@@ -45,8 +45,9 @@ const OnBoarding = () => {
       body: JSON.stringify({ email, password }),
     }).then((res) => res.json())
     .then((data) => {
-
-      if(data.status === 201) {
+      console.log('signup', data)
+      if(data?.data?.token) {
+        localStorage.setItem('token_app_wpl', data?.data?.token)
         setIsSignComplete(true)
         setError('')
         return

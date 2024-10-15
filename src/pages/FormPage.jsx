@@ -1,15 +1,19 @@
 import { AlignLeft, Info } from 'lucide-react'
 import headerPng from '../assets/images/prdetails_header.png'
 import wpllogo from '../assets/images/wpl_prdetails.png'
+import wplwolfLogo from '../assets/svg/wolf_logo.svg'
+
 import { useEffect, useState } from 'react';
 
 import checkTick from '../assets/images/check-tick.png'
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import GithubTeamSearchBox from '../components/form/GithubTeamSearchBox';
 
 import akashProfile from '../assets/dummy/akash_profile.png'
 import sumeetProfile from '../assets/dummy/sumeet_profile.png'
 import rahulProfile from '../assets/dummy/rahul_profile.png'
+import { getProjectDetails } from '../service/api';
+import { useQuery } from '@tanstack/react-query';
 
 const whitespaceRegex = /^\s*$/;
 const emailIdRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,7 +39,14 @@ const githubTeammatesList = [
 
 const FormPage = () => {
 
-  const navigate = useNavigate();
+  const { id } = useParams();
+  const navigate = useNavigate()
+  
+  const {data: projectDetails, isLoading: isLoadingProjectDetails} = useQuery({
+    queryKey: ['projectDetails', id],
+    queryFn: () => getProjectDetails(id),
+    enabled: !!id
+  })
 
   const submittedDetails = () => {
     return(
@@ -146,13 +157,18 @@ const FormPage = () => {
 
         <div className='flex flex-col justify-center items-center'>
           <div className='w-[360px] md:w-[496px]'>
+            
             <div className='-translate-y-8'>
-              <img src={wpllogo} alt="WPL Logo" className='size-[72px]'/>
+              <img src={projectDetails?.image} alt="WPL Logo" className='size-[72px]'/>
             </div>
 
             <div>
-              <p className='font-gridular text-[24px] leading-[28.8px] text-primaryYellow mb-2'>A follow along guide for shipping blinks</p>
-              <p className='font-inter text-[14px] leading-[20px] text-white32 mb-3'>@Crediblefi</p>
+              <p className='font-gridular text-[24px] leading-[28.8px] text-primaryYellow mb-2'>
+                {projectDetails?.title}
+              </p>
+              <p className='font-inter text-[14px] leading-[20px] text-white32 mb-3'>
+                { projectDetails?.organisationHandle}
+              </p>
               <div className='flex flex-row gap-2 font-inter text-[14px] leading-[20px] text-white32'>
                 <p><span className='text-white88'>136</span> Interested</p>
                 <p><span className='text-white88'>1.99k</span> Submissions</p>

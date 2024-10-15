@@ -23,3 +23,21 @@ export const getProjectDetails = async (id) => {
         handleForbiddenError(error)
     }
 }
+
+export const getAllProjects = async () => {
+    try {
+        const response = await axiosInstance.get('/projects')
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const getUserProjects = async () => {
+    try {
+        const response = await axiosInstance.get('/projects/user')
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}

@@ -9,6 +9,7 @@ import FormPage from "./pages/FormPage"
 import OnBoarding from "./pages/OnBoarding"
 import AddProjectPage from "./pages/AddProjectPage"
 import EditProjectPage from "./pages/EditProjectPage"
+import AllProjectsPage from "./pages/AllProjectsPage"
 
 function App() {
 
@@ -24,10 +25,12 @@ function App() {
           <Route path="/rewards" element={<RewardsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/editprofile" element={<EditProfilePage />} />
-          <Route path="/form" element={<FormPage />} />
+          <Route path="/signup/form" element={<FormPage />} />
+          <Route path="/projectdetails/form/:id" element={<FormPage />} />
           <Route path="/onboarding" element={<OnBoarding />} />
           <Route path="/addproject" element={<AddProjectPage />} />
           <Route path="/editproject/:id" element={<EditProjectPage />} />
+          <Route path="/allprojects" element={<AllProjectsPage />} />
         </Routes>
       </div>
     </div>

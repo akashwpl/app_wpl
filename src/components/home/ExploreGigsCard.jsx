@@ -1,16 +1,22 @@
-import gigProfile from '../../assets/images/gig-profile.png'
+import { useNavigate } from 'react-router-dom';
 import usdc from '../../assets/images/usdc.png'
 import { CalendarCheck, Clock, Dot, Trophy, Zap } from 'lucide-react';
 
-const ExploreGigsCard = () => {
+const ExploreGigsCard = ({data, type}) => {
+    const navigate = useNavigate()
+
+    const navigateToProjectDetails = () => {
+        navigate(`/projectdetails/${data?._id}`)
+    }
+
   return (
-    <div>
-        <div className='flex flex-row justify-between items-center my-4'>
+    <div onClick={navigateToProjectDetails} className='cursor-pointer py-2 flex items-center w-full'>
+        <div className='flex flex-row justify-between items-center w-full'>
             <div className='flex flex-row'>
-                <img className='size-14 mr-2' src={gigProfile} alt="Gig Profile Picture" />
+                <img className='size-14 mr-2 rounded-md' src={data?.image} alt="Gig Profile Picture"/>
                 <div className='flex flex-col'>
-                    <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48 mb-1'>Credible Finance</p>
-                    <p className='font-gridular text-[16px] leading-[19.2px] text-white88 mb-3'>Regional finance ambassador USA 🇺🇸</p>
+                    <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48 mb-1'>{data?.organisationHandle}</p>
+                    <p className='font-gridular text-[16px] leading-[19.2px] text-white88 mb-3'>{data?.title}</p>
                     <div className='flex flex-row text-white32 justify-between w-[450px]'>
                         <Clock size={14} />
                         <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Due in 12h</p>
@@ -33,7 +39,6 @@ const ExploreGigsCard = () => {
                 <p className='text-white48'> USDC</p>
             </div>
         </div>
-        <div className=' border border-x-0 border-t-0 border-b-white7'></div>
     </div>
   )
 }

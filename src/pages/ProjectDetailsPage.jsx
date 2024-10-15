@@ -30,6 +30,10 @@ const ProjectDetailsPage = () => {
     navigate(`/editproject/${id}`)
   }
 
+  const applyForProject = () => {
+    navigate(`/projectdetails/form/${id}`)
+  }
+
   const totalPrize = projectDetails?.milestones?.reduce((acc, milestone) => acc + parseFloat(milestone.prize), 0) || 0;
 
   return (
@@ -76,9 +80,9 @@ const ProjectDetailsPage = () => {
           </div>
 
           <div>
-            <Accordion type="multiple" defaultValue="item-0" collapsible>
+            <Accordion type={projectDetails?.milestones?.length <= 1 ? "single" : 'multiple'} defaultValue="item-1" collapsible>
               {projectDetails?.milestones?.map((milestone, index) => (
-                <AccordionItem value={`item-${index}`} key={index} className="border-white7">
+                <AccordionItem value={`item-${index + 1}`} key={index} className="border-white7">
                   <AccordionTrigger className="text-white48 font-inter hover:no-underline">Milestone {index + 1}</AccordionTrigger>
                   <AccordionContent>
                     <MilestoneCard data={milestone}/>
@@ -124,8 +128,11 @@ const ProjectDetailsPage = () => {
                 ))}
               </Accordion>
             </div>
-
-            <div onClick={editProject}>edit project</div>
+              
+            <div className='mx-4 mt-4'>
+              <button onClick={applyForProject} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular'>Apply</button>
+              <div onClick={editProject}>edit project</div>
+            </div>
           </div>
         </div>
       </div>
