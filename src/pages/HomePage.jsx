@@ -1,3 +1,4 @@
+import { useDispatch, useSelector } from 'react-redux'
 import BugFixCard from '../components/home/BugFixCard'
 import ExploreGigs from '../components/home/ExploreGigs'
 import KYC_Card from '../components/home/KYC_Card'
@@ -5,8 +6,27 @@ import ProfileDetailsCard from '../components/home/ProfileDetailsCard'
 import RecentActivityCard from '../components/home/RecentActivityCard'
 import SearchRoles from '../components/home/SearchRoles'
 import Statistics from '../components/home/Statistics'
+import { useEffect } from 'react'
+import { setUserDetails } from '../store/slice/userSlice'
+
+
 
 const HomePage = () => {
+
+  const { user } = useSelector((state) => state?.user)
+
+
+  console.log('user', user)
+
+  // useEffect(() => {
+  //   haha()
+  // }, [])
+
+  // const haha = () => {
+  //   dispatch(setUserDetails({
+  //     name: "ak"
+  //   }))
+  // }
 
   return (
     <div className='flex flex-row justify-between mt-4 mx-8'>
