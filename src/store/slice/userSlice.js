@@ -1,18 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 
 const initialState = {
-    user: {
-        id: '1',
-        name: 'Giga Wolf',
-        email: 'wolf@giga.com',
-        role: 'Giga Admin',
-        createdAt: '3 days ago',
-        updatedAt: '',
-        kyc: {
-            isVerified: false,
-            verifiedAt: '2 days ago'
-        }
-    },
+    user: {},
     isLoadingUser: false,
     error: null
 }
@@ -20,13 +9,13 @@ const initialState = {
 const userSlice = createSlice({
     name: 'user',
     initialState,
-    reducers: {},
-    // extraReducers: (builder) => {
-    //     builder
-    //         .addCase(fetchUser.fulfilled, (state, action) => {
-    //             state.user = action.payload
-    //         })
-    // }
+    reducers: {
+        setUserDetails: (state, action) => {
+            state.user = action.payload;
+        }
+    },
 })
+
+export const { setUserDetails } = userSlice.actions;
 
 export default userSlice.reducer

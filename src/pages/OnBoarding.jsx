@@ -5,16 +5,18 @@ import { useNavigate } from 'react-router-dom'
 
 import headerPng from '../assets/images/prdetails_header.png'
 import wpllogo from '../assets/images/wpl_prdetails.png'
+import { useDispatch } from 'react-redux'
+import { setUserDetails } from '../store/slice/userSlice'
 
 const OnBoarding = () => {
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const [email, setEmail] = useState('') // Changed from firstName to email
   const [password, setPassword] = useState('')
 
   // const []
-
 
   const [displayName, setDisplayName] = useState('') // Changed from firstName to email
   const [experience, setExperience] = useState('')
@@ -81,6 +83,7 @@ const OnBoarding = () => {
         setError(data.message)
         return
       } else {
+        dispatch(setUserDetails(data?.data))
         localStorage.setItem('token_app_wpl', data?.data?.token)
         navigate('/')
         setError('')
