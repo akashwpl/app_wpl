@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-export const BASE_URL = "http://139.59.58.53:3000"
+import { BASE_URL } from './constants';
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
