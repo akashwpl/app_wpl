@@ -100,7 +100,7 @@ const OnBoarding = () => {
       return
     }
 
-    const response = fetch(`http://139.59.58.53:3000/users/update/`, {
+    const response = fetch(`${BASE_URL}/users/update/`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
