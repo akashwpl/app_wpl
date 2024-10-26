@@ -12,7 +12,23 @@ import DiscordSvg from '../assets/svg/discord.svg'
 import { getProjectDetails, updateProjectDetails } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
+import { getTimestampFromNow } from '../lib/constants'
+import DatePicker from 'react-datepicker'
+// import '../components/ui/react-datepicker.css';
 
+const calcDaysUntilDate = (futureDate) => {
+    const today = new Date();
+    const differenceInMilliseconds = new Date(futureDate) - today;
+    const differenceInDays = Math.ceil(differenceInMilliseconds / (1000 * 60 * 60 * 24));
+
+    if (differenceInDays%30 == 0) {
+        return { timeUnit: 'months', deliveryTime: Math.floor(differenceInDays / 30) };
+    } else if (differenceInDays%7 == 0) {
+        return { timeUnit: 'weeks', deliveryTime: Math.floor(differenceInDays / 7) };
+    } else {
+        return { timeUnit: 'days', deliveryTime: differenceInDays };
+    }
+}
 
 const EditProjectPage = () => {
     const navigate = useNavigate();
@@ -38,9 +54,10 @@ const EditProjectPage = () => {
     const setMilestonesHelper = (index,event) => {
         setMilestones(prevMilestones => {
             const updatedMilestones = [...prevMilestones];
+
             updatedMilestones[index] = {
                 ...updatedMilestones[index],
-                [event.target.name]: event.target.value
+                [event.target.name]: event.target.value,
             };
             return updatedMilestones;
         });
@@ -56,11 +73,6 @@ const EditProjectPage = () => {
             prevMilestones.filter((_, i) => i !== index)
         );
     }
-
-    // useEffect(() => {
-    //     console.log('milestones', milestones);
-    //     console.log('proj details', projectDetails);
-    // },[milestones,projectDetails])
 
     // State for validation errors
     const [errors, setErrors] = useState({});
@@ -87,16 +99,27 @@ const EditProjectPage = () => {
     };
 
     const handleSave = async () => {
+        const updatedMilestones = milestones.map(milestone => ({
+            ...milestone,
+            deadline: getTimestampFromNow(`${milestone.deliveryTime} ${milestone.timeUnit?.toLowerCase() || 'days'}`) // Add timestamp to each milestone
+        }));
+
+        console.log('Updatedmilestones', updatedMilestones);
+
         if (validateFields()) {
             // Proceed with saving the data
             const updData = {
-                title: title,
-                description: description,
-                organisationHandle: organisationHandle,
-                discordLink: discordLink,
-                about: about,
-                // milestones: milestones
+                project: {
+                    title: title,
+                    description: description,
+                    organisationHandle: organisationHandle,
+                    discordLink: discordLink,
+                    about: about,
+                },
+                milestones: updatedMilestones
             }
+            console.log(updData);
+            
             const res = await updateProjectDetails(projectDetails._id,updData);
             console.log('response', res);
             setSubmitted(true);
@@ -106,6 +129,25 @@ const EditProjectPage = () => {
     const handleNavigateToProjectDetails = () => {
         navigate(`/projectdetails/${projectDetails._id}`);
     }
+
+    const handleDateChange = (index,date) => {
+        const updatedMilestones = [...milestones];
+        updatedMilestones[index] = { ...updatedMilestones[index], starts_in: date.getTime() };
+        setMilestones(updatedMilestones);
+    };
+
+    useEffect(() => {
+        const updatedMilestones = milestones.map(milestone => {
+            const daysObj = calcDaysUntilDate(milestone?.deadline);
+            return {
+                ...milestone,
+                deliveryTime: daysObj.deliveryTime,
+                timeUnit: daysObj.timeUnit
+            }
+        });
+        
+        setMilestones(updatedMilestones)
+    },[])
 
   return (
     <div className='mb-20'>
@@ -250,26 +292,40 @@ const EditProjectPage = () => {
                                     </div>
                                 <AccordionContent className="py-2">
                                     <div>
-                                            <div className='my-3'>
-                                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title</p>
-                                                <div className='bg-white7 rounded-md px-3 py-2'>
-                                                    <input
-                                                        type='text'
-                                                        value={milestone.title}
-                                                        name='title'
-                                                        onChange={(e) => setMilestonesHelper(index,e)} 
-                                                        className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full'
-                                                    />
-                                                </div>
-                                                {errors.organisationHandle && <p className='text-[10px] font-medium text-red-500'>{errors.organisationHandle}</p>}
-                                            </div>
-                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add Milestone goals</p>
-                                        <div className='bg-white7 rounded-md px-3 py-2'>
-                                            <textarea type='text' 
-                                                    value={milestone.description} 
-                                                    name='description'
+                                        <div className='mt-3'>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title</p>
+                                            <div className='bg-white7 rounded-md px-3 py-2'>
+                                                <input
+                                                    type='text'
+                                                    value={milestone.title}
+                                                    name='title'
                                                     onChange={(e) => setMilestonesHelper(index,e)} 
-                                                    className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
+                                                    className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full'
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className='mt-3'>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add Milestone goals</p>
+                                            <div className='bg-white7 rounded-md px-3 py-2'>
+                                                <textarea type='text' 
+                                                        value={milestone.description} 
+                                                        name='description'
+                                                        onChange={(e) => setMilestonesHelper(index,e)} 
+                                                        className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
+                                            </div>
+                                        </div>
+                                        <div className='mt-3'>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Start date</p>
+                                            <div className='bg-white7 rounded-md'>
+                                                <DatePicker
+                                                    className='w-[28rem] bg-transparent text-white88 placeholder:text-white64 outline-none border-none cursor-pointer px-3 py-2' 
+                                                    selected={milestone.starts_in || ''}
+                                                    onChange={(date) => handleDateChange(index,date)}
+                                                    minDate={new Date()}
+                                                    dateFormat="dd/MM/yyyy"
+                                                    placeholderText='DD/MM/YYYY'
+                                                />
+                                            </div>
                                         </div>
                                         <div className='mt-3'>
                                                 <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
@@ -297,7 +353,7 @@ const EditProjectPage = () => {
                                                     <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
                                                         <select 
                                                             className='bg-[#091044] text-white88 outline-none border-none w-full'
-                                                            value={milestone.timeUnit}
+                                                            value={milestone.timeUnit || 'Days'}
                                                             name='timeUnit'
                                                             onChange={(e) => setMilestonesHelper(index,e)}
                                                         >
@@ -367,7 +423,7 @@ const EditProjectPage = () => {
                 <p className='text-white88 font-semibold font-inter text-[13px]'>Project Total Sum</p>
                 <div className='bg-white4 rounded-md flex items-center gap-1 h-8 px-3'>
                     <img src={USDCsvg} alt='usdc' className='size-[14px]'/>
-                    <p className='text-white88 text-[12px] font-semibold font-inter'>1200</p>
+                    <p className='text-white88 text-[12px] font-semibold font-inter'>{projectDetails?.totalPrize}</p>
                     <p className='text-white32 font-semibold font-inter text-[12px]'>USDC</p>
                 </div>
             </div>
