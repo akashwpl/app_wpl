@@ -8,31 +8,26 @@ import SearchRoles from '../components/home/SearchRoles'
 import Statistics from '../components/home/Statistics'
 import { useEffect } from 'react'
 import { setUserDetails } from '../store/slice/userSlice'
+import { useQuery } from '@tanstack/react-query'
+import { getUserDetails } from '../service/api'
 
 
 
 const HomePage = () => {
 
-  const { user } = useSelector((state) => state?.user)
+  const { user_id } = useSelector((state) => state)
 
-
-  console.log('user', user)
-
-  // useEffect(() => {
-  //   haha()
-  // }, [])
-
-  // const haha = () => {
-  //   dispatch(setUserDetails({
-  //     name: "ak"
-  //   }))
-  // }
+  const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
+    queryKey: ["userDetails", user_id],
+    queryFn: () => getUserDetails(user_id),
+    enabled: !!user_id,
+  })
 
   return (
     <div className='flex flex-row justify-between mt-4 mx-8'>
       {/* Left side */}
       <div className='flex flex-col px-[46px] mt-4 w-full '>
-        <Statistics />
+        <Statistics userDetails={userDetails}/>
         <SearchRoles />
         <ExploreGigs />
       </div>

@@ -1,14 +1,25 @@
-import { ArrowLeft, CheckCheck, Info, Plus, Search, Upload, X } from 'lucide-react'
+import { ArrowLeft, CheckCheck, CheckCheckIcon, Info, Plus, Search, Upload, X } from 'lucide-react'
 import React, { useRef, useState } from 'react'
 import CustomModal from '../components/ui/CustomModal'
 import PoWCard from '../components/profile/PoWCard'
 import { Link } from 'react-router-dom';
+import { getUserDetails } from '../service/api';
+import { useSelector } from 'react-redux';
+import { useQuery } from '@tanstack/react-query';
+import { BASE_URL } from '../lib/constants';
 
 const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
 
 const EditProfilePage = () => {
 
     const fileInputRef = useRef(null);
+    const { user_id } = useSelector((state) => state)
+
+    const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
+        queryKey: ["userDetails", user_id],
+        queryFn: () => getUserDetails(user_id),
+        enabled: !!user_id,
+    })
 
     const [dummyProjects, setDummyProjects] = useState([])
     const [showAddProjectModal, setShowAddProjectModal] = useState(false)
@@ -139,6 +150,65 @@ const EditProfilePage = () => {
         setErrors({})
     }
 
+    const handleUploadProject = async () => {
+        const transformedProjects = dummyProjects.map(project => ({
+            project: {
+                title: project.title,
+                organisationHandle: "",
+                description: project.desc,
+                discordLink: project.link,
+                // image: project.imgPreview, // Assuming imgPreview is the base64 string
+                status: "idle",
+                type: "sample",
+                about: project.desc,
+                skills: project.skills,
+            },
+            milestones: []
+        }));
+        
+        console.log('Transformed Projects:', transformedProjects);
+    
+        const response = await fetch(`${BASE_URL}/projects/create/multiple`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token_app_wpl')}`
+            },
+            body: JSON.stringify({projects: transformedProjects})
+        }).then(res => res.json())
+        .then((data) => {
+            console.log('res add project', data)
+        })
+    }
+
+    const handleSubmitEditProfile = async () => {
+        const data = {
+            "displayName": document.querySelector('input[name="displayName"]').value,
+            "bio": document.querySelector('textarea[name="bio"]').value,
+            "socials": {
+                "discord": document.querySelector('input[name="discordUsername"]').value,
+                "telegram": document.querySelector('input[name="telegramUsername"]').value,
+            }
+        }
+
+        const response = await fetch(`${BASE_URL}/users/update/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${localStorage.getItem('token_app_wpl')}`
+            },
+            body: JSON.stringify(data)
+        }).then(res => res.json())
+        .then((data) => {
+            if(dummyProjects?.length) {
+                handleUploadProject()
+            }
+            console.log('res edit profile', data)
+        })
+    }
+
+    console.log('userDetails', userDetails)
+
   return (
     <div className='flex flex-col justify-center items-center'>
         <Link to={'/profile'} className='w-full text-left text-white32 text-[13px] font-medium border-t border-b border-white7 flex items-center gap-1 py-2 px-20 mt-[1px]'><ArrowLeft size={14} className='text-white32'/> Back to your Profile</Link>
@@ -171,7 +241,7 @@ const EditProfilePage = () => {
 
             <div className='h-[1px] w-full bg-white7 my-4'/>
 
-            <div>
+            <div className='mb-20'>
                 <div className='flex flex-col gap-4'>
                     <div>
                         <p className="text-[14px] font-inter text-white88">Edit Basic Details</p>
@@ -179,13 +249,13 @@ const EditProfilePage = () => {
                     <div className='flex justify-between gap-4'>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Your Name</label>
-                            <input className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
+                            <input name='displayName' defaultValue={userDetails?.displayName} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
                                 placeholder='Jhon Doe'
                             />
                         </div>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Your Email</label>
-                            <input className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
+                            <input name='email' value={userDetails?.email} readOnly className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none border-none' 
                                 placeholder='Jhon@Doe.com'
                             />
                         </div>
@@ -193,7 +263,7 @@ const EditProfilePage = () => {
 
                     <div className='flex flex-col gap-1 w-full'>
                         <label className='text-[13px] font-medium text-white32'>Write your Bio (max 240 characters)</label>
-                        <textarea className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
+                        <textarea name='bio' defaultValue={userDetails?.bio} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
                             placeholder='I am a preety fuckin cool dev'
                             rows={3}
                         />
@@ -209,23 +279,16 @@ const EditProfilePage = () => {
                     <div className='flex justify-between gap-4'>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Discord Username</label>
-                            <input className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
+                            <input name='discordUsername' defaultValue={userDetails?.socials?.discord} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
                                 placeholder='Jhon Wick'
                             />
                         </div>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Telegram Username</label>
-                            <input className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
+                            <input name='telegramUsername' defaultValue={userDetails?.socials?.telegram} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
                                 placeholder='Jhon Wick'
                             />
                         </div>
-                    </div>
-
-                    <div className='flex flex-col gap-1 w-full'>
-                        <label className='text-[13px] font-medium text-white32'>Email</label>
-                        <input className='bg-white7 rounded-[6px] placeholder:text-white32 px-3 py-2 text-[14px]'
-                            placeholder='Jhon@Doe.com'
-                        />
                     </div>
                 </div>
 
@@ -251,6 +314,12 @@ const EditProfilePage = () => {
                     <button onClick={() => {setShowAddProjectModal(true)}} className='bg-white7 text-white88 rounded-[6px] h-[42px] flex justify-center items-center mt-4 w-full'>
                         <p className='flex items-center gap-1 text-[12px] font-medium font-inter'>Add {dummyProjects ? 'another' : 'a'} Project <Plus size={16} className='text-white32'/></p>
                     </button>
+                </div>
+            </div>
+
+            <div className='bg-[#091044] fixed bottom-0 left-0 w-full'>
+                <div className='flex justify-end items-center py-2 pr-10'>
+                    <button onClick={handleSubmitEditProfile} className={`bg-primaryYellow px-6 py-2 rounded-md text-[14px] font-inter flex justify-center items-center gap-1 ${false ? "opacity-25" : ""}`}><CheckCheckIcon size={20}/> Save</button>
                 </div>
             </div>
         </div>

@@ -10,6 +10,7 @@ import OnBoarding from "./pages/OnBoarding"
 import AddProjectPage from "./pages/AddProjectPage"
 import EditProjectPage from "./pages/EditProjectPage"
 import AllProjectsPage from "./pages/AllProjectsPage"
+import AllUserOwnedProjectsPage from "./pages/AllUserOwnedProjectsPage"
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/addproject" element={<AddProjectPage />} />
           <Route path="/editproject/:id" element={<EditProjectPage />} />
           <Route path="/allprojects" element={<AllProjectsPage />} />
+          <Route path="/userprojects" element={<AllUserOwnedProjectsPage />} />
         </Routes>
       </div>
     </div>
