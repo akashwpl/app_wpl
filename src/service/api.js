@@ -69,3 +69,32 @@ export const deleteProject = async (id) => {
     }
 }
 
+export const applyForProject = async (id, data) => {
+    try {
+        const response = await axiosInstance.post(`/submissions/submit/${id}`, data)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const getProjectSubmissions = async (id) => {
+    try {
+        const response = await axiosInstance.get(`/submissions/${id}`)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const acceptRejectSubmission = async (submissionData, id) => {
+    try {
+        const response = await axiosInstance.put(`/submissions/update/${id}`, submissionData)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+
+

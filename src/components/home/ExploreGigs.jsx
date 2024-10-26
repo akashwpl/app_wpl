@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Tabs from "../ui/Tabs"
 import ExploreGigsCard from "./ExploreGigsCard"
 import { LayoutGrid, ListFilter, SquareArrowOutUpRightIcon, SquareArrowUpRight, TableProperties } from "lucide-react"
@@ -41,6 +41,14 @@ const ExploreGigs = () => {
     navigate(`/allprojects`)
   }
 
+  const onGoingProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'ongoing'), [userProjects])
+  const completedProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'completed'), [userProjects])
+  const inReviewProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'submitted'), [userProjects])
+
+  console.log('onGoingProjects', onGoingProjects)
+  console.log('completedProjects', completedProjects)
+  console.log('inReviewProjects', inReviewProjects)
+
   return (
     <div>
         <p onClick={navigateToProjectDetails} className="font-gridular text-primaryYellow/70 hover:text-primaryYellow text-[20px] leading-[24px] mb-6 flex items-center gap-2 cursor-pointer">Explore Gigs <SquareArrowOutUpRightIcon size={16}/></p>
@@ -54,26 +62,26 @@ const ExploreGigs = () => {
             </div>
             <div className="flex flex-row justify-center items-center">
                 <div className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[89px] h-[32px]">
-                    <ListFilter size={12}/>
-                    <p className='font-gridular text-[14px] leading-[16.8px]'>Filter</p>
+                  <ListFilter size={12}/>
+                  <p className='font-gridular text-[14px] leading-[16.8px]'>Filter</p>
                 </div>
             </div>
           </div>
         </div>
 
         {selectedTab === 'opengigs' && <div>
-            {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
-            userProjects && !userProjects?.length ? <div className="mt-4">
-                <div className="font-gridular text-primaryYellow text-[24px]">Start Contributing to Gigs</div>
-                <div className="flex justify-center items-center mt-8">
-                  <button onClick={navigateToProjectDetails} className="bg-primaryYellow/90 hover:bg-primaryYellow text-black w-fit px-4 py-1 rounded-md font-bienvenue mt-3 text-[20px]">Explore Gigs</button>
-                </div>
-               </div>
-             : userProjects?.map((project, idx) => <div key={idx} className="hover:bg-white4 my-4"> 
-                    <ExploreGigsCard data={project} type={"project"}/>
-                    <div className=' border border-x-0 border-t-0 border-b-white7'></div>
-                </div>
-            )}
+          {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
+          userProjects && !userProjects?.length ? <div className="mt-4">
+              <div className="font-gridular text-primaryYellow text-[24px]">Start Contributing to Gigs</div>
+              <div className="flex justify-center items-center mt-8">
+                <button onClick={navigateToProjectDetails} className="bg-primaryYellow/90 hover:bg-primaryYellow text-black w-fit px-4 py-1 rounded-md font-bienvenue mt-3 text-[20px]">Explore Gigs</button>
+              </div>
+              </div>
+            : userProjects?.map((project, idx) => <div key={idx} className="hover:bg-white4 my-4"> 
+                  <ExploreGigsCard data={project} type={"project"}/>
+                  <div className=' border border-x-0 border-t-0 border-b-white7'></div>
+              </div>
+          )}
         </div>}
         {selectedTab === 'inreview' &&  <div>
             <div className="font-gridular text-primaryYellow text-[24px] mt-4">No Gigs in review</div>
