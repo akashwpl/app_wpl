@@ -1,7 +1,15 @@
 import { ArrowRight, CheckCheck, FileText, LoaderCircle, TextSearch, Users } from 'lucide-react'
 import twitterIcon from '../../assets/images/twitter.png'
+import { useNavigate } from 'react-router-dom'
 
 const ProfileDetailsCard = () => {
+
+  const navigate = useNavigate()
+
+  const navigateToEditProfile = () => {
+    navigate('/editprofile')
+  }
+
   return (
     <div className='flex flex-col w-full h-[233px] bg-white4 rounded-md my-6'>
       <div className='flex flex-row justify-between items-center px-4 bg-white7 h-[65px]'>
@@ -25,7 +33,7 @@ const ProfileDetailsCard = () => {
           <TextSearch size={16}/>
           <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Set Job preferences</p>
         </div>
-        <ArrowRight size={16} />
+        <ArrowRight size={16} onClick={navigateToEditProfile}/>
       </div>
       <div className='border border-white12 border-dashed w-full'></div>
       <div className='flex flex-row justify-between my-3 text-white64 mx-4'>
@@ -33,7 +41,7 @@ const ProfileDetailsCard = () => {
           <img src={twitterIcon} width={16} alt="twitter icon" />
           <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Social Links</p>
         </div>
-        <ArrowRight size={16} />
+        <ArrowRight size={16} onClick={navigateToEditProfile}/>
       </div>
       <div className='border border-white12 border-dashed w-full'></div>
       <div className='flex flex-row justify-between my-3 text-white64 mx-4'>
@@ -41,7 +49,7 @@ const ProfileDetailsCard = () => {
           <FileText size={16}/>
           <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Add work / Samples</p>
         </div>
-        <ArrowRight size={16} />
+        <ArrowRight size={16} onClick={navigateToEditProfile}/>
       </div>
     </div>
   )

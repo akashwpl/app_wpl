@@ -33,6 +33,15 @@ export const getAllProjects = async () => {
     }
 }
 
+export const getUserDetails = async (id) => {
+    try {
+        const response = await axiosInstance.get(`/users/${id}`)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
 export const getUserProjects = async () => {
     try {
         const response = await axiosInstance.get('/projects/user')
@@ -50,3 +59,13 @@ export const updateProjectDetails = async (id, updData) => {
         handleForbiddenError(error)
     }
 }
+
+export const deleteProject = async (id) => {
+    try {
+        const response = await axiosInstance.delete(`/projects/delete/${id}`)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
