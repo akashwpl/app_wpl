@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import headerPng from '../assets/images/prdetails_header.png'
 import wpllogo from '../assets/images/wpl_prdetails.png'
 import { useDispatch } from 'react-redux'
-import { setUserDetails } from '../store/slice/userSlice'
+import { setUserDetails, setUserId } from '../store/slice/userSlice'
 
 const OnBoarding = () => {
 
@@ -77,14 +77,28 @@ const OnBoarding = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
-    }).then((res) => res.json()).then((data) => {
+    }).then((res) => {
+      if(res.status === 401) {
+        setError('Password is not matching')
+        return
+      }
+      if(res.status === 404) {
+        setError('Email not found')
+        return
+      }
+      if(res.status === 500) {
+        setError('Something went wrong')
+        return
+      }
+      return res.json()
+    }).then((data) => {
       console.log('login', data)
       if(data.message === 'Password is not matching') {
         setError(data.message)
         return
       } else {
-        dispatch(setUserDetails(data?.data))
         localStorage.setItem('token_app_wpl', data?.data?.token)
+        dispatch(setUserId(data?.data?.userId))
         navigate('/')
         setError('')
       }

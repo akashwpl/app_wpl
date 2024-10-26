@@ -358,19 +358,18 @@ const AddProjectPage = () => {
                 </div>
         }
 
-            <div className='bg-[#091044] px-20 py-4 fixed bottom-0 left-0 w-full flex justify-between items-center'>
-                    
-                    <div className='flex items-center gap-2'>
-                        <p className='text-white88 font-semibold font-inter text-[13px]'>Project Total Sum</p>
-                        <div className='bg-white4 rounded-md flex items-center gap-1 h-8 px-3'>
-                            <img src={USDCsvg} alt='usdc' className='size-[14px]'/>
-                            <p className='text-white88 text-[12px] font-semibold font-inter'>1200</p>
-                            <p className='text-white32 font-semibold font-inter text-[12px]'>USDC</p>
-                        </div>
+            <div className='bg-[#091044] px-20 py-4 fixed bottom-0 left-0 w-full flex justify-between items-center'> 
+                <div className='flex items-center gap-2'>
+                    <p className='text-white88 font-semibold font-inter text-[13px]'>Project Total Sum</p>
+                    <div className='bg-white4 rounded-md flex items-center gap-1 h-8 px-3'>
+                        <img src={USDCsvg} alt='usdc' className='size-[14px]'/>
+                        <p className='text-white88 text-[12px] font-semibold font-inter'>1200</p>
+                        <p className='text-white32 font-semibold font-inter text-[12px]'>USDC</p>
                     </div>
-                    <div>
-                        <button disabled={submitted} className={`bg-primaryYellow px-6 py-2 rounded-md text-[14px] font-inter flex justify-center items-center gap-1 ${submitted ? "opacity-25" : ""}`} onClick={handleSubmit}><CheckCheckIcon size={20}/> Save</button>
-                    </div>
+                </div>
+                <div>
+                    <button disabled={submitted} className={`bg-primaryYellow px-6 py-2 rounded-md text-[14px] font-inter flex justify-center items-center gap-1 ${submitted ? "opacity-25" : ""}`} onClick={handleSubmit}><CheckCheckIcon size={20}/> Save</button>
+                </div>
             </div>
     </div>
   )
