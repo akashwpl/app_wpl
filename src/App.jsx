@@ -35,7 +35,7 @@ function App() {
           <Route path="/editproject/:id" element={<EditProjectPage />} />
           <Route path="/allprojects" element={<AllProjectsPage />} />
           <Route path="/userprojects" element={<AllUserOwnedProjectsPage />} />
-          <Route path="/submissions/:id" element={<SubmissionsPage />} />
+          <Route path="/submissions/:id/:page" element={<SubmissionsPage />} />
           <Route path="/notifications" element={<Notifications />} />
         </Routes>
       </div>

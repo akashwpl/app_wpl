@@ -79,8 +79,8 @@ const ProjectDetailsPage = () => {
 
   
 
-  const navigateToSubmissions = () => {
-    navigate(`/submissions/${projectDetails?._id}`)
+  const navigateToSubmissions = (page) => {
+    navigate(`/submissions/${projectDetails?._id}/${page}`)
   }
 
   
@@ -177,7 +177,7 @@ const ProjectDetailsPage = () => {
 
                     <div className='max-h-[300px] overflow-y-auto'>
                       {projectSubmissions?.map((submission, index) => (
-                        <div onClick={navigateToSubmissions} key={index} className={`grid grid-cols-12 gap-2 py-2 ${index === projectSubmissions.length - 1 ? "" : "border-b border-white7"}`}>
+                        <div onClick={() => navigateToSubmissions(index + 1)} key={index} className={`grid grid-cols-12 gap-2 py-2 ${index === projectSubmissions.length - 1 ? "" : "border-b border-white7"}`}>
                           <div className='text-[14px] col-span-1 text-white88 font-inter'>{index + 1}</div>
                           <div className='text-[14px] col-span-3 text-start text-white88 font-inter'>{submission?.user?.displayName}</div>
                           <div className='text-[14px] col-span-4 text-white88 font-inter truncate'>{submission?._doc?.experienceDescription}</div>
