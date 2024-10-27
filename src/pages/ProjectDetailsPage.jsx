@@ -77,6 +77,8 @@ const ProjectDetailsPage = () => {
     setShowCloseProjectModal(false);
   }
 
+  
+
   const navigateToSubmissions = () => {
     navigate(`/submissions/${projectDetails?._id}`)
   }

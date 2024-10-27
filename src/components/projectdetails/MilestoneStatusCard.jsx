@@ -1,7 +1,14 @@
+import { submitMilestone, updateProjectDetails } from '../../service/api';
 import { ArrowUpRight, Clock, HeartCrack, Hourglass } from 'lucide-react'
 import React from 'react'
 
 const MilestoneStatusCard = ({ data }) => {
+
+    const handleSubmitMilestone = async () => {
+        const res = await submitMilestone(data?._id);
+        console.log('res mile submmited', res)
+    }
+
   return (
     <div className='flex flex-col gap-[14px]'>
         <div className='flex items-center justify-between'>
@@ -36,6 +43,8 @@ const MilestoneStatusCard = ({ data }) => {
                 </a>
             </div>
         </div>
+
+        <button onClick={handleSubmitMilestone}>submit</button>
     </div>
   )
 }
