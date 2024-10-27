@@ -1,23 +1,23 @@
 import { useQuery } from '@tanstack/react-query'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { acceptRejectSubmission, getProjectSubmissions } from '../service/api'
 import { useParams } from 'react-router-dom';
 import headerPng from '../assets/images/prdetails_header.png'
-import { AlignLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlignLeft, CheckCheck, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import wpllogo from '../assets/images/wpl_prdetails.png'
 
 
 
 const SubmissionsPage = () => {
 
-    const { id } = useParams();
+    const { id, page } = useParams();
 
     const {data: submissions, isLoading: isLoadingSubmission} = useQuery({
         queryKey: ["submissions", id],
         queryFn: () => getProjectSubmissions(id),
     })
 
-    const [currentPage, setCurrentPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(page);
 
     const totalSubmissions = submissions?.length || 0;
     const currentSubmission = submissions?.[currentPage];
@@ -30,34 +30,34 @@ const SubmissionsPage = () => {
         setCurrentPage((prevPage) => Math.max(prevPage - 1, 0));
     };
 
-  
-    const handleAccpetReject = () => {
-        console.log('submission', currentSubmission)
+    useEffect(() => {
+        setCurrentPage(page);
+        return () => {
+            setCurrentPage(0);
+        }
+    }, [page])
 
+  
+    const handleAccpetReject = (type) => {
         const submissionData = {
             email: currentSubmission.user?.email,
             experienceDescription: currentSubmission._doc?.experienceDescription || "",
             name: currentSubmission.user?.displayName || "",
             portfolioLink: currentSubmission._doc?.portfolioLink || "",
-            projectId: id, // Using the id from useParams
-            status: "accepted", // Hardcoded to 'accepted' for now
+            projectId: id,
             teammates: [],
             userId: currentSubmission.user?._id || "",
             walletAddress: currentSubmission._doc?.walletAddress || "",
-          };
-
-        submissionData.status = 'rejected';
+        };
+        submissionData.status = type == 'accepted' ? 'accepted' : 'rejected';
         acceptRejectSubmission(submissionData, currentSubmission?._doc?._id)
     }
-
-    console.log('submissions', submissions)
 
     return (
         <div className='relative'>
             <div>
                 <img src={headerPng} alt='header' className='h-[200px] w-full'/>
             </div>
-
             <div>
                 <div className='flex flex-col justify-center items-center'>
                 <div className='w-[350px] md:w-[480px]'>
@@ -154,7 +154,7 @@ const SubmissionsPage = () => {
                     <ChevronLeft size={20} />
                 </button>
                 <div className='text-[14px] text-white88 font-inter'>
-                    Submissions: {currentPage + 1} / {totalSubmissions}
+                    Submissions: {currentPage} / {totalSubmissions}
                 </div>
                 <button
                     onClick={goToNextPage}
@@ -164,9 +164,9 @@ const SubmissionsPage = () => {
                     <ChevronRight size={20} />
                 </button>
             </div>
-            <div>
-                <button onClick={handleAccpetReject} className='px-4 py-1 bg-[#F03D3D1A] text-[#E38070] border border-[#E38070] rounded-md'>Reject</button>
-                <button onClick={handleAccpetReject} className='px-4 py-1 bg-[##0ED0651A] text-[#9FE7C7] border border-[#9FE7C7] rounded-md'>Accept</button>
+            <div className='flex items-center gap-2'>
+                <button onClick={() => handleAccpetReject('rejected')} className='px-4 py-1 bg-[#F03D3D1A] text-[#E38070] border border-[#E38070] rounded-md flex items-center gap-1'><X size={14}/>Reject</button>
+                <button onClick={() => handleAccpetReject('accepted')} className='px-4 py-1 bg-[##0ED0651A] text-[#9FE7C7] border border-[#9FE7C7] rounded-md flex items-center gap-1'><CheckCheck size={14}/>Accept</button>
             </div>
         </div>
            

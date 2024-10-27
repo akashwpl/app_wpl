@@ -45,10 +45,6 @@ const ExploreGigs = () => {
   const completedProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'completed'), [userProjects])
   const inReviewProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'submitted'), [userProjects])
 
-  console.log('onGoingProjects', onGoingProjects)
-  console.log('completedProjects', completedProjects)
-  console.log('inReviewProjects', inReviewProjects)
-
   return (
     <div>
         <p onClick={navigateToProjectDetails} className="font-gridular text-primaryYellow/70 hover:text-primaryYellow text-[20px] leading-[24px] mb-6 flex items-center gap-2 cursor-pointer">Explore Gigs <SquareArrowOutUpRightIcon size={16}/></p>
