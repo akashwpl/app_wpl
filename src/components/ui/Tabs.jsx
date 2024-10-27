@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 
 
-const Tabs = ({ tabs, handleTabClick, selectedTab }) => {
+const Tabs = ({ tabs, handleTabClick, selectedTab, submissionsCount }) => {
 
     const tabRefs = useRef([]);
     const [underlineStyle, setUnderlineStyle] = useState({});
@@ -21,7 +21,7 @@ const Tabs = ({ tabs, handleTabClick, selectedTab }) => {
         <div>
             <div className='flex relative'>
                 {tabs.map((tab, index) => (
-                    <div ref={el => tabRefs.current[index] = el} onClick={() => handleTabClick(tab.id)} key={tab.id} className={`px-4 py-5 ${selectedTab == tab.id ? "bg-[#050e52] text-primaryYellow" : "text-white32"} font-gridular text-[14px] leading-[16.8px] transition duration-150 cursor-pointer`}>{tab.name}</div>
+                    <div ref={el => tabRefs.current[index] = el} onClick={() => handleTabClick(tab.id)} key={tab.id} className={`px-4 py-5 ${selectedTab == tab.id ? "bg-[#050e52] text-primaryYellow" : "text-white32"} font-gridular text-[14px] leading-[16.8px] transition duration-150 cursor-pointer`}>{tab.name} {submissionsCount ? tab.name == 'Submissions' ? `(${submissionsCount})` : "" : null}</div>
                 ))}
                 <div className={`absolute bottom-0 h-[1px] bg-[#FBF1B8] transition-all duration-200 `} style={underlineStyle} />
             </div>

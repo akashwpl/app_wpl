@@ -120,7 +120,7 @@ const EditProjectPage = () => {
             }
             console.log(updData);
             
-            const res = await updateProjectDetails(projectDetails._id,updData);
+            const res = await updateProjectDetails(projectDetails._id, updData);
             console.log('response', res);
             setSubmitted(true);
         }

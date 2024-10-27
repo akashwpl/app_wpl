@@ -12,8 +12,9 @@ import GithubTeamSearchBox from '../components/form/GithubTeamSearchBox';
 import akashProfile from '../assets/dummy/akash_profile.png'
 import sumeetProfile from '../assets/dummy/sumeet_profile.png'
 import rahulProfile from '../assets/dummy/rahul_profile.png'
-import { getProjectDetails } from '../service/api';
+import { applyForProject, getProjectDetails, getUserDetails } from '../service/api';
 import { useQuery } from '@tanstack/react-query';
+import { useSelector } from 'react-redux';
 
 const whitespaceRegex = /^\s*$/;
 const emailIdRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -41,6 +42,14 @@ const FormPage = () => {
 
   const { id } = useParams();
   const navigate = useNavigate()
+
+  const { user_id } = useSelector((state) => state)
+
+  const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
+    queryKey: ["userDetails", user_id],
+    queryFn: () => getUserDetails(user_id),
+    enabled: !!user_id,
+  })
   
   const {data: projectDetails, isLoading: isLoadingProjectDetails} = useQuery({
     queryKey: ['projectDetails', id],
@@ -91,6 +100,20 @@ const FormPage = () => {
 
   const handleSubmitForm = () => {
     if(validateForm()) {
+
+      const data = {
+        name: formData.username,
+        email: formData.emailId,
+        userId: user_id,
+        projectId: id,
+        teammates: formData.gitTeammates,
+        portfolioLink: formData.portfolioLink,
+        experienceDescription: formData.appExp,
+        walletAddress: formData.ercAddress,
+        status: 'submitted'
+      }
+
+      const res = applyForProject(projectDetails._id, data);
       setIsSubmitDone(true)
     } else {
       console.log('Invalid form');
@@ -106,28 +129,29 @@ const FormPage = () => {
         // skip validation for Github teammates
         return;
       }
+      const value = formData[key] || document.getElementById(key)?.value || '';
       if (key === 'emailId') {
-        if (!formData[key]) {
+        if (!value) {
           newErrors[key] = 'Email is required';
           isValid = false;
-        } else if (!emailIdRegex.test(formData[key])) {
+        } else if (!emailIdRegex.test(value)) {
           newErrors[key] = 'Invalid Email';
           isValid = false;
         }
       } else if (key === 'ercAddress') {
-        if (!formData[key]) {
+        if (!value) {
           newErrors[key] = 'Address is required';
           isValid = false;
-        } else if (!addressRegex.test(formData[key])) {
+        } else if (!addressRegex.test(value)) {
           newErrors[key] = 'Invalid Address';
           isValid = false;
         }
       } else if (key === 'appExp') {
-        if (!formData[key] || whitespaceRegex.test(formData[key])) {
+        if (!value || whitespaceRegex.test(value)) {
           newErrors[key] = 'Field is required';
           isValid = false;
         }
-      } else if (!formData[key] || whitespaceRegex.test(formData[key])) {
+      } else if (!value || whitespaceRegex.test(value)) {
         newErrors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
         isValid = false;
       }
@@ -195,6 +219,7 @@ const FormPage = () => {
                                   Your Name {errors.username && <span className='text-errorMsgRedText'>*</span>}
                                 </label>
                                 <input 
+                                  defaultValue={userDetails?.displayName}
                                   className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.username && 'border border-errorMsgRedText'}`} 
                                   placeholder='Jhon Doe'
                                   name='username'
@@ -216,6 +241,7 @@ const FormPage = () => {
                                   Your Email {errors.emailId && <span className='text-errorMsgRedText'>*</span>}
                                 </label>
                                 <input 
+                                  defaultValue={userDetails?.email}
                                   className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.emailId && 'border border-errorMsgRedText'}`}
                                   placeholder='Jhon@Doe.com'
                                   name='emailId'
@@ -254,6 +280,22 @@ const FormPage = () => {
                             }
                         </div>
 
+                        <div className='flex flex-col gap-1 w-44 md:w-full'>
+                          <label 
+                            htmlFor='emailId' 
+                            className='text-[13px] leading-[15.6px] font-medium text-white32'
+                          >
+                            Portfolio link
+                          </label>
+                          <input 
+                            className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`}
+                            placeholder='https://www.johndoe.com'
+                            name='portfolioLink'
+                            id='portfolioLinkid'
+                            onChange={handleChange}
+                          />
+                        </div>
+
                         <div className='flex flex-col gap-1 w-full'>
                             <label 
                               htmlFor='ercAddress' 
@@ -262,6 +304,7 @@ const FormPage = () => {
                               Enter your ERC-20 Address {errors.username && <span className='text-errorMsgRedText'>*</span>}
                             </label>
                             <input 
+                              defaultValue={userDetails?.walletAddress}
                               className={`bg-white7 rounded-[6px] placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.ercAddress ? 'border border-errorMsgRedText text-errorMsgRedText' : 'text-white48'}`}
                               placeholder='0xabc1234....'
                               name='ercAddress'
@@ -291,7 +334,6 @@ const FormPage = () => {
           </div>
         </div>
 
-      
     </div>
   )
 }

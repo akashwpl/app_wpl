@@ -11,6 +11,7 @@ import AddProjectPage from "./pages/AddProjectPage"
 import EditProjectPage from "./pages/EditProjectPage"
 import AllProjectsPage from "./pages/AllProjectsPage"
 import AllUserOwnedProjectsPage from "./pages/AllUserOwnedProjectsPage"
+import SubmissionsPage from "./pages/SubmissionsPage"
 import Notifications from "./pages/Notifications"
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="/editproject/:id" element={<EditProjectPage />} />
           <Route path="/allprojects" element={<AllProjectsPage />} />
           <Route path="/userprojects" element={<AllUserOwnedProjectsPage />} />
+          <Route path="/submissions/:id" element={<SubmissionsPage />} />
           <Route path="/notifications" element={<Notifications />} />
         </Routes>
       </div>
