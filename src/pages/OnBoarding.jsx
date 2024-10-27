@@ -13,10 +13,12 @@ const OnBoarding = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('') // Changed from firstName to email
   const [password, setPassword] = useState('')
 
-  const [displayName, setDisplayName] = useState('')
+  // const []
+
+  const [displayName, setDisplayName] = useState('') // Changed from firstName to email
   const [experience, setExperience] = useState('')
   const [walletAddress, setWalletAddress] = useState('')
 
@@ -43,33 +45,19 @@ const OnBoarding = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
-    }).then((res) => {
-      if(res.status === 401) {
-        setError('Password is not matching')
-        return
-      }
-      if(res.status === 404) {
-        setError('Email not found')
-        return
-      }
-      if(res.status === 500) {
-        setError('Something went wrong')
-        return
-      }
-      return res.json()
-    }).then((data) => {
-      if(data.message === 'Password is not matching') {
-        setError(data.message)
-        return
-      } else {
+    }).then((res) => res.json())
+    .then((data) => {
+      console.log('signup', data)
+      if(data?.data?.token) {
         localStorage.setItem('token_app_wpl', data?.data?.token)
         dispatch(setUserId(data?.data?.userId))
-        navigate('/')
+        setIsSignComplete(true)
         setError('')
+        return
+      } 
+      if(data.message === `This email ${email} already exists`) {
+        setError(data.message)
       }
-    }).finally(() => {
-      setEmail('')
-      setPassword('')
     })
     
   }
