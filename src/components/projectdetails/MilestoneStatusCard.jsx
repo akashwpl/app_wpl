@@ -1,6 +1,7 @@
 import { submitMilestone, updateProjectDetails } from '../../service/api';
 import { ArrowUpRight, Clock, HeartCrack, Hourglass } from 'lucide-react'
-import React from 'react'
+import { calculateRemainingDaysAndHours } from '../../lib/constants';
+import React, { useEffect } from 'react'
 
 const MilestoneStatusCard = ({ data }) => {
 
@@ -8,6 +9,8 @@ const MilestoneStatusCard = ({ data }) => {
         const res = await submitMilestone(data?._id);
         console.log('res mile submmited', res)
     }
+
+    const time_remain = calculateRemainingDaysAndHours(data.starts_in);
 
   return (
     <div className='flex flex-col gap-[14px]'>
@@ -28,7 +31,7 @@ const MilestoneStatusCard = ({ data }) => {
                 <p className='text-[12px] text-white32 leading-[16px]'>Starts in</p>
             </div>
             <div className='flex items-center gap-1'>
-                <p className='text-white88 text-[12px] font-medium font-inter'>DUMMY START IN</p>
+                <p className='text-white88 text-[12px] font-medium font-inter'>{time_remain.days} D {time_remain.hours} H</p>
             </div>
         </div>
 
