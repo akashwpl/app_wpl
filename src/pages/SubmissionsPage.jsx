@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { acceptRejectSubmission, getProjectDetails, getProjectSubmissions } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom';
 import headerPng from '../assets/images/prdetails_header.png'
-import { AlignLeft, CheckCheck, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { AlignLeft, CheckCheck, ChevronLeft, ChevronRight, TriangleAlert, X } from 'lucide-react';
 import wpllogo from '../assets/images/wpl_prdetails.png'
 import checkTick from '../assets/images/check-tick.png'
 
@@ -165,7 +165,7 @@ const SubmissionsPage = () => {
                         </div>
                     </div>
 
-                    <div className='fixed bottom-0 left-0 w-full bg-[#091044] flex justify-between items-center px-14 py-5'>
+                    <div className='fixed bottom-0 left-0 w-full bg-[#091044] flex justify-between items-center px-14 h-[70px]'>
                         <div className='flex justify-between items-center gap-2'>
                             <button
                                 onClick={goToPreviousPage}
@@ -189,7 +189,7 @@ const SubmissionsPage = () => {
                         {currentSubmission?._doc?.status == "rejected" 
                         ?   <div className='text-cardRedText'>
                                 <div className='flex items-center gap-1'>
-                                    <X size={16}/>
+                                    <TriangleAlert size={16}/>
                                     You have rejected this submission
                                 </div>
                             </div> 
