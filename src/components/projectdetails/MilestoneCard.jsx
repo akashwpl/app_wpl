@@ -22,7 +22,6 @@ const MilestoneCard = ({ data }) => {
       </div>
       <div className='mt-3'>
           <p className='text-white64 leading-[21px]'>{data?.description}</p>
-          <p className='text-white64 leading-[21px] mt-3'>DUMMY SUB DESCRIPTION</p>
       </div>
     </div>
   )

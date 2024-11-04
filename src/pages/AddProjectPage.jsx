@@ -393,7 +393,7 @@ const AddProjectPage = () => {
                             </div>
                             <div>
                                 <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
-                                <p className='text-white88 font-semibold text-[13px] font-inter'>@credbii</p>
+                                <p className='text-white88 font-semibold text-[13px] font-inter'>@{organisationHandle}</p>
                             </div>
                         </div>
 

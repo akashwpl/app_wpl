@@ -92,6 +92,7 @@ const ProjectDetailsPage = () => {
   const totalSubmissions = useMemo(() => projectSubmissions?.length, [projectSubmissions])
 
   console.log('projectSubmissions', projectSubmissions)
+  console.log('projectDetails', projectDetails)
 
   return (
     <div className='relative'>
@@ -117,7 +118,7 @@ const ProjectDetailsPage = () => {
               <p className='text-[14px] text-white32 leading-5'>@{projectDetails?.organisationHandle}</p>
               <div className='flex gap-2 leading-5 font-inter text-[14px] mt-2'>
                 <p className='text-white88'>DUMMY <span className='text-white32'>Interested</span></p>
-                <p className='text-white88'>DUMMY <span className='text-white32'>Submissions</span></p>
+                <p className='text-white88'>{totalSubmissions} <span className='text-white32'>Submissions</span></p>
               </div>
             </div>
 
