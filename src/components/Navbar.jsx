@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import wpllogo from '../assets/svg/wolf_logo.svg'
 import hourglass from '../assets/images/green_hourglass.png'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { getUserDetails } from '../service/api'
@@ -9,6 +9,7 @@ import { SquareChartGantt } from 'lucide-react'
 
 const Navbar = () => {
   const navigate = useNavigate()
+  const { pathname } = useLocation()
 
   const { user_id } = useSelector((state) => state)
 
@@ -41,21 +42,22 @@ const Navbar = () => {
           </div>
         </div>
 
-        <div onClick={() => setShowUserMenu((prev) => !prev)} className='relative cursor-pointer'>
+        {!pathname?.includes('onboarding') && <div onClick={() => setShowUserMenu((prev) => !prev)} className='relative cursor-pointer'>
           <div>
             <div className='flex items-center gap-2'>
               <img src={hourglass} alt='hourglass' className='w-[16px] h-[24px]'/>
-              <p className='text-primaryYellow'>{userDetail?.username}</p>
+              <p className='text-primaryYellow'>{userDetail?.displayName}</p>
             </div>
           </div>
           {showUserMenu &&
-            <div className='absolute top-10 -left-7 w-[150px] bg-primaryBlue rounded-md transition duration-300'>
+            <div className='absolute top-10 -left-16 w-[150px] bg-primaryBlue rounded-md transition duration-300'>
               <Link to={'/profile'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-8 flex justify-center items-center rounded-md'>Your Profile</Link>
               <div className='h-[1px] w-full bg-white7 rounded-md'/>
               <Link to={'/userprojects'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-center items-center gap-1 rounded-md'><SquareChartGantt size={20} color='#FFFFFFE0'/>Your Projects</Link>
             </div>
           }
         </div>
+        }
     
       </div>
 

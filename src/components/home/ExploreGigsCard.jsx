@@ -13,7 +13,7 @@ const ExploreGigsCard = ({data, type}) => {
     <div onClick={navigateToProjectDetails} className='cursor-pointer py-2 flex items-center w-full'>
         <div className='flex flex-row justify-between items-center w-full'>
             <div className='flex flex-row'>
-                <img className='size-14 mr-2 rounded-md' src={data?.image} alt="Gig Profile Picture"/>
+                <img className='size-16 mr-2 rounded-2xl' src={data?.image} alt="Gig Profile Picture"/>
                 <div className='flex flex-col'>
                     <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48 mb-1'>{data?.organisationHandle}</p>
                     <p className='font-gridular text-[16px] leading-[19.2px] text-white88 mb-3'>{data?.title}</p>
@@ -33,10 +33,10 @@ const ExploreGigsCard = ({data, type}) => {
                 </div>
             </div>
 
-            <div className='w-[130px] h-[19px] flex flex-row justify-evenly items-center font-gridular font-[16px] leading-[19.2px]'>
+            <div className='w-[120px] flex flex-row justify-evenly items-center font-gridular leading-[19.2px] bg-[#091044] py-2 rounded-md'>
                 <img className='h-[16px]' src={usdc} alt="" />
-                <p className='text-white88'>1200</p>
-                <p className='text-white48'> USDC</p>
+                <p className='text-[14px] font-inter text-white88'>1200</p>
+                <p className='text-[14px] font-semibold text-white48'> USDC</p>
             </div>
         </div>
     </div>
