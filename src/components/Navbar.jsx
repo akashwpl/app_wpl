@@ -32,9 +32,11 @@ const Navbar = () => {
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
       <div className='hidden md:flex justify-between items-center w-full'>
         <div className='flex items-center gap-[24px] text-[12px] lg:text-[14px] text-primaryYellow font-bienvenue'>
-          <p>BOUNTIES</p>
-          <p>PROJECTS</p>
-          <p>GRANTS</p>
+          {/* <p>BOUNTIES</p> */}
+          {/* <p>PROJECTS</p> */}
+          <Link to={'/allprojects'}><p>EXPLORE</p></Link>
+
+          {/* <p>GRANTS</p> */}
           <Link to={'/leaderboard'}><p>LEADERBOARD</p></Link>
         </div>
         <div className='-translate-x-10'>
@@ -52,9 +54,9 @@ const Navbar = () => {
           </div>
           {showUserMenu &&
             <div className='absolute top-10 -left-16 w-[150px] bg-primaryBlue rounded-md transition duration-300'>
-              <Link to={'/profile'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-8 flex justify-center items-center rounded-md'>Your Profile</Link>
+              <Link to={'/profile'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-8 flex justify-center items-center rounded-md'>My Profile</Link>
               <div className='h-[1px] w-full bg-white7 rounded-md'/>
-              <Link to={'/userprojects'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-center items-center gap-1 rounded-md'><SquareChartGantt size={20} color='#FFFFFFE0'/>Your Projects</Link>
+              <Link to={'/userprojects'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-center items-center gap-1 rounded-md'><SquareChartGantt size={20} color='#FFFFFFE0'/>My Projects</Link>
             </div>
           }
         </div>
