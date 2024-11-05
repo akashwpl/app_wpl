@@ -2,6 +2,7 @@ import samuelProfile from '../../assets/images/user_profiles/samuel.png'
 import bryanProfile from '../../assets/images/user_profiles/bryan.png'
 import kpProfile from '../../assets/images/user_profiles/KP.png'
 import purpProfile from '../../assets/images/user_profiles/purp.png'
+import { AnimatedList } from '../ui/animated-list'
 
 const profileData = [
   {
@@ -38,24 +39,26 @@ const RecentActivityCard = () => {
   return (
     <div className='flex flex-col w-full'>
       <p className='text-[13px] text-white48 font-inter leading-[15.6px] font-medium mb-2'>Recent activity</p>
-      { profileData?.map((profile, index) => {
-        return(
-          <div key={index} className='flex flex-row justify-between w-full my-2'>
-            <div className='flex flex-row'>
-              <img width={32} height={32} src={profile.profileImg} alt="" />
-              <div className='flex flex-col justify-around ml-2'>
-                <div className='flex flex-row items-center'>
-                  <p className='font-inter text-[14px] leading-[19.88px] text-white88 mr-1'>{profile.name}</p>
-                  <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48'>@{profile.tag}</p>
+      <AnimatedList delay={2000}>                        
+        {profileData?.map((profile, index) => {
+          return(
+            <div key={index} className='flex flex-row justify-between w-full my-2'>
+              <div className='flex flex-row'>
+                <img width={32} height={32} src={profile.profileImg} alt="" />
+                <div className='flex flex-col justify-around ml-2'>
+                  <div className='flex flex-row items-center'>
+                    <p className='font-inter text-[14px] leading-[19.88px] text-white88 mr-1'>{profile.name}</p>
+                    <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48'>@{profile.tag}</p>
+                  </div>
+                  <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48'>{profile.activityName}</p>
                 </div>
-                <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48'>{profile.activityName}</p>
               </div>
+              <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48'>{profile.time}</p>
             </div>
-            <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48'>{profile.time}</p>
-          </div>
-        )
-        })
-      }
+          )
+          })
+        }
+      </AnimatedList>
 
 
     </div>

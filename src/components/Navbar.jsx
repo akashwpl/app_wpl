@@ -35,6 +35,7 @@ const Navbar = () => {
           <p>BOUNTIES</p>
           <p>PROJECTS</p>
           <p>GRANTS</p>
+          <Link to={'/leaderboard'}><p>LEADERBOARD</p></Link>
         </div>
         <div className='-translate-x-10'>
           <div className='z-[100]'>
