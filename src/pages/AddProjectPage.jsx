@@ -173,9 +173,10 @@ const AddProjectPage = () => {
             <p className='text-white32 font-inter text-[14px]'>Go back</p>
         </div>
 
-        {!submitted 
+        {!submitted
             ?  <div className='flex justify-center items-center mt-4'>
                     <div className='max-w-[469px] w-full'>
+                        
                         <Accordion type="single" defaultValue="item-1" collapsible>
                             <AccordionItem value={`item-${1}`} key={1} className="border-none">
                                 <AccordionTrigger className="text-white48 font-inter hover:no-underline border-b border-primaryYellow">
@@ -194,7 +195,7 @@ const AddProjectPage = () => {
                                                         <div onClick={() => {setLogoPreview(null)}} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
                                                     </div>
                                                 :   <>
-                                                        <div onClick={handleUploadClick} className='bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'>
+                                                        <div onClick={handleUploadClick} className='bg-[#FCBF041A] size-[72px] rounded-[8px] border-[1px] border-primaryYellow flex justify-center items-center cursor-pointer'>
                                                             <Upload size={16} className='text-white32'/>
                                                             <input
                                                                 name='img'
@@ -218,7 +219,7 @@ const AddProjectPage = () => {
                                         </div>
 
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title of the project</p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title of the project<span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <input 
                                                     type='text' 
@@ -230,7 +231,7 @@ const AddProjectPage = () => {
                                             {errors.title && <p className='text-red-500 font-medium text-[10px]'>{errors.title}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation handle</p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation handle<span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <input 
                                                     type='text' 
@@ -242,7 +243,7 @@ const AddProjectPage = () => {
                                             {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description (240 character)</p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description (240 character)<span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <textarea 
                                                     type='text' 

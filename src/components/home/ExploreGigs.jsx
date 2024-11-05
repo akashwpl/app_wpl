@@ -1,16 +1,15 @@
-import { useEffect, useMemo, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
+import { ArrowUpRight, LayoutGrid, ListFilter, TableProperties } from "lucide-react"
+import { useMemo, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { getUserProjects } from "../../service/api"
+import Spinner from "../ui/spinner"
 import Tabs from "../ui/Tabs"
 import ExploreGigsCard from "./ExploreGigsCard"
-import { LayoutGrid, ListFilter, SquareArrowOutUpRightIcon, SquareArrowUpRight, TableProperties } from "lucide-react"
-import { BASE_URL } from "../../lib/constants"
-import { useQuery } from "@tanstack/react-query"
-import { getUserProjects } from "../../service/api"
-import { useNavigate } from "react-router-dom"
-import Spinner from "../ui/spinner"
 
 
 const initialTabs = [
-  {id: 'opengigs', name: 'Open Gigs', isActive: true},
+  {id: 'inprogress', name: 'In Progress', isActive: true},
   {id: 'inreview', name: 'In Review', isActive: false},
   {id: 'completed', name: 'Completed', isActive: false}
 ]
@@ -20,7 +19,7 @@ const ExploreGigs = () => {
   const navigate = useNavigate()
 
   const [tabs, setTabs] = useState(initialTabs)
-  const [selectedTab, setSelectedTab] = useState('opengigs')
+  const [selectedTab, setSelectedTab] = useState('inprogress')
 
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
@@ -47,8 +46,11 @@ const ExploreGigs = () => {
 
   return (
     <div>
-        <p onClick={navigateToProjectDetails} className="font-gridular text-primaryYellow/70 hover:text-primaryYellow text-[20px] leading-[24px] mb-6 flex items-center gap-2 cursor-pointer">Explore Gigs <SquareArrowOutUpRightIcon size={16}/></p>
-        <div className="flex justify-between items-center border border-white7 rounded-[2px]">
+        <div className="flex justify-between items-center">
+          <h1 className="font-gridular text-primaryYellow text-[20px]">My Gigs</h1>
+          <p onClick={navigateToProjectDetails} className="font-gridular bg-white4 py-2 px-2 rounded-md text-primaryYellow/70 hover:text-primaryYellow text-[14px] leading-[24px] flex items-center gap-1 cursor-pointer">Explore all <ArrowUpRight size={16}/></p>
+        </div>
+        <div className="flex justify-between items-center border border-white7 rounded-[2px] mt-5">
           <Tabs tabs={tabs} handleTabClick={handleTabClick} selectedTab={selectedTab}/>
           <div className="flex flex-row items-center w-[200px] justify-evenly  text-white48">
             <div className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[56px] h-[32px]">
@@ -65,7 +67,7 @@ const ExploreGigs = () => {
           </div>
         </div>
 
-        {selectedTab === 'opengigs' && <div>
+        {selectedTab === 'inprogress' && <div>
           {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
           userProjects && !userProjects?.length ? <div className="mt-4">
               <div className="font-gridular text-primaryYellow text-[24px]">Start Contributing to Gigs</div>

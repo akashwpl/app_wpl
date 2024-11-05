@@ -26,12 +26,12 @@ const HomePage = () => {
       {/* Left side */}
       <div className='flex flex-col px-[46px] mt-4 w-full '>
         <Statistics userDetails={userDetails}/>
-        <SearchRoles />
+        {/* <SearchRoles /> */}
         <ExploreGigs />
       </div>
 
       {/* right side */}
-      <div className='flex flex-col py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20'>
+      <div className='flex flex-col py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-screen'>
         <KYC_Card />
         <ProfileDetailsCard />
         <BugFixCard />

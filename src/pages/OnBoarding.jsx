@@ -1,22 +1,25 @@
-import React, { useState } from 'react'
-import { BASE_URL, email_regex } from '../lib/constants'
 import { ArrowRight, EyeIcon, MailWarningIcon, Menu, MessageSquareMoreIcon, Zap } from 'lucide-react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { BASE_URL, email_regex } from '../lib/constants'
 
+import { useDispatch } from 'react-redux'
 import headerPng from '../assets/images/prdetails_header.png'
 import wpllogo from '../assets/images/wpl_prdetails.png'
-import { useDispatch } from 'react-redux'
-import { setUserDetails, setUserId } from '../store/slice/userSlice'
+import { setUserId } from '../store/slice/userSlice'
+import { getUserDetails } from '../service/api'
 
 const OnBoarding = () => {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState('') // Changed from firstName to email
   const [password, setPassword] = useState('')
 
-  const [displayName, setDisplayName] = useState('')
+  // const []
+
+  const [displayName, setDisplayName] = useState('') // Changed from firstName to email
   const [experience, setExperience] = useState('')
   const [walletAddress, setWalletAddress] = useState('')
 
@@ -43,33 +46,19 @@ const OnBoarding = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ email, password }),
-    }).then((res) => {
-      if(res.status === 401) {
-        setError('Password is not matching')
-        return
-      }
-      if(res.status === 404) {
-        setError('Email not found')
-        return
-      }
-      if(res.status === 500) {
-        setError('Something went wrong')
-        return
-      }
-      return res.json()
-    }).then((data) => {
-      if(data.message === 'Password is not matching') {
-        setError(data.message)
-        return
-      } else {
+    }).then((res) => res.json())
+    .then((data) => {
+      console.log('signup', data)
+      if(data?.data?.token) {
         localStorage.setItem('token_app_wpl', data?.data?.token)
         dispatch(setUserId(data?.data?.userId))
-        navigate('/')
+        setIsSignComplete(true)
         setError('')
+        return
+      } 
+      if(data.message === `This email ${email} already exists`) {
+        setError(data.message)
       }
-    }).finally(() => {
-      setEmail('')
-      setPassword('')
     })
     
   }
@@ -112,8 +101,12 @@ const OnBoarding = () => {
       } else {
         localStorage.setItem('token_app_wpl', data?.data?.token)
         dispatch(setUserId(data?.data?.userId))
-        navigate('/')
-        setError('')
+
+        getUserDetails(data?.data?.userId).then((data) => {
+          setError('')
+          console.log('data', data)
+          data?.role == 'sponsor' ? navigate('/sponsordashboard') : navigate('/allprojects')
+        })        
       }
     }).finally(() => {
       setEmail('')
@@ -152,12 +145,16 @@ const OnBoarding = () => {
   const swtichOnboardingType = () => {
     setIsSignin(!isSignin)
   }
+
+  const navigateToOrgFormPage = () => {
+    navigate('/verifyorg')
+  }
   
   return (
     <div className='flex justify-center items-center'>
       {!isSignComplete ?
         <div className='mt-32'>
-          <div className='bg-[#091044] text-white88 flex items-center gap-1 py-2 px-4 rounded-md w-fit'><Zap stroke='#97A0F1' size={14}/>New to WPL? <span className='text-white48 ml-1'>Apply to be a part!</span></div>
+          {!isSignin && <div onClick={navigateToOrgFormPage} className='bg-[#091044] hover:bg-[#121534] text-white88 flex items-center gap-1 py-2 px-4 rounded-md w-fit cursor-pointer hover:underline'><Zap stroke='#97A0F1' size={14}/>Want to sponsor a Project? <span className='text-white48 ml-1'>Apply to be a part!</span></div>}
           <div className='mt-4'>
             <div className='text-primaryYellow font-gridular text-[24px] leading-[28.8px]'>Start contributing Onchain</div>
             <p className='text-white48 font-semibold text-[12px] font-inter'>Earn in crypto by contributing to your fav projects</p>
@@ -165,8 +162,8 @@ const OnBoarding = () => {
 
           <div className='bg-white4 rounded-lg p-3 mt-6 min-w-[400px]'>
             <div className='bg-[#091044] rounded-lg p-3'>
-              <div className='flex justify-between items-center'>
-                <div className='text-white88 text-[14px] font-inter'>{isSignin ? "Login" : "Sign up"} with Google</div>
+              <div className='flex justify-between items-center group  cursor-pointer'>
+                <div className='text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Login" : "Sign up"} with Google</div>
                 <div><ArrowRight stroke='#FFFFFF52'/></div>
               </div>
               <div className='my-4 border border-dashed border-[#FFFFFF12]'/>
