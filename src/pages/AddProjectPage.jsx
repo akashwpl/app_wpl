@@ -38,6 +38,28 @@ const AddProjectPage = () => {
     const [submitted, setSubmitted] = useState(false);
     const [createdProjectId, setCreatedProjectId] = useState(null);
 
+    const validateMilestones = () => {
+        let isErr = false;
+        if(milestones?.length > 0) {
+            milestones.map((milestone,index) => {
+                const newErrors = {};
+                if (!milestone.title) newErrors.title = 'Title is required';
+                if (!milestone.description) newErrors.description = 'Description is required';
+                if (!milestone.starts_in) newErrors.starts_in = 'Start date is required';
+                if (!milestone.prize) newErrors.prize = 'Prize is required';
+                if (!milestone.deliveryTime) newErrors.deliveryTime = 'Delivery time is required';
+                if (Object.keys(newErrors).length !== 0) {
+                    const updatedMilestones = [...milestones];
+                    updatedMilestones[index] = { ...updatedMilestones[index], err: newErrors };
+                    console.log(`Milestone ${index}`, updatedMilestones);
+                    setMilestones(updatedMilestones);
+                    isErr = true;
+                }
+            })
+        }
+        return isErr;
+    }
+
     const validateFields = () => {
         const newErrors = {};
         if (!title) newErrors.title = 'Title is required';
@@ -52,7 +74,7 @@ const AddProjectPage = () => {
     };
 
     const handleUploadClick = () => {
-        fileInputRef.current.click();
+        fileInputRef.current.click();   
     }
 
     const handleLogoChange = (e) => {
@@ -77,11 +99,13 @@ const AddProjectPage = () => {
         
         const updatedMilestones = milestones.map(milestone => ({
             ...milestone,
-            deadline: getTimestampFromNow(`${milestone.deliveryTime} ${milestone.timeUnit?.toLowerCase()}`) // Add timestamp to each milestone
+            deadline: getTimestampFromNow(milestone.deliveryTime, milestone.timeUnit?.toLowerCase(), milestone.starts_in) // Add timestamp to each milestone
         }));
     
         console.log('updatedMilestones:', updatedMilestones); // Log the timestamps for each milestone
 
+        if (!validateMilestones()) alert('no MS err');
+        
         
         if (validateFields()) {
 
@@ -128,7 +152,7 @@ const AddProjectPage = () => {
 
     const handleDateChange = (index,date) => {
         const updatedMilestones = [...milestones];
-        updatedMilestones[index] = { ...updatedMilestones[index], starts_in: date.getTime() };
+        updatedMilestones[index] = { ...updatedMilestones[index], starts_in: date?.getTime()  };
         setMilestones(updatedMilestones);
     };
 
@@ -139,6 +163,8 @@ const AddProjectPage = () => {
         }, 0);
         setTotalPrize(total)
     },[milestones])
+
+    console.log('ms',milestones);
 
   return (
     <div className='pb-40'>
@@ -296,6 +322,7 @@ const AddProjectPage = () => {
                                                             onChange={(e) => handleMilestoneChange(index, 'title', e.target.value)} 
                                                         />
                                                     </div>
+                                                    {milestone.err?.title && <p className='text-red-500 font-medium text-[10px]'>{milestone.err.title}</p>}
                                                 </div>
                                                 <div className='mt-3'>
                                                     <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add Milestone goals</p>
@@ -308,6 +335,7 @@ const AddProjectPage = () => {
                                                             onChange={(e) => handleMilestoneChange(index, 'description', e.target.value)} 
                                                         />
                                                     </div>
+                                                    {milestone.err?.description && <p className='text-red-500 font-medium text-[10px]'>{milestone.err.description}</p>}
                                                 </div>
                                                 <div className='mt-3'>
                                                     <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Start date</p>
@@ -321,6 +349,7 @@ const AddProjectPage = () => {
                                                             placeholderText='DD/MM/YYYY'
                                                         />
                                                     </div>
+                                                    {milestone.err?.starts_in && <p className='text-red-500 font-medium text-[10px]'>{milestone.err.starts_in}</p>}
                                                 </div>
                                                 <div className='mt-3'>
                                                     <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
@@ -341,6 +370,7 @@ const AddProjectPage = () => {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    {milestone.err?.prize && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{milestone.err.prize}</p>}
                                                 </div>
                                                 <div className='mt-3'>
                                                     <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Delivery Time</p>
@@ -368,6 +398,7 @@ const AddProjectPage = () => {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    {milestone.err?.deliveryTime && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{milestone.err.deliveryTime}</p>}
                                                 </div>
                                             </div>
                                         </AccordionContent>

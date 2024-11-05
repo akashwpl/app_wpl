@@ -18,6 +18,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import CustomModal from '../components/ui/CustomModal'
 import Tabs from '../components/ui/Tabs'
+import { calcDaysUntilDate, convertTimestampToDate } from '../lib/constants'
 
 
 const initialTabs = [
@@ -92,6 +93,24 @@ const ProjectDetailsPage = () => {
 
   const totalPrize = useMemo(() => projectDetails?.milestones?.reduce((acc, milestone) => acc + parseFloat(milestone.prize), 0) || 0, [projectDetails]);
   const totalSubmissions = useMemo(() => projectSubmissions?.length, [projectSubmissions])
+
+  // const projectDeadline = (projectDetails?.milestones?.map((milestone) => {
+  //   return parseInt(new Date(milestone.starts_in).getTime())
+  // })).sort()
+
+  const tmpMilestones = projectDetails?.milestones;
+  const lastMilestone = tmpMilestones?.reduce((acc, curr) => {
+    
+    return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
+  });
+
+  console.log('LD',lastMilestone);
+  
+  
+
+  // console.log('deadline',projectDeadline);
+  // console.log('deadlineSorted', calcDaysUntilDate(projectDeadline[projectDeadline?.length-1]));
+  
 
   console.log('projectSubmissions', projectSubmissions)
   console.log('projectDetails', projectDetails)

@@ -2,12 +2,16 @@ export const BASE_URL = "https://api.thewpl.xyz"
 
 export const email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-export function getTimestampFromNow(input) {
-    const [number, unit] = input.split(' '); // Split the input into number and unit
-    const duration = parseInt(number, 10); // Convert the number to an integer
-    const now = new Date(); // Get the current date
+export function getTimestampFromNow(deliveryTime, timeUnit, starts_in) {
+    // const [number, unit] = input.split(' '); // Split the input into number and unit
+    const duration = parseInt(deliveryTime, 10); // Convert the number to an integer
+    // const now = new Date(); // Get the current date
+    const now = new Date(starts_in)
 
-    switch (unit.toLowerCase()) {
+    console.log('getTimestamp: ',now);
+    
+
+    switch (timeUnit.toLowerCase()) {
         case 'day':
         case 'days':
             now.setDate(now.getDate() + duration);
@@ -27,7 +31,23 @@ export function getTimestampFromNow(input) {
     return now.getTime(); // Return the timestamp in milliseconds
 }
 
+export const calcDaysUntilDate = (futureDate) => {
+    const today = new Date();
+    const differenceInMilliseconds = new Date(futureDate) - today;
+    const differenceInDays = Math.ceil(differenceInMilliseconds / (1000 * 60 * 60 * 24));
+
+    if (differenceInDays%30 == 0) {
+        return { timeUnit: 'months', deliveryTime: Math.floor(differenceInDays / 30) };
+    } else if (differenceInDays%7 == 0) {
+        return { timeUnit: 'weeks', deliveryTime: Math.floor(differenceInDays / 7) };
+    } else {
+        return { timeUnit: 'days', deliveryTime: differenceInDays };
+    }
+}
+
 export function calculateRemainingDaysAndHours(targetDate) {
+    console.log('targetDate', targetDate);
+    
     // Create a Date object for the target date
     const targetDateTime = new Date(targetDate);
   
@@ -51,4 +71,10 @@ export function calculateRemainingDaysAndHours(targetDate) {
       days: timeDifferenceDays,
       hours: remainingHours
     };
+  }
+
+  export function convertTimestampToDate(timestamp) {
+    const date = new Date(timestamp);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString(undefined, options);
   }
