@@ -26,7 +26,7 @@ const HomePage = () => {
       {/* Left side */}
       <div className='flex flex-col px-[46px] mt-4 w-full '>
         <Statistics userDetails={userDetails}/>
-        <SearchRoles />
+        {/* <SearchRoles /> */}
         <ExploreGigs />
       </div>
 
