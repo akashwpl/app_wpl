@@ -6,7 +6,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "../components/ui/accordion"
-import { ArrowLeft, ArrowRight, Globe, Menu, Plus, Send, Upload } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Globe, Menu, Plus, Send, Trash, Upload, X } from 'lucide-react';
 import USDCsvg from '../assets/svg/usdc.svg'
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
@@ -18,7 +18,6 @@ const VerifyOrgForm = () => {
     const [title, setTitle] = useState('')
     const [organisationHandle, setOrganisationHandle] = useState('');
     const [description, setDescription] = useState('');
-    const [aboutProject, setAboutProject] = useState('');
     const [discordLink, setDiscordLink] = useState('');
     const [twitterLink, setTwitterLink] = useState('');
     const [telegramLink, setTelegramLink] = useState('');
@@ -26,19 +25,17 @@ const VerifyOrgForm = () => {
     const [logoPreview, setLogoPreview] = useState('');
     const [errors, setErrors] = useState({}); // State for validation errors
 
-
-    const [milestones, setMilestones] = useState([]);
-
     const [submitted, setSubmitted] = useState(false);
 
     const validateFields = () => {
         const newErrors = {};
-        if (!title) newErrors.title = 'Title is required';
+        if (!title) newErrors.title = 'Name is required';
         if (!organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
         if (!description) newErrors.description = 'Description is required';
         if (!discordLink) newErrors.discordLink = 'Discord link is required';
+        if (!twitterLink) newErrors.twitterLink = 'Twitter link is required';
+        if (!telegramLink) newErrors.telegramLink = 'Telegram link is required';
         if (!logo) newErrors.logo = 'Logo is required';
-        if (!aboutProject) newErrors.aboutProject = 'About project is required';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0; // Return true if no errors
     };
@@ -55,6 +52,13 @@ const VerifyOrgForm = () => {
         }
     };
 
+    const submitForm = () => {
+        const isValid = validateFields();
+        if (isValid) {
+            setSubmitted(true);
+        }
+    }
+
   return (
     <div className='pb-40'>
         <div className='flex items-center gap-1 pl-20 border-b border-white12 py-2'>
@@ -62,7 +66,32 @@ const VerifyOrgForm = () => {
             <p className='text-white32 font-inter text-[14px]'>Go back</p>
         </div>
         <div className='flex justify-center items-center mt-4'>
-                    <div className='max-w-[469px] w-full'>
+            <div className='max-w-[469px] w-full'>
+                {submitted 
+                ?   <div className='flex justify-center items-center mt-4'>
+                        <div className='max-w-[469px] w-full'>
+                            <div className='flex items-center gap-4 border border-dashed border-[#FFFFFF1F] bg-white12 rounded-md px-4 py-3'>
+                                <div>
+                                    <img src={logoPreview} alt='dummy' className='size-[72px] aspect-square rounded-md'/>
+                                </div>
+                                <div>
+                                    <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
+                                    <p className='text-white88 font-semibold text-[13px] font-inter'>@{organisationHandle}</p>
+                                </div>
+                            </div>
+
+                            <div className='flex flex-col justify-center items-center mt-8'>
+                                <div><CheckCircle2 fill='#FBF1B8' strokeWidth={1} size={54}/></div>
+                                <div className='text-white font-inter'>Submitted your details</div>
+                                <p className='text-white32 text-[13px] font-semibold font-inter'>You will be notified once the verification is compeleted</p>
+                            </div>
+
+                            <div className='mt-4'>
+                                <button onClick={() => {}} className='flex justify-center items-center py-3 px-4 border border-primaryYellow text-primaryYellow w-full font-gridular'>Follow on X</button>
+                            </div>
+                        </div>
+                    </div>
+                :   <>
                         <div className='bg-primaryYellow/10 p-2 py-3 rounded-md border border-dashed border-primaryYellow/10'>
                             <p className='text-primaryYellow/70 text-[14px] font-gridular leading-[16.8px]'>We need to manually verify your organisation before you could post your projects.</p>
                         </div>
@@ -109,7 +138,7 @@ const VerifyOrgForm = () => {
                                         </div>
 
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title of the project<span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Company Name<span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <input 
                                                     type='text' 
@@ -183,7 +212,7 @@ const VerifyOrgForm = () => {
                                                     type='text' 
                                                     placeholder='@john' 
                                                     className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full' 
-                                                    value={discordLink} 
+                                                    value={twitterLink} 
                                                     onChange={(e) => setTwitterLink(e.target.value)} 
                                                 />
                                             </div>
@@ -196,7 +225,7 @@ const VerifyOrgForm = () => {
                                                     type='text' 
                                                     placeholder='john' 
                                                     className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full' 
-                                                    value={discordLink} 
+                                                    value={telegramLink} 
                                                     onChange={(e) => setTelegramLink(e.target.value)} 
                                                 />
                                             </div>
@@ -209,13 +238,15 @@ const VerifyOrgForm = () => {
                         <div className='border border-dashed border-white12 my-4'/>
 
                         <div className='mt-4'>
-                            <button className='flex justify-center items-center gap-2 w-full border border-primaryYellow h-[43px]' onClick={() => {}}>
+                            <button className='flex justify-center items-center gap-2 w-full border border-primaryYellow h-[43px]' onClick={submitForm}>
                                 <p className='text-primaryYellow font-gridular text-[14px]'>Verify Org </p>
                                 <ArrowRight className='text-primaryYellow' size={16}/>
                             </button>
-                        </div>                      
-                    </div>
-                </div>
+                        </div>
+                    </>
+                }
+            </div>
+        </div>
     </div>
   )
 }

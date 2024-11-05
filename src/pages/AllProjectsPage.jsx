@@ -45,7 +45,7 @@ const AllProjectsPage = () => {
         <div className='flex justify-center items-center'>
             <div className='md:w-[800px] max-w-[1200px] mt-6'>
                 <div className={`mr-3 w-full flex justify-center items-start flex-col h-[101px] py-5 px-4 bg-cover bg-[url('assets/images/total_earned_bg.png')] rounded-md `}>
-                    {userDetails?.role != 'sponsor' ? <div className='w-full flex flex-col justify-between'>
+                    {userDetails?.role == 'sponsor' ? <div className='w-full flex flex-col justify-between'>
                         <h2 className='text-[18px] font-gridular text-[#06105D]'>Invite the best talent to work on your project!</h2>
                         <p className='text-[#06105D] text-[13px] font-inter'>"KODAK" marks the debut collaboration between New Delhi-based heavyweight KING</p>
                         <div onClick={navigateToAddProject} className='flex justify-between items-center w-full bg-[#06105D] rounded-md px-2 py-[6px] mt-3 cursor-pointer'>

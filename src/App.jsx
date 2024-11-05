@@ -14,6 +14,7 @@ import AllUserOwnedProjectsPage from "./pages/AllUserOwnedProjectsPage"
 import SubmissionsPage from "./pages/SubmissionsPage"
 import Notifications from "./pages/Notifications"
 import VerifyOrgForm from "./pages/VerifyOrgForm"
+import Leaderboard from "./pages/Leaderboard"
 
 function App() {
 
@@ -39,6 +40,7 @@ function App() {
           <Route path="/submissions/:id/:page" element={<SubmissionsPage />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/verifyorg" element={<VerifyOrgForm />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
         </Routes>
       </div>
     </div>
