@@ -82,7 +82,6 @@ const ProjectDetailsPage = () => {
     navigate(`/submissions/${projectDetails?._id}/${page}`)
   }
 
-  
   const isOwner = useMemo(() => projectDetails?.owner_id == user_id, [projectDetails, user_id])
 
   useEffect(() => {
@@ -100,7 +99,7 @@ const ProjectDetailsPage = () => {
   const lastMilestone = tmpMilestones?.reduce((acc, curr) => {
     
     return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
-  });
+  },[]);
 
   console.log('LD',lastMilestone);
   
@@ -112,6 +111,8 @@ const ProjectDetailsPage = () => {
 
   console.log('projectSubmissions', projectSubmissions)
   console.log('projectDetails', projectDetails)
+
+
 
   return (
     <div className='relative'>

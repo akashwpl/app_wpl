@@ -13,6 +13,10 @@ const handleForbiddenError = async (error) => {
         window.location.href = '/banned'
         return
     }
+    if (error?.status === 400) {
+        console.error('error', error);
+        return { err: error?.response?.data?.message }
+    }
 };
 
 export const getProjectDetails = async (id) => {
@@ -99,6 +103,24 @@ export const acceptRejectSubmission = async (submissionData, id) => {
 export const submitMilestone = async (id) => {
     try {
         const response = await axiosInstance.put(`/projects/milestone/submit/${id}`)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const createOrganisation = async (data) => {
+    try {
+        const response = await axiosInstance.post('/organisation/create', data)
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+
+export const getUserOrgs = async (id) => {
+    try {
+        const response = await axiosInstance.get(`organisation/user/${id}`)
         return response.data.data
     } catch (error) {
         handleForbiddenError(error)
