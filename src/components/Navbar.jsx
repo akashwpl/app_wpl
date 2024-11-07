@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { getUserDetails } from '../service/api'
-import { LayoutDashboardIcon, LucideInfo, SquareChartGantt, User } from 'lucide-react'
+import { LayoutDashboardIcon, LogOut, LucideInfo, SquareChartGantt, User } from 'lucide-react'
 
 const Navbar = () => {
   const navigate = useNavigate()
@@ -26,7 +26,10 @@ const Navbar = () => {
     setShowNavbar(!showNavbar)
   }
 
-
+  const signout = () => {
+    localStorage.removeItem('token_app_wpl')
+    navigate('/onboarding')
+  }
 
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
@@ -61,6 +64,8 @@ const Navbar = () => {
               <Link to={'/requests'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm'><LucideInfo size={20} color='#FFFFFFE0'/>Requests</Link>
               <div className='h-[1px] w-full bg-white7 rounded-sm'/>
               <Link to={'/'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm'><LayoutDashboardIcon size={20} color='#FFFFFFE0'/>Dashboard</Link>
+              <div className='h-[1px] w-full bg-white7 rounded-sm'/>
+              <div onClick={signout} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm'><LogOut size={20} color='#FFFFFFE0'/>Sign out</div>
             </div>
           }
         </div>
