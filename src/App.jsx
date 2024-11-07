@@ -16,6 +16,9 @@ import Notifications from "./pages/Notifications"
 import VerifyOrgForm from "./pages/VerifyOrgForm"
 import Leaderboard from "./pages/Leaderboard"
 import SponsorDashboard from "./pages/SponsorDashboard"
+import AdminDashboard from "./pages/AdminDashboard"
+import OrganisationPage from "./pages/OrganisationPage"
+import Requests from "./pages/Requests"
 
 function App() {
 
@@ -43,6 +46,9 @@ function App() {
           <Route path="/verifyorg" element={<VerifyOrgForm />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/sponsordashboard" element={<SponsorDashboard />} />
+          <Route path="/admindashboard" element={<AdminDashboard />} />
+          <Route path="/organisation/:id" element={<OrganisationPage />} />
+          <Route path="/requests" element={<Requests />} />
         </Routes>
       </div>
     </div>
