@@ -79,8 +79,10 @@ const VerifyOrgForm = () => {
   return (
     <div className='pb-40'>
         <div className='flex items-center gap-1 pl-20 border-b border-white12 py-2'>
-            <ArrowLeft size={14} stroke='#ffffff65'/>
-            <p onClick={() => navigate('/sponsordashboard')} className='text-white32 font-inter text-[14px] cursor-pointer'>Go back</p>
+            <div onClick={() => navigate(-1)} className='flex items-center gap-1 text-white32 hover:text-white48 cursor-pointer'>
+                <ArrowLeft size={14}/>
+                <p className='font-inter text-[14px]'>Go back</p>
+            </div>
         </div>
         <div className='flex justify-center items-center mt-4'>
             <div className='max-w-[469px] w-full'>

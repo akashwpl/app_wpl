@@ -136,5 +136,16 @@ export const getOrgById = async (id) => {
     }
 }
 
+export const getLeaderboardData = async () => {
+    try {
+        const response = await axiosInstance.get(`/leaderboard`)
+        return response.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+
+
 
 

@@ -24,6 +24,9 @@ const ExploreGigsCard = ({data, type}) => {
                         <CalendarCheck size={14} />
                         <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Delivery time: 2 weeks</p>
                         <Dot size={14} />
+                        <CalendarCheck size={14} />
+                        <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Role: Frontend</p>
+                        <Dot size={14} />
                         <Zap size={14} color='#FCBF04' />
                         <p className='font-inter font-medium text-cardYellowText text-[12px] leading-[14.4px] capitalize'>{data?.type}</p>
                     </div>

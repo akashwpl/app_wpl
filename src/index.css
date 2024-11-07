@@ -133,3 +133,69 @@ body{
   backdrop-filter: blur(10px);
   background-color: rgba(0, 0, 0, 0.1);
 }
+
+.nav_btn {
+  text-transform: uppercase;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.nav_btn::after {
+  content: ""; 
+  position: absolute;
+  inset: 0;
+  transition: opacity 0.2s;
+}
+
+.nav_btn:is(:hover, :focus-visible) {
+  --intent: 1;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+
+.nav_btn > .nav_btn__span:not(.sr-only) {
+  position: relative;
+  color: transparent;
+}
+
+.nav_btn > .nav_btn__span:not(.sr-only)::after {
+  content: attr(data-char);
+  position: absolute;
+  display: inline-block;
+  inset: 0;
+  color: #FAF1B1;
+  font-family: 'Bienvenue';
+  text-align: center;
+  display: flex;
+  justify-content: center ;
+  align-items: center;
+}
+
+.nav_btn:is(:hover, :focus-visible) > .nav_btn__span:not(.sr-only)::after {
+  animation: flash calc(var(--speed, 0.25) * 1s) calc(var(--index, 0) * 0.05s) steps(1, end);
+}
+
+@keyframes flash {
+  0%, 20%   { content: ''; }
+  40%  { content: var(--char-1); }
+  60%  { content: var(--char-2); }
+  80%  { content: var(--char-3); }
+}
+
+.nav_btn {
+	transition: transform 0.5s 1s, scale 0.5s 3s, opacity 0s 3s;
+}

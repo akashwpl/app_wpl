@@ -274,12 +274,12 @@ const ProjectDetailsPage = () => {
               
             {isOwner ? 
                <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
-                <button onClick={() => setShowCloseProjectModal(true)} className='border border-[#E38070] w-full bg-[#E38070]/10 text-[#E38070] py-2 rounded-md font-gridular text-[14px]'>Close Project</button>
-                <button onClick={editProject} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular text-[14px]'>Edit Project</button>
+                <button onClick={() => setShowCloseProjectModal(true)} className='border border-[#E38070] w-full bg-[#E38070]/10 text-[#E38070] py-2 rounded-md font-gridular text-[14px] hover:bg-[#E38070]/20'>Close Project</button>
+                <button onClick={editProject} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular text-[14px] hover:bg-primaryYellow/10'>Edit Project</button>
               </div>
             :
               <div className='mx-4 mt-4'>
-                <button onClick={applyForProject} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular'>Apply</button>
+                <button onClick={applyForProject} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular hover:bg-primaryYellow/10'>Apply</button>
               </div>
             }
           </div>
@@ -293,8 +293,8 @@ const ProjectDetailsPage = () => {
               <p className='text-white88 font-semibold'>Are you sure you want close the project?</p>
           </div>
           <div className='flex justify-end items-center w-full mt-5 gap-2'>
-            <button onClick={() => setShowCloseProjectModal(false)} className='px-4 py-1 rounded-md bg-white12 text-white64'>Cancel</button>
-            <button onClick={closeProject} className='px-6 py-1 rounded-md bg-cardRedBg text-cardRedText'>Close</button>
+            <button onClick={() => setShowCloseProjectModal(false)} className='px-4 py-1 rounded-md bg-white12 text-white64 hover:bg-white4'>Cancel</button>
+            <button onClick={closeProject} className='px-6 py-1 rounded-md bg-cardRedBg text-cardRedText hover:bg-cardRedText/10'>Close</button>
           </div>
         </div>
       </CustomModal>

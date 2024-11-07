@@ -3,19 +3,29 @@ import { ArrowLeft, ArrowRight, Filter, Search } from 'lucide-react'
 import USDCsvg from '../assets/svg/usdc.svg'
 import wpl_logo from '../assets/images/wpl_prdetails.png'
 import btnPng from '../assets/images/leaderboard_btn.png'
+import { useQuery } from '@tanstack/react-query'
+import { getLeaderboardData } from '../service/api'
 
 
 const Leaderboard = () => {
+
+
+    const {data: leaderboardData, isLoading, refetch} = useQuery({
+        queryKey: ["leaderboard"],
+        queryFn: () => getLeaderboardData(),
+    })
+
+    console.log('leaderboardData', leaderboardData)
 
     const [searchInput, setSearchInput] = useState()
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 5
 
     const filteredData = useMemo(() =>  searchInput
-        ? dummyData.filter(data =>
-            data.name.toLowerCase().includes(searchInput.toLowerCase())
+        ? leaderboardData?.data?.filter(data =>
+            data?.name?.toLowerCase().includes(searchInput.toLowerCase())
         )
-        : dummyData
+        : leaderboardData?.data
     , [searchInput])
 
     const indexOfLastItem = currentPage * itemsPerPage
@@ -66,14 +76,14 @@ const Leaderboard = () => {
                             </tr>
                         </thead>
                         <tbody className='h-full'>
-                            {currentData.length > 0 ? (
-                                currentData.map((data, index) => (
+                            {isLoading ? <div>loading..</div> : currentData && currentData?.length > 0 ? (
+                                currentData?.map((data, index) => (
                                     <tr key={index} className="text-[14px] text-white48 font-inter border-b border-white7 h-fit">
                                         <td className="py-4 text-[14px] text-end pr-3">#{index + 1}</td>
                                         <td className="py-4 w-[200px] truncate text-ellipsis">
                                             <div className="flex items-center gap-1 text-white88 text-[14px]">
                                                 <img src={wpl_logo} alt="USDC" className="size-4" />
-                                                {data.name}
+                                                {data.discordIdentifier}
                                             </div>
                                         </td>
                                         <td className="py-4 text-[14px] text-end text-white88">
@@ -82,7 +92,7 @@ const Leaderboard = () => {
                                                 {data.rewards}
                                             </div>
                                         </td>
-                                        <td className="py-4 text-[14px] text-end pr-2">{data.wplPoints}</td>
+                                        <td className="py-4 text-[14px] text-end pr-2">{data.cumulativeLeaderboard}</td>
                                         <td className="py-4 text-[14px] text-end pr-2">{data.bountyPoints}</td>
                                         <td className="py-4 text-[14px] text-end pr-2">{data.totalPoints}</td>
                                     </tr>
