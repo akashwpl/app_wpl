@@ -9,7 +9,7 @@ const Statistics = ({ userDetails }) => {
                 <p className='font-gridular text-[42px] leading-[50.4px]'>$ {userDetails?.totalEarned}</p>
             </div>
             <div className='w-1/6 h-[101px] bg-primaryGreen py-6 px-3 rounded-lg mr-3'>
-                <p className='font-inter font-medium text-[12px] leading-[14.4px] mb-1'>Participate</p>
+                <p className='font-inter font-medium text-[12px] leading-[14.4px] mb-1'>Participated</p>
                 <p className='font-gridular text-[42px] leading-[42px]'>
                     {userDetails?.projects?.taken.length == 0 || userDetails?.projects?.taken.length > 9 ? userDetails?.projects?.taken.length : '0' + userDetails?.projects?.taken.length}
                 </p>

@@ -2,7 +2,7 @@ import headerPng from '../assets/images/prdetails_header.png'
 import wpl_prdetails from '../assets/images/wpl_prdetails.png'
 
 import { useQuery } from '@tanstack/react-query'
-import { Clock, Download, TriangleAlert, Zap } from 'lucide-react'
+import { ArrowLeft, Clock, Download, TriangleAlert, Zap } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import USDCsvg from '../assets/svg/usdc.svg'
 import MilestoneCard from '../components/projectdetails/MilestoneCard'
@@ -82,6 +82,10 @@ const ProjectDetailsPage = () => {
     navigate(`/submissions/${projectDetails?._id}/${page}`)
   }
 
+  const navigateToPrevPage = () => {
+    navigate(-1);
+  }
+
   const isOwner = useMemo(() => projectDetails?.owner_id == user_id, [projectDetails, user_id])
 
   useEffect(() => {
@@ -119,6 +123,11 @@ const ProjectDetailsPage = () => {
       <div>
         <img src={headerPng} alt='header' className='h-[200px] w-full'/>
       </div>
+      <div className='absolute top-0 left-0 border-b border-white12 w-full py-1'>
+        <div onClick={navigateToPrevPage} className='flex items-center gap-1 mx-20 text-white48 text-[14px] font-semibold cursor-pointer hover:text-white64 w-fit'>
+          <ArrowLeft size={20}/> Go Back
+        </div>
+      </div>
       <div className='flex justify-center gap-20 mx-44'>
         <div>
          
@@ -148,10 +157,11 @@ const ProjectDetailsPage = () => {
               </div>
               {selectedTab == 'overview' &&
                 <>
-                  <div className='mt-5'>
+                  <div className='mt-5 flex flex-col justify-between'>
                     <p className='font-inter text-white88 leading-[21px] text-wrap'>{projectDetails?.description}</p>
+                    <div className='text-white48 text-[14px] mt-4'>Role: <span>{projectDetails?.role}</span></div>
                   </div>
-                  <div className='h-[1px] w-full bg-white7 mt-10 mb-3'/>
+                  <div className='h-[1px] w-full bg-white7 mt-4 mb-3'/>
                   <div>
                     <Accordion type="single" defaultValue="item-1" collapsible>
                       <AccordionItem value="item-1" className="border-white7">
@@ -165,7 +175,7 @@ const ProjectDetailsPage = () => {
                     </Accordion>
                   </div>
 
-                  <div>
+                  <div className='pb-32'>
                     <Accordion type={projectDetails?.milestones?.length <= 1 ? "single" : 'multiple'} defaultValue="item-1" collapsible>
                       {projectDetails?.milestones?.map((milestone, index) => (
                         <AccordionItem value={`item-${index + 1}`} key={index} className="border-white7">
@@ -216,7 +226,7 @@ const ProjectDetailsPage = () => {
         </div>
 
         <div className='mt-[35px]'>
-          <div className='w-[372px] h-[463px] bg-white4 rounded-[10px]'>
+          <div className='w-[372px] h-fit pb-4 bg-white4 rounded-[10px]'>
             <div className='flex items-center gap-2 mx-4 py-4'>
               <Clock size={14} className='text-white32'/>
               <p className='text-[14px] text-white32 leading-[20px] font-inter'>Project Deadline in <span className='text-white88 ml-1'>DUMMY TIME</span></p>

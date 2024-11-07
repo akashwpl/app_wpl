@@ -41,7 +41,7 @@ const Navbar = () => {
         </div>
         <div className='-translate-x-10'>
           <div className='z-[100]'>
-            <Link to={'/'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]'/></Link>
+            <Link to={'/allprojects'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]'/></Link>
           </div>
         </div>
 
@@ -57,6 +57,8 @@ const Navbar = () => {
               <Link to={'/profile'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-8 flex justify-center items-center rounded-md'>My Profile</Link>
               <div className='h-[1px] w-full bg-white7 rounded-md'/>
               <Link to={'/userprojects'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-center items-center gap-1 rounded-md'><SquareChartGantt size={20} color='#FFFFFFE0'/>My Projects</Link>
+              <div className='h-[1px] w-full bg-white7 rounded-md'/>
+              <Link to={'/requests'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-center items-center gap-1 rounded-md'><SquareChartGantt size={20} color='#FFFFFFE0'/>Requests</Link>
             </div>
           }
         </div>
@@ -81,10 +83,8 @@ const Navbar = () => {
         
         <div className={`absolute -top-8 left-0 ${showNavbar ? 'translate-y-0' : '-translate-y-[900px]'} transition-all duration-500 w-full bg-[#16237F] z-50`}>
           <div className='flex flex-col justify-center items-center text-center bg-[#16237F] text-white font-bienvenue mt-20'>
-            <Link to={'/'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2'>BOUNTIES</h2></Link>
-            <Link to={'/'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2'>PROJECTS</h2></Link>
-            <h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2'>GRANTS</h2>
-            <Link to={'/'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2'>LEADERBOARD</h2></Link>
+            <Link to={'/allprojects'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2'>EXPLORE</h2></Link>
+            <Link to={'/leaderboard'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2'>LEADERBOARD</h2></Link>
             <h2 className='text-[24px] text-primary w-[90%] mb-2'>FAQ</h2>
           </div>
         </div>

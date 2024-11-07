@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowRight, Filter, Search } from 'lucide-react'
+import { ArrowDown, ArrowRight, ArrowUp, Filter, Search } from 'lucide-react'
 import ExploreGigsCard from '../components/home/ExploreGigsCard'
 import SearchRoles from '../components/home/SearchRoles'
 import Spinner from '../components/ui/spinner'
@@ -11,6 +11,9 @@ import { getAllProjects, getUserDetails } from '../service/api'
 const AllProjectsPage = () => {
     const navigate = useNavigate()
     const { user_id } = useSelector((state) => state)
+
+    const [roleName, setRoleName] = useState('none');
+    const [sortOrder, setSortOrder] = useState('ascending');
 
     const {data: allProjects, isLoading: isLoadingAllProjects} = useQuery({
         queryKey: ["allProjects"],
@@ -35,15 +38,31 @@ const AllProjectsPage = () => {
     }
 
     const filteredProjects = useMemo(() => {
-        if (!searchInput) return allProjects;
-        return allProjects?.filter(project => 
-            project?.title?.toLowerCase()?.includes(searchInput?.toLowerCase())
-        );
-    }, [allProjects, searchInput]);
+        return allProjects
+            ?.filter(project => {
+                const matchesSearch = searchInput ? project?.title?.toLowerCase().includes(searchInput.toLowerCase()) : true;
+                const matchesRole = roleName && roleName !== 'none' ? project?.role?.toLowerCase() === roleName.toLowerCase() : true;
+                return matchesSearch && matchesRole;
+            })
+            .sort((a, b) => {
+                const dateA = a.milestones && a.milestones.length > 0 
+                    ? new Date(a.milestones[a.milestones.length - 1].deadline) 
+                    : new Date(0);
+                const dateB = b.milestones && b.milestones.length > 0 
+                    ? new Date(b.milestones[b.milestones.length - 1].deadline) 
+                    : new Date(0);
+                
+                return sortOrder === 'ascending' ? dateA - dateB : dateB - dateA;
+            });
+    }, [allProjects, searchInput, roleName, sortOrder]);
+
+    const handleRoleChange = (e) => {
+        setRoleName(e.target.value)
+    }
 
     return (
         <div className='flex justify-center items-center'>
-            <div className='md:w-[800px] max-w-[1200px] mt-6'>
+            <div className='md:w-[800px] max-w-[1200px] mt-6 pb-32'>
                 <div className={`mr-3 w-full flex justify-center items-start flex-col h-[101px] py-5 px-4 bg-cover bg-[url('assets/images/total_earned_bg.png')] rounded-md `}>
                     {userDetails?.role == 'sponsor' ? <div className='w-full flex flex-col justify-between'>
                         <h2 className='text-[18px] font-gridular text-[#06105D]'>Invite the best talent to work on your project!</h2>
@@ -61,7 +80,7 @@ const AllProjectsPage = () => {
                 </div>
 
                 <div className='mt-6'>
-                    <SearchRoles />
+                    <SearchRoles handleRoleChange={handleRoleChange}/>
                 </div>
 
                 <div className='border border-white7 h-[56px] rounded-md flex justify-between items-center'>
@@ -69,10 +88,13 @@ const AllProjectsPage = () => {
                         <Search className='text-white32' size={16}/>
                         <input value={searchInput} onChange={handleSearch}  className='bg-transparent w-full outline-none border-none text-white88 placeholder:text-[14px] placeholder:text-white32 placeholder:font-gridular' placeholder='Search for you fav Org, role...'/>
                     </div>
-                    <div className='border border-white7 min-w-[169px] h-full flex justify-center items-center'>
+                    <div className='border border-white7 min-w-[169px] h-full flex justify-center items-center cursor-pointer'>
                         <div className='flex items-center justify-center border border-white7 rounded-md px-2 py-[6px] gap-1'>
                             <Filter className='text-white32' size={15}/>
-                            <p className='font-gridular text-[14px] text-white48'>Sort Results</p>
+                            <p onClick={() => setSortOrder((prev) => {
+                                if(prev == 'ascending') return 'descending'
+                                else return 'ascending'
+                            })} className='font-gridular text-[14px] text-white48 flex items-center gap-1'>Sort Results {sortOrder == 'ascending' ? <ArrowDown size={15}/> : <ArrowUp size={15}/>}</p>
                         </div>
                     </div>
                 </div>

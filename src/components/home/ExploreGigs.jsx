@@ -2,29 +2,37 @@ import { useQuery } from "@tanstack/react-query"
 import { ArrowUpRight, LayoutGrid, ListFilter, TableProperties } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { getUserProjects } from "../../service/api"
+import { getUserDetails, getUserProjects } from "../../service/api"
 import Spinner from "../ui/spinner"
 import Tabs from "../ui/Tabs"
 import ExploreGigsCard from "./ExploreGigsCard"
+import { useSelector } from "react-redux"
 
 
 const initialTabs = [
-  {id: 'inprogress', name: 'In Progress', isActive: true},
-  {id: 'inreview', name: 'In Review', isActive: false},
-  {id: 'completed', name: 'Completed', isActive: false}
+  {id: 'building', name: 'Building', isActive: true},
+  {id: 'current', name: 'Current', isActive: false},
+  {id: 'Done', name: 'Done', isActive: false}
 ]
 
-const ExploreGigs = () => {
+const ExploreGigs = ({userId}) => {
 
   const navigate = useNavigate()
+  const { user_id } = useSelector((state) => state)
 
   const [tabs, setTabs] = useState(initialTabs)
-  const [selectedTab, setSelectedTab] = useState('inprogress')
+  const [selectedTab, setSelectedTab] = useState('building')
 
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
     queryKey: ["userProjects"],
     queryFn: getUserProjects
+  })
+
+  const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
+    queryKey: ["userDetails", user_id],
+    queryFn: () => getUserDetails(user_id),
+    enabled: !!user_id,
   })
 
   const handleTabClick = (id) => {
@@ -41,15 +49,18 @@ const ExploreGigs = () => {
   }
 
   const onGoingProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'ongoing'), [userProjects])
-  const completedProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'completed'), [userProjects])
-  const inReviewProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'submitted'), [userProjects])
+  const DoneProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'completed'), [userProjects])
+  const currentProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'submitted'), [userProjects])
 
   return (
     <div>
-        <div className="flex justify-between items-center">
-          <h1 className="font-gridular text-primaryYellow text-[20px]">My Gigs</h1>
-          <p onClick={navigateToProjectDetails} className="font-gridular bg-white4 py-2 px-2 rounded-md text-primaryYellow/70 hover:text-primaryYellow text-[14px] leading-[24px] flex items-center gap-1 cursor-pointer">Explore all <ArrowUpRight size={16}/></p>
-        </div>
+        {userId == user_id ? 
+          <div className="flex justify-between items-center">
+            <h1 className="font-gridular text-primaryYellow text-[20px]">My Gigs</h1>
+            <p onClick={navigateToProjectDetails} className="font-gridular bg-white4 py-2 px-2 rounded-md text-primaryYellow/70 hover:text-primaryYellow text-[14px] leading-[24px] flex items-center gap-1 cursor-pointer">Explore all <ArrowUpRight size={16}/></p>
+          </div>
+          : null
+        }
         <div className="flex justify-between items-center border border-white7 rounded-[2px] mt-5">
           <Tabs tabs={tabs} handleTabClick={handleTabClick} selectedTab={selectedTab}/>
           <div className="flex flex-row items-center w-[200px] justify-evenly  text-white48">
@@ -67,7 +78,7 @@ const ExploreGigs = () => {
           </div>
         </div>
 
-        {selectedTab === 'inprogress' && <div>
+        {selectedTab === 'building' && <div>
           {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
           userProjects && !userProjects?.length ? <div className="mt-4">
               <div className="font-gridular text-primaryYellow text-[24px]">Start Contributing to Gigs</div>
@@ -81,10 +92,10 @@ const ExploreGigs = () => {
               </div>
           )}
         </div>}
-        {selectedTab === 'inreview' &&  <div>
+        {selectedTab === 'current' &&  <div>
             <div className="font-gridular text-primaryYellow text-[24px] mt-4">No Gigs in review</div>
         </div>}
-        {selectedTab === 'completed' &&  <div>
+        {selectedTab === 'Done' &&  <div>
           <div className="font-gridular text-primaryYellow text-[24px] mt-4">No Completed gigs found</div>
         </div>}
       
