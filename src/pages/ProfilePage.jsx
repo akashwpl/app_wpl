@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import wpllogo from '../assets/images/wpl_prdetails.png'
 import headerPng from '../assets/images/prdetails_header.png'
 
@@ -17,6 +17,7 @@ import { useSelector } from 'react-redux'
 import { useQuery } from '@tanstack/react-query'
 import { deleteProject, getUserDetails } from '../service/api'
 import CustomModal from '../components/ui/CustomModal'
+import { BASE_URL } from '../lib/constants'
 
 
 const ProfilePage = () => {
@@ -27,8 +28,7 @@ const ProfilePage = () => {
     queryKey: ["userDetails", user_id],
     queryFn: () => getUserDetails(user_id),
     enabled: !!user_id,
-  }) 
-
+  })
 
   const [selectedProjectToDelete, setSelectedProjectToDelete] = useState(null)
   const [showProjectDeleteModal, setShowProjectDeleteModal] = useState(false)
@@ -57,7 +57,7 @@ const ProfilePage = () => {
         <img src={headerPng} alt='header' className='h-[200px] w-full'/>
       </div>
 
-      <div className='flex flex-col justify-center items-center'>
+      <div className='flex flex-col justify-center items-center pb-20'>
         <div className='w-[350px] md:w-[480px]'>
           <div className='-translate-y-8'>
             <img src={wpllogo} alt="WPL Logo" className='size-[72px]'/>
@@ -79,7 +79,7 @@ const ProfilePage = () => {
               <p>{userDetails?.bio}</p>
             </div>
 
-            <div className='text-[14px] text-white88 font-inter flex items-center gap-1 mt-3'>
+            <div className='text-[14px] text-white88 font-inter flex items-center gap-2 mt-3'>
               <p>{userDetails?.projectsCompleted} <span className='text-white32'>Projects Completed</span></p>
               <p>${userDetails?.totalEarned} <span className='text-white32'>Earned</span></p>
             </div>
@@ -160,7 +160,6 @@ const ProfilePage = () => {
                       </div>
                       <div className='flex items-center gap-1'>
                         <p className='text-[14px] text-white88'>{userDetails?.email}</p>
-                        <ArrowUpRight size={16} className='text-white32'/>
                       </div>
                     </div>
 

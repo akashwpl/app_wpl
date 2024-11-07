@@ -220,11 +220,12 @@ const FormPage = () => {
                                 </label>
                                 <input 
                                   defaultValue={userDetails?.displayName}
-                                  className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.username && 'border border-errorMsgRedText'}`} 
+                                  className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.username && 'border border-errorMsgRedText'}`} 
                                   placeholder='Jhon Doe'
                                   name='username'
                                   id='username'
                                   onChange={handleChange}
+                                  readOnly
                                 />
                                 {errors.username && 
                                   <div className='flex gap-1 items-center'>
@@ -242,11 +243,12 @@ const FormPage = () => {
                                 </label>
                                 <input 
                                   defaultValue={userDetails?.email}
-                                  className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.emailId && 'border border-errorMsgRedText'}`}
+                                  className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.emailId && 'border border-errorMsgRedText'}`}
                                   placeholder='Jhon@Doe.com'
                                   name='emailId'
                                   id='emailId'
                                   onChange={handleChange}
+                                  readOnly
                                 />
                                 {errors.emailId && 
                                   <div className='flex gap-1 items-center'>
@@ -266,7 +268,7 @@ const FormPage = () => {
                             </label>
                             <textarea 
                               className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.appExp && 'border border-errorMsgRedText'}`}
-                              placeholder='I am a preety fuckin cool dev'
+                              placeholder='I am a preety good dev'
                               rows={3}
                               name='appExp'
                               id='appExp'
@@ -320,7 +322,7 @@ const FormPage = () => {
                         </div>
                         <GithubTeamSearchBox teamList={githubTeammatesList} />
                         <button 
-                          className='w-full text-white48 text-[14px] leading-[20px] bg-cardBlueBg h-[43px] mb-56' 
+                          className='w-full text-white48 text-[14px] leading-[20px] bg-cardBlueBg h-[43px] mb-56 hover:bg-white12' 
                           onClick={handleSubmitForm}
                         >
                           Submit
