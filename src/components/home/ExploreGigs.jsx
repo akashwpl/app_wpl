@@ -26,6 +26,7 @@ const ExploreGigs = ({userId}) => {
   const [sortBy, setSortBy] = useState('prize')
 
   const [showfilterModal, setShowFilterModal] = useState(false)
+  const [projectsGridView, setProjectsGridView] = useState(false)
 
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
@@ -90,9 +91,9 @@ const ExploreGigs = ({userId}) => {
           <Tabs tabs={tabs} handleTabClick={handleTabClick} selectedTab={selectedTab}/>
           <div className="flex flex-row items-center w-[200px] justify-evenly  text-white48">
             <div className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[56px] h-[32px]">
-                <LayoutGrid size={12}/>
+                <LayoutGrid onClick={() => {setProjectsGridView((prev) => !prev)}} size={14} className={`${projectsGridView ? "text-primaryYellow" : "text-white32"} cursor-pointer`}/>
                 <div className='h-full border border-r border-white/10'></div>
-                <TableProperties className='text-primaryYellow' size={12} rotate={90}/>
+                <TableProperties onClick={() => {setProjectsGridView((prev) => !prev)}} className={`${!projectsGridView ? "text-primaryYellow" : "text-white32"} cursor-pointer`} size={14} rotate={90}/>
             </div>
             <div className="flex flex-row justify-center items-center cursor-pointer relative">
                 <div onClick={() => setShowFilterModal((prev) => !prev)} className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[89px] h-[32px]">
@@ -120,9 +121,9 @@ const ExploreGigs = ({userId}) => {
               </div>
             </div>
             : selectedTab !== 'building' && !filteredProjects?.length ? <div className="font-gridular text-primaryYellow text-[24px] mt-4">No gigs found</div> 
-            : filteredProjects?.map((project, idx) => <div key={idx} className="hover:bg-white4 my-4"> 
+            : filteredProjects?.map((project, idx) => <div key={idx} className={`hover:bg-white4 my-4 ${projectsGridView ? "grid grid-cols-12" : "flex flex-col"}`}> 
                 <ExploreGigsCard data={project} type={"project"}/>
-                <div className=' border border-x-0 border-t-0 border-b-white7'></div>
+                <div className='border border-x-0 border-t-0 border-b-white7'></div>
             </div>
           )}
         </div>

@@ -152,13 +152,12 @@ const OnBoarding = () => {
 
 
   // TODO :: FORGOT PASSWORD
-  // TODO :: when role typed it should show a tile, tile can be multiple, can rm the dropwn
-  // TODO :: filter by USDC and deadline
+  // TODO :: filter by USDC and deadline in all projects page
   // TODO :: role UI in project details to update
   // TODO :: project github teammates
   // TODO :: animation same as landing
+  // TODO :: add reward to leaderboard based on user total rewards earned
 
-  
   return (
     <div className='flex justify-center items-center'>
       {!isSignComplete ?
