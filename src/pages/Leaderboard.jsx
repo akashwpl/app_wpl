@@ -76,9 +76,11 @@ const Leaderboard = () => {
                                                 {data.name}
                                             </div>
                                         </td>
-                                        <td className="py-4 text-[14px] flex justify-end items-center gap-1 text-end text-white88">
-                                            <img src={USDCsvg} alt="USDC" className="size-4" />
-                                            {data.rewards}
+                                        <td className="py-4 text-[14px] text-end text-white88">
+                                            <div className='flex justify-end items-center gap-1'>
+                                                <img src={USDCsvg} alt="USDC" className="size-4" />
+                                                {data.rewards}
+                                            </div>
                                         </td>
                                         <td className="py-4 text-[14px] text-end pr-2">{data.wplPoints}</td>
                                         <td className="py-4 text-[14px] text-end pr-2">{data.bountyPoints}</td>
@@ -138,5 +140,5 @@ const dummyData = [
     {name: "John Wick", rewards: "100", wplPoints: "10000", bountyPoints: "10000", totalPoints: "1901"},
     {name: "Rahul Subramanium", rewards: "9000", wplPoints: "9000", bountyPoints: "109000", totalPoints: "193485"},
     {name: "Subaru", rewards: "105000", wplPoints: "100500", bountyPoints: "105000", totalPoints: "140005"},
-    // {name: "Derek Dow", rewards: "9000", wplPoints: "19000", bountyPoints: "101200", totalPoints: "129075"},
+    {name: "Derek Dow", rewards: "9000", wplPoints: "19000", bountyPoints: "101200", totalPoints: "129075"},
 ]
