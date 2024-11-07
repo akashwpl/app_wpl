@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { ArrowUpRight, LayoutGrid, ListFilter, TableProperties } from "lucide-react"
+import { ArrowDown, ArrowUp, ArrowUpRight, LayoutGrid, ListFilter, TableProperties } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { getUserDetails, getUserProjects } from "../../service/api"
@@ -22,6 +22,7 @@ const ExploreGigs = ({userId}) => {
 
   const [tabs, setTabs] = useState(initialTabs)
   const [selectedTab, setSelectedTab] = useState('building')
+  const [sortOrder, setSortOrder] = useState('ascending')
 
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
@@ -29,11 +30,6 @@ const ExploreGigs = ({userId}) => {
     queryFn: getUserProjects
   })
 
-  const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
-    queryKey: ["userDetails", user_id],
-    queryFn: () => getUserDetails(user_id),
-    enabled: !!user_id,
-  })
 
   const handleTabClick = (id) => {
     const newTabs = tabs.map((tab) => ({
@@ -48,9 +44,27 @@ const ExploreGigs = ({userId}) => {
     navigate(`/allprojects`)
   }
 
-  const onGoingProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'ongoing'), [userProjects])
-  const DoneProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'completed'), [userProjects])
-  const currentProjects =  useMemo(() => userProjects?.filter((project) => project.status === 'submitted'), [userProjects])
+  const filteredProjects = useMemo(() => {
+    // Filter projects based on the selected tab
+    let projectsToSort = [];
+    if (selectedTab === 'building') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
+    else if (selectedTab === 'Done') projectsToSort = userProjects?.filter(project => project.status === 'completed');
+    else if (selectedTab === 'current') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
+    else projectsToSort = userProjects;
+
+    // Sort by the last milestone's deadline
+    return projectsToSort
+      ?.sort((a, b) => {
+        const dateA = a.milestones && a.milestones.length > 0
+          ? new Date(a.milestones[a.milestones.length - 1].deadline)
+          : new Date(0); // fallback date if no milestones
+        const dateB = b.milestones && b.milestones.length > 0
+          ? new Date(b.milestones[b.milestones.length - 1].deadline)
+          : new Date(0); // fallback date if no milestones
+        
+          return sortOrder === 'ascending' ? dateA - dateB : dateB - dateA;
+      });
+  }, [userProjects, selectedTab, sortOrder]);
 
   return (
     <div>
@@ -69,36 +83,34 @@ const ExploreGigs = ({userId}) => {
                 <div className='h-full border border-r border-white/10'></div>
                 <TableProperties className='text-primaryYellow' size={12} rotate={90}/>
             </div>
-            <div className="flex flex-row justify-center items-center">
-                <div className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[89px] h-[32px]">
+            <div className="flex flex-row justify-center items-center cursor-pointer">
+                <div onClick={() => setSortOrder((prev) => {
+                  if(prev == 'ascending') return 'descending'
+                  else return 'ascending'
+                })} className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[89px] h-[32px]">
                   <ListFilter size={12}/>
                   <p className='font-gridular text-[14px] leading-[16.8px]'>Filter</p>
+                  {sortOrder === 'ascending' ? <ArrowUp size={12}/> : <ArrowDown size={12} rotate={180}/>}
                 </div>
             </div>
           </div>
         </div>
 
-        {selectedTab === 'building' && <div>
+        <div>
           {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
-          userProjects && !userProjects?.length ? <div className="mt-4">
+          filteredProjects && selectedTab == 'building' && !filteredProjects?.length ? <div className="mt-4">
               <div className="font-gridular text-primaryYellow text-[24px]">Start Contributing to Gigs</div>
               <div className="flex justify-center items-center mt-8">
                 <button onClick={navigateToProjectDetails} className="bg-primaryYellow/90 hover:bg-primaryYellow text-black w-fit px-4 py-1 rounded-md font-bienvenue mt-3 text-[20px]">Explore Gigs</button>
               </div>
-              </div>
-            : userProjects?.map((project, idx) => <div key={idx} className="hover:bg-white4 my-4"> 
-                  <ExploreGigsCard data={project} type={"project"}/>
-                  <div className=' border border-x-0 border-t-0 border-b-white7'></div>
-              </div>
+            </div>
+            : selectedTab !== 'building' && !filteredProjects?.length ? <div className="font-gridular text-primaryYellow text-[24px] mt-4">No gigs found</div> 
+            : filteredProjects?.map((project, idx) => <div key={idx} className="hover:bg-white4 my-4"> 
+                <ExploreGigsCard data={project} type={"project"}/>
+                <div className=' border border-x-0 border-t-0 border-b-white7'></div>
+            </div>
           )}
-        </div>}
-        {selectedTab === 'current' &&  <div>
-            <div className="font-gridular text-primaryYellow text-[24px] mt-4">No Gigs in review</div>
-        </div>}
-        {selectedTab === 'Done' &&  <div>
-          <div className="font-gridular text-primaryYellow text-[24px] mt-4">No Completed gigs found</div>
-        </div>}
-      
+        </div>
     </div>
   )
 }
