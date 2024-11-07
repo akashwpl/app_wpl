@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
 import { getUserDetails } from '../service/api'
-import { SquareChartGantt } from 'lucide-react'
+import { LayoutDashboardIcon, LucideInfo, SquareChartGantt, User } from 'lucide-react'
 
 const Navbar = () => {
   const navigate = useNavigate()
@@ -54,11 +54,13 @@ const Navbar = () => {
           </div>
           {showUserMenu &&
             <div className='absolute top-10 -left-16 w-[150px] bg-primaryBlue rounded-md transition duration-300'>
-              <Link to={'/profile'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-8 flex justify-center items-center rounded-md'>My Profile</Link>
+              <Link to={'/profile'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-4 rounded-md'><User  size={20} color='#FFFFFFE0'/>My Profile</Link>
               <div className='h-[1px] w-full bg-white7 rounded-md'/>
-              <Link to={'/userprojects'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-center items-center gap-1 rounded-md'><SquareChartGantt size={20} color='#FFFFFFE0'/>My Projects</Link>
+              <Link to={'/userprojects'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-md'><SquareChartGantt size={20} color='#FFFFFFE0'/>My Projects</Link>
               <div className='h-[1px] w-full bg-white7 rounded-md'/>
-              <Link to={'/requests'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-center items-center gap-1 rounded-md'><SquareChartGantt size={20} color='#FFFFFFE0'/>Requests</Link>
+              <Link to={'/requests'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-md'><LucideInfo size={20} color='#FFFFFFE0'/>Requests</Link>
+              <div className='h-[1px] w-full bg-white7 rounded-md'/>
+              <Link to={'/'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-md'><LayoutDashboardIcon size={20} color='#FFFFFFE0'/>Dashboard</Link>
             </div>
           }
         </div>
