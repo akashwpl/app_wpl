@@ -17,7 +17,8 @@ const ExploreGigsCard = ({data, type}) => {
                 <img className='size-16 mr-2 rounded-2xl' src={data?.image} alt="Gig Profile Picture"/>
                 <div className='flex flex-col'>
                     <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48 mb-1'>{data?.organisationHandle}</p>
-                    <p className='font-gridular text-[16px] leading-[19.2px] text-white88 mb-3'>{data?.title}</p>                    <div className='flex flex-row text-white32 justify-between w-[320px]'>
+                    <p className='font-gridular text-[16px] leading-[19.2px] text-white88 mb-3'>{data?.title}</p>     
+                    <div className='flex flex-row text-white32 justify-between w-full'>
                         <Clock size={14} />
                         <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Due in {data?.deadline}</p>
                         <Dot size={14} />

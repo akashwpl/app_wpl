@@ -118,7 +118,7 @@ const ProjectDetailsPage = () => {
 
   console.log('LD',lastMilestone);
 
-  const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone.deadline))
+  const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone?.deadline))
 
   // console.log('deadline',projectDeadline);
   // console.log('deadlineSorted', calcDaysUntilDate(projectDeadline[projectDeadline?.length-1]));

@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react'
-import { ArrowLeft, ArrowRight, Filter, Search } from 'lucide-react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { ArrowLeft, ArrowRight, DollarSign, Filter, Search, TimerIcon, Trophy } from 'lucide-react'
 import USDCsvg from '../assets/svg/usdc.svg'
 import wpl_logo from '../assets/images/wpl_prdetails.png'
 import btnPng from '../assets/images/leaderboard_btn.png'
@@ -10,33 +10,56 @@ import { getLeaderboardData } from '../service/api'
 const Leaderboard = () => {
 
 
-    const {data: leaderboardData, isLoading, refetch} = useQuery({
+    const {data: leaderboardData, isLoading: isLoadingLeaderboard, refetch} = useQuery({
         queryKey: ["leaderboard"],
         queryFn: () => getLeaderboardData(),
     })
 
-    console.log('leaderboardData', leaderboardData)
+    const [showfilterModal, setShowFilterModal] = useState(false)
+    const [currentData, setCurrentData] = useState([])
+
+    const [sortBy, setSortBy] = useState('')
+    const [sortOrder, setSortOrder] = useState('ascending')
 
     const [searchInput, setSearchInput] = useState()
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 5
 
-    const filteredData = useMemo(() =>  searchInput
+    const filteredData = useMemo(() => 
+        searchInput
         ? leaderboardData?.data?.filter(data =>
-            data?.name?.toLowerCase().includes(searchInput.toLowerCase())
+            data?.discordIdentifier?.toLowerCase().includes(searchInput.toLowerCase())
         )
+        : sortBy == 'rewards' ? 
+            leaderboardData?.data?.sort((a, b) => {
+                return sortOrder == 'ascending' ? a.cumulativeLeaderboard - b.cumulativeLeaderboard : b.cumulativeLeaderboard - a.cumulativeLeaderboard;
+            })
         : leaderboardData?.data
-    , [searchInput])
+    , [searchInput, leaderboardData, sortBy, sortOrder])
 
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
-    const currentData = filteredData?.slice(indexOfFirstItem, indexOfLastItem)
+
+    useEffect(() => {
+        if(isLoadingLeaderboard) return
+        const data = filteredData?.slice(indexOfFirstItem, indexOfLastItem)
+        setCurrentData(data)
+    }, [leaderboardData, currentPage, searchInput, sortBy, sortOrder])
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(filteredData?.length / itemsPerPage); i++) {
       pageNumbers?.push(i);
+    }
+
+    const handleSortLeaderboard = (type) => {
+        setSortBy(type); 
+        setSortOrder((prev) => {
+            if(prev == 'ascending') return 'descending'
+            else return 'ascending'
+        });
+        setShowFilterModal(false)   
     }
      
   return (
@@ -54,11 +77,19 @@ const Leaderboard = () => {
                     <Search className='text-white32' size={16}/>
                     <input value={searchInput} onChange={(e) => setSearchInput(e.target.value)}  className='bg-transparent w-full outline-none border-none text-white88 placeholder:text-[14px] placeholder:text-white32 placeholder:font-gridular' placeholder='Search for address, name...'/>
                 </div>
-                <div className='border border-white7 min-w-[169px] h-full flex justify-center items-center'>
-                    <div className='flex items-center justify-center border border-white7 rounded-md px-2 py-[6px] gap-1'>
+                <div className='border border-white7 min-w-[169px] h-full flex justify-center items-center relative'>
+                    <div onClick={() => setShowFilterModal((prev) => !prev)} className='flex items-center justify-center border border-white7 rounded-md px-2 py-[6px] gap-1 cursor-pointer hover:bg-white4'>
                         <Filter className='text-white32' size={15}/>
                         <p className='font-gridular text-[14px] text-white48'>Sort Results</p>
                     </div>
+
+                    {showfilterModal && 
+                        <div className="absolute w-[150px] top-12 left-4 bg-primaryBlue rounded-md">
+                            <p onClick={() => {setSortBy('tier'); setShowFilterModal(false)} } className="text-[14px] text-white88 font-semibold hover:bg-white12 pl-4 flex items-center gap-1 font-inter py-2 cursor-pointer"><Trophy size={16}/> Tier</p>
+                            <div className="h-[1px] w-full bg-white12 my-1" />
+                            <p onClick={() => handleSortLeaderboard('rewards')} className="text-[14px] text-white88 font-semibold hover:bg-white12 pl-4 flex items-center gap-1 font-inter py-2 cursor-pointer"><DollarSign size={16}/> Rewards</p>
+                        </div>
+                    }
                 </div>
             </div>
 
@@ -70,31 +101,29 @@ const Leaderboard = () => {
                                 <th className='py-4 text-white32 font-inter font-semibold'>Rank</th>
                                 <th className='py-4 text-white32 font-inter font-semibold text-start w-[200px]'>Name</th>
                                 <th className='py-4 text-white32 font-inter font-semibold text-end pr-2'>Rewards</th>
-                                <th className='py-4 text-white32 font-inter font-semibold text-end pr-2'>WPL Points</th>
-                                <th className='py-4 text-white32 font-inter font-semibold text-end pr-2'>Bounty Points</th>
+                                <th className='py-4 text-white32 font-inter font-semibold text-end pr-2'>Tier</th>
                                 <th className='py-4 text-white32 font-inter font-semibold text-end pr-2'>Total Points</th>
                             </tr>
                         </thead>
                         <tbody className='h-full'>
-                            {isLoading ? <div>loading..</div> : currentData && currentData?.length > 0 ? (
+                            {isLoadingLeaderboard ? <p>loading..</p> : currentData && currentData?.length > 0 ? (
                                 currentData?.map((data, index) => (
                                     <tr key={index} className="text-[14px] text-white48 font-inter border-b border-white7 h-fit">
                                         <td className="py-4 text-[14px] text-end pr-3">#{index + 1}</td>
                                         <td className="py-4 w-[200px] truncate text-ellipsis">
-                                            <div className="flex items-center gap-1 text-white88 text-[14px]">
+                                            <p className="flex items-center gap-1 text-white88 text-[14px]">
                                                 <img src={wpl_logo} alt="USDC" className="size-4" />
                                                 {data.discordIdentifier}
-                                            </div>
+                                            </p>
                                         </td>
                                         <td className="py-4 text-[14px] text-end text-white88">
-                                            <div className='flex justify-end items-center gap-1'>
+                                            <p className='flex justify-end items-center gap-1'>
                                                 <img src={USDCsvg} alt="USDC" className="size-4" />
-                                                {data.rewards}
-                                            </div>
+                                                {data.rewards ? data.rewards : "--"}
+                                            </p>
                                         </td>
+                                        <td className="py-4 text-[14px] text-end pr-2">{data.newTier == "" ? data?.tier : data?.newTier}</td>
                                         <td className="py-4 text-[14px] text-end pr-2">{data.cumulativeLeaderboard}</td>
-                                        <td className="py-4 text-[14px] text-end pr-2">{data.bountyPoints}</td>
-                                        <td className="py-4 text-[14px] text-end pr-2">{data.totalPoints}</td>
                                     </tr>
                                 ))
                             ) : (
