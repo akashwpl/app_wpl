@@ -31,28 +31,29 @@ export function getTimestampFromNow(deliveryTime, timeUnit, starts_in) {
     return now.getTime(); // Return the timestamp in milliseconds
 }
 
-export const calcDaysUntilDate = (futureDate) => {
-    const today = new Date();
-    const differenceInMilliseconds = new Date(futureDate) - today;
+export const calcDaysUntilDate = (startDate, futureDate) => {
+    const startDateObj = new Date(startDate);
+    
+    const differenceInMilliseconds = new Date(futureDate) - startDateObj;
     const differenceInDays = Math.ceil(differenceInMilliseconds / (1000 * 60 * 60 * 24));
 
     if (differenceInDays%30 == 0) {
-        return { timeUnit: 'months', deliveryTime: Math.floor(differenceInDays / 30) };
+        return { timeUnit: 'Months', deliveryTime: Math.floor(differenceInDays / 30) };
     } else if (differenceInDays%7 == 0) {
-        return { timeUnit: 'weeks', deliveryTime: Math.floor(differenceInDays / 7) };
+        return { timeUnit: 'Weeks', deliveryTime: Math.floor(differenceInDays / 7) };
     } else {
-        return { timeUnit: 'days', deliveryTime: differenceInDays };
+        return { timeUnit: 'Days', deliveryTime: differenceInDays };
     }
 }
 
-export function calculateRemainingDaysAndHours(targetDate) {
+export function calculateRemainingDaysAndHours(startDate, targetDate) {
     console.log('targetDate', targetDate);
     
     // Create a Date object for the target date
     const targetDateTime = new Date(targetDate);
   
     // Get the current time
-    const currentTime = new Date();
+    const currentTime = new Date(startDate);
   
     // Calculate the time difference in milliseconds
     const timeDifferenceMs = targetDateTime - currentTime;
@@ -75,6 +76,6 @@ export function calculateRemainingDaysAndHours(targetDate) {
 
   export function convertTimestampToDate(timestamp) {
     const date = new Date(timestamp);
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return date.toLocaleDateString(undefined, options);
   }

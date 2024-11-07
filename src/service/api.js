@@ -127,5 +127,14 @@ export const getUserOrgs = async (id) => {
     }
 }
 
+export const getOrgById = async (id) => {
+    try {
+        const response = await axiosInstance.get(`organisation/${id}`)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
 
 
