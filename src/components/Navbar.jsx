@@ -41,7 +41,7 @@ const Navbar = () => {
         </div>
         <div className='-translate-x-10'>
           <div className='z-[100]'>
-            <Link to={'/'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]'/></Link>
+            <Link to={'/allprojects'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]'/></Link>
           </div>
         </div>
 
