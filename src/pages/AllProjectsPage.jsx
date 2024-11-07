@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -14,6 +14,9 @@ const AllProjectsPage = () => {
 
     const [roleName, setRoleName] = useState('none');
     const [sortOrder, setSortOrder] = useState('ascending');
+
+    const [tiles, setTiles] = useState([])
+
 
     const {data: allProjects, isLoading: isLoadingAllProjects} = useQuery({
         queryKey: ["allProjects"],
@@ -60,6 +63,21 @@ const AllProjectsPage = () => {
         setRoleName(e.target.value)
     }
 
+    const handleKeyboardEnter = (e) => {
+        if(e.key === 'Enter') {
+            e.preventDefault()
+            setTiles((prev) => [...prev, e.target.value?.trim()])
+            setSearchInput('')
+        }
+    }
+
+    const handleRemoveTile = (tile) => {
+        console.log('tile', tile)
+        setTiles((prev) => prev.filter((t) => t !== tile))
+    }
+
+   console.log('tiles', tiles)
+
     return (
         <div className='flex justify-center items-center'>
             <div className='md:w-[800px] max-w-[1200px] mt-6 pb-32'>
@@ -80,15 +98,15 @@ const AllProjectsPage = () => {
                 </div>
 
                 <div className='mt-6'>
-                    <SearchRoles handleRoleChange={handleRoleChange}/>
+                    <SearchRoles tiles={tiles} handleRoleChange={handleRoleChange} handleRemoveTile={handleRemoveTile}/>
                 </div>
 
-                <div className='border border-white7 h-[56px] rounded-md flex justify-between items-center'>
+                <div className='border border-white7 h-[56px] flex justify-between items-center'>
                     <div className='flex items-center gap-2 w-full ml-3'>
                         <Search className='text-white32' size={16}/>
-                        <input value={searchInput} onChange={handleSearch}  className='bg-transparent w-full outline-none border-none text-white88 placeholder:text-[14px] placeholder:text-white32 placeholder:font-gridular' placeholder='Search for you fav Org, role...'/>
+                        <input onKeyDown={handleKeyboardEnter} value={searchInput} onChange={handleSearch}  className='bg-transparent w-full outline-none border-none text-white88 placeholder:text-[14px] placeholder:text-white32 placeholder:font-gridular' placeholder='Search for you fav Org, role...'/>
                     </div>
-                    <div className='border border-white7 min-w-[169px] h-full flex justify-center items-center cursor-pointer'>
+                    <div className='border-l border-white7 min-w-[180px] h-full flex justify-center items-center cursor-pointer'>
                         <div className='flex items-center justify-center border border-white7 rounded-md px-2 py-[6px] gap-1'>
                             <Filter className='text-white32' size={15}/>
                             <p onClick={() => setSortOrder((prev) => {

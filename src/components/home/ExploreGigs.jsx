@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { ArrowDown, ArrowUp, ArrowUpRight, LayoutGrid, ListFilter, TableProperties } from "lucide-react"
+import { ArrowDown, ArrowUp, ArrowUpRight, DollarSign, LayoutGrid, ListFilter, TableProperties, TimerIcon } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { getUserDetails, getUserProjects } from "../../service/api"
@@ -23,6 +23,9 @@ const ExploreGigs = ({userId}) => {
   const [tabs, setTabs] = useState(initialTabs)
   const [selectedTab, setSelectedTab] = useState('building')
   const [sortOrder, setSortOrder] = useState('ascending')
+  const [sortBy, setSortBy] = useState('prize')
+
+  const [showfilterModal, setShowFilterModal] = useState(false)
 
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
@@ -53,6 +56,13 @@ const ExploreGigs = ({userId}) => {
     else projectsToSort = userProjects;
 
     // Sort by the last milestone's deadline
+
+    if(sortBy == 'prize') {
+      return projectsToSort
+        ?.sort((a, b) => {
+          return sortOrder === 'ascending' ? a.totalPrize - b.totalPrize : b.totalPrize - a.totalPrize;
+        });
+    } else {
     return projectsToSort
       ?.sort((a, b) => {
         const dateA = a.milestones && a.milestones.length > 0
@@ -64,6 +74,7 @@ const ExploreGigs = ({userId}) => {
         
           return sortOrder === 'ascending' ? dateA - dateB : dateB - dateA;
       });
+    }
   }, [userProjects, selectedTab, sortOrder]);
 
   return (
@@ -83,15 +94,19 @@ const ExploreGigs = ({userId}) => {
                 <div className='h-full border border-r border-white/10'></div>
                 <TableProperties className='text-primaryYellow' size={12} rotate={90}/>
             </div>
-            <div className="flex flex-row justify-center items-center cursor-pointer">
-                <div onClick={() => setSortOrder((prev) => {
-                  if(prev == 'ascending') return 'descending'
-                  else return 'ascending'
-                })} className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[89px] h-[32px]">
+            <div className="flex flex-row justify-center items-center cursor-pointer relative">
+                <div onClick={() => setShowFilterModal((prev) => !prev)} className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[89px] h-[32px]">
                   <ListFilter size={12}/>
                   <p className='font-gridular text-[14px] leading-[16.8px]'>Filter</p>
-                  {sortOrder === 'ascending' ? <ArrowUp size={12}/> : <ArrowDown size={12} rotate={180}/>}
                 </div>
+
+                {showfilterModal && 
+                  <div className="absolute w-[150px] top-9 -left-4 bg-primaryBlue rounded-md">
+                    <p onClick={() => {setSortBy('prize'); setShowFilterModal(false)} } className="text-[14px] text-white88 font-semibold hover:bg-white12 pl-4 flex items-center gap-1 font-inter py-2 cursor-pointer"><DollarSign size={16}/> Prize</p>
+                    <div className="h-[1px] w-full bg-white12 my-1" />
+                    <p onClick={() => {setSortBy('deadline'); setShowFilterModal(false)}} className="text-[14px] text-white88 font-semibold hover:bg-white12 pl-4 flex items-center gap-1 font-inter py-2 cursor-pointer"><TimerIcon size={16}/> Deadline</p>
+                  </div>
+                }
             </div>
           </div>
         </div>

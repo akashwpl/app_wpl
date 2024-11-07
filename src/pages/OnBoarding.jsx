@@ -149,6 +149,12 @@ const OnBoarding = () => {
   const navigateToOrgFormPage = () => {
     navigate('/verifyorg')
   }
+
+
+  // TODO :: FORGOT PASSWORD
+  // TODO :: when role typed it should show a tile, tile can be multiple, can rm the dropwn
+  // TODO :: filter by USDC and deadline
+
   
   return (
     <div className='flex justify-center items-center'>
