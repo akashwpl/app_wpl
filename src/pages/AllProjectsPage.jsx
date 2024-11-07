@@ -62,7 +62,7 @@ const AllProjectsPage = () => {
 
     return (
         <div className='flex justify-center items-center'>
-            <div className='md:w-[800px] max-w-[1200px] mt-6'>
+            <div className='md:w-[800px] max-w-[1200px] mt-6 pb-32'>
                 <div className={`mr-3 w-full flex justify-center items-start flex-col h-[101px] py-5 px-4 bg-cover bg-[url('assets/images/total_earned_bg.png')] rounded-md `}>
                     {userDetails?.role == 'sponsor' ? <div className='w-full flex flex-col justify-between'>
                         <h2 className='text-[18px] font-gridular text-[#06105D]'>Invite the best talent to work on your project!</h2>
