@@ -5,10 +5,8 @@ import ExploreGigs from '../components/home/ExploreGigs'
 import KYC_Card from '../components/home/KYC_Card'
 import ProfileDetailsCard from '../components/home/ProfileDetailsCard'
 import RecentActivityCard from '../components/home/RecentActivityCard'
-import SearchRoles from '../components/home/SearchRoles'
 import Statistics from '../components/home/Statistics'
 import { getUserDetails } from '../service/api'
-
 
 
 const HomePage = () => {
@@ -27,7 +25,7 @@ const HomePage = () => {
       <div className='flex flex-col px-[46px] mt-4 w-full '>
         <Statistics userDetails={userDetails}/>
         {/* <SearchRoles /> */}
-        <ExploreGigs />
+        <ExploreGigs userId={user_id}/>
       </div>
 
       {/* right side */}

@@ -9,7 +9,6 @@ import checkTick from '../assets/images/check-tick.png'
 
 
 
-
 const SubmissionsPage = () => {
 
     const { id, page } = useParams();
