@@ -10,11 +10,14 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Globe, Menu, Plus, Send, Trash, Up
 import USDCsvg from '../assets/svg/usdc.svg'
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
+import { useSelector } from 'react-redux';
+import { createOrganisation } from '../service/api';
 
 const VerifyOrgForm = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
+    const { user_id } = useSelector((state) => state)
     const [title, setTitle] = useState('')
     const [organisationHandle, setOrganisationHandle] = useState('');
     const [description, setDescription] = useState('');
@@ -52,10 +55,24 @@ const VerifyOrgForm = () => {
         }
     };
 
-    const submitForm = () => {
+    const submitForm = async () => {
         const isValid = validateFields();
         if (isValid) {
-            setSubmitted(true);
+            const data = {
+                userId: user_id,
+                // organisationName: organisationName,
+                description: description,
+                organisationHandle: organisationHandle,
+                socialHandleLink: twitterLink,
+                status: 'pending'
+            }
+            const res = await createOrganisation(data);
+            
+            if(res.err === 'User is not a sponsor') {
+                alert('The account is not Sponsor account. Please contact admin to upgrade your account')
+                navigate('/')
+            }
+            else setSubmitted(true);
         }
     }
 
@@ -63,7 +80,7 @@ const VerifyOrgForm = () => {
     <div className='pb-40'>
         <div className='flex items-center gap-1 pl-20 border-b border-white12 py-2'>
             <ArrowLeft size={14} stroke='#ffffff65'/>
-            <p className='text-white32 font-inter text-[14px]'>Go back</p>
+            <p onClick={() => navigate('/sponsordashboard')} className='text-white32 font-inter text-[14px] cursor-pointer'>Go back</p>
         </div>
         <div className='flex justify-center items-center mt-4'>
             <div className='max-w-[469px] w-full'>

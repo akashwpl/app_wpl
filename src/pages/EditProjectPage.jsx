@@ -101,7 +101,7 @@ const EditProjectPage = () => {
     const handleSave = async () => {
         const updatedMilestones = milestones.map(milestone => ({
             ...milestone,
-            deadline: getTimestampFromNow(`${milestone.deliveryTime} ${milestone.timeUnit?.toLowerCase() || 'days'}`) // Add timestamp to each milestone
+            deadline: getTimestampFromNow(milestone.deliveryTime, milestone.timeUnit?.toLowerCase() || 'days', milestone.starts_in) // Add timestamp to each milestone
         }));
 
         console.log('Updatedmilestones', updatedMilestones);
@@ -153,7 +153,7 @@ const EditProjectPage = () => {
     <div className='mb-20'>
         <div className='flex items-center gap-1 pl-20 border-b border-white12 py-2'>
             <ArrowLeft size={14} stroke='#ffffff65'/>
-            <p className='text-white32 font-inter text-[14px]'>Go back</p>
+            <p className='text-white32 font-inter text-[14px] cursor-pointer' onClick={handleNavigateToProjectDetails}>Go back</p>
         </div>
 
         {!submitted ?

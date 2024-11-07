@@ -1,16 +1,23 @@
 import React from 'react'
-import { CalendarCheck, Trophy } from 'lucide-react'
+import { CalendarCheck, Clock, Trophy } from 'lucide-react'
 import USDCsvg from '../../assets/svg/usdc.svg'
+import { calcDaysUntilDate, convertTimestampToDate } from '../../lib/constants'
 
 const MilestoneCard = ({ data }) => {
+
+  const date = convertTimestampToDate(data?.starts_in)
+  const dealine = calcDaysUntilDate(date, data?.deadline)
+
   return (
     <div>
       <div className='flex justify-between items-center'>
         <div>
           <h2 className='text-[20px] text-white88 font-semibold leading-[27px]'>{data?.title}</h2>
           <div className='text-[12px] text-white32 font-semibold leading-[14px] flex items-center gap-1 mt-1'>
-              <CalendarCheck size={14} className='text-white32'/>
-              <p>Delivery time: DUMMY TIME</p>
+              <Clock size={14} className='text-white32'/>
+              <p>Start date: {date} </p>
+              <CalendarCheck size={14} className='text-white32 ml-2'/>
+              <p>Delivery time: {dealine.deliveryTime} {dealine.timeUnit}</p>
               <Trophy size={14} className='text-white32 ml-2'/>
               <p>DUMMY METRIC</p>
           </div>

@@ -10,7 +10,7 @@ const MilestoneStatusCard = ({ data }) => {
         console.log('res mile submmited', res)
     }
 
-    const time_remain = calculateRemainingDaysAndHours(data.starts_in);
+    const time_remain = calculateRemainingDaysAndHours(new Date(), data?.starts_in);
 
   return (
     <div className='flex flex-col gap-[14px]'>
@@ -47,7 +47,7 @@ const MilestoneStatusCard = ({ data }) => {
             </div>
         </div>
 
-        <button onClick={handleSubmitMilestone}>submit</button>
+        <button className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular text-[14px]' onClick={handleSubmitMilestone}>Submit Milestone</button>
     </div>
   )
 }
