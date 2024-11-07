@@ -9,7 +9,7 @@ const MilestoneStatusCard = ({ data }) => {
         const res = await submitMilestone(data?._id);
     }
 
-    const time_remain = calculateRemainingDaysAndHours(data.starts_in);
+    const time_remain = calculateRemainingDaysAndHours(new Date(), data?.starts_in);
 
     return (
         <div className='flex flex-col gap-[14px]'>

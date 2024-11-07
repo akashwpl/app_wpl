@@ -13,11 +13,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../components/ui/accordion"
-import { getProjectDetails, getProjectSubmissions, updateProjectDetails } from '../service/api'
+import { getOrgById, getProjectDetails, getProjectSubmissions, updateProjectDetails } from '../service/api'
 import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import CustomModal from '../components/ui/CustomModal'
 import Tabs from '../components/ui/Tabs'
+import { calcDaysUntilDate, calculateRemainingDaysAndHours, convertTimestampToDate } from '../lib/constants'
 
 
 const initialTabs = [
@@ -32,6 +33,7 @@ const ProjectDetailsPage = () => {
 
   const { id } = useParams();
   const { user_id } = useSelector((state) => state)
+  const [orgHandle, setOrgHandle] = useState('');
 
   console.log('current user Id', user_id)
   const navigate = useNavigate()
@@ -46,6 +48,16 @@ const ProjectDetailsPage = () => {
     queryKey: ['projectSubmissions', id],
     queryFn: () => getProjectSubmissions(id),
   })
+
+  useEffect(() => {
+    const fetchOrgHandle = async () => {
+      if(!isLoadingProjectDetails && !projectDetails.organisationHandle) {
+        const org = await getOrgById(projectDetails.organisationId);
+        setOrgHandle(org[0].organisationHandle);
+      }
+    }
+    fetchOrgHandle();
+  },[isLoadingProjectDetails])
 
   const [tabs, setTabs] = useState([])
   const [selectedTab, setSelectedTab] = useState('overview')
@@ -82,10 +94,9 @@ const ProjectDetailsPage = () => {
   }
 
   const navigateToPrevPage = () => {
-    navigate(-1)
+    navigate(-1);
   }
 
-  
   const isOwner = useMemo(() => projectDetails?.owner_id == user_id, [projectDetails, user_id])
 
   useEffect(() => {
@@ -95,8 +106,28 @@ const ProjectDetailsPage = () => {
   const totalPrize = useMemo(() => projectDetails?.milestones?.reduce((acc, milestone) => acc + parseFloat(milestone.prize), 0) || 0, [projectDetails]);
   const totalSubmissions = useMemo(() => projectSubmissions?.length, [projectSubmissions])
 
+  // const projectDeadline = (projectDetails?.milestones?.map((milestone) => {
+  //   return parseInt(new Date(milestone.starts_in).getTime())
+  // })).sort()
+
+  const tmpMilestones = projectDetails?.milestones;
+  const lastMilestone = tmpMilestones?.reduce((acc, curr) => {
+    
+    return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
+  });
+
+  console.log('LD',lastMilestone);
+
+  const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone.deadline))
+
+  // console.log('deadline',projectDeadline);
+  // console.log('deadlineSorted', calcDaysUntilDate(projectDeadline[projectDeadline?.length-1]));
+  
+
   console.log('projectSubmissions', projectSubmissions)
   console.log('projectDetails', projectDetails)
+
+
 
   return (
     <div className='relative'>
@@ -113,7 +144,7 @@ const ProjectDetailsPage = () => {
          
           <div className='md:min-w-[600px]'>
             <div className='translate-y-[-15px]'>
-              <img src={wpl_prdetails} alt='wpl_prdetails' className='size-[72px]'/>
+              <img src={projectDetails?.image || wpl_prdetails} alt='wpl_prdetails' className='size-[72px] rounded-md'/>
             </div>
 
             <div className='flex flex-col'>
@@ -124,7 +155,7 @@ const ProjectDetailsPage = () => {
                   <p className='capitalize'>{projectDetails?.type}</p>
                 </div>
               </div>
-              <p className='text-[14px] text-white32 leading-5'>@{projectDetails?.organisationHandle}</p>
+              <p className='text-[14px] text-white32 leading-5'>@{projectDetails?.organisationHandle || orgHandle}</p>
               <div className='flex gap-2 leading-5 font-inter text-[14px] mt-2'>
                 <p className='text-white88'>DUMMY <span className='text-white32'>Interested</span></p>
                 <p className='text-white88'>{totalSubmissions} <span className='text-white32'>Submissions</span></p>
@@ -209,7 +240,7 @@ const ProjectDetailsPage = () => {
           <div className='w-[372px] h-fit pb-4 bg-white4 rounded-[10px]'>
             <div className='flex items-center gap-2 mx-4 py-4'>
               <Clock size={14} className='text-white32'/>
-              <p className='text-[14px] text-white32 leading-[20px] font-inter'>Project Deadline in <span className='text-white88 ml-1'>DUMMY TIME</span></p>
+              <p className='text-[14px] text-white32 leading-[20px] font-inter'>Project Deadline in <span className='text-white88 ml-1'>{remain.days} D {remain.hours} H</span></p>
             </div>
             <div className='h-[1px] w-full'>
               <div className='h-[1px] w-[40%] bg-primaryYellow'/>

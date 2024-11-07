@@ -10,11 +10,14 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Globe, Menu, Plus, Send, Trash, Up
 import USDCsvg from '../assets/svg/usdc.svg'
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
+import { useSelector } from 'react-redux';
+import { createOrganisation } from '../service/api';
 
 const VerifyOrgForm = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
+    const { user_id } = useSelector((state) => state)
     const [title, setTitle] = useState('')
     const [organisationHandle, setOrganisationHandle] = useState('');
     const [description, setDescription] = useState('');
@@ -52,10 +55,24 @@ const VerifyOrgForm = () => {
         }
     };
 
-    const submitForm = () => {
+    const submitForm = async () => {
         const isValid = validateFields();
         if (isValid) {
-            setSubmitted(true);
+            const data = {
+                userId: user_id,
+                // organisationName: organisationName,
+                description: description,
+                organisationHandle: organisationHandle,
+                socialHandleLink: twitterLink,
+                status: 'pending'
+            }
+            const res = await createOrganisation(data);
+            
+            if(res.err === 'User is not a sponsor') {
+                alert('The account is not Sponsor account. Please contact admin to upgrade your account')
+                navigate('/')
+            }
+            else setSubmitted(true);
         }
     }
 
