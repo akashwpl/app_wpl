@@ -19,6 +19,7 @@ import SponsorDashboard from "./pages/SponsorDashboard"
 import AdminDashboard from "./pages/AdminDashboard"
 import OrganisationPage from "./pages/OrganisationPage"
 import Requests from "./pages/Requests"
+import ForgetPasswordPage from "./pages/ForgetPasswordPage"
 
 function App() {
 
@@ -49,6 +50,7 @@ function App() {
           <Route path="/admindashboard" element={<AdminDashboard />} />
           <Route path="/organisation/:id" element={<OrganisationPage />} />
           <Route path="/requests" element={<Requests />} />
+          <Route path="/forgetpassword" element={<ForgetPasswordPage />} />
         </Routes>
       </div>
     </div>

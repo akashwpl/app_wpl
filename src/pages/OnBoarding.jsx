@@ -1,5 +1,5 @@
-import { ArrowRight, EyeIcon, MailWarningIcon, Menu, MessageSquareMoreIcon, Zap } from 'lucide-react'
-import { useState } from 'react'
+import { ArrowRight, EyeIcon, Info, MailWarningIcon, Menu, MessageSquareMoreIcon, Zap } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BASE_URL, email_regex } from '../lib/constants'
 
@@ -8,6 +8,8 @@ import headerPng from '../assets/images/prdetails_header.png'
 import wpllogo from '../assets/images/wpl_prdetails.png'
 import googleLogo from '../assets/svg/google_symbol.png'
 import loginBtnImg from '../assets/svg/login_btn.png'
+import loginBtnSubtract from '../assets/svg/btn_subtract2.png'
+import loginBtnHoverSubtract from '../assets/svg/btn_hover_subtract2.png'
 import signupBtnImg from '../assets/svg/signup_btn.png'
 
 import { setUserId } from '../store/slice/userSlice'
@@ -34,7 +36,8 @@ const OnBoarding = () => {
 
   const [error, setError] = useState('')
 
-  const [isPass, setIsPass ] = useState(true)
+  const [isPass, setIsPass ] = useState(true);
+  const [showForgetPassDialog, setShowForgetPassDialog] = useState(false);
 
   const signUp = async () => {
     if (!email || !password) {
@@ -160,6 +163,11 @@ const OnBoarding = () => {
     setIsPass(!isPass)
   }
 
+  useEffect(() => {
+    setTimeout(() => {
+      setShowForgetPassDialog(false)
+    },10000)
+  },[showForgetPassDialog])
 
   // TODO :: FORGOT PASSWORD
   // TODO :: filter by USDC and deadline in all projects page
@@ -173,10 +181,14 @@ const OnBoarding = () => {
       {!isSignComplete ?
         <div className='mt-32'>
           {!isSignin ? 
-            <div onClick={navigateToOrgFormPage} className='bg-[#091044] hover:bg-[#121534] text-white88 flex items-center gap-1 py-2 px-4 rounded-md w-fit cursor-pointer hover:underline'><Zap stroke='#97A0F1' size={14}/>Want to sponsor a Project? <span className='text-white48 ml-1'>Apply to be a part!</span></div>
+            <div onClick={navigateToOrgFormPage} className='flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md hover:bg-[#121534] cursor-pointer hover:underline'>
+              <Zap stroke='#97A0F1' size={12}/>
+              <p className='text-white88'>Want to sponsor a Project? </p>
+              <p className='text-white48'>Apply to be a part!</p>
+            </div>
           : 
             <div className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px]  rounded-md">
-              <Zap className='text-[#97A0F1]' size={12}></Zap>
+              <Zap stroke='#97A0F1' size={12} />
               <p className='text-white88'>New to WPL?</p>
               <p className='text-white48'>Apply to be a part!</p>
             </div>
@@ -186,6 +198,13 @@ const OnBoarding = () => {
             <div className='text-primaryYellow font-gridular text-[24px] leading-[28.8px]'>Start contributing Onchain</div>
             <p className='text-white48 font-semibold text-[12px] font-inter'>Earn in crypto by contributing to your fav projects</p>
           </div>
+
+          {showForgetPassDialog &&
+            <div onClick={() => navigate('/forgetpassword')} className="flex items-center justify-center mt-3 -mb-1 text-[#FBF1B8] bg-white7 p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md">
+              <Info size={12}  />
+              <p className=''>We've sent a link to your registered mail to reset your password.</p>
+            </div>
+          }
 
           <div className='bg-white4 rounded-lg p-3 mt-6 min-w-[400px]'>
             <div className='bg-[#091044] rounded-lg p-3'>
@@ -211,10 +230,13 @@ const OnBoarding = () => {
                 <p className='text-[#F03D3D] font-semibold text-[12px] font-inter leading-[14.4px]'>{error}</p>
               </div>}
 
-              <p className='mt-1 text-[12px] text-center text-white32 font-medium text-inter'>Forgot your Password?<span onClick={() => {console.log('Forgot Pass clicked')}} className='text-primaryYellow cursor-pointer ml-[2px]'>Reset it</span></p>
+              {isSignin && 
+                <p className='mt-1 text-[12px] text-center text-white32 font-medium text-inter'>Forgot your Password?<span onClick={() => {console.log(setShowForgetPassDialog(true))}} className='text-primaryYellow cursor-pointer ml-[2px] hover:underline'>Reset it</span></p>
+              }
+
             </div>
                 <div className='mt-4'>
-                  <FancyButton src_img={isSignin ? loginBtnImg : signupBtnImg} img_size_classes='w-[396px]' className='' btn_txt='' onClick={isSignin ? login : signUp} />
+                  <FancyButton src_img={loginBtnSubtract} hover_src_img={loginBtnHoverSubtract} img_size_classes='w-[398px]' className='mt-1 font-gridular text-white64 text-[14px] leading-[8.82px]' btn_txt={isSignin ? 'login' : 'signup'} onClick={isSignin ? login : signUp} />
                 </div>
               {/* <div className='mt-4 border border-primaryYellow py-1'>
                 <button onClick={isSignin ? login : signUp} className='w-full flex justify-center items-center text-primaryYellow'>{isSignin ? "Log In" : "Sign Up"}</button>
@@ -224,8 +246,8 @@ const OnBoarding = () => {
           <div className='flex justify-center items-center mt-2 gap-2'>
             <div onClick={swtichOnboardingType} className='text-[12px] text-white32 font-semibold text-inter mr-1'>
               {isSignin
-                ? <p>Do not have an account?<span className='text-[12px] text-primaryYellow font-semibold font-inter cursor-pointer ml-[2px]'>Sign up now!</span></p>
-                : <p>Already have an account? <span className='text-[12px] text-primaryYellow font-semibold font-inter cursor-pointer ml-[2px]'>Login</span></p>
+                ? <p>Do not have an account?<span className='text-[12px] text-primaryYellow font-semibold font-inter cursor-pointer ml-[2px] hover:underline'>Sign up now!</span></p>
+                : <p>Already have an account? <span className='text-[12px] text-primaryYellow font-semibold font-inter cursor-pointer ml-[2px] hover:underline'>Login</span></p>
               }
             </div>
           </div>

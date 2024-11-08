@@ -8,7 +8,6 @@ import RecentActivityCard from '../components/home/RecentActivityCard'
 import Statistics from '../components/home/Statistics'
 import { getUserDetails } from '../service/api'
 
-
 const HomePage = () => {
 
   const { user_id } = useSelector((state) => state)
@@ -17,7 +16,7 @@ const HomePage = () => {
     queryKey: ["userDetails", user_id],
     queryFn: () => getUserDetails(user_id),
     enabled: !!user_id,
-  })
+  }) 
 
   return (
     <div className='flex flex-row justify-between mt-4 mx-8'>
