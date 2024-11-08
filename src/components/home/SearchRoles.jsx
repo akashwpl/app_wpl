@@ -26,20 +26,23 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                     </div>    
                 </div>
 
-                <div className="min-w-[220px] h-[32px] bg-cardBlueBg2 rounded-md p-2 flex flex-row justify-between">
-                    <div className='flex flex-row'>
-                        <img src={ethereumIcon} alt="Ethereum icon"/>
-                        <p className="text-white opacity-[88%] font-gridular text-[14px] leading-[16.8px] ml-2">Ethereum</p>
-                    </div>
-                    <ChevronDown className='text-white48' size={14}/>
+                <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
+                    <select className='bg-transparent h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
+                        <option className='text-white88 font-gridular text-[14px]'>All</option>
+                        <option className='text-white88 font-gridular text-[14px]'>Professional</option>
+                    </select>
                 </div>
-                  
-                <div className="min-w-[220px] h-[32px] bg-cardBlueBg2 rounded-md p-2 flex flex-row justify-between">
-                    <div className='flex flex-row'>
-                        <img src={ethereumIcon} alt="Ethereum icon"/>
-                        <p className="text-white opacity-[88%] font-gridular text-[14px] leading-[16.8px] ml-2">Ethereum</p>
-                    </div>
-                    <ChevronDown className='text-white48' size={14}/>
+
+                <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
+                    <select className='bg-transparent h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
+                        <option className='text-white88 font-gridular text-[14px]'>All</option>
+                        <option className='text-white88 font-gridular text-[14px]'>
+                            <div className='flex flex-row'>
+                                <img src={ethereumIcon} alt="Ethereum icon"/>
+                                <p className="text-white opacity-[88%] font-gridular text-[14px] leading-[16.8px] ml-2">Ethereum</p>
+                            </div>
+                        </option>
+                    </select>
                 </div>
             </div>
         </div>

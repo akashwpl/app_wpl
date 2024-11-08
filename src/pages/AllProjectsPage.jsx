@@ -141,26 +141,28 @@ const AllProjectsPage = () => {
                             </div>
 
                             {showfilterModal && 
-                                <div className="absolute w-[156px] top-9 -left-[70px] rounded-md bg-white4 backdrop-blur-sm py-3 flex flex-col px-4">
+                                <div className="absolute w-[156px] top-10 -left-[70px] rounded-md bg-white4 backdrop-blur-[52px] py-3 flex flex-col px-4">
                                     <div>
-                                        <p className='text-[12px] font-semibold font-inter mb-2 text-start'>Sort prizes</p>
+                                        <p className='text-[12px] font-semibold font-inter mb-3 text-start'>Sort prizes</p>
                                         <div className='font-gridular text-[14px] text-white88 mb-1 flex items-center gap-1'><img src={listAscendingSvg} alt='sort' className='size-[16px]' /> Low to High</div>
                                         <div className='font-gridular text-[14px] text-white88 mb-[6px] flex items-center gap-1'><img src={listDescendingSvg} alt='sort' className='size-[16px]' /> High to Low</div>
                                         <div className='font-gridular text-[14px] text-white88'> Low to High</div>
                                     </div>
-                                    <div className='border border-dashed border-white7 w-full my-4'/>
+                                    <div className='border border-dashed border-white7 w-full my-5'/>
                                     <div>
-                                        <p className='text-[12px] font-semibold font-inter mb-2'>Select duration</p>
-                                        <div className='mb-1'>
-                                            <input type='checkbox' name='duration' value='1' id='1'/>
+                                        <p className='text-[12px] font-semibold font-inter mb-3'>Select duration</p>
+                                        <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>
+                                            {/* <div className='border border-primaryYellow h-[14px] p-0 m-0 flex justify-center items-center rounded-sm'> */}
+                                                <input type='checkbox' name='duration' value='1' id='1' className='p-0 m-0 cursor-pointer'/>
+                                            {/* </div> */}
                                             <label htmlFor='1'>{`<`} 2 weeks</label>
                                         </div>
-                                        <div className='mb-1'>
-                                            <input type='checkbox' name='duration' value='1' id='1'/>
+                                        <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>
+                                            <input type='checkbox' name='duration' value='1' id='1' className='border border-primaryYellow cursor-pointer'/>
                                             <label htmlFor='1'>2-4 weeks</label>
                                         </div>
-                                        <div className=''>
-                                            <input type='checkbox' name='duration' value='1' id='1'/>
+                                        <div className=' flex items-center gap-2 text-white88 text-[14px] font-gridular'>
+                                            <input type='checkbox' name='duration' value='1' id='1' className='border border-primaryYellow cursor-pointer'/>
                                             <label htmlFor='1'>{`>`} 4 week</label>
                                         </div>
                                     </div>
@@ -172,11 +174,15 @@ const AllProjectsPage = () => {
                 </div>
 
                 <div className='mt-8'>
-                    <div>
+                    <div className={`${projectsGridView ? "grid grid-cols-2" : "flex flex-col"} gap-4`}>
                         {isLoadingAllProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
-                            filteredProjects && filteredProjects.map((project, idx) => <div key={idx} className='hover:bg-white4'>
-                                <ExploreGigsCard data={project} type={"project"} />
-                                <div className=' border border-x-0 border-t-0 border-b-white7'></div>
+                            
+                            filteredProjects && 
+                            filteredProjects.map((project, idx) => <div key={idx} className={`hover:bg-white4 w-full gap-3`}>
+                                    <div className='col-span-1'>
+                                        <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
+                                    </div>
+                                {/* <div className=' border border-x-0 border-t-0 border-b-white7'></div> */}
                             </div>
                             )}
                     </div>
