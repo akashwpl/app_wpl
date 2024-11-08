@@ -43,9 +43,10 @@ const AllProjectsPage = () => {
     const filteredProjects = useMemo(() => {
         return allProjects
             ?.filter(project => {
+                const matchesType = project?.type?.toLowerCase() === 'bounty';
                 const matchesSearch = searchInput ? project?.title?.toLowerCase().includes(searchInput.toLowerCase()) : true;
                 const matchesRole = roleName && roleName !== 'none' ? project?.role?.toLowerCase() === roleName.toLowerCase() : true;
-                return matchesSearch && matchesRole;
+                return matchesSearch && matchesRole && matchesType;
             })
             .sort((a, b) => {
                 const dateA = a.milestones && a.milestones.length > 0 

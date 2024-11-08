@@ -6,8 +6,13 @@ import { BASE_URL, email_regex } from '../lib/constants'
 import { useDispatch } from 'react-redux'
 import headerPng from '../assets/images/prdetails_header.png'
 import wpllogo from '../assets/images/wpl_prdetails.png'
+import googleLogo from '../assets/svg/google_symbol.png'
+import loginBtnImg from '../assets/svg/login_btn.png'
+import signupBtnImg from '../assets/svg/signup_btn.png'
+
 import { setUserId } from '../store/slice/userSlice'
 import { getUserDetails } from '../service/api'
+import FancyButton from '../components/ui/FancyButton'
 
 const OnBoarding = () => {
 
@@ -29,6 +34,7 @@ const OnBoarding = () => {
 
   const [error, setError] = useState('')
 
+  const [isPass, setIsPass ] = useState(true)
 
   const signUp = async () => {
     if (!email || !password) {
@@ -150,6 +156,10 @@ const OnBoarding = () => {
     navigate('/verifyorg')
   }
 
+  const togglePasswordField = () => {
+    setIsPass(!isPass)
+  }
+
 
   // TODO :: FORGOT PASSWORD
   // TODO :: filter by USDC and deadline in all projects page
@@ -162,7 +172,16 @@ const OnBoarding = () => {
     <div className='flex justify-center items-center'>
       {!isSignComplete ?
         <div className='mt-32'>
-          {!isSignin && <div onClick={navigateToOrgFormPage} className='bg-[#091044] hover:bg-[#121534] text-white88 flex items-center gap-1 py-2 px-4 rounded-md w-fit cursor-pointer hover:underline'><Zap stroke='#97A0F1' size={14}/>Want to sponsor a Project? <span className='text-white48 ml-1'>Apply to be a part!</span></div>}
+          {!isSignin ? 
+            <div onClick={navigateToOrgFormPage} className='bg-[#091044] hover:bg-[#121534] text-white88 flex items-center gap-1 py-2 px-4 rounded-md w-fit cursor-pointer hover:underline'><Zap stroke='#97A0F1' size={14}/>Want to sponsor a Project? <span className='text-white48 ml-1'>Apply to be a part!</span></div>
+          : 
+            <div className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px]  rounded-md">
+              <Zap className='text-[#97A0F1]' size={12}></Zap>
+              <p className='text-white88'>New to WPL?</p>
+              <p className='text-white48'>Apply to be a part!</p>
+            </div>
+          }
+          
           <div className='mt-4'>
             <div className='text-primaryYellow font-gridular text-[24px] leading-[28.8px]'>Start contributing Onchain</div>
             <p className='text-white48 font-semibold text-[12px] font-inter'>Earn in crypto by contributing to your fav projects</p>
@@ -170,21 +189,21 @@ const OnBoarding = () => {
 
           <div className='bg-white4 rounded-lg p-3 mt-6 min-w-[400px]'>
             <div className='bg-[#091044] rounded-lg p-3'>
-              <div className='flex justify-between items-center group  cursor-pointer'>
-                <div className='text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Login" : "Sign up"} with Google</div>
-                <div><ArrowRight stroke='#FFFFFF52'/></div>
+              <div className='flex justify-between items-center group cursor-pointer'>
+                <div className='flex items-center gap-1 text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Log in" : "Sign up with"} <img src={googleLogo} width={12} height={12} />Google</div>
+                <div><ArrowRight size={18} stroke='#FFFFFF52'/></div>
               </div>
               <div className='my-4 border border-dashed border-[#FFFFFF12]'/>
               <div>
-                <p className='text-white32 font-semibold font-inter text-[13px]'>Or, {isSignin ? "Login" : "Sign up"} with Email</p>
+                <p className='text-white32 font-medium font-inter text-[13px] leading-[15.6px]'>Or, {isSignin ? "Log in" : "Sign up"} with Email</p>
               </div>
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
-                <input type="email" placeholder="user@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} className='bg-transparent w-full outline-none border-none text-white placeholder:text-white32'/>
+                <input type="email" placeholder="User@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
                 <MessageSquareMoreIcon stroke='#FFFFFF52'/>
               </div>
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
-                <input type="password" placeholder="password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent w-full outline-none border-none text-white placeholder:text-white32'/>
-                <EyeIcon stroke='#FFFFFF52'/>
+                <input type={isPass ? 'password' : 'text'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                <EyeIcon className='cursor-pointer' onClick={togglePasswordField} stroke='#FFFFFF52'/>
               </div>
 
               {error && <div className='bg-[#F03D3D1A] rounded-md px-2 py-2 mt-4 flex items-center gap-1'>
@@ -192,21 +211,23 @@ const OnBoarding = () => {
                 <p className='text-[#F03D3D] font-semibold text-[12px] font-inter leading-[14.4px]'>{error}</p>
               </div>}
 
-              
-              <div className='mt-4 border border-primaryYellow py-1'>
-                <button onClick={isSignin ? login : signUp} className='w-full flex justify-center items-center text-primaryYellow'>{isSignin ? "Log In" : "Sign Up"}</button>
-              </div>
+              <p className='mt-1 text-[12px] text-center text-white32 font-medium text-inter'>Forgot your Password?<span onClick={() => {console.log('Forgot Pass clicked')}} className='text-primaryYellow cursor-pointer ml-[2px]'>Reset it</span></p>
             </div>
+                <div className='mt-4'>
+                  <FancyButton src_img={isSignin ? loginBtnImg : signupBtnImg} img_size_classes='w-[396px]' className='' btn_txt='' onClick={isSignin ? login : signUp} />
+                </div>
+              {/* <div className='mt-4 border border-primaryYellow py-1'>
+                <button onClick={isSignin ? login : signUp} className='w-full flex justify-center items-center text-primaryYellow'>{isSignin ? "Log In" : "Sign Up"}</button>
+              </div> */}
           </div>
 
           <div className='flex justify-center items-center mt-2 gap-2'>
             <div onClick={swtichOnboardingType} className='text-[12px] text-white32 font-semibold text-inter mr-1'>
               {isSignin
-                ? <p>Create an account? <span className='text-[12px] text-primaryYellow font-semibold font-inter cursor-pointer ml-[2px] underline'>Sign Up</span></p>
-                : <p>Already have an account? <span className='text-[12px] text-primaryYellow font-semibold font-inter cursor-pointer ml-[2px] underline'>Login</span></p>
+                ? <p>Do not have an account?<span className='text-[12px] text-primaryYellow font-semibold font-inter cursor-pointer ml-[2px]'>Sign up now!</span></p>
+                : <p>Already have an account? <span className='text-[12px] text-primaryYellow font-semibold font-inter cursor-pointer ml-[2px]'>Login</span></p>
               }
             </div>
-            <p className='text-[12px] text-white32 font-semibold text-inter'>Still loking for help? <span className='text-[12px] text-primaryYellow font-semibold font-inter underline cursor-pointer'>Join discord</span></p>
           </div>
         </div>
       :
