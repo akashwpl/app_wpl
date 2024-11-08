@@ -183,7 +183,7 @@ const FormPage = () => {
           <div className='w-[360px] md:w-[496px]'>
             
             <div className='-translate-y-8'>
-              <img src={projectDetails?.image} alt="WPL Logo" className='size-[72px]'/>
+              <img src={projectDetails?.image} alt="WPL Logo" className='size-[72px] rounded-[8px]'/>
             </div>
 
             <div>

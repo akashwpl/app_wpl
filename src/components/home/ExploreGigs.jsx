@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { ArrowDown, ArrowUp, ArrowUpRight, DollarSign, LayoutGrid, ListFilter, TableProperties, TimerIcon } from "lucide-react"
+import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, DollarSign, LayoutGrid, ListFilter, TableProperties, TimerIcon } from "lucide-react"
 import { useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { getUserDetails, getUserProjects } from "../../service/api"
@@ -11,8 +11,8 @@ import { useSelector } from "react-redux"
 
 const initialTabs = [
   {id: 'building', name: 'Building', isActive: true},
-  {id: 'current', name: 'Current', isActive: false},
-  {id: 'Done', name: 'Done', isActive: false}
+  {id: 'in_review', name: 'In Review', isActive: false},
+  {id: 'completed', name: 'Completed', isActive: false}
 ]
 
 const ExploreGigs = ({userId}) => {
@@ -52,8 +52,8 @@ const ExploreGigs = ({userId}) => {
     // Filter projects based on the selected tab
     let projectsToSort = [];
     if (selectedTab === 'building') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
-    else if (selectedTab === 'Done') projectsToSort = userProjects?.filter(project => project.status === 'completed');
-    else if (selectedTab === 'current') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
+    else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed');
+    else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
     else projectsToSort = userProjects;
 
     // Sort by the last milestone's deadline
@@ -114,15 +114,26 @@ const ExploreGigs = ({userId}) => {
 
         <div>
           {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
-          filteredProjects && selectedTab == 'building' && !filteredProjects?.length ? <div className="mt-4">
-              <div className="font-gridular text-primaryYellow text-[24px]">Start Contributing to Gigs</div>
-              <div className="flex justify-center items-center mt-8">
-                <button onClick={navigateToProjectDetails} className="bg-primaryYellow/90 hover:bg-primaryYellow text-black w-fit px-4 py-1 rounded-md font-bienvenue mt-3 text-[20px]">Explore Gigs</button>
+          filteredProjects && selectedTab == 'building' && filteredProjects?.length ? <div className="mt-24">
+            <div className="flex flex-col justify-center items-center gap-2">
+              <div className="font-gridular text-white88 text-[24px]">You haven’t applied to any projects :(</div>
+              <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
+            </div>
+              <div className="flex justify-center items-center mt-6">
+                <button onClick={navigateToProjectDetails} className="bg-primaryYellow/10 hover:bg-primaryYellow/15 text-primaryYellow w-fit px-7 h-[44px] rounded-md border border-primaryYellow mt-3 text-[14px] font-gridular flex items-center gap-2 uppercase">Explore Gigs <ArrowRight size={18} className="text-primaryYellow"/></button>
               </div>
             </div>
-            : selectedTab !== 'building' && !filteredProjects?.length ? <div className="font-gridular text-primaryYellow text-[24px] mt-4">No gigs found</div> 
-            : filteredProjects?.map((project, idx) => <div key={idx} className={`hover:bg-white4 my-4 ${projectsGridView ? "grid grid-cols-12" : "flex flex-col"}`}> 
-                <ExploreGigsCard data={project} type={"project"}/>
+            : selectedTab !== 'building' && !filteredProjects?.length ? <div className="mt-24">
+              <div className="flex flex-col justify-center items-center gap-2">
+                <div className="font-gridular text-white88 text-[24px]">Oops! Looks like you haven't submitted a project :(</div>
+                <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
+              </div>
+                <div className="flex justify-center items-center mt-6">
+                  <button onClick={navigateToProjectDetails} className="bg-primaryYellow/10 hover:bg-primaryYellow/15 text-primaryYellow w-fit px-7 h-[44px] rounded-md border border-primaryYellow mt-3 text-[14px] font-gridular flex items-center gap-2 uppercase">Explore Gigs <ArrowRight size={18} className="text-primaryYellow"/></button>
+                </div>
+            </div>
+            : filteredProjects?.map((project, idx) => <div key={idx} className={`my-4 ${projectsGridView ? "grid grid-cols-12" : "flex flex-col hover:bg-white4"}`}> 
+                <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
                 <div className='border border-x-0 border-t-0 border-b-white7'></div>
             </div>
           )}

@@ -8,6 +8,11 @@ import { useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { BASE_URL } from '../lib/constants';
 
+import checkSVG from '../assets/svg/check.svg'
+import Spinner from '../components/ui/spinner';
+import discordSVG from '../assets/svg/discord.svg'
+import telegramSVG from '../assets/svg/telegram.svg'
+
 const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
 
 const EditProfilePage = () => {
@@ -23,6 +28,14 @@ const EditProfilePage = () => {
 
     const [dummyProjects, setDummyProjects] = useState([])
     const [showAddProjectModal, setShowAddProjectModal] = useState(false)
+
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [bio, setBio] = useState('')
+    const [discord, setDiscord] = useState('')
+    const [telegram, setTelegram] = useState('')
+
+    const [isUpdating, setIsUpdating] = useState(false)
 
     const [projectDetails, setProjectDetails] = useState({
         img: '',
@@ -124,7 +137,17 @@ const EditProfilePage = () => {
           } else if (!projectDetails[key]) {
             newErrors[key] = `${key.charAt(0).toUpperCase() + key.slice(1)} is required`;
             isValid = false;
+          } else if (!name?.length) {
+            newErrors['displayName'] = 'Name is required';
+            isValid = false;
+          } else if (!email) {
+            newErrors['email'] = 'Email is required';
+            isValid = false;
+          } else if (!bio) {
+            newErrors['bio'] = 'Bio is required';
+            isValid = false;
           }
+
         });
       
         setErrors(newErrors);
@@ -182,6 +205,24 @@ const EditProfilePage = () => {
     }
 
     const handleSubmitEditProfile = async () => {
+        if(!document.querySelector('input[name="displayName"]')?.value?.length) {
+            setErrors({displayName: 'Name is required'})
+            return
+        } else if(!document.querySelector('input[name="email"]')?.value?.length) {
+            setErrors({email: 'Email is required'})
+            return
+        } else if(!document.querySelector('textarea[name="bio"]')?.value?.length) {
+            setErrors({bio: 'Bio is required'})
+            return
+        } else if(!document.querySelector('input[name="discordUsername"]')?.value?.length) {
+            setErrors({discord: 'Discord is required'})
+            return
+        } else if(!document.querySelector('input[name="telegramUsername"]')?.value?.length) {
+            setErrors({telegram: 'Telegram is required'})
+            return
+        }
+        setErrors({})
+        setIsUpdating(true)
         const data = {
             "displayName": document.querySelector('input[name="displayName"]').value,
             "bio": document.querySelector('textarea[name="bio"]').value,
@@ -204,6 +245,9 @@ const EditProfilePage = () => {
                 handleUploadProject()
             }
             console.log('res edit profile', data)
+        }).finally(() => {
+            setIsUpdating(false)
+            setErrors({})
         })
     }
 
@@ -213,7 +257,7 @@ const EditProfilePage = () => {
     <div className='flex flex-col justify-center items-center'>
         <Link to={'/profile'} className='w-full text-left text-white32 text-[13px] font-medium border-t border-b border-white7 flex items-center gap-1 py-2 px-20 mt-[1px]'><ArrowLeft size={14} className='text-white32'/> Back to your Profile</Link>
         
-        <div className='w-[340px] md:w-[480px] mt-2'>
+        <div className='w-[340px] md:w-[480px] mt-2 mb-20'>
             <div className='flex items-center gap-4'>
                 {projectDetails.imgPreview ? 
                     <div className='relative'>
@@ -241,7 +285,7 @@ const EditProfilePage = () => {
 
             <div className='h-[1px] w-full bg-white7 my-4'/>
 
-            <div className='mb-20'>
+            <div className='mb-4'>
                 <div className='flex flex-col gap-4'>
                     <div>
                         <p className="text-[14px] font-inter text-white88">Edit Basic Details</p>
@@ -249,24 +293,27 @@ const EditProfilePage = () => {
                     <div className='flex justify-between gap-4'>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Your Name</label>
-                            <input name='displayName' defaultValue={userDetails?.displayName} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
+                            <input name='displayName' defaultValue={userDetails?.displayName} onChange={(e) => setName(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
                                 placeholder='Jhon Doe'
                             />
+                            {errors.displayName && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.displayName}</div>}
                         </div>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Your Email</label>
-                            <input name='email' value={userDetails?.email} readOnly className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none border-none' 
+                            <input name='email' defaultValue={userDetails?.email} onChange={(e) => setEmail(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none border-none' 
                                 placeholder='Jhon@Doe.com'
                             />
+                            {errors.email && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.email}</div>}
                         </div>
                     </div>
 
                     <div className='flex flex-col gap-1 w-full'>
                         <label className='text-[13px] font-medium text-white32'>Write your Bio (max 240 characters)</label>
-                        <textarea name='bio' defaultValue={userDetails?.bio} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
-                            placeholder='I am a preety fuckin cool dev'
+                        <textarea name='bio' defaultValue={userDetails?.bio} onChange={(e) => setBio(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
+                            placeholder='I am a preety good dev'
                             rows={3}
                         />
+                        {errors.bio && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.bio}</div>}
                     </div>
                 </div>
 
@@ -279,15 +326,23 @@ const EditProfilePage = () => {
                     <div className='flex justify-between gap-4'>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Discord Username</label>
-                            <input name='discordUsername' defaultValue={userDetails?.socials?.discord} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
-                                placeholder='Jhon Wick'
-                            />
+                            <div className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] flex items-center'>
+                                <img src={discordSVG} alt='discord' className='size-[16px] mr-2'/>
+                                <input name='discordUsername' defaultValue={userDetails?.socials?.discord} onChange={(e) => setDiscord(e.target.value)} className='bg-transparent outline-none w-full text-white placeholder:text-white32' 
+                                    placeholder='John Wick'
+                                />
+                            </div>
+                            {errors.discord && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.discord}</div>}
                         </div>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Telegram Username</label>
-                            <input name='telegramUsername' defaultValue={userDetails?.socials?.telegram} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
-                                placeholder='Jhon Wick'
-                            />
+                            <div className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] flex items-center'>
+                                <img src={telegramSVG} alt='telegram' className='size-[16px] mr-2'/>
+                                <input name='telegramUsername' defaultValue={userDetails?.socials?.telegram} onChange={(e) => setTelegram(e.target.value)} className='bg-transparent rounded-[6px] text-white placeholder:text-white32 text-[14px]' 
+                                    placeholder='John Wick'
+                                />
+                            </div>
+                            {errors.telegram && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.telegram}</div>}
                         </div>
                     </div>
                 </div>
@@ -317,11 +372,12 @@ const EditProfilePage = () => {
                 </div>
             </div>
 
-            <div className='bg-[#091044] fixed bottom-0 left-0 w-full'>
-                <div className='flex justify-end items-center py-2 pr-10'>
-                    <button onClick={handleSubmitEditProfile} className={`bg-primaryYellow px-6 py-2 rounded-md text-[14px] font-inter flex justify-center items-center gap-1 ${false ? "opacity-25" : ""}`}><CheckCheckIcon size={20}/> Save</button>
-                </div>
+            <div className='flex justify-center items-center w-full'>
+                <button onClick={handleSubmitEditProfile} className={`bg-primaryYellow/10 border border-primaryYellow text-primaryYellow font-gridular px-6 py-2 rounded-md text-[14px] flex justify-center items-center gap-1 w-full ${false ? "opacity-25" : ""}`}>
+                    {isUpdating ? <Spinner /> : "Update Profile"}
+                </button>
             </div>
+            
         </div>
 
         {showAddProjectModal &&  
@@ -412,7 +468,7 @@ const EditProfilePage = () => {
                                         bg-[#FAF1B11C] text-[#FAF1B1E0]
                                     `}
                                     >
-                                    Add Project <CheckCheck size={14} className=''/>
+                                    Add Project <img src={checkSVG} className='size-[14px]'/>
                                 </button>
                             </div>
                         </div>

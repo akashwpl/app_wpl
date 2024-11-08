@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import usdc from '../../assets/images/usdc.png'
 import { CalendarCheck, Clock, Dot, Trophy, Zap } from 'lucide-react';
 
-const ExploreGigsCard = ({data, type}) => {
+const ExploreGigsCard = ({data, type, projectsGridView}) => {
     const navigate = useNavigate()
 
 
@@ -11,7 +11,7 @@ const ExploreGigsCard = ({data, type}) => {
     }
 
   return (
-    <div onClick={navigateToProjectDetails} className='cursor-pointer py-2 flex items-center w-full'>
+    <div onClick={navigateToProjectDetails} className={`cursor-pointer py-2 flex items-center w-full ${projectsGridView ? "hover:bg-white4" : ""}`}>
         <div className='flex flex-row justify-between items-center w-full'>
             <div className='flex flex-row'>
                 <img className='size-16 mr-2 rounded-2xl' src={data?.image} alt="Gig Profile Picture"/>

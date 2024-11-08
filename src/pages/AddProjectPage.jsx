@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query';
 import { getUserOrgs } from '../service/api';
 import { useSelector } from 'react-redux';
+import checkSVG from '../assets/svg/check.svg'
 
 const AddProjectPage = () => {
 
@@ -489,7 +490,7 @@ const AddProjectPage = () => {
                         </div>
                     </div>
                     <div>
-                        <button disabled={submitted} className={`bg-primaryYellow px-6 py-2 rounded-md text-[14px] font-inter flex justify-center items-center gap-1 ${submitted ? "opacity-25" : ""}`} onClick={handleSubmit}><CheckCheckIcon size={20}/> Save</button>
+                        <button disabled={submitted} className={`bg-primaryYellow/10 border border-primaryYellow text-primaryYellow font-gridular text-[14px] px-6 py-2 rounded-md flex justify-center items-center gap-2 ${submitted ? "opacity-25" : ""}`} onClick={handleSubmit}><img src={checkSVG} className='size-[14px]'/> SAVE</button>
                     </div>
             </div>
     </div>

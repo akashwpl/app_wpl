@@ -134,9 +134,9 @@ const ProjectDetailsPage = () => {
       <div>
         <img src={headerPng} alt='header' className='h-[200px] w-full'/>
       </div>
-      <div className='absolute top-0 left-0 border-b border-white12 w-full py-1'>
-        <div onClick={navigateToPrevPage} className='flex items-center gap-1 mx-20 text-white48 text-[14px] font-semibold cursor-pointer hover:text-white64 w-fit'>
-          <ArrowLeft size={20}/> Go Back
+      <div className='absolute top-1 left-0 w-full py-1'>
+        <div onClick={navigateToPrevPage} className='flex items-center gap-1 mx-20 text-white text-[14px] font-inter cursor-pointer hover:text-white88 w-fit'>
+          <ArrowLeft size={18}/> Go Back
         </div>
       </div>
       <div className='flex justify-center gap-20 mx-44'>
@@ -163,7 +163,7 @@ const ProjectDetailsPage = () => {
             </div>
 
             {isLoadingProjectDetails ? <div>Loading...</div> : <>
-              <div className='mt-4 mb-4'>
+              <div className='mt-4 mb-4 border border-white7 rounded-md'>
                 <Tabs tabs={tabs} handleTabClick={handleTabClick} selectedTab={selectedTab} submissionsCount={totalSubmissions} />
               </div>
               {selectedTab == 'overview' &&

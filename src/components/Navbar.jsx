@@ -55,28 +55,22 @@ const Navbar = () => {
         {!pathname?.includes('onboarding') &&
           <div>
             <div onClick={() => setShowUserMenu((prev) => !prev)} className='relative cursor-pointer flex flex-row items-center'>
-              <div>
-                <div className='flex items-center gap-4'>
-                  <img src={hourglass} alt='hourglass' className='w-[16px] h-[24px]' />
-                  <p className='text-primaryYellow'>{userDetail?.displayName}</p>
-                </div>
-              </div>
               {showUserMenu &&
-                <div className='absolute top-12 right-0 w-[150px] bg-primaryBlue rounded-md transition duration-300 pb-1 text-primaryYellow font-bienvenue'>
-                  <Link to={'/profile'} className='font-semibold hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-4 rounded-sm flex gap-2'><User size={20} color='#FBF1B8' />My Profile</Link>
+                <div className='absolute top-12 -right-6 w-[170px] bg-primaryBlue rounded-md transition duration-300 pb-1 text-primaryYellow font-bienvenue'>
+                  <Link to={'/profile'} className='font-semibold hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-4 rounded-sm gap-2'><User size={20} color='#FBF1B8' />My Profile</Link>
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
-                  <Link to={'/userprojects'} className='font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm gap-2'><SquareChartGantt size={20} color='#FBF1B8' />My Projects</Link>
+                  <Link to={'/userprojects'} className='font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 rounded-sm gap-2'><SquareChartGantt size={20} color='#FBF1B8' />My Projects</Link>
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
-                  <Link to={'/requests'} className='font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm gap-2'><LucideInfo size={20} color='#FBF1B8' />Requests</Link>
+                  <Link to={'/requests'} className='font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 rounded-sm gap-2'><LucideInfo size={20} color='#FBF1B8' />Requests</Link>
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
-                  <Link to={'/'} className='font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm gap-2'><LayoutDashboardIcon size={20} color='#FBF1B8' />Dashboard</Link>
+                  <Link to={'/'} className='font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 rounded-sm gap-2'><LayoutDashboardIcon size={20} color='#FBF1B8' />Dashboard</Link>
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
-                  <div onClick={signout} className='text-[#E38070] font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm gap-2'><LogOut size={20} color='#E38070' />Sign out</div>
+                  <div onClick={signout} className='text-[#E38070] font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 rounded-sm gap-2'><LogOut size={20} color='#E38070' />Sign out</div>
                 </div>
               }
-              <button className='text-white text-primaryYellow font-bienvenue flex items-center justify-center gap-2 border border-[#FBF1B8] px-4 py-2 bg-[#D9D9D933]'>
+              <button className='text-primaryYellow font-bienvenue flex items-center justify-center gap-2 border border-[#FBF1B8] px-6 py-2 bg-[#D9D9D933]'>
                 <img src={wolfButton} alt='wolf' />
-                dacoit.eth
+                {userDetail?.displayName}
                 <img src={arrow} alt='wolf' />
               </button>
             </div>
