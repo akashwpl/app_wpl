@@ -144,9 +144,9 @@ const AllProjectsPage = () => {
                                 <div className="absolute w-[156px] top-10 -left-[70px] rounded-md bg-white4 backdrop-blur-[52px] py-3 flex flex-col px-4 z-50">
                                     <div>
                                         <p className='text-[12px] font-semibold font-inter mb-3 text-start'>Sort prizes</p>
-                                        <div className='font-gridular text-[14px] text-white88 mb-1 flex items-center gap-1'><img src={listAscendingSvg} alt='sort' className='size-[16px]' /> Low to High</div>
-                                        <div className='font-gridular text-[14px] text-white88 mb-[6px] flex items-center gap-1'><img src={listDescendingSvg} alt='sort' className='size-[16px]' /> High to Low</div>
-                                        <div className='font-gridular text-[14px] text-white88'> Low to High</div>
+                                        <div onClick={() => {setSortOrder('ascending'); setShowFilterModal(false)}} className='font-gridular text-[14px] text-white88 mb-1 flex items-center gap-1'><img src={listAscendingSvg} alt='sort' className='size-[16px]' /> Low to High</div>
+                                        <div onClick={() => {setSortOrder('descending'); setShowFilterModal(false)}} className='font-gridular text-[14px] text-white88 mb-[6px] flex items-center gap-1'><img src={listDescendingSvg} alt='sort' className='size-[16px]' /> High to Low</div>
+                                        <div className='font-gridular text-[14px] text-white88'> {sortOrder == "ascending" ? "Low to High" : "High to Low"} Low to High</div>
                                     </div>
                                     <div className='border border-dashed border-white7 w-full my-5'/>
                                     <div>
@@ -174,7 +174,7 @@ const AllProjectsPage = () => {
                 </div>
 
                 <div className='mt-8'>
-                    <div className={`${projectsGridView ? "grid grid-cols-2" : "flex flex-col"} gap-4`}>
+                    <div className={`${projectsGridView ? "grid grid-cols-2" : "flex flex-col"} transition duration-300 gap-4`}>
                         {isLoadingAllProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
                             
                             filteredProjects && 
