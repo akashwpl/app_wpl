@@ -7,17 +7,27 @@ import ProfileDetailsCard from '../components/home/ProfileDetailsCard'
 import RecentActivityCard from '../components/home/RecentActivityCard'
 import Statistics from '../components/home/Statistics'
 import { getUserDetails } from '../service/api'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 
 
 const HomePage = () => {
 
   const { user_id } = useSelector((state) => state)
+  const navigate = useNavigate()
 
   const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
     queryKey: ["userDetails", user_id],
     queryFn: () => getUserDetails(user_id),
     enabled: !!user_id,
   })
+
+  useEffect(() => {
+    if(!isLoadingUserDetails && !userDetails) {
+      navigate('onboarding')
+    } 
+  },[isLoadingUserDetails])  
 
   return (
     <div className='flex flex-row justify-between mt-4 mx-8'>
