@@ -58,16 +58,16 @@ const Navbar = () => {
             </div>
           </div>
           {showUserMenu &&
-            <div className='absolute top-8 -left-10 w-[150px] bg-primaryBlue rounded-md transition duration-300 pb-1'>
-              <Link to={'/profile'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-4 rounded-sm'><User  size={20} color='#FFFFFFE0'/>My Profile</Link>
-              <div className='h-[1px] w-full bg-white7 rounded-sm'/>
-              <Link to={'/userprojects'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm'><SquareChartGantt size={20} color='#FFFFFFE0'/>My Projects</Link>
-              <div className='h-[1px] w-full bg-white7 rounded-sm'/>
-              <Link to={'/requests'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm'><LucideInfo size={20} color='#FFFFFFE0'/>Requests</Link>
-              <div className='h-[1px] w-full bg-white7 rounded-sm'/>
-              <Link to={'/'} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm'><LayoutDashboardIcon size={20} color='#FFFFFFE0'/>Dashboard</Link>
-              <div className='h-[1px] w-full bg-white7 rounded-sm'/>
-              <div onClick={signout} className='text-white88 font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm'><LogOut size={20} color='#FFFFFFE0'/>Sign out</div>
+            <div className='absolute top-8 -left-20 w-[187px] h-[210px] rounded-md transition duration-300 pb-1 flex flex-col gap-2 py-2 backdrop-blur-sm border border-primaryYellow'>
+              <Link to={'/profile'} className='text-primaryYellow text-[14px] font-gridular uppercase font-semibold hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-4 rounded-sm'><User  size={20} color='#FFFFFFE0'/>My Profile</Link>
+              
+              <Link to={'/userprojects'} className='text-primaryYellow text-[14px] font-gridular uppercase font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm'><SquareChartGantt size={20} color='#FFFFFFE0'/>My Projects</Link>
+              
+              <Link to={'/requests'} className='text-primaryYellow text-[14px] font-gridular uppercase font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm'><LucideInfo size={20} color='#FFFFFFE0'/>Requests</Link>
+              
+              <Link to={'/'} className='text-primaryYellow text-[14px] font-gridular uppercase font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm'><LayoutDashboardIcon size={20} color='#FFFFFFE0'/>Dashboard</Link>
+              
+              <div onClick={signout} className='text-primaryYellow text-[14px] font-gridular uppercase font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 gap-1 rounded-sm'><LogOut size={20} color='#FFFFFFE0'/>Sign out</div>
             </div>
           }
         </div>

@@ -11,8 +11,8 @@ import { useSelector } from "react-redux"
 
 const initialTabs = [
   {id: 'building', name: 'Building', isActive: true},
-  {id: 'current', name: 'Current', isActive: false},
-  {id: 'Done', name: 'Done', isActive: false}
+  {id: 'in_review', name: 'In Review', isActive: false},
+  {id: 'completed', name: 'Completed', isActive: false}
 ]
 
 const ExploreGigs = ({userId}) => {
@@ -52,8 +52,8 @@ const ExploreGigs = ({userId}) => {
     // Filter projects based on the selected tab
     let projectsToSort = [];
     if (selectedTab === 'building') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
-    else if (selectedTab === 'Done') projectsToSort = userProjects?.filter(project => project.status === 'completed');
-    else if (selectedTab === 'current') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
+    else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed');
+    else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
     else projectsToSort = userProjects;
 
     // Sort by the last milestone's deadline
@@ -121,8 +121,8 @@ const ExploreGigs = ({userId}) => {
               </div>
             </div>
             : selectedTab !== 'building' && !filteredProjects?.length ? <div className="font-gridular text-primaryYellow text-[24px] mt-4">No gigs found</div> 
-            : filteredProjects?.map((project, idx) => <div key={idx} className={`hover:bg-white4 my-4 ${projectsGridView ? "grid grid-cols-12" : "flex flex-col"}`}> 
-                <ExploreGigsCard data={project} type={"project"}/>
+            : filteredProjects?.map((project, idx) => <div key={idx} className={`my-4 ${projectsGridView ? "grid grid-cols-12" : "flex flex-col hover:bg-white4"}`}> 
+                <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
                 <div className='border border-x-0 border-t-0 border-b-white7'></div>
             </div>
           )}

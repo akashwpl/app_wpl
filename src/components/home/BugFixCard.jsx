@@ -22,7 +22,7 @@ const BugFixCard = () => {
           <p className='text-[13px] text-white font-inter leading-[15.6px] font-medium'>Milestone 2 in progress</p>
         </div>
         <div className=' w-full'></div>
-        <div className='flex flex-row justify-between items-center px-4  text-white32 bg-white4 w-full h-[42px] border border-white12 border-dashed'>
+        <div className='flex flex-row justify-between items-center px-4  text-white32 bg-white4 w-full h-[42px] border-t border-white12 border-dashed rounded-b-md'>
           <div className='flex flex-row'>
             <Hourglass size={14}/>
             <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Deadline</p>
