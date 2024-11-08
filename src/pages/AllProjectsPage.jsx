@@ -2,11 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowDown, ArrowRight, ArrowUp, Filter, Search } from 'lucide-react'
+import { ArrowDown, ArrowRight, ArrowUp, DollarSign, Filter, LayoutGrid, ListFilter, Search, TableProperties, TimerIcon } from 'lucide-react'
 import ExploreGigsCard from '../components/home/ExploreGigsCard'
 import SearchRoles from '../components/home/SearchRoles'
 import Spinner from '../components/ui/spinner'
 import { getAllProjects, getUserDetails } from '../service/api'
+import listAscendingSvg from '../assets/svg/list-number-ascending.svg'
+import listDescendingSvg from '../assets/svg/list-number-descending.svg'
 
 const AllProjectsPage = () => {
     const navigate = useNavigate()
@@ -14,6 +16,8 @@ const AllProjectsPage = () => {
 
     const [roleName, setRoleName] = useState('none');
     const [sortOrder, setSortOrder] = useState('ascending');
+    const [showfilterModal, setShowFilterModal] = useState(false)
+    const [projectsGridView, setProjectsGridView] = useState(false)
 
     const [tiles, setTiles] = useState([])
 
@@ -43,9 +47,10 @@ const AllProjectsPage = () => {
     const filteredProjects = useMemo(() => {
         return allProjects
             ?.filter(project => {
+                const matchesType = project?.type?.toLowerCase() === 'bounty';
                 const matchesSearch = searchInput ? project?.title?.toLowerCase().includes(searchInput.toLowerCase()) : true;
                 const matchesRole = roleName && roleName !== 'none' ? project?.role?.toLowerCase() === roleName.toLowerCase() : true;
-                return matchesSearch && matchesRole;
+                return matchesSearch && matchesRole && matchesType;
             })
             .sort((a, b) => {
                 const dateA = a.milestones && a.milestones.length > 0 
@@ -98,10 +103,10 @@ const AllProjectsPage = () => {
                 </div>
 
                 <div className='mt-6'>
-                    <SearchRoles tiles={tiles} handleRoleChange={handleRoleChange} handleRemoveTile={handleRemoveTile}/>
+                    <SearchRoles tiles={tiles} handleRoleChange={handleRoleChange} handleRemoveTile={handleRemoveTile} handleKeyboardEnter={handleKeyboardEnter} searchInput={searchInput} handleSearch={handleSearch}/>
                 </div>
 
-                <div className='border border-white7 h-[56px] flex justify-between items-center'>
+                {/* <div className='border border-white7 h-[56px] flex justify-between items-center'>
                     <div className='flex items-center gap-2 w-full ml-3'>
                         <Search className='text-white32' size={16}/>
                         <input onKeyDown={handleKeyboardEnter} value={searchInput} onChange={handleSearch}  className='bg-transparent w-full outline-none border-none text-white88 placeholder:text-[14px] placeholder:text-white32 placeholder:font-gridular' placeholder='Search for you fav Org, role...'/>
@@ -114,6 +119,55 @@ const AllProjectsPage = () => {
                                 else return 'ascending'
                             })} className='font-gridular text-[14px] text-white48 flex items-center gap-1'>Sort Results {sortOrder == 'ascending' ? <ArrowDown size={15}/> : <ArrowUp size={15}/>}</p>
                         </div>
+                    </div>
+                </div> */}
+
+
+                <div className='border border-white7 rounded-md h-[56px] flex justify-between items-center'>
+                    <div className='bg-[#0000001F] h-full flex justify-center items-center w-[150px] text-primaryYellow font-gridular text-[14px] border-b border-primaryYellow'>
+                        <p>Currently open</p>
+                    </div>
+                    <div>
+                    <div className="flex flex-row items-center w-[200px] justify-evenly  text-white48">
+                        <div className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[56px] h-[32px]">
+                            <LayoutGrid onClick={() => {setProjectsGridView((prev) => !prev)}} size={14} className={`${projectsGridView ? "text-primaryYellow" : "text-white32"} cursor-pointer`}/>
+                            <div className='h-full border border-r border-white/10'></div>
+                            <TableProperties onClick={() => {setProjectsGridView((prev) => !prev)}} className={`${!projectsGridView ? "text-primaryYellow" : "text-white32"} cursor-pointer`} size={14} rotate={90}/>
+                        </div>
+                        <div className="flex flex-row justify-center items-center cursor-pointer relative">
+                            <div onClick={() => setShowFilterModal((prev) => !prev)} className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[89px] h-[32px]">
+                                <ListFilter size={12}/>
+                                <p className='font-gridular text-[14px] leading-[16.8px]'>Filter</p>
+                            </div>
+
+                            {showfilterModal && 
+                                <div className="absolute w-[156px] top-9 -left-[70px] rounded-md bg-white4 backdrop-blur-sm py-3 flex flex-col px-4">
+                                    <div>
+                                        <p className='text-[12px] font-semibold font-inter mb-2 text-start'>Sort prizes</p>
+                                        <div className='font-gridular text-[14px] text-white88 mb-1 flex items-center gap-1'><img src={listAscendingSvg} alt='sort' className='size-[16px]' /> Low to High</div>
+                                        <div className='font-gridular text-[14px] text-white88 mb-[6px] flex items-center gap-1'><img src={listDescendingSvg} alt='sort' className='size-[16px]' /> High to Low</div>
+                                        <div className='font-gridular text-[14px] text-white88'> Low to High</div>
+                                    </div>
+                                    <div className='border border-dashed border-white7 w-full my-4'/>
+                                    <div>
+                                        <p className='text-[12px] font-semibold font-inter mb-2'>Select duration</p>
+                                        <div className='mb-1'>
+                                            <input type='checkbox' name='duration' value='1' id='1'/>
+                                            <label htmlFor='1'>{`<`} 2 weeks</label>
+                                        </div>
+                                        <div className='mb-1'>
+                                            <input type='checkbox' name='duration' value='1' id='1'/>
+                                            <label htmlFor='1'>2-4 weeks</label>
+                                        </div>
+                                        <div className=''>
+                                            <input type='checkbox' name='duration' value='1' id='1'/>
+                                            <label htmlFor='1'>{`>`} 4 week</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
                     </div>
                 </div>
 
