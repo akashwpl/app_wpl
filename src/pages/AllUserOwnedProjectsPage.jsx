@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import ExploreGigsCard from '../components/home/ExploreGigsCard'
 import { getAllProjects, getUserDetails, getUserProjects } from '../service/api'
 import Spinner from '../components/ui/spinner'
-import { Plus } from 'lucide-react'
+import { CheckCheck, Plus } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
@@ -26,7 +26,7 @@ const AllUserOwnedProjectsPage = () => {
             <div className='md:w-[800px] max-w-[1200px] mt-6'>
                 <div className='flex justify-between items-center'>
                     <div className='font-gridular text-primaryYellow text-[32px]'>All Gigs Owned</div>
-                    <button onClick={navigateToAddProject} className='bg-primaryYellow/90 hover:bg-primaryYellow rounded-md py-1 px-2 flex justify-center items-center gap-1 font-gridular'><Plus size={20}/> Add a Project</button>
+                    <button onClick={navigateToAddProject} className='bg-primaryYellow/90 hover:bg-primaryYellow rounded-md py-1 px-2 flex justify-center items-center gap-1 font-gridular'>Add Project <CheckCheck size={20}/></button>
                 </div>
                 <div className='mt-8'>
                     <div>
