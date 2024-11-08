@@ -181,10 +181,14 @@ const OnBoarding = () => {
       {!isSignComplete ?
         <div className='mt-32'>
           {!isSignin ? 
-            <div onClick={navigateToOrgFormPage} className='bg-[#091044] hover:bg-[#121534] text-white88 flex items-center gap-1 py-2 px-4 rounded-md w-fit cursor-pointer hover:underline'><Zap stroke='#97A0F1' size={14}/>Want to sponsor a Project? <span className='text-white48 ml-1'>Apply to be a part!</span></div>
+            <div onClick={navigateToOrgFormPage} className='flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md hover:bg-[#121534] cursor-pointer hover:underline'>
+              <Zap stroke='#97A0F1' size={12}/>
+              <p className='text-white88'>Want to sponsor a Project? </p>
+              <p className='text-white48'>Apply to be a part!</p>
+            </div>
           : 
             <div className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px]  rounded-md">
-              <Zap className='text-[#97A0F1]' size={12}></Zap>
+              <Zap stroke='#97A0F1' size={12} />
               <p className='text-white88'>New to WPL?</p>
               <p className='text-white48'>Apply to be a part!</p>
             </div>
