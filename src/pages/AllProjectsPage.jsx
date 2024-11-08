@@ -141,7 +141,7 @@ const AllProjectsPage = () => {
                             </div>
 
                             {showfilterModal && 
-                                <div className="absolute w-[156px] top-10 -left-[70px] rounded-md bg-white4 backdrop-blur-[52px] py-3 flex flex-col px-4">
+                                <div className="absolute w-[156px] top-10 -left-[70px] rounded-md bg-white4 backdrop-blur-[52px] py-3 flex flex-col px-4 z-50">
                                     <div>
                                         <p className='text-[12px] font-semibold font-inter mb-3 text-start'>Sort prizes</p>
                                         <div className='font-gridular text-[14px] text-white88 mb-1 flex items-center gap-1'><img src={listAscendingSvg} alt='sort' className='size-[16px]' /> Low to High</div>
