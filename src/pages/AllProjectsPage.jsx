@@ -53,14 +53,14 @@ const AllProjectsPage = () => {
                 return matchesSearch && matchesRole && matchesType;
             })
             .sort((a, b) => {
-                const dateA = a.milestones && a.milestones.length > 0
-                    ? new Date(a.milestones[a.milestones.length - 1].deadline)
-                    : new Date(0);
-                const dateB = b.milestones && b.milestones.length > 0
-                    ? new Date(b.milestones[b.milestones.length - 1].deadline)
-                    : new Date(0);
+                // const dateA = a.milestones && a.milestones.length > 0
+                //     ? new Date(a.milestones[a.milestones.length - 1].deadline)
+                //     : new Date(0);
+                // const dateB = b.milestones && b.milestones.length > 0
+                //     ? new Date(b.milestones[b.milestones.length - 1].deadline)
+                //     : new Date(0);
 
-                return sortOrder === 'ascending' ? dateA - dateB : dateB - dateA;
+                return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
             });
     }, [allProjects, searchInput, roleName, sortOrder]);
 
@@ -146,7 +146,7 @@ const AllProjectsPage = () => {
                                         <p className='text-[12px] font-semibold font-inter mb-3 text-start'>Sort prizes</p>
                                         <div onClick={() => {setSortOrder('ascending'); setShowFilterModal(false)}} className='font-gridular text-[14px] text-white88 mb-1 flex items-center gap-1'><img src={listAscendingSvg} alt='sort' className='size-[16px]' /> Low to High</div>
                                         <div onClick={() => {setSortOrder('descending'); setShowFilterModal(false)}} className='font-gridular text-[14px] text-white88 mb-[6px] flex items-center gap-1'><img src={listDescendingSvg} alt='sort' className='size-[16px]' /> High to Low</div>
-                                        <div className='font-gridular text-[14px] text-white88'> {sortOrder == "ascending" ? "Low to High" : "High to Low"} Low to High</div>
+                                        <div className='font-gridular text-[14px] text-white88'> {sortOrder == "ascending" ? "Low to High" : "High to Low"}</div>
                                     </div>
                                     <div className='border border-dashed border-white7 w-full my-5'/>
                                     <div>
