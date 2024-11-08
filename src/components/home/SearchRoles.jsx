@@ -36,6 +36,7 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                 <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
                     <select className='bg-transparent h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
                         <option className='text-white88 font-gridular text-[14px]'>All</option>
+                        <option className='text-white88 font-gridular text-[14px]'>Starknet</option>
                         <option className='text-white88 font-gridular text-[14px]'>
                             <div className='flex flex-row'>
                                 <img src={ethereumIcon} alt="Ethereum icon"/>
