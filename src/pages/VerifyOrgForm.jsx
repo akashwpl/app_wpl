@@ -6,19 +6,21 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "../components/ui/accordion"
-import { ArrowLeft, ArrowRight, CheckCircle2, Globe, Menu, Plus, Send, Trash, Upload, X } from 'lucide-react';
-import USDCsvg from '../assets/svg/usdc.svg'
+import { ArrowLeft, CheckCircle2, Globe, Menu, Send, Trash, Upload, X } from 'lucide-react';
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
 import { useSelector } from 'react-redux';
 import { createOrganisation } from '../service/api';
+import FancyButton from '../components/ui/FancyButton';
+import btnImg from '../assets/svg/btn_subtract_semi.png'
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 
 const VerifyOrgForm = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
     const { user_id } = useSelector((state) => state)
-    const [title, setTitle] = useState('')
+    const [name, setName] = useState('')
     const [organisationHandle, setOrganisationHandle] = useState('');
     const [description, setDescription] = useState('');
     const [discordLink, setDiscordLink] = useState('');
@@ -32,12 +34,10 @@ const VerifyOrgForm = () => {
 
     const validateFields = () => {
         const newErrors = {};
-        if (!title) newErrors.title = 'Name is required';
+        if (!name) newErrors.name = 'Name is required';
         if (!organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
         if (!description) newErrors.description = 'Description is required';
-        if (!discordLink) newErrors.discordLink = 'Discord link is required';
-        if (!twitterLink) newErrors.twitterLink = 'Twitter link is required';
-        if (!telegramLink) newErrors.telegramLink = 'Telegram link is required';
+        if (!discordLink && !twitterLink && !telegramLink) newErrors.socialHandleLink = 'Please provide at least one social media handle link';
         if (!logo) newErrors.logo = 'Logo is required';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0; // Return true if no errors
@@ -60,18 +60,24 @@ const VerifyOrgForm = () => {
         if (isValid) {
             const data = {
                 userId: user_id,
-                // organisationName: organisationName,
+                name: name,
                 description: description,
                 organisationHandle: organisationHandle,
-                socialHandleLink: twitterLink,
+                socialHandleLink: {
+                    twitter: twitterLink,
+                    telegram: telegramLink,
+                    discord: discordLink
+                },
                 status: 'pending'
             }
             const res = await createOrganisation(data);
             
-            // if(res.err === 'User is not a sponsor') {
-            //     alert('The account is not Sponsor account. Please contact admin to upgrade your account')
-            //     navigate('/')
-            // }
+            if(res.err == 'Organisation already exists') {
+                const errorObj = {...errors,organisationHandle: res.err};
+                setErrors(errorObj)
+                return;
+            }
+            
             setSubmitted(true);
         }
     }
@@ -94,7 +100,7 @@ const VerifyOrgForm = () => {
                                     <img src={logoPreview} alt='dummy' className='size-[72px] aspect-square rounded-md'/>
                                 </div>
                                 <div>
-                                    <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
+                                    <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{name}</p>
                                     <p className='text-white88 font-semibold text-[13px] font-inter'>@{organisationHandle}</p>
                                 </div>
                             </div>
@@ -106,7 +112,15 @@ const VerifyOrgForm = () => {
                             </div>
 
                             <div className='mt-4'>
-                                <button onClick={() => {}} className='flex justify-center items-center py-3 px-4 border border-primaryYellow text-primaryYellow w-full font-gridular'>Follow on X</button>
+                                <FancyButton 
+                                    src_img={btnImg} 
+                                    hover_src_img={btnHoverImg} 
+                                    img_size_classes='w-[490px] h-[44px]' 
+                                    className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                                    btn_txt='Welcome Aboard' 
+                                    alt_txt='redirect to all projects' 
+                                    onClick={() => {navigate('/allprojects')}}
+                                />
                             </div>
                         </div>
                     </div>
@@ -157,19 +171,19 @@ const VerifyOrgForm = () => {
                                         </div>
 
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Company Name<span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Company Name <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <input 
                                                     type='text' 
                                                     className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' 
-                                                    value={title} 
-                                                    onChange={(e) => setTitle(e.target.value)} 
+                                                    value={name} 
+                                                    onChange={(e) => setName(e.target.value)} 
                                                 />
                                             </div>
-                                            {errors.title && <p className='text-red-500 font-medium text-[10px]'>{errors.title}</p>} {/* Error message */}
+                                            {errors.name && <p className='text-red-500 font-medium text-[10px]'>{errors.name}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation handle<span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation handle <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <input 
                                                     type='text' 
@@ -181,7 +195,7 @@ const VerifyOrgForm = () => {
                                             {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description (240 character)<span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description (240 character) <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <textarea 
                                                     type='text' 
@@ -205,9 +219,10 @@ const VerifyOrgForm = () => {
                                 <AccordionTrigger className="text-white48 font-inter hover:no-underline border-b border-primaryYellow">
                                     <div className='flex items-center gap-1'>
                                         <Globe size={14} className='text-primaryYellow'/>
-                                        <div className='text-primaryYellow font-inter text-[14px]'>Social Handles</div>
+                                        <div className='text-primaryYellow font-inter text-[14px]'>Social Handles <span className='text-[#F03D3D]'>*</span></div>
                                     </div>
                                 </AccordionTrigger>
+                                {errors.socialHandleLink && <p className='text-red-500 font-medium text-[10px] mt-1'>{errors.socialHandleLink}</p>} {/* Error message */}
                                 <AccordionContent className="py-2">
                                     <div>
                                         <div>
@@ -254,14 +269,19 @@ const VerifyOrgForm = () => {
                             </AccordionItem>
                         </Accordion>
 
-                        <div className='border border-dashed border-white12 my-4'/>
-
+                        <div className='border border-dashed border-white12 my-4 mt-4'/>
                         <div className='mt-4'>
-                            <button className='flex justify-center items-center gap-2 w-full border border-primaryYellow h-[43px]' onClick={submitForm}>
-                                <p className='text-primaryYellow font-gridular text-[14px]'>Verify Org </p>
-                                <ArrowRight className='text-primaryYellow' size={16}/>
-                            </button>
-                        </div>
+                            <FancyButton 
+                                src_img={btnImg} 
+                                hover_src_img={btnHoverImg} 
+                                img_size_classes='w-[470px] h-[44px]' 
+                                className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                                btn_txt='Verify Org'
+                                alt_txt='verify org btn' 
+                                onClick={submitForm}
+                                isArrow='true'
+                            />
+                        </div> 
                     </>
                 }
             </div>
