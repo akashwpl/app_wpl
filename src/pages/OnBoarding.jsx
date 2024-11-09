@@ -1,5 +1,5 @@
-import { ArrowRight, EyeIcon, EyeOffIcon, Info, MailWarningIcon, Menu, MessageSquareMoreIcon, Zap } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { ArrowRight, EyeIcon, EyeOffIcon, Info, MailWarningIcon, Menu, MessageSquareMoreIcon, Upload, X, Zap } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BASE_URL, email_regex } from '../lib/constants'
 
@@ -10,9 +10,12 @@ import googleLogo from '../assets/svg/google_symbol.png'
 import loginBtnImg from '../assets/svg/btn_subtract_semi.png'
 import loginBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
 
-import { setUserId } from '../store/slice/userSlice'
+import userSlice, { setUserId } from '../store/slice/userSlice'
 import { getUserDetails } from '../service/api'
 import FancyButton from '../components/ui/FancyButton'
+
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../lib/firebase'
 
 const OnBoarding = () => {
 
@@ -36,6 +39,12 @@ const OnBoarding = () => {
 
   const [isPass, setIsPass ] = useState(true);
   const [showForgetPassDialog, setShowForgetPassDialog] = useState(false);
+
+  const [img, setImg] = useState(null)
+  const [imgPreview, setImgPreview] = useState(null)
+
+  const fileInputRef = useRef(null);
+
 
   const signUp = async () => {
     if (!email || !password) {
@@ -125,11 +134,27 @@ const OnBoarding = () => {
     })
   }
 
+  const handleUploadProfileimage = async (e) => {
+    const file = e.target.files[0];
+    setImg(file);
+    if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImgPreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+    }
+  }
+
   const updateProfile = async () => {
     if(!displayName || !experience || !walletAddress) {
       alert('Please fill all the fields')
       return
     }
+
+    const imageRef = ref(storage, `images/${img.name}`);
+    await uploadBytes(imageRef, img);
+    const imageUrl = await getDownloadURL(imageRef);
 
     const response = fetch(`${BASE_URL}/users/update/`, {
       method: "PUT",
@@ -140,7 +165,8 @@ const OnBoarding = () => {
       body: JSON.stringify({ 
         "displayName": displayName,
         "experienceDescription": experience,
-        "walletAddress": walletAddress
+        "walletAddress": walletAddress,
+        "pfp": imageUrl
        }),
     })
     const data = await response;
@@ -151,6 +177,10 @@ const OnBoarding = () => {
     }
 
     console.log('update profile', data)
+  }
+  const removeImgPrveiew = () => {
+    setImg(null)
+    setImgPreview(null)
   }
 
   const swtichOnboardingType = () => {
@@ -179,6 +209,11 @@ const OnBoarding = () => {
 
   // CLIENT_SECRET = "b643efa0e033531ef1d41d987190fe250483793d"
   // PRIVATE_KEY = "kbDC8BeZIGG1bTKJpvPdj+Rqw9Zf18IFAd21Jw/JBRI="
+
+
+  const handleUploadClick = () => {
+    fileInputRef.current.click();
+  }
 
   return (
     <div className='flex justify-center items-center'>
@@ -267,9 +302,30 @@ const OnBoarding = () => {
           </div>
 
           <div className='flex flex-col justify-center items-center'>
-            <div className='w-[350px] md:w-[480px]'>
+            <div className='w-[350px] md:w-[480px] mb-10'>
               <div className='-translate-y-8'>
-                <img src={wpllogo} alt="WPL Logo" className='size-[72px]'/>
+                {imgPreview ? 
+                    <div className='relative size-fit'>
+                        <img src={imgPreview} alt='dummy' className='size-[72px] aspect-square rounded-md'/>
+                        <div onClick={() => {removeImgPrveiew()}} className='absolute -top-1 -right-1 bg-white64 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
+                    </div>
+                :   <>
+                      <div onClick={handleUploadClick} className='bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'>
+                        <Upload size={16} className='text-white32'/>
+                        <input
+                          name='img'
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleUploadProfileimage}
+                          style={{ display: 'none' }}
+                        />                           
+                      </div>
+                      <div className='text-[14px] font-inter'>
+                          <p className='text-white88'>Add a profile image</p>
+                          <p className='text-white32'>Recommended 1:1 aspect ratio</p>
+                      </div>
+                    </>
+                }
               </div>
 
               <div>
@@ -319,11 +375,11 @@ const OnBoarding = () => {
                   <input value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} placeholder='0x101..' className='w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] outline-none text-white'/>
                 </div>
 
-                <div className='mt-8 border border-primaryYellow py-1'>
+                <div className='mt-8 py-1'>
                   <FancyButton 
                     src_img={loginBtnImg} 
                     hover_src_img={loginBtnHoverImg} 
-                    img_size_classes='w-[342px] h-[44px]' 
+                    img_size_classes='w-[350px] md:w-[480px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                     btn_txt='submit'  
                     alt_txt='submit sign up btn' 
@@ -342,3 +398,11 @@ const OnBoarding = () => {
 }
 
 export default OnBoarding
+
+// TODO :: tabs refactor in home page
+// live first for user
+// all first for sponsor
+
+// TODO :: add banner on explore page
+
+

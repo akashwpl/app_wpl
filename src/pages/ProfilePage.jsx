@@ -135,9 +135,9 @@ const ProfilePage = () => {
                         <DiscIcon size={16} className='text-white32'/>
                         <p className='text-[14px] text-white32'>Discord</p>
                       </div>
-                      <div className='flex items-center gap-1'>
-                        <p className='text-[14px] text-white88'>{userDetails?.socials?.discord}</p>
-                        <ArrowUpRight size={16} className='text-white32'/>
+                      <div className='flex items-center gap-1 group'>
+                        <a href={`https://discordapp.com/users/${userDetails?.socials?.discord}`} target='_blank' className='text-[14px] text-white88 group-hover:text-[#FFFFFFE0]/90'>{userDetails?.socials?.discord}</a>
+                        <ArrowUpRight size={16} className='text-white32 group-hover:text-white48'/>
                       </div>
                     </div>
 
@@ -146,10 +146,11 @@ const ProfilePage = () => {
                         <Send size={16} className='text-white32'/>
                         <p className='text-[14px] text-white32'>Telegram</p>
                       </div>
-                      <div className='flex items-center gap-1'>
-                        <p className='text-[14px] text-white88'>{userDetails?.socials?.telegram}</p>
-                        <ArrowUpRight size={16} className='text-white32'/>
-                      </div>
+                      <a href={`https://t.me/${userDetails?.socials?.telegram}`} target='_blank' className='flex items-center gap-1 group text-white88'>
+                        <p className='text-[14px] flex items-center gap-1 group-hover:text-[#FFFFFFE0]/90'>
+                        {userDetails?.socials?.telegram} <ArrowUpRight size={16} className='text-white32 group-hover:text-white48'/>
+                        </p>
+                      </a>
                     </div>
 
                     <div className='flex justify-between items-center'>

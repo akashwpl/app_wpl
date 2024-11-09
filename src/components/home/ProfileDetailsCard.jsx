@@ -11,7 +11,7 @@ const ProfileDetailsCard = () => {
   }
 
   return (
-    <div onClick={navigateToEditProfile} className='flex flex-col w-full h-[233px] bg-white4 rounded-md my-6 cursor-pointer hover:bg-white7'>
+    <div onClick={navigateToEditProfile} className='flex flex-col w-full h-[200px] bg-white4 rounded-md my-6 cursor-pointer hover:bg-white7'>
       <div className='flex flex-row justify-between items-center px-4 bg-white7 rounded-t-md h-[65px]'>
         <div className='flex flex-col'>
           <p className='font-inter font-medium text-[13px] leading-[15.6px] text-white48 mb-1'>Your Profile is </p>
@@ -27,14 +27,14 @@ const ProfileDetailsCard = () => {
         </div>
         <CheckCheck size={16} />
       </div>
-      <div className='border border-white12 border-dashed w-full'></div>
-      <div className='flex flex-row justify-between py-3 text-white64 px-4'>
+      {/* <div className='border border-white12 border-dashed w-full'></div> */}
+      {/* <div className='flex flex-row justify-between py-3 text-white64 px-4'>
         <div className='flex flex-row'>
           <TextSearch size={16}/>
           <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Set Job preferences</p>
         </div>
         <ArrowRight size={16} onClick={navigateToEditProfile}/>
-      </div>
+      </div> */}
       <div className='border border-white12 border-dashed w-full'></div>
       <div className='flex flex-row justify-between py-3 text-white64 px-4'>
         <div className='flex flex-row'>

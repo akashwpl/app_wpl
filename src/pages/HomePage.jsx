@@ -32,7 +32,9 @@ const HomePage = () => {
         <div className='flex flex-col py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh]'>
           <KYC_Card />
           <ProfileDetailsCard />
-          <BugFixCard />
+          {userDetails?.projectsInProgress == 0 && userDetails?.projectsOngoing == 0 && userDetails?.projectsParticipated == 0 ? null :     
+            <BugFixCard />
+          }
           <RecentActivityCard />
         </div>
       }

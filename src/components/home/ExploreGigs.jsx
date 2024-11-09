@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { ArrowUpRight, LayoutGrid, ListFilter, TableProperties } from "lucide-react"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import exploreBtnHoverImg from '../../assets/svg/menu_btn_hover_subtract.png'
@@ -14,11 +14,15 @@ import ExploreGigsCard from "./ExploreGigsCard"
 import listAscendingSvg from '../../assets/svg/list-number-ascending.svg'
 import listDescendingSvg from '../../assets/svg/list-number-descending.svg'
 
-// TODO :: submission Highlight and hover effect
 // TODO ::  Leaderboard page clickable user and rediret to user profile
 
+const userTabs = [
+  {id: 'live', name: 'Live', isActive: true},
+  {id: 'all', name: 'All', isActive: false},
+  {id: 'completed', name: 'Completed', isActive: false}
+]
 
-const initialTabs = [
+const sponsorTabs = [
   {id: 'all', name: 'All', isActive: true},
   {id: 'live', name: 'Live', isActive: false},
   {id: 'completed', name: 'Completed', isActive: false}
@@ -29,8 +33,8 @@ const ExploreGigs = ({userId}) => {
   const navigate = useNavigate()
   const { user_id, user_role } = useSelector((state) => state)
 
-  const [tabs, setTabs] = useState(initialTabs)
-  const [selectedTab, setSelectedTab] = useState('all')
+  const [tabs, setTabs] = useState([])
+  const [selectedTab, setSelectedTab] = useState()
   const [sortOrder, setSortOrder] = useState('ascending')
   const [sortBy, setSortBy] = useState('prize')
 
@@ -42,6 +46,16 @@ const ExploreGigs = ({userId}) => {
     queryKey: ["userProjects"],
     queryFn: getUserProjects
   })
+
+  useEffect(() => {
+    if(user_role == 'sponsor') {
+      setTabs(sponsorTabs)
+      setSelectedTab('all')
+    } else {
+      setTabs(userTabs)
+      setSelectedTab('live')
+    }
+  }, [])
 
 
   const handleTabClick = (id) => {
@@ -118,7 +132,7 @@ const handleWeeksFilterChange = (event) => {
 
 const navigateToProjectDetails = () => {
   if(user_role == 'sponsor') {
-    navigate('/ownedprojects')
+    navigate('/userprojects')
   } else {
     navigate('/allprojects')
   }
@@ -222,10 +236,10 @@ const navigateToProjectDetails = () => {
                   />
                 </div>
             </div>
-            : filteredProjects?.map((project, idx) => <div key={idx} className={`my-4 ${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col hover:bg-white4"}`}> 
+            : filteredProjects?.map((project, idx) => <div key={idx} className={`${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col hover:bg-white4"}`}> 
                 <div className='col-span-1'>
                   <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
-                  <div className='border border-x-0 border-t-0 border-b-white7'></div>
+                  {/* {!projectsGridView && <div className='border border-x-0 border-t-0 border-b-white7'></div>} */}
                 </div>
             </div>
           )}

@@ -195,7 +195,7 @@ const ProjectDetailsPage = () => {
                   <div className='w-[700px]'>
                     <div className='mt-5 flex flex-col justify-between'>
                       <p className='font-inter text-white88 leading-[21px] text-wrap'>{projectDetails?.description}</p>
-                      <div className='text-white48 text-[14px] mt-4'>Role: <span>{projectDetails?.role}</span></div>
+                      <div className='text-white48 text-[14px] mt-4'>Role: <span>{projectDetails?.roles?.map((role, index) => <span className='mr-1 capitalize bg-white12 rounded-md px-2 py-1 text-[12px] font-inter'> {role}</span>)}</span></div>
                     </div>
                     <div className='h-[1px] w-full bg-white7 mt-4 mb-3'/>
                     <div>
