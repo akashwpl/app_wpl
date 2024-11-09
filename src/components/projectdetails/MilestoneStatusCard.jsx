@@ -25,11 +25,12 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
     }
 
     // TODO :: sponsor can accept or reject the milestone
-    const handleMileStone = async (type) => {
+    const handleMileStoneSponsorAction = async (type) => {
 
     }
 
     console.log('user_role', user_role)
+    console.log('data', data)
 
     const time_remain = calculateRemainingDaysAndHours(new Date(), data?.starts_in);
 
@@ -90,7 +91,7 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
             <div className="my-1">
                 {user_id != projectDetails?.user_id && user_role == 'sponsor' ?
                     <div>
-                        {data?.status == 'under_review' 
+                        {data?.status == 'under_review' && projectDetails?.status != 'closed'
                         ? <div className='flex items-center gap-2'>
                             <FancyButton 
                                 src_img={btnImg} 
@@ -99,7 +100,7 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
                                 className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                                 btn_txt='accept'
                                 alt_txt='project apply btn' 
-                                onClick={handleSubmitMilestone}
+                                onClick={() => handleMileStoneSponsorAction('accept')}
                             />
                             <FancyButton 
                                 src_img={closeProjBtnImg} 
@@ -108,7 +109,7 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
                                 className='font-gridular text-[14px] leading-[8.82px] text-primaryRed mt-1.5'
                                 btn_txt='reject'  
                                 alt_txt='project apply btn' 
-                                onClick={handleSubmitMilestone}
+                                onClick={() => handleMileStoneSponsorAction('reject')}
                             />
                         </div>
                         : ""
