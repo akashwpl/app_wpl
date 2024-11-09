@@ -2,8 +2,16 @@ import headerPng from '../assets/images/prdetails_header.png'
 import wpl_prdetails from '../assets/images/wpl_prdetails.png'
 
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Clock, Download, Info, TriangleAlert, Zap } from 'lucide-react'
+import { ArrowLeft, Clock, Download, TriangleAlert, Zap } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
+import btnImg from '../assets/svg/btn_subtract_semi.png'
+import closeProjBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png'
+import closeProjBtnImg from '../assets/svg/close_proj_btn_subtract.png'
+import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
+import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
 import USDCsvg from '../assets/svg/usdc.svg'
 import MilestoneCard from '../components/projectdetails/MilestoneCard'
 import MilestoneStatusCard from '../components/projectdetails/MilestoneStatusCard'
@@ -13,19 +21,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../components/ui/accordion"
-import { getOrgById, getProjectDetails, getProjectSubmissions, getUserProjects, updateProjectDetails } from '../service/api'
-import { useEffect, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
-import CustomModal from '../components/ui/CustomModal'
-import Tabs from '../components/ui/Tabs'
-import { calcDaysUntilDate, calculateRemainingDaysAndHours, convertTimestampToDate } from '../lib/constants'
 import FancyButton from '../components/ui/FancyButton'
-import btnImg from '../assets/svg/btn_subtract_semi.png'
-import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
-import closeProjBtnImg from '../assets/svg/close_proj_btn_subtract.png'
-import closeProjBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png'
-import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
-import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
+import Tabs from '../components/ui/Tabs'
+import { calculateRemainingDaysAndHours, convertTimestampToDate } from '../lib/constants'
+import { getOrgById, getProjectDetails, getProjectSubmissions, getUserProjects, updateProjectDetails } from '../service/api'
 
 import alertPng from '../assets/images/alert.png'
 
@@ -228,13 +227,13 @@ const ProjectDetailsPage = () => {
                 }
 
                 {isOwner && selectedTab == 'submissions' && <div className='w-[700px]'>
-                  <div className='bg-[#091044] rounded-md px-4 py-2'>
-                    <div className='flex justify-between items-center py-2'>
+                  <div className='bg-[#091044] rounded-md py-2'>
+                    <div className='flex justify-between items-center py-2 px-4'>
                       <div className='text-[14px] font-gridular text-white88'>Submission ({totalSubmissions})</div>
                       <div className='text-[12px] font-gridular text-white48 flex items-center gap-2'>Download as CSV <Download size={18} color='#FFFFFF7A'/></div>
                     </div>
                     {totalSubmissions == 0 ? <div className='text-[14px] text-primaryYellow font-gridular'>No submissions yet</div> : <>
-                      <div className='grid grid-cols-12 gap-2 mb-2'>
+                      <div className='grid grid-cols-12 gap-2 mb-2 px-4'>
                         <div className='text-[14px] col-span-1 text-white48 font-inter'>No.</div>
                         <div className='text-[14px] col-span-3 text-white48 font-inter'>Name</div>
                         <div className='text-[14px] col-span-4 text-white48 font-inter'>Why should we hire you</div>
@@ -243,7 +242,7 @@ const ProjectDetailsPage = () => {
 
                       <div className='max-h-[300px] overflow-y-auto'>
                         {projectSubmissions?.map((submission, index) => (
-                          <div onClick={() => navigateToSubmissions(index + 1)} key={index} className={`grid grid-cols-12 gap-2 py-2 ${index === projectSubmissions.length - 1 ? "" : "border-b border-white7"}`}>
+                          <div onClick={() => navigateToSubmissions(index + 1)} key={index} className={`grid grid-cols-12 gap-2 py-2 px-4 rounded-sm hover:bg-white4 cursor-pointer ${index === projectSubmissions.length - 1 ? "" : "border-b border-white7"}`}>
                             <div className='text-[14px] col-span-1 text-white88 font-inter'>{index + 1}</div>
                             <div className='text-[14px] col-span-3 text-start text-white88 font-inter'>{submission?.user?.displayName}</div>
                             <div className='text-[14px] col-span-4 text-white88 font-inter truncate'>{submission?._doc?.experienceDescription}</div>
@@ -366,7 +365,7 @@ const ProjectDetailsPage = () => {
               <div className='flex justify-center items-center w-full mt-5 gap-2'>
                 <FancyButton 
                   src_img={closeProjBtnImg} 
-                  hover_src_img={closeProjBtnHoverImg} 
+                  hover_src_img={closeProjBtnHoverImg}
                   img_size_classes='w-[480px] h-[44px]' 
                   className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5 lowercase capitalize'
                   btn_txt='Close project' 

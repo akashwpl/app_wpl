@@ -10,7 +10,7 @@ import { getUserDetails } from '../service/api'
 
 const HomePage = () => {
 
-  const { user_id } = useSelector((state) => state)
+  const { user_id, user_role } = useSelector((state) => state)
 
   const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
     queryKey: ["userDetails", user_id],
@@ -28,12 +28,14 @@ const HomePage = () => {
       </div>
 
       {/* right side */}
-      <div className='flex flex-col py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh]'>
-        <KYC_Card />
-        <ProfileDetailsCard />
-        <BugFixCard />
-        <RecentActivityCard />
-      </div>
+      {user_role == 'user' && 
+        <div className='flex flex-col py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh]'>
+          <KYC_Card />
+          <ProfileDetailsCard />
+          <BugFixCard />
+          <RecentActivityCard />
+        </div>
+      }
     </div>
   )
 }

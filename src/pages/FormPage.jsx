@@ -86,7 +86,7 @@ const FormPage = () => {
           btn_txt='Explore Projects'
           alt_txt='explore projects button'
           className='font-gridular text-[14px] leading-[20px] text-primaryYellow'
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/allprojects')}
         />
         {/* <button className='w-full text-white48 font-gridular text-[14px] leading-[20px] bg-cardBlueBg h-[43px]'
           onClick={() => {
