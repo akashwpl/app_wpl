@@ -316,7 +316,15 @@ const OnBoarding = () => {
                 </div>
 
                 <div className='mt-8 border border-primaryYellow py-1'>
-                  <button onClick={updateProfile} className='w-full flex justify-center items-center text-primaryYellow'>Submit</button>
+                  <FancyButton 
+                    src_img={loginBtnImg} 
+                    hover_src_img={loginBtnHoverImg} 
+                    img_size_classes='w-[342px] h-[44px]' 
+                    className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                    btn_txt='submit'  
+                    alt_txt='submit sign up btn' 
+                    onClick={updateProfile}
+                  />
                 </div>
 
               </div>

@@ -368,7 +368,7 @@ const ProjectDetailsPage = () => {
                   src_img={closeProjBtnImg} 
                   hover_src_img={closeProjBtnHoverImg} 
                   img_size_classes='w-[480px] h-[44px]' 
-                  className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5 lowercase capitalize'
+                  className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5'
                   btn_txt='Close project' 
                   alt_txt='project close btn' 
                   onClick={closeProject}
