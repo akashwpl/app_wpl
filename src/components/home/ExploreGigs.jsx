@@ -11,6 +11,9 @@ import exploreBtnImg from '../../assets/svg/menu_btn_subtract.png'
 import exploreBtnHoverImg from '../../assets/svg/menu_btn_hover_subtract.png'
 import FancyButton from "../ui/FancyButton"
 
+import listAscendingSvg from '../../assets/svg/list-number-ascending.svg'
+import listDescendingSvg from '../../assets/svg/list-number-descending.svg'
+
 const initialTabs = [
   {id: 'building', name: 'Building', isActive: true},
   {id: 'in_review', name: 'In Review', isActive: false},
@@ -29,7 +32,7 @@ const ExploreGigs = ({userId}) => {
 
   const [showfilterModal, setShowFilterModal] = useState(false)
   const [projectsGridView, setProjectsGridView] = useState(false)
-
+  const [weeksFilter, setWeeksFilter] = useState()
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
     queryKey: ["userProjects"],
@@ -50,35 +53,67 @@ const ExploreGigs = ({userId}) => {
     navigate(`/allprojects`)
   }
 
+  // const filteredProjects = useMemo(() => {
+  //   // Filter projects based on the selected tab
+  //   let projectsToSort = [];
+  //   if (selectedTab === 'building') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
+  //   else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
+  //   else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
+  //   else projectsToSort = userProjects;
+
+  //   // Sort by the last milestone's deadline
+
+  //   if(sortBy == 'prize') {
+  //     return projectsToSort
+  //       ?.sort((a, b) => {
+  //         return sortOrder === 'ascending' ? a.totalPrize - b.totalPrize : b.totalPrize - a.totalPrize;
+  //       });
+  //   } else {
+  //   return projectsToSort
+  //     ?.sort((a, b) => {
+  //       const dateA = a.milestones && a.milestones.length > 0
+  //         ? new Date(a.milestones[a.milestones.length - 1].deadline)
+  //         : new Date(0); // fallback date if no milestones
+  //       const dateB = b.milestones && b.milestones.length > 0
+  //         ? new Date(b.milestones[b.milestones.length - 1].deadline)
+  //         : new Date(0); // fallback date if no milestones
+        
+  //         return sortOrder === 'ascending' ? dateA - dateB : dateB - dateA;
+  //     });
+  //   }
+  // }, [userProjects, selectedTab, sortOrder]);
+
   const filteredProjects = useMemo(() => {
-    // Filter projects based on the selected tab
     let projectsToSort = [];
     if (selectedTab === 'building') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
     else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
     else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
     else projectsToSort = userProjects;
 
-    // Sort by the last milestone's deadline
-
-    if(sortBy == 'prize') {
-      return projectsToSort
-        ?.sort((a, b) => {
-          return sortOrder === 'ascending' ? a.totalPrize - b.totalPrize : b.totalPrize - a.totalPrize;
-        });
-    } else {
     return projectsToSort
-      ?.sort((a, b) => {
-        const dateA = a.milestones && a.milestones.length > 0
-          ? new Date(a.milestones[a.milestones.length - 1].deadline)
-          : new Date(0); // fallback date if no milestones
-        const dateB = b.milestones && b.milestones.length > 0
-          ? new Date(b.milestones[b.milestones.length - 1].deadline)
-          : new Date(0); // fallback date if no milestones
-        
-          return sortOrder === 'ascending' ? dateA - dateB : dateB - dateA;
-      });
-    }
-  }, [userProjects, selectedTab, sortOrder]);
+        ?.filter(project => {
+            // Week-based filter
+            const lastMilestone = project?.milestones?.[project.milestones.length - 1];
+            const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;
+            const weeksLeft = deadlineDate ? (deadlineDate - new Date()) / (1000 * 60 * 60 * 24 * 7) : null;
+            const matchesWeeks = 
+                !weeksFilter || // if no weeks filter is set
+                (weeksFilter === 'lessThan2' && weeksLeft < 2) ||
+                (weeksFilter === 'between2And4' && weeksLeft >= 2 && weeksLeft <= 4) ||
+                (weeksFilter === 'above4' && weeksLeft > 4);
+
+            return matchesWeeks;
+        })
+        .sort((a, b) => {
+            return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
+    });
+}, [userProjects, sortOrder, weeksFilter]);
+
+const handleWeeksFilterChange = (event) => {
+  const value = event.target.value;
+  setWeeksFilter(prevFilter => prevFilter === value ? '' : value);
+};
+
 
   const ExploreGigsBtn = () => {
     return (
@@ -123,10 +158,30 @@ const ExploreGigs = ({userId}) => {
                 </div>
 
                 {showfilterModal && 
-                  <div className="absolute w-[150px] top-9 -left-4 bg-primaryBlue rounded-md">
-                    <p onClick={() => {setSortBy('prize'); setShowFilterModal(false)} } className="text-[14px] text-white88 font-semibold hover:bg-white12 pl-4 flex items-center gap-1 font-inter py-2 cursor-pointer"><DollarSign size={16}/> Prize</p>
-                    <div className="h-[1px] w-full bg-white12 my-1" />
-                    <p onClick={() => {setSortBy('deadline'); setShowFilterModal(false)}} className="text-[14px] text-white88 font-semibold hover:bg-white12 pl-4 flex items-center gap-1 font-inter py-2 cursor-pointer"><TimerIcon size={16}/> Deadline</p>
+                  <div className="absolute w-[156px] top-10 -left-[70px] rounded-md bg-white4 backdrop-blur-[52px] py-3 flex flex-col px-4 z-50">
+                    <div>
+                        <p className='text-[12px] font-semibold font-inter mb-3 text-start'>Sort prizes</p>
+                        <div onClick={() => {setSortOrder('ascending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'ascending' ? "text-primaryYellow" : 'text-white88'} mb-1 flex items-center gap-1`}><img src={listAscendingSvg} alt='sort' color={sortOrder == 'ascending' ? "#FBF1B8" : "#FFFFFF52"} className={`text-[16px]`} /> Low to High</div>
+                        <div onClick={() => {setSortOrder('descending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'descending' ? "text-primaryYellow" : 'text-white88'}  mb-[6px] flex items-center gap-1`}><img src={listDescendingSvg} alt='sort' className={`${sortOrder == 'descending' ? "text-primaryYellow" : "text-white32"}`} /> High to Low</div>
+                    </div>
+                    <div className='border border-dashed border-white7 w-full my-5'/>
+                    <div>
+                        <p className='text-[12px] font-semibold font-inter mb-3'>Select duration</p>
+                        <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>
+                            {/* <div className='border border-primaryYellow h-[14px] p-0 m-0 flex justify-center items-center rounded-sm'> */}
+                                <input type='checkbox' name='duration' value='lessThan2' onChange={(e) => handleWeeksFilterChange(e)} checked={weeksFilter === 'lessThan2'} id='1' className='p-0 m-0 cursor-pointer'/>
+                            {/* </div> */}
+                            <label htmlFor='1'>{`<`} 2 weeks</label>
+                        </div>
+                        <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>
+                            <input type='checkbox' name='duration' value='between2And4' onChange={(e) => handleWeeksFilterChange(e)} checked={weeksFilter === 'between2And4'} id='1' className='border border-primaryYellow cursor-pointer'/>
+                            <label htmlFor='1'>2-4 weeks</label>
+                        </div>
+                        <div className=' flex items-center gap-2 text-white88 text-[14px] font-gridular'>
+                            <input type='checkbox' name='duration' value='above4' onChange={(e) => handleWeeksFilterChange(e)} checked={weeksFilter === 'above4'} id='1' className='border border-primaryYellow cursor-pointer'/>
+                            <label htmlFor='1'>{`>`} 4 week</label>
+                        </div>
+                    </div>
                   </div>
                 }
             </div>
@@ -153,9 +208,11 @@ const ExploreGigs = ({userId}) => {
                   {ExploreGigsBtn()}
                 </div>
             </div>
-            : filteredProjects?.map((project, idx) => <div key={idx} className={`my-4 ${projectsGridView ? "grid grid-cols-12" : "flex flex-col hover:bg-white4"}`}> 
-                <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
-                <div className='border border-x-0 border-t-0 border-b-white7'></div>
+            : filteredProjects?.map((project, idx) => <div key={idx} className={`my-4 ${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col hover:bg-white4"}`}> 
+                <div className='col-span-1'>
+                  <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
+                  <div className='border border-x-0 border-t-0 border-b-white7'></div>
+                </div>
             </div>
           )}
         </div>

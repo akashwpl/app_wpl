@@ -1,13 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
-import ExploreGigsCard from '../components/home/ExploreGigsCard'
-import { getAllProjects, getUserDetails, getUserProjects } from '../service/api'
-import Spinner from '../components/ui/spinner'
-import { CheckCheck } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import saveBtnImg from '../assets/svg/menu_btn_subtract.png'
+import { useNavigate } from 'react-router-dom'
 import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
+import saveBtnImg from '../assets/svg/menu_btn_subtract.png'
+import ExploreGigsCard from '../components/home/ExploreGigsCard'
 import FancyButton from '../components/ui/FancyButton'
+import Spinner from '../components/ui/spinner'
+import { getUserDetails } from '../service/api'
+
+import { Plus } from 'lucide-react'
 
 const AllUserOwnedProjectsPage = () => {
     const navigate = useNavigate()
@@ -30,12 +31,12 @@ const AllUserOwnedProjectsPage = () => {
                 <div className='flex justify-between items-center'>
                     <div className='font-gridular text-primaryYellow text-[32px]'>All Gigs Owned</div>
                     <FancyButton 
-                        src_img={saveBtnImg} 
-                        hover_src_img={saveBtnHoverImg} 
-                        img_size_classes='w-[175px] h-[44px]' 
+                        src_img={saveBtnImg}
+                        hover_src_img={saveBtnHoverImg}
+                        img_size_classes='w-[175px] h-[44px]'
                         className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                        btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={18}/><span>Add project</span></span>} 
-                        alt_txt='Add project btn' 
+                        btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={20} fontWeight={800} className='size-4 stoke-[3]'/><span>Add project</span></span>} 
+                        alt_txt='Add project btn'
                         onClick={navigateToAddProject}
                     />
                 </div>

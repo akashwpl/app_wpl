@@ -18,18 +18,22 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
                 <div className='flex flex-col w-full'>
                     <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48 mb-1'>{data?.organisationHandle}</p>
                     <p className='font-gridular text-[16px] leading-[19.2px] text-white88 mb-3'>{data?.title}</p>     
-                    <div className='flex flex-row gap-x-1 text-white32 justify-between w-full mt-1'>
-                        <Clock size={14} />
-                        <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Due in {data?.deadline}</p>
-                        <Dot size={14} />
-                        <CalendarCheck size={14} />
-                        <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Delivery time: 2 weeks</p>
-                        <Dot size={14} />
-                        <CalendarCheck size={14} />
-                        <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Role: Frontend</p>
-                        <Dot size={14} />
-                        <Zap size={14} color='#FCBF04' />
-                        <p className='font-inter font-medium text-cardYellowText text-[12px] leading-[14.4px] capitalize'>{data?.type}</p>
+                    <div className={`flex flex-row ${projectsGridView ? 'flex-col' : "flex-row"} gap-2 text-white32 w-full mt-1`}>
+                        <div className={`flex items-center gap-1 ${projectsGridView ? "mt-2" : ""}`}>
+                            <Clock size={14} />
+                            <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Due in <span className='text-white64'>{data?.deadline}</span></p>
+                            <Dot size={14} />
+                            <CalendarCheck size={14} />
+                            <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Delivery time: <span className='text-white64'>2 weeks</span></p>
+                            {!projectsGridView && <Dot size={14} />}
+                        </div>
+                        <div className={`flex items-center gap-1 ${projectsGridView ? "mt-2" : ""}`}>
+                            <CalendarCheck size={14} />
+                            <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Role: <span className='text-white64'>Frontend</span></p>
+                            <Dot size={14} />
+                            <Zap size={14} color='#FCBF04' />
+                            <p className='font-inter font-medium text-cardYellowText text-[12px] leading-[14.4px] capitalize'>{data?.type}</p>
+                        </div>
                     </div>
                 </div>
             </div>
