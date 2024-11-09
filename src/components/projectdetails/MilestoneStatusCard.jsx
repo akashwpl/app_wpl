@@ -6,9 +6,14 @@ import React, { useEffect } from 'react'
 import FancyButton from '../ui/FancyButton'
 import btnImg from '../../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png'
+import { useSelector } from 'react-redux';
+import closeProjBtnImg from '../../assets/svg/close_proj_btn_subtract.png'
+import closeProjBtnHoverImg from '../../assets/svg/close_proj_btn_hover_subtract.png'
 
 
 const MilestoneStatusCard = ({ data, projectDetails }) => {
+
+    const {user_id, user_role} = useSelector(state => state)
 
     const handleSubmitMilestone = async () => {
         const res = await submitMilestone(data?._id);
@@ -18,6 +23,13 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
             alert('Something went wrong. Please try again later!')
         }
     }
+
+    // TODO :: sponsor can accept or reject the milestone
+    const handleMileStone = async (type) => {
+
+    }
+
+    console.log('user_role', user_role)
 
     const time_remain = calculateRemainingDaysAndHours(new Date(), data?.starts_in);
 
@@ -76,7 +88,34 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
             </div>
 
             <div className="my-1">
-                {projectDetails?.status == 'closed' ? "" : 
+                {user_id != projectDetails?.user_id && user_role == 'sponsor' ?
+                    <div>
+                        {data?.status == 'under_review' 
+                        ? <div className='flex items-center gap-2'>
+                            <FancyButton 
+                                src_img={btnImg} 
+                                hover_src_img={btnHoverImg} 
+                                img_size_classes='w-[190px] h-[44px]' 
+                                className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                                btn_txt='accept'
+                                alt_txt='project apply btn' 
+                                onClick={handleSubmitMilestone}
+                            />
+                            <FancyButton 
+                                src_img={closeProjBtnImg} 
+                                hover_src_img={closeProjBtnHoverImg} 
+                                img_size_classes='w-full h-[44px]' 
+                                className='font-gridular text-[14px] leading-[8.82px] text-primaryRed mt-1.5'
+                                btn_txt='reject'  
+                                alt_txt='project apply btn' 
+                                onClick={handleSubmitMilestone}
+                            />
+                        </div>
+                        : ""
+                        }
+                    </div>
+                : 
+                    projectDetails?.status == 'closed' ? "" : 
                     <FancyButton 
                         src_img={btnImg} 
                         hover_src_img={btnHoverImg} 
@@ -86,6 +125,7 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
                         alt_txt='project apply btn' 
                         onClick={handleSubmitMilestone}
                     />
+                
                 }
             </div>
         </div>

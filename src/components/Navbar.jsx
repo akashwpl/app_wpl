@@ -5,17 +5,19 @@ import wolfButton from '../assets/images/BW.png'
 import arrow from '../assets/images/arrow.png'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { getUserDetails } from '../service/api'
 import { LayoutDashboardIcon, LogOut, LucideInfo, SquareChartGantt, User } from 'lucide-react'
 import GlyphEffect from './ui/GlyphEffect'
 
 import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
 import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
+import { setUserRole } from '../store/slice/userSlice'
 
 const Navbar = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const dispatch = useDispatch()
 
   const { user_id } = useSelector((state) => state)
 
@@ -35,6 +37,11 @@ const Navbar = () => {
   const handleShowNavbar = () => {
     setShowNavbar(!showNavbar)
   }
+
+  useEffect(() => {
+    if(!userDetail) return
+    dispatch(setUserRole(userDetail?.role))
+  }, [userDetail])
 
   const signout = () => {
     localStorage.removeItem('token_app_wpl')

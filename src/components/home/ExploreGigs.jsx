@@ -54,7 +54,7 @@ const ExploreGigs = ({userId}) => {
     // Filter projects based on the selected tab
     let projectsToSort = [];
     if (selectedTab === 'building') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
-    else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed');
+    else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
     else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
     else projectsToSort = userProjects;
 
@@ -94,6 +94,11 @@ const ExploreGigs = ({userId}) => {
     )
   }
 
+  // const buildingProjects = useMemo(() => userProjects && userProjects?.filter((project) => project?.status == 'ongoing') , [userProjects])
+
+  console.log('userProjects', userProjects)
+  console.log('filteredProjects', filteredProjects)
+
   return (
     <div>
         {userId == user_id ? 
@@ -130,7 +135,7 @@ const ExploreGigs = ({userId}) => {
 
         <div>
           {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
-          filteredProjects && selectedTab == 'building' && filteredProjects?.length ? <div className="mt-24">
+          filteredProjects && selectedTab == 'building' && !filteredProjects?.length ? <div className="mt-24">
             <div className="flex flex-col justify-center items-center gap-2">
               <div className="font-gridular text-white88 text-[24px]">You haven't applied to any projects :(</div>
               <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
@@ -139,7 +144,7 @@ const ExploreGigs = ({userId}) => {
                 {ExploreGigsBtn()}
               </div>
             </div>
-            : selectedTab !== 'building' && !filteredProjects?.length ? <div className="mt-24">
+            : selectedTab !== 'building' && filteredProjects?.length == 0 ? <div className="mt-24">
               <div className="flex flex-col justify-center items-center gap-2">
                 <div className="font-gridular text-white88 text-[24px]">Oops! Looks like you haven't submitted a project :(</div>
                 <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
