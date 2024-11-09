@@ -13,7 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../components/ui/accordion"
-import { getOrgById, getProjectDetails, getProjectSubmissions, updateProjectDetails } from '../service/api'
+import { getOrgById, getProjectDetails, getProjectSubmissions, getUserProjects, updateProjectDetails } from '../service/api'
 import { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import CustomModal from '../components/ui/CustomModal'
@@ -40,8 +40,24 @@ const ProjectDetailsPage = () => {
   const { id } = useParams();
   const { user_id } = useSelector((state) => state)
   const [orgHandle, setOrgHandle] = useState('');
+  const [isProjApplied, setIsProjApplied] = useState(false);
 
-  console.log('current user Id', user_id)
+  const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
+    queryKey: ["userProjects"],
+    queryFn: getUserProjects
+  })
+
+  useEffect(() => {
+    !isLoadingUserProjects && 
+    userProjects.map((project) => {
+      if(project._id == id) {
+        setIsProjApplied(true);
+        return;
+      }
+    })
+  },[])
+  
+  console.log('user projects', userProjects)
   const navigate = useNavigate()
   
   const {data: projectDetails, isLoading: isLoadingProjectDetails} = useQuery({
@@ -90,7 +106,7 @@ const ProjectDetailsPage = () => {
   const closeProject = async () => {
     const { _id, __v, comments, milestones, totalPrize, created_at, updated_at, ...data } = projectDetails;
     data.status = 'closed';
-  
+
     const res = await updateProjectDetails(projectDetails._id, data);
     setShowCloseProjectModal(false);
   }
@@ -112,28 +128,13 @@ const ProjectDetailsPage = () => {
   const totalPrize = useMemo(() => projectDetails?.milestones?.reduce((acc, milestone) => acc + parseFloat(milestone.prize), 0) || 0, [projectDetails]);
   const totalSubmissions = useMemo(() => projectSubmissions?.length, [projectSubmissions])
 
-  // const projectDeadline = (projectDetails?.milestones?.map((milestone) => {
-  //   return parseInt(new Date(milestone.starts_in).getTime())
-  // })).sort()
-
   const tmpMilestones = projectDetails?.milestones;
   const lastMilestone = tmpMilestones?.reduce((acc, curr) => {
     
     return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
   });
 
-  console.log('LD',lastMilestone);
-
   const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone?.deadline))
-
-  // console.log('deadline',projectDeadline);
-  // console.log('deadlineSorted', calcDaysUntilDate(projectDeadline[projectDeadline?.length-1]));
-  
-
-  console.log('projectSubmissions', projectSubmissions)
-  console.log('projectDetails', projectDetails)
-
-
 
   return (
     <div className='relative'>
@@ -148,7 +149,7 @@ const ProjectDetailsPage = () => {
       <div className='flex justify-center gap-20 mx-44'>
         <div>
          
-          <div className='md:min-w-[600px]'>
+          <div className='md:min-w-[700px]'>
             <div className='translate-y-[-15px]'>
               <img src={projectDetails?.image || wpl_prdetails} alt='wpl_prdetails' className='size-[72px] rounded-md'/>
             </div>
@@ -246,7 +247,7 @@ const ProjectDetailsPage = () => {
           <div className='w-[372px] h-fit pb-4 bg-white4 rounded-[10px]'>
             <div className='flex items-center gap-2 mx-4 py-4'>
               <Clock size={14} className='text-white32'/>
-              <p className='text-[14px] text-white32 leading-[20px] font-inter'>Project Deadline in <span className='text-white88 ml-1'>{remain.days} D {remain.hours} H</span></p>
+              <p className='text-[14px] text-white32 leading-[20px] font-inter'>Project Deadline in <span className='text-white88 ml-1'>{remain.days < 0 ? <span className='text-cardRedText'>Overdue</span> : `${remain.days} D ${remain.hours} H`}</span></p>
             </div>
             <div className='h-[1px] w-full'>
               <div className='h-[1px] w-[40%] bg-primaryYellow'/>
@@ -307,12 +308,13 @@ const ProjectDetailsPage = () => {
                   <div className='mx-4 mt-4'>
                     <FancyButton 
                       src_img={btnImg} 
-                      hover_src_img={btnHoverImg} 
+                      hover_src_img={isProjApplied ? btnImg : btnHoverImg} 
                       img_size_classes='w-[342px] h-[44px]' 
-                      className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                      btn_txt='Apply' 
+                      className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5 ${isProjApplied && 'cursor-not-allowed'}`}
+                      btn_txt={isProjApplied ? 'Applied' : 'Apply'} 
                       alt_txt='project apply btn' 
                       onClick={applyForProject}
+                      disabled={isProjApplied}
                     />
                   </div>
                 }
