@@ -2,7 +2,7 @@ import headerPng from '../assets/images/prdetails_header.png'
 import wpl_prdetails from '../assets/images/wpl_prdetails.png'
 
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Clock, Download, TriangleAlert, Zap } from 'lucide-react'
+import { ArrowLeft, Clock, Download, Info, TriangleAlert, Zap } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import USDCsvg from '../assets/svg/usdc.svg'
 import MilestoneCard from '../components/projectdetails/MilestoneCard'
@@ -265,7 +265,7 @@ const ProjectDetailsPage = () => {
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="py-2 border-t border-dashed border-white12">
-                      <MilestoneStatusCard data={milestone}/>
+                      <MilestoneStatusCard data={milestone} projectDetails={projectDetails}/>
                     </AccordionContent>
                   </AccordionItem>
                 ))}
@@ -274,12 +274,17 @@ const ProjectDetailsPage = () => {
               
             {isOwner ? 
                <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
-                <button onClick={() => setShowCloseProjectModal(true)} className='border border-[#E38070] w-full bg-[#E38070]/10 text-[#E38070] py-2 rounded-md font-gridular text-[14px] hover:bg-[#E38070]/20'>Close Project</button>
-                <button onClick={editProject} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular text-[14px] hover:bg-primaryYellow/10'>Edit Project</button>
-              </div>
+                {projectDetails?.status == 'closed' ? <div className='text-[#E38070] text-[14px] font-inter flex justify-center items-center gap-1 font-semibold'><TriangleAlert size={20}/> Project is closed</div> : <>
+                  <button onClick={() => setShowCloseProjectModal(true)} className='border border-[#E38070] w-full bg-[#E38070]/10 text-[#E38070] py-2 rounded-md font-gridular text-[14px] hover:bg-[#E38070]/20'>Close Project</button>
+                  <button onClick={editProject} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular text-[14px] hover:bg-primaryYellow/10'>Edit Project</button>
+                </>
+                }
+                </div>
             :
               <div className='mx-4 mt-4'>
-                <button onClick={applyForProject} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular hover:bg-primaryYellow/10'>Apply</button>
+                {projectDetails?.status == 'closed' ? <div className='text-[#E38070] text-[14px] font-inter flex justify-center items-center gap-1 font-semibold'><TriangleAlert size={20}/> Project is closed</div> :
+                  <button onClick={applyForProject} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular hover:bg-primaryYellow/10'>Apply</button>
+                }
               </div>
             }
           </div>

@@ -68,11 +68,11 @@ const VerifyOrgForm = () => {
             }
             const res = await createOrganisation(data);
             
-            if(res.err === 'User is not a sponsor') {
-                alert('The account is not Sponsor account. Please contact admin to upgrade your account')
-                navigate('/')
-            }
-            else setSubmitted(true);
+            // if(res.err === 'User is not a sponsor') {
+            //     alert('The account is not Sponsor account. Please contact admin to upgrade your account')
+            //     navigate('/')
+            // }
+            setSubmitted(true);
         }
     }
 

@@ -3,7 +3,7 @@ import { ArrowUpRight, Clock, HeartCrack, Hourglass } from 'lucide-react'
 import { calculateRemainingDaysAndHours } from '../../lib/constants';
 import React, { useEffect } from 'react'
 
-const MilestoneStatusCard = ({ data }) => {
+const MilestoneStatusCard = ({ data, projectDetails }) => {
 
     const handleSubmitMilestone = async () => {
         const res = await submitMilestone(data?._id);
@@ -45,8 +45,9 @@ const MilestoneStatusCard = ({ data }) => {
                     </a>
                 </div>
             </div>
-
-            <button onClick={handleSubmitMilestone} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular hover:bg-primaryYellow/10'>Submit Milestone</button>
+            {projectDetails?.status == 'closed' ? null :
+                <button onClick={handleSubmitMilestone} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular hover:bg-primaryYellow/10'>Submit Milestone</button>
+            }
         </div>
     )
 }
