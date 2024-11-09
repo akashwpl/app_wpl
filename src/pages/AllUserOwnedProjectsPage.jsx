@@ -2,9 +2,12 @@ import { useQuery } from '@tanstack/react-query'
 import ExploreGigsCard from '../components/home/ExploreGigsCard'
 import { getAllProjects, getUserDetails, getUserProjects } from '../service/api'
 import Spinner from '../components/ui/spinner'
-import { CheckCheck, Plus } from 'lucide-react'
+import { CheckCheck } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import saveBtnImg from '../assets/svg/menu_btn_subtract.png'
+import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
+import FancyButton from '../components/ui/FancyButton'
 
 const AllUserOwnedProjectsPage = () => {
     const navigate = useNavigate()
@@ -26,7 +29,15 @@ const AllUserOwnedProjectsPage = () => {
             <div className='md:w-[800px] max-w-[1200px] mt-6'>
                 <div className='flex justify-between items-center'>
                     <div className='font-gridular text-primaryYellow text-[32px]'>All Gigs Owned</div>
-                    <button onClick={navigateToAddProject} className='bg-primaryYellow/90 hover:bg-primaryYellow rounded-md py-1 px-2 flex justify-center items-center gap-1 font-gridular'>Add Project <CheckCheck size={20}/></button>
+                    <FancyButton 
+                        src_img={saveBtnImg} 
+                        hover_src_img={saveBtnHoverImg} 
+                        img_size_classes='w-[175px] h-[44px]' 
+                        className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                        btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={18}/><span>Add project</span></span>} 
+                        alt_txt='Add project btn' 
+                        onClick={navigateToAddProject}
+                    />
                 </div>
                 <div className='mt-8'>
                     <div>

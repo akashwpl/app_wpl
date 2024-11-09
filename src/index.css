@@ -199,3 +199,11 @@ body{
 .nav_btn {
 	transition: transform 0.5s 1s, scale 0.5s 3s, opacity 0s 3s;
 }
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+input[data-autocompleted] {
+  background-color: transparent !important;
+}

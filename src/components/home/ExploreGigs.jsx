@@ -7,7 +7,9 @@ import Spinner from "../ui/spinner"
 import Tabs from "../ui/Tabs"
 import ExploreGigsCard from "./ExploreGigsCard"
 import { useSelector } from "react-redux"
-
+import exploreBtnImg from '../../assets/svg/menu_btn_subtract.png'
+import exploreBtnHoverImg from '../../assets/svg/menu_btn_hover_subtract.png'
+import FancyButton from "../ui/FancyButton"
 
 const initialTabs = [
   {id: 'building', name: 'Building', isActive: true},
@@ -78,12 +80,26 @@ const ExploreGigs = ({userId}) => {
     }
   }, [userProjects, selectedTab, sortOrder]);
 
+  const ExploreGigsBtn = () => {
+    return (
+      <FancyButton 
+        src_img={exploreBtnImg} 
+        hover_src_img={exploreBtnHoverImg} 
+        img_size_classes='w-[175px] h-[44px]' 
+        className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+        btn_txt={<span className='flex items-center justify-center gap-2'><span>Explore all</span><ArrowUpRight size={18}/></span>} 
+        alt_txt='save project btn' 
+        onClick={navigateToProjectDetails}
+      />
+    )
+  }
+
   return (
     <div>
         {userId == user_id ? 
           <div className="flex justify-between items-center">
             <h1 className="font-gridular text-primaryYellow text-[20px]">My Gigs</h1>
-            <p onClick={navigateToProjectDetails} className="font-gridular bg-white4 py-2 px-2 rounded-md text-primaryYellow/70 hover:text-primaryYellow text-[14px] leading-[24px] flex items-center gap-1 cursor-pointer">Explore all <ArrowUpRight size={16}/></p>
+            {ExploreGigsBtn()}
           </div>
           : null
         }
@@ -116,11 +132,11 @@ const ExploreGigs = ({userId}) => {
           {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
           filteredProjects && selectedTab == 'building' && filteredProjects?.length ? <div className="mt-24">
             <div className="flex flex-col justify-center items-center gap-2">
-              <div className="font-gridular text-white88 text-[24px]">You haven’t applied to any projects :(</div>
+              <div className="font-gridular text-white88 text-[24px]">You haven't applied to any projects :(</div>
               <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
             </div>
               <div className="flex justify-center items-center mt-6">
-                <button onClick={navigateToProjectDetails} className="bg-primaryYellow/10 hover:bg-primaryYellow/15 text-primaryYellow w-fit px-7 h-[44px] rounded-md border border-primaryYellow mt-3 text-[14px] font-gridular flex items-center gap-2 uppercase">Explore Gigs <ArrowRight size={18} className="text-primaryYellow"/></button>
+                {ExploreGigsBtn()}
               </div>
             </div>
             : selectedTab !== 'building' && !filteredProjects?.length ? <div className="mt-24">
@@ -129,7 +145,7 @@ const ExploreGigs = ({userId}) => {
                 <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
               </div>
                 <div className="flex justify-center items-center mt-6">
-                  <button onClick={navigateToProjectDetails} className="bg-primaryYellow/10 hover:bg-primaryYellow/15 text-primaryYellow w-fit px-7 h-[44px] rounded-md border border-primaryYellow mt-3 text-[14px] font-gridular flex items-center gap-2 uppercase">Explore Gigs <ArrowRight size={18} className="text-primaryYellow"/></button>
+                  {ExploreGigsBtn()}
                 </div>
             </div>
             : filteredProjects?.map((project, idx) => <div key={idx} className={`my-4 ${projectsGridView ? "grid grid-cols-12" : "flex flex-col hover:bg-white4"}`}> 
