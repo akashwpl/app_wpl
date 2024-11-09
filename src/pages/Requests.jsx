@@ -34,29 +34,21 @@ const Requests = () => {
         if(res._id) alert(`You have ${status ? 'Approved' : 'Rejected'} ${orgHandle} organisation successfully.`)
         refetch();
     }
-    
-
-    const filteredData = useMemo(() =>  searchInput
-        ? projectSubmissions.filter(data =>
-            data.user?.displayName.toLowerCase().includes(searchInput.toLowerCase())
-        )
-        : projectSubmissions
-    , [searchInput])
 
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
-    const currentData = filteredData?.slice(indexOfFirstItem, indexOfLastItem)
+    const currentData = filteredReq?.slice(indexOfFirstItem, indexOfLastItem)
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(filteredData?.length / itemsPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(filteredReq?.length / itemsPerPage); i++) {
       pageNumbers?.push(i);
     }
 
-    const navigateToSubmissions = (id, page) => {
-        navigate(`/submissions/${id}/${page}`)
-    }
+    const navigateToRequests = (id) => {
+        navigate(`/requests/${id}`)
+    }   
 
     return (
         <div className='size-full'>
@@ -84,17 +76,17 @@ const Requests = () => {
                                     </div>
                                     <div className="border border-dashed border-white88 w-full"></div>
                                     <div className='max-h-[515px] overflow-y-hidden'>
-                                        {filteredReq?.map((org, index) => (
+                                        {currentData?.map((org, index) => (
                                             <div 
                                                 key={index} className={`grid grid-cols-10 gap-2 py-3 items-center cursor-pointer px-5 ${index == 4 ? "" : "border-b border-white7 hover:bg-white12"}`}>
                                                 <div className='text-[14px] col-span-1 text-white88 font-inter'>{index + 1}</div>
                                                 <div className='text-[14px] col-span-2 text-start text-white88 font-inter'>
-                                                    <div className='flex flex-col'>
+                                                    <div onClick={() =>navigateToRequests(org._id)} className='flex flex-col'>
                                                         {/* <p className='text-white88 text-[14px]'>{org?.user?.displayName}</p> */}
                                                         <p className='text-white88 text-[14px]'>@{org?.organisationHandle}</p>
                                                     </div>
                                                 </div>
-                                                <div className='text-[14px] col-span-5 text-white88 font-inter truncate'>{org?.description}</div>
+                                                <div onClick={() =>navigateToRequests(org._id)} className='text-[14px] col-span-5 text-white88 font-inter truncate'>{org?.description}</div>
                                                 <div className='col-span-2 flex justify-between w-[90px]'>
                                                     <CircleCheck onClick={() => handleAcceptRejectRequest(org._id,org.organisationHandle,true)} className='text-cardGreenText/70' size={30} />
                                                     <CircleX onClick={() => handleAcceptRejectRequest(org._id,org.organisationHandle,false)} className='text-cardRedText/70' size={30} />
@@ -142,118 +134,4 @@ const Requests = () => {
     )
 }
 
-export default Requests
-
-const projectSubmissions = [
-    {
-        _id: "671e360bf7b187d104dc4e16",
-        user: {
-            displayName: 'John Doe',
-            organisationHandle: "JohnDoe"
-        },
-        _doc: {
-            experienceDescription: 'I have been working as a developer for 5 years',
-            portfolioLink: 'https://google.com'
-        }
-    },
-    {
-        user: {
-            displayName: 'Jane Doe',
-            organisationHandle: "JaneDoe"
-        },
-        _doc: {
-            experienceDescription: 'I have been working as a developer for 5 years',
-            portfolioLink: 'https://google.com'
-        }
-    },
-    {
-        user: {
-            displayName: 'Subham Doe',
-            organisationHandle: "ShuDoe"
-        },
-        _doc: {
-            experienceDescription: 'I have been working as a developer for 5 years',
-            portfolioLink: 'https://google.com'
-        }
-    },
-    {
-        user: {
-            displayName: 'John Doe',
-            organisationHandle: "JohnDoe"
-        },
-        _doc: {
-            experienceDescription: 'I have been working as a developer for 5 years',
-            portfolioLink: 'https://google.com'
-        }
-    },
-    {
-        user: {
-            displayName: 'Jane Doe',
-            organisationHandle: "JaneDoe"
-        },
-        _doc: {
-            experienceDescription: 'I have been working as a developer for 5 years',
-            portfolioLink: 'https://google.com'
-        }
-    },
-    {
-        user: {
-            displayName: 'Subham Doe',
-            organisationHandle: "ShuDoe"
-        },
-        _doc: {
-            experienceDescription: 'I have been working as a developer for 5 years',
-            portfolioLink: 'https://google.com'
-        }
-    },
-    {
-        user: {
-            displayName: 'John Doe',
-            organisationHandle: "JohnDoe"
-        },
-        _doc: {
-            experienceDescription: 'I have been working as a developer for 5 years',
-            portfolioLink: 'https://google.com'
-        }
-    },
-    {
-        user: {
-            displayName: 'Jane Doe',
-            organisationHandle: "JaneDoe"
-        },
-        _doc: {
-            experienceDescription: 'I have been working as a developer for 5 years',
-            portfolioLink: 'https://google.com'
-        }
-    },
-    {
-        user: {
-            displayName: 'Subham Doe',
-            organisationHandle: "ShuDoe"
-        },
-        _doc: {
-            experienceDescription: 'I have been working as a developer for 5 years',
-            portfolioLink: 'https://google.com'
-        }
-    },
-    {
-        user: {
-            displayName: 'John Doe',
-            organisationHandle: "JohnDoe"
-        },
-        _doc: {
-            experienceDescription: 'I have been working as a developer for 5 years',
-            portfolioLink: 'https://google.com'
-        }
-    },
-    {
-        user: {
-            displayName: 'Jane Doe',
-            organisationHandle: "JaneDoe"
-        },
-        _doc: {
-            experienceDescription: 'I have been working as a developer for 5 years',
-            portfolioLink: 'https://google.com'
-        }
-    },
-]
+export default Requests;

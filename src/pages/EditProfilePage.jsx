@@ -12,6 +12,13 @@ import checkSVG from '../assets/svg/check.svg'
 import Spinner from '../components/ui/spinner';
 import discordSVG from '../assets/svg/discord.svg'
 import telegramSVG from '../assets/svg/telegram.svg'
+import FancyButton from '../components/ui/FancyButton';
+import updateBtn from '../assets/svg/btn_subtract_semi.png'
+import updateBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
+import saveBtnImg from '../assets/svg/menu_btn_subtract.png'
+import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
+import closeProjBtnImg from '../assets/svg/close_proj_btn_subtract.png'
+import closeProjBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png'
 
 const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
 
@@ -373,9 +380,15 @@ const EditProfilePage = () => {
             </div>
 
             <div className='flex justify-center items-center w-full'>
-                <button onClick={handleSubmitEditProfile} className={`bg-primaryYellow/10 border border-primaryYellow text-primaryYellow font-gridular px-6 py-2 rounded-md text-[14px] flex justify-center items-center gap-1 w-full ${false ? "opacity-25" : ""}`}>
-                    {isUpdating ? <Spinner /> : "Update Profile"}
-                </button>
+                <FancyButton 
+                    src_img={updateBtn} 
+                    hover_src_img={updateBtnHoverImg} 
+                    img_size_classes='w-[482px] h-[44px]' 
+                    className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                    btn_txt={isUpdating ? <Spinner /> : "Update Profile"}  
+                    alt_txt='update profile btn' 
+                    onClick={handleSubmitEditProfile}
+                  />
             </div>
             
         </div>
@@ -385,7 +398,7 @@ const EditProfilePage = () => {
                 <div className='w-[320px] md:w-[420px] bg-primaryDarkUI rounded-[6px] pb-4'>
                     <div className='border-b border-white7 px-4 py-2 flex justify-between items-center'>
                         <p className='text-[14px] text-white/65 font-medium'>Add Project</p>
-                        <X onClick={handleCloseAddProjectModal} size={14} className='text-white/65'/>
+                        <X onClick={handleCloseAddProjectModal} size={14} className='text-white/65 cursor-pointer'/>
                     </div>
 
                     <div className='px-4 mt-4'>
@@ -459,17 +472,24 @@ const EditProfilePage = () => {
                             </div>
                             {errors.link && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter flex items-center gap-1">{errors.link == 'Invalid Link' && <Info fill='#FF7373' size={16} className='text-primaryDarkUI'/>} {errors.link}</div>}
                             <div className='flex justify-end items-center gap-4 w-full mt-8'>
-                                <button onClick={handleCloseAddProjectModal} className='bg-white7 rounded-md px-3 py-2 text-[12px] text-white48 font-medium font-inter flex items-center gap-1'>Cancel <X size={14} className='text-white32'/></button>
-                                <button 
-                                    onClick={handleAddProject} 
-                                    className={`
-                                        rounded-md px-3 py-2 text-[12px] font-medium font-inter 
-                                        flex items-center gap-1 transition-opacity duration-300
-                                        bg-[#FAF1B11C] text-[#FAF1B1E0]
-                                    `}
-                                    >
-                                    Add Project <img src={checkSVG} className='size-[14px]'/>
-                                </button>
+                                <FancyButton 
+                                    src_img={closeProjBtnImg} 
+                                    hover_src_img={closeProjBtnHoverImg} 
+                                    img_size_classes='w-[108px] h-[34px]' 
+                                    className='font-gridular text-[14px] leading-[8.82px] text-primaryRed normal-case'
+                                    btn_txt={<span className='flex items-center justify-center gap-1'><X size={12}/><span>Cancel</span></span>}  
+                                    alt_txt='project apply btn' 
+                                    onClick={handleCloseAddProjectModal}
+                                />
+                                <FancyButton 
+                                    src_img={saveBtnImg} 
+                                    hover_src_img={saveBtnHoverImg} 
+                                    img_size_classes='w-[108px] h-[34px]' 
+                                    className='font-gridular text-[12px] leading-[16.8px] text-primaryYellow normal-case'
+                                    btn_txt={<span className='flex items-center justify-center gap-1'><CheckCheck size={12}/><span>Add project</span></span>} 
+                                    alt_txt='Add personal project btn' 
+                                    onClick={handleAddProject}
+                                />
                             </div>
                         </div>
                     </div>
@@ -481,17 +501,3 @@ const EditProfilePage = () => {
 }
 
 export default EditProfilePage
-
-
-
-// validation for btn add project
-// ${Object.keys(errors).map((i, idx) => {
-//     if (errors[i] !== '') {
-//         return false
-//     } else {
-//         return true
-//     }
-// }) > 0 
-// ? "bg-[#FAF1B11C] text-[#FAF1B1E0] opacity-50" 
-// : "bg-[#FAF1B11C] text-[#FAF1B1E0]"
-// }  
