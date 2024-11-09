@@ -7,7 +7,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUserDetails } from '../service/api'
-import { LayoutDashboardIcon, LogOut, LucideInfo, SquareChartGantt, User } from 'lucide-react'
+import { Building2, LayoutDashboardIcon, LogOut, LucideInfo, SquareChartGantt, User } from 'lucide-react'
 import GlyphEffect from './ui/GlyphEffect'
 
 import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
@@ -73,17 +73,28 @@ const Navbar = () => {
                 <div className='absolute top-12 w-[196px] bg-[#101C7703] rounded-md transition duration-300 pb-1 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase backdrop-blur-[52px]'>
                   <Link to={'/profile'} className='hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-5 rounded-sm gap-2'><User size={18} color='#FBF1B8' />My Profile</Link>
                   
-                  <Link to={'/userprojects'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><SquareChartGantt size={18} color='#FBF1B8' />List Projects</Link>
+                  {
+                    userDetail?.role != 'user' && 
+                    <>
+                      <Link to={'/userprojects'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><SquareChartGantt size={18} color='#FBF1B8' />List Projects</Link>
+                    </>
+                  }
                   
                   {
                     userDetail?.role === 'admin' && 
                     <>
                       <Link to={'/requests'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><LucideInfo size={18} color='#FBF1B8' />Requests</Link>
-                      
                     </>
                   }
                   <Link to={'/'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><LayoutDashboardIcon size={18} color='#FBF1B8' />Dashboard</Link>
-                  
+                  <div className='h-[1px] w-full bg-white7 rounded-sm' />
+                  {
+                    userDetail?.role === 'user' && 
+                    <>
+                      <Link to={'/verifyorg'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><Building2 size={18} color='#FBF1B8' />Join as Org</Link>
+                      <div className='h-[1px] w-full bg-white7 rounded-sm' />
+                    </>
+                  }
                   <div onClick={signout} className='text-[#E38070] hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 rounded-sm gap-2'><LogOut size={18} color='#E38070' />Sign out</div>
                 </div>
               }
