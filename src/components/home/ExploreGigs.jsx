@@ -107,7 +107,7 @@ const ExploreGigs = ({userId}) => {
         .sort((a, b) => {
             return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
     });
-}, [userProjects, sortOrder, weeksFilter]);
+}, [userProjects, sortOrder, weeksFilter, selectedTab]);
 
 const handleWeeksFilterChange = (event) => {
   const value = event.target.value;
