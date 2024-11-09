@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import wpllogo from '../assets/svg/wolf_logo.svg'
 import hourglass from '../assets/images/green_hourglass.png'
 import wolfButton from '../assets/images/BW.png'
@@ -68,8 +68,13 @@ const Navbar = () => {
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
                   <Link to={'/userprojects'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><SquareChartGantt size={18} color='#FBF1B8' />My Projects</Link>
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
-                  <Link to={'/requests'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><LucideInfo size={18} color='#FBF1B8' />Requests</Link>
-                  <div className='h-[1px] w-full bg-white7 rounded-sm' />
+                  {
+                    userDetail?.role === 'admin' && 
+                    <>
+                      <Link to={'/requests'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><LucideInfo size={18} color='#FBF1B8' />Requests</Link>
+                      <div className='h-[1px] w-full bg-white7 rounded-sm' />
+                    </>
+                  }
                   <Link to={'/'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><LayoutDashboardIcon size={18} color='#FBF1B8' />Dashboard</Link>
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
                   <div onClick={signout} className='text-[#E38070] hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 rounded-sm gap-2'><LogOut size={18} color='#E38070' />Sign out</div>
