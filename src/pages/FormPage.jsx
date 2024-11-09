@@ -1,4 +1,4 @@
-import { AlignLeft, Info } from 'lucide-react'
+import { AlignLeft, Hourglass, Info } from 'lucide-react'
 import headerPng from '../assets/images/prdetails_header.png'
 import wpllogo from '../assets/images/wpl_prdetails.png'
 import wplwolfLogo from '../assets/svg/wolf_logo.svg'
@@ -12,9 +12,13 @@ import GithubTeamSearchBox from '../components/form/GithubTeamSearchBox';
 import akashProfile from '../assets/dummy/akash_profile.png'
 import sumeetProfile from '../assets/dummy/sumeet_profile.png'
 import rahulProfile from '../assets/dummy/rahul_profile.png'
-import { applyForProject, getProjectDetails, getUserDetails } from '../service/api';
+import { applyForProject, getProjectDetails, getProjectSubmissions, getUserDetails } from '../service/api';
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
+
+import FancyButton from '../components/ui/FancyButton'
+import btnImg from '../assets/svg/btn_subtract_semi.png'
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 
 const whitespaceRegex = /^\s*$/;
 const emailIdRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -57,6 +61,15 @@ const FormPage = () => {
     enabled: !!id
   })
 
+  const {data: projectSubmissions, isLoading: isLoadinProjectSubmissions} = useQuery({
+    queryKey: ['projectSubmissions', id],
+    queryFn: () => getProjectSubmissions(id),
+    enabled: !!id
+  })
+
+  console.log();
+  
+
   const submittedDetails = () => {
     return(
       <div className='flex flex-col justify-evenly gap-4 h-[230px] items-center'>
@@ -66,13 +79,22 @@ const FormPage = () => {
           <p className='font-inter text-[16px] leading-[22px] text-white'>Submitted details</p>
           <p className='text-[13px] leading-[15.6px] font-medium text-white32'>Explore other bounties/projects that you can help.</p>
         </div>
-        <button className='w-full text-white48 font-gridular text-[14px] leading-[20px] bg-cardBlueBg h-[43px]'
+        <FancyButton 
+          src_img={btnImg}
+          hover_src_img={btnHoverImg}
+          img_size_classes='w-[496px] h-[44px]'
+          btn_txt='Explore Projects'
+          alt_txt='explore projects button'
+          className='font-gridular text-[14px] leading-[20px] text-primaryYellow'
+          onClick={() => navigate('/')}
+        />
+        {/* <button className='w-full text-white48 font-gridular text-[14px] leading-[20px] bg-cardBlueBg h-[43px]'
           onClick={() => {
-            navigate('/')
+            
           }}
         >
           Explore Projects
-        </button>
+        </button> */}
       </div>
     )
   }
@@ -102,8 +124,10 @@ const FormPage = () => {
     if(validateForm()) {
 
       const data = {
-        name: formData.username,
-        email: formData.emailId,
+        // name: formData.username,
+        // email: formData.emailId,
+        name: userDetails?.displayName,
+        email: userDetails?.email,
         userId: user_id,
         projectId: id,
         teammates: formData.gitTeammates,
@@ -195,7 +219,7 @@ const FormPage = () => {
               </p>
               <div className='flex flex-row gap-2 font-inter text-[14px] leading-[20px] text-white32'>
                 <p><span className='text-white88'>136</span> Interested</p>
-                <p><span className='text-white88'>1.99k</span> Submissions</p>
+                {isLoadinProjectSubmissions ? <Hourglass size={12} /> : <span className='text-white88'>{projectSubmissions?.length}</span>} Submissions
               </div>
             </div>  
 
@@ -220,7 +244,7 @@ const FormPage = () => {
                                 </label>
                                 <input 
                                   defaultValue={userDetails?.displayName}
-                                  className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.username && 'border border-errorMsgRedText'}`} 
+                                  className={`bg-white7 rounded-[6px] cursor-not-allowed text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.username && 'border border-errorMsgRedText'}`} 
                                   placeholder='Jhon Doe'
                                   name='username'
                                   id='username'
@@ -243,7 +267,7 @@ const FormPage = () => {
                                 </label>
                                 <input 
                                   defaultValue={userDetails?.email}
-                                  className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.emailId && 'border border-errorMsgRedText'}`}
+                                  className={`bg-white7 rounded-[6px] cursor-not-allowed text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.emailId && 'border border-errorMsgRedText'}`}
                                   placeholder='Jhon@Doe.com'
                                   name='emailId'
                                   id='emailId'
@@ -267,7 +291,7 @@ const FormPage = () => {
                               Do you have experience designing application? {errors.username && <span className='text-errorMsgRedText'>*</span>}
                             </label>
                             <textarea 
-                              className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.appExp && 'border border-errorMsgRedText'}`}
+                              className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.appExp && 'border border-errorMsgRedText'}`}
                               placeholder='I am a preety good dev'
                               rows={3}
                               name='appExp'
@@ -290,7 +314,7 @@ const FormPage = () => {
                             Portfolio link
                           </label>
                           <input 
-                            className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`}
+                            className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`}
                             placeholder='https://www.johndoe.com'
                             name='portfolioLink'
                             id='portfolioLinkid'
@@ -307,7 +331,7 @@ const FormPage = () => {
                             </label>
                             <input 
                               defaultValue={userDetails?.walletAddress}
-                              className={`bg-white7 rounded-[6px] placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.ercAddress ? 'border border-errorMsgRedText text-errorMsgRedText' : 'text-white48'}`}
+                              className={`bg-white7 rounded-[6px] placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.ercAddress ? 'border border-errorMsgRedText text-errorMsgRedText' : 'text-white88'}`}
                               placeholder='0xabc1234....'
                               name='ercAddress'
                               id='ercAddress'
@@ -321,13 +345,18 @@ const FormPage = () => {
                             }
                         </div>
                         <GithubTeamSearchBox teamList={githubTeammatesList} />
-                        <button 
-                          className='w-full text-white48 text-[14px] leading-[20px] bg-cardBlueBg h-[43px] mb-56 hover:bg-white12' 
-                          onClick={handleSubmitForm}
-                        >
-                          Submit
-                        </button>
-
+                        
+                        <div className="mb-56">
+                          <FancyButton 
+                            src_img={btnImg}
+                            hover_src_img={btnHoverImg}
+                            img_size_classes='w-[496px] h-[44px]'
+                            btn_txt='Submit'
+                            alt_txt='apply project form submit button'
+                            className='font-gridular text-[14px] leading-[20px] text-primaryYellow'
+                            onClick={handleSubmitForm}
+                          />
+                        </div>
                     </div>
 
                 </div>

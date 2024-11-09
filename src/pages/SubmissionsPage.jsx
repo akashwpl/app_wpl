@@ -3,11 +3,15 @@ import React, { useEffect, useState } from 'react'
 import { acceptRejectSubmission, getProjectDetails, getProjectSubmissions } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom';
 import headerPng from '../assets/images/prdetails_header.png'
-import { AlignLeft, CheckCheck, ChevronLeft, ChevronRight, TriangleAlert, X } from 'lucide-react';
+import { AlignLeft, CheckCheck, CheckCircle2, ChevronLeft, ChevronRight, TriangleAlert, X } from 'lucide-react';
 import wpllogo from '../assets/images/wpl_prdetails.png'
-import checkTick from '../assets/images/check-tick.png'
-
-
+import greenBtnImg from '../assets/svg/green_btn_subtract.png'
+import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png'
+import redBtnImg from '../assets/svg/close_proj_btn_subtract.png'
+import redBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png'
+import btnImg from '../assets/svg/btn_subtract_semi.png'
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
+import FancyButton from '../components/ui/FancyButton';
 
 const SubmissionsPage = () => {
 
@@ -24,8 +28,6 @@ const SubmissionsPage = () => {
         queryFn: () => getProjectDetails(id),
         enabled: !!id
     })
-
-    console.log('projectDetails query', projectDetails)
 
     const [currentPage, setCurrentPage] = useState(page - 1);
     const [projectAccepted, setProjectAccepted] = useState(false);
@@ -80,7 +82,7 @@ const SubmissionsPage = () => {
             {projectAccepted 
                 ? submittedDetails(projectDetails, navigate)
                 : <>
-                    <div className='flex flex-col justify-center items-center'>
+                    <div className='flex flex-col justify-center items-center mb-10'>
                         <div className='w-[350px] md:w-[480px]'>
                             <div className='-translate-y-8'>
                                 <img src={wpllogo} alt="WPL Logo" className='size-[72px]'/>
@@ -94,9 +96,9 @@ const SubmissionsPage = () => {
                                 </div>
                                 </div>
 
-                                <div className='text-[14px] text-white88 font-inter flex items-center gap-1 mt-3'>
-                                <p>{currentSubmission?.user?.projectsCompleted} <span className='text-white32'>Projects Completed</span></p>
-                                <p>${currentSubmission?.user?.totalEarned} <span className='text-white32'>Earned</span></p>
+                                <div className='text-[14px] text-white88 font-inter flex items-center gap-2 mt-3'>
+                                    <p>{currentSubmission?.user?.projectsCompleted || '--'} <span className='text-white32'>Projects Completed</span></p>
+                                    <p>${currentSubmission?.user?.totalEarned} <span className='text-white32'>Earned</span></p>
                                 </div>
                             </div>
 
@@ -146,7 +148,7 @@ const SubmissionsPage = () => {
                                         >
                                             Portfolio link
                                         </label>
-                                        <a href={currentSubmission?._doc?.portfolioLink} target='_blank' className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 cursor-pointer`}>{currentSubmission?._doc?.portfolioLink}</a>
+                                        <a href={currentSubmission?._doc?.portfolioLink} target='_blank' className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 hover:underline cursor-pointer`}>{currentSubmission?._doc?.portfolioLink}</a>
                                         </div>
 
                                         <div className='flex flex-col gap-1 w-full mb-20'>
@@ -166,6 +168,7 @@ const SubmissionsPage = () => {
 
                     <div className='fixed bottom-0 left-0 w-full bg-[#091044] flex justify-between items-center px-14 h-[70px]'>
                         <div className='flex justify-between items-center gap-2'>
+                        
                             <button
                                 onClick={goToPreviousPage}
                                 disabled={currentPage === 0}
@@ -192,9 +195,25 @@ const SubmissionsPage = () => {
                                     You have rejected this submission
                                 </div>
                             </div> 
-                        :   <div className='flex items-center gap-2'>
-                                <button onClick={() => handleAccpetReject('rejected')} className='px-4 py-1 bg-[#F03D3D1A] text-[#E38070] border border-[#E38070] rounded-md flex items-center gap-1'><X size={14}/>Reject</button>
-                                <button onClick={() => handleAccpetReject('accepted')} className='px-4 py-1 bg-[#0ED0651A] text-[#9FE7C7] border border-[#9FE7C7] rounded-md flex items-center gap-1'><CheckCheck size={14}/>Accept</button>
+                        :   <div className='flex items-center gap-4'>
+                                <FancyButton 
+                                    src_img={redBtnImg} 
+                                    hover_src_img={redBtnHoverImg} 
+                                    img_size_classes='w-[160px] h-[44px]' 
+                                    className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5'
+                                    btn_txt={<span className='flex items-center justify-center gap-2'><X size={14}/><span>Reject</span></span>} 
+                                    alt_txt='submission reject btn' 
+                                    onClick={() => handleAccpetReject('rejected')}
+                                />
+                                <FancyButton 
+                                    src_img={greenBtnImg} 
+                                    hover_src_img={greenBtnHoverImg} 
+                                    img_size_classes='w-[160px] h-[44px]' 
+                                    className='font-gridular text-[14px] leading-[16.8px] text-primaryGreen mt-0.5'
+                                    btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Accept</span></span>}  
+                                    alt_txt='submission accept btn' 
+                                    onClick={() => handleAccpetReject('accepted')}
+                                />
                             </div>
                         }
                     </div>
@@ -205,32 +224,39 @@ const SubmissionsPage = () => {
 }
 
 const submittedDetails = (projectDetails, navigate) => {
-    console.log('projectDetails', projectDetails)
+
+    const handleNavigateToProjectDetails = () => {
+        navigate(`/projectdetails/${projectDetails._id}`);
+    }
+
     return(
-        <div className='flex justify-center mt-4'>
-            <div className='flex flex-col justify-evenly gap-4 h-[230px] w-[380px] items-center'>
-                <div className='bg-white/10 size-full p-2 flex gap-2 rounded-sm'>
+        <div className='flex justify-center items-center mt-4'>
+            <div className='max-w-[469px] w-full'>
+                <div className='flex gap-4 border border-dashed border-[#FFFFFF1F] bg-[#FCBF041A] rounded-md px-4 py-3'>
                     <div>
                         <div className='size-16 rounded-sm bg-white/10'/>
                     </div>
                     <div>
-                        <p className='text-[20px] text-white88 text-wrap'>{projectDetails?.title}</p>
-                        <p className='text-[13px] text-white32'>@{projectDetails?.organisationHandle}</p>
+                        <p className='text-white88 font-gridular text-[20px] leading-[24px] text-wrap'>{projectDetails?.title}</p>
+                        <p className='text-white32 font-semibold text-[13px] font-inter'>@{projectDetails?.organisationHandle}</p>
                     </div>
                 </div>
-                <div className='h-[1px] w-full bg-white7'/>
-                <img width={60} src={checkTick} alt="" />
-                <div className='flex flex-col items-center gap-1'>
-                    <p className='font-inter text-[16px] leading-[22px] text-white'>Updated details</p>
-                    <p className='text-[13px] leading-[15.6px] font-medium text-white32'>You can now view updated details of the project overview</p>
+                <div className='flex flex-col justify-center items-center mt-8'>
+                    <div><CheckCircle2 fill='#FBF1B8' strokeWidth={1} size={54}/></div>
+                    <div className='text-white font-inter'>Updated details</div>
+                    <p className='text-white32 text-[13px] font-semibold font-inter'>You can now view updated details of the project overview</p>
                 </div>
-                <button className='w-full text-primaryYellow font-gridular text-[14px] leading-[20px] bg-cardBlueBg py-2 rounded-md'
-                    onClick={() => {
-                        navigate(`/projectdetails/${projectDetails?._id}`)
-                    }}
-                >
-                   View Project
-                </button>
+                <div className='mt-6'>
+                    <FancyButton 
+                        src_img={btnImg} 
+                        hover_src_img={btnHoverImg} 
+                        img_size_classes='w-[490px] h-[44px]' 
+                        className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                        btn_txt='view project' 
+                        alt_txt='view projects btn' 
+                        onClick={handleNavigateToProjectDetails}
+                    />
+                </div>
             </div>
         </div>
     )

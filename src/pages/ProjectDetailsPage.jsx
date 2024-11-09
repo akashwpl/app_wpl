@@ -19,7 +19,13 @@ import { useSelector } from 'react-redux'
 import CustomModal from '../components/ui/CustomModal'
 import Tabs from '../components/ui/Tabs'
 import { calcDaysUntilDate, calculateRemainingDaysAndHours, convertTimestampToDate } from '../lib/constants'
-
+import FancyButton from '../components/ui/FancyButton'
+import btnImg from '../assets/svg/btn_subtract_semi.png'
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
+import closeProjBtnImg from '../assets/svg/close_proj_btn_subtract.png'
+import closeProjBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png'
+import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
+import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
 
 const initialTabs = [
   {id: 'overview', name: 'Overview', isActive: true},
@@ -157,7 +163,7 @@ const ProjectDetailsPage = () => {
               </div>
               <p className='text-[14px] text-white32 leading-5'>@{projectDetails?.organisationHandle || orgHandle}</p>
               <div className='flex gap-2 leading-5 font-inter text-[14px] mt-2'>
-                <p className='text-white88'>DUMMY <span className='text-white32'>Interested</span></p>
+                {/* <p className='text-white88'>DUMMY <span className='text-white32'>Interested</span></p> */}
                 <p className='text-white88'>{totalSubmissions} <span className='text-white32'>Submissions</span></p>
               </div>
             </div>
@@ -272,20 +278,45 @@ const ProjectDetailsPage = () => {
               </Accordion>
             </div>
               
-            {isOwner ? 
+            {isOwner ?
+              projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> :
                <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
-                {projectDetails?.status == 'closed' ? <div className='text-[#E38070] text-[14px] font-inter flex justify-center items-center gap-1 font-semibold'><TriangleAlert size={20}/> Project is closed</div> : <>
-                  <button onClick={() => setShowCloseProjectModal(true)} className='border border-[#E38070] w-full bg-[#E38070]/10 text-[#E38070] py-2 rounded-md font-gridular text-[14px] hover:bg-[#E38070]/20'>Close Project</button>
-                  <button onClick={editProject} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular text-[14px] hover:bg-primaryYellow/10'>Edit Project</button>
-                </>
-                }
-                </div>
-            :
-              <div className='mx-4 mt-4'>
-                {projectDetails?.status == 'closed' ? <div className='text-[#E38070] text-[14px] font-inter flex justify-center items-center gap-1 font-semibold'><TriangleAlert size={20}/> Project is closed</div> :
-                  <button onClick={applyForProject} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular hover:bg-primaryYellow/10'>Apply</button>
-                }
+                <FancyButton 
+                  src_img={closeProjBtnImg} 
+                  hover_src_img={closeProjBtnHoverImg} 
+                  img_size_classes='w-[162px] h-[44px]' 
+                  className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5'
+                  btn_txt='Close project' 
+                  alt_txt='project close btn' 
+                  onClick={() => setShowCloseProjectModal(true)}
+                />
+                <FancyButton 
+                  src_img={menuBtnImg} 
+                  hover_src_img={menuBtnImgHover} 
+                  img_size_classes='w-[162px] h-[44px]' 
+                  className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                  btn_txt='Edit project' 
+                  alt_txt='project edit btn' 
+                  onClick={editProject}
+                />
               </div>
+            :
+              <>
+                {projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> : 
+              
+                  <div className='mx-4 mt-4'>
+                    <FancyButton 
+                      src_img={btnImg} 
+                      hover_src_img={btnHoverImg} 
+                      img_size_classes='w-[342px] h-[44px]' 
+                      className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                      btn_txt='Apply' 
+                      alt_txt='project apply btn' 
+                      onClick={applyForProject}
+                    />
+                  </div>
+                }
+                </>
             }
           </div>
         </div>
@@ -295,11 +326,11 @@ const ProjectDetailsPage = () => {
         <div className='bg-primaryBlue w-[390px] h-[150px] px-4 flex flex-col justify-center items-center'>
           <div className='flex items-center gap-2'>
               <TriangleAlert size={28} className='text-cardRedText'/>
-              <p className='text-white88 font-semibold'>Are you sure you want close the project?</p>
+              <p className='text-white88 font-semibold'>Are you sure you want to close the project ?</p>
           </div>
           <div className='flex justify-end items-center w-full mt-5 gap-2'>
-            <button onClick={() => setShowCloseProjectModal(false)} className='px-4 py-1 rounded-md bg-white12 text-white64 hover:bg-white4'>Cancel</button>
-            <button onClick={closeProject} className='px-6 py-1 rounded-md bg-cardRedBg text-cardRedText hover:bg-cardRedText/10'>Close</button>
+            <button onClick={closeProject} className='px-6 py-1 rounded-md bg-cardRedBg text-cardRedText hover:bg-cardRedText/30'>Close</button>
+            <button onClick={() => setShowCloseProjectModal(false)} className='px-5 py-1 rounded-md bg-white12 text-white64 hover:bg-white4'>Cancel</button>
           </div>
         </div>
       </CustomModal>

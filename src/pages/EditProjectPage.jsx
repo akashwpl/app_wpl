@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle2, ChevronDown, Menu, Plus, Trash, Trophy, Upload, X } from 'lucide-react'
+import { ArrowLeft, CheckCheck, CheckCircle2, ChevronDown, Menu, Plus, Trash, Trophy, Upload, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
 import {
@@ -9,12 +9,17 @@ import {
 } from "../components/ui/accordion"
 import USDCsvg from '../assets/svg/usdc.svg'
 import DiscordSvg from '../assets/svg/discord.svg'
-import { getProjectDetails, updateProjectDetails } from '../service/api'
+import { getProjectDetails, getUserOrgs, updateProjectDetails } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getTimestampFromNow } from '../lib/constants'
 import DatePicker from 'react-datepicker'
-// import '../components/ui/react-datepicker.css';
+import saveBtnImg from '../assets/svg/menu_btn_subtract.png'
+import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
+import btnImg from '../assets/svg/btn_subtract_semi.png'
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
+import FancyButton from '../components/ui/FancyButton'
+import { useSelector } from 'react-redux'
 
 const calcDaysUntilDate = (futureDate) => {
     const today = new Date();
@@ -34,6 +39,7 @@ const EditProjectPage = () => {
     const navigate = useNavigate();
 
     const { id } = useParams();
+    const user_id = useSelector((state) => state.user_id)
 
     const {data: projectDetails, isLoading: isLoadingProjectDetails} = useQuery({
         queryKey: ['projectDetails', id],
@@ -41,8 +47,14 @@ const EditProjectPage = () => {
         enabled: !!id
     })
 
+    const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
+        queryKey: ['userOrganisations', user_id],
+        queryFn: () => getUserOrgs(user_id),
+    })
+
     const [title, setTitle] = useState(projectDetails?.title || '');
     const [organisationHandle, setOrganisationHandle] = useState(projectDetails?.organisationHandle || '');
+    const [organisationId, setOrganisationId] = useState('');
     const [description, setDescription] = useState(projectDetails?.description || '');
     const [discordLink, setDiscordLink] = useState(projectDetails?.discordLink || '');
     const [about, setAbout] = useState(projectDetails?.about || '');
@@ -104,8 +116,6 @@ const EditProjectPage = () => {
             deadline: getTimestampFromNow(milestone.deliveryTime, milestone.timeUnit?.toLowerCase() || 'days', milestone.starts_in) // Add timestamp to each milestone
         }));
 
-        console.log('Updatedmilestones', updatedMilestones);
-
         if (validateFields()) {
             // Proceed with saving the data
             const updData = {
@@ -113,6 +123,7 @@ const EditProjectPage = () => {
                     title: title,
                     description: description,
                     organisationHandle: organisationHandle,
+                    organisationId: organisationId,
                     discordLink: discordLink,
                     about: about,
                 },
@@ -149,6 +160,17 @@ const EditProjectPage = () => {
         setMilestones(updatedMilestones)
     },[])
 
+    useEffect(() => {
+        if(!isLoadingUserOrgs) {
+            if(userOrganisations[0]?.status == 'pending') {
+                alert("Your Organisation is not yet approved by Admin. Please try again later.")
+                navigate('/sponsordashboard')
+            }
+            setOrganisationHandle(userOrganisations[0]?.organisationHandle)
+            setOrganisationId(userOrganisations[0]?._id)
+        }
+    },[isLoadingUserOrgs])
+
   return (
     <div className='mb-20'>
         <div className='flex items-center gap-1 pl-20 border-b border-white12 py-2'>
@@ -158,7 +180,7 @@ const EditProjectPage = () => {
 
         {!submitted ?
             <div className='flex justify-center items-center mt-4'>
-                <div className='max-w-[469px] w-full'>
+                <div className='max-w-[469px] w-full mb-12'>
                     <Accordion type="single" defaultValue="item-1" collapsible>
                         <AccordionItem value={`item-${1}`} key={1} className="border-none">
                             <AccordionTrigger className="text-white48 font-inter hover:no-underline border-b border-primaryYellow">
@@ -188,7 +210,8 @@ const EditProjectPage = () => {
                                                 type='text'
                                                 value={organisationHandle}
                                                 onChange={(e) => setOrganisationHandle(e.target.value)}
-                                                className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full'
+                                                className='cursor-not-allowed bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full'
+                                                disabled
                                             />
                                         </div>
                                         {errors.organisationHandle && <p className='text-[10px] font-medium text-red-500'>{errors.organisationHandle}</p>}
@@ -384,10 +407,15 @@ const EditProjectPage = () => {
                     </div>
 
                     <div className='mt-4'>
-                        <button className='flex justify-center items-center w-full border border-primaryYellow h-[43px]' onClick={handleAddMilestone}>
-                            <Plus size={14} className='text-primaryYellow'/>
-                            <p className='text-primaryYellow font-gridular text-[14px]'>Add milestone</p>
-                        </button>
+                        <FancyButton 
+                            src_img={btnImg} 
+                            hover_src_img={btnHoverImg} 
+                            img_size_classes='w-[470px] h-[44px]' 
+                            className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                            btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={14}/><span>Add milestone</span></span>} 
+                            alt_txt='add milestone btn' 
+                            onClick={handleAddMilestone}
+                        />
                     </div>                      
                 </div>
             </div>
@@ -396,7 +424,7 @@ const EditProjectPage = () => {
                 <div className='max-w-[469px] w-full'>
                     <div className='flex gap-4 border border-dashed border-[#FFFFFF1F] bg-[#FCBF041A] rounded-md px-4 py-3'>
                         <div>
-                            {/* <img src={} alt='dummy' className='size-[72px] aspect-square rounded-md'/> */}
+                            <img src='' alt='Profile Image' className='size-[72px] aspect-square rounded-md'/>
                         </div>
                         <div>
                             <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
@@ -410,8 +438,16 @@ const EditProjectPage = () => {
                         <p className='text-white32 text-[13px] font-semibold font-inter'>You can now view updated details of the project overview</p>
                     </div>
 
-                    <div className='mt-4'>
-                        <button onClick={handleNavigateToProjectDetails} className='flex justify-center items-center py-3 px-4 border border-primaryYellow text-primaryYellow w-full font-gridular'>View Project</button>
+                    <div className='mt-6'>
+                        <FancyButton 
+                            src_img={btnImg} 
+                            hover_src_img={btnHoverImg} 
+                            img_size_classes='w-[490px] h-[44px]' 
+                            className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                            btn_txt='view project' 
+                            alt_txt='view projects btn' 
+                            onClick={handleNavigateToProjectDetails}
+                        />
                     </div>
                 </div>
             </div>
@@ -428,7 +464,15 @@ const EditProjectPage = () => {
                 </div>
             </div>
             <div>
-                <button onClick={handleSave} className='bg-primaryYellow px-6 py-2 rounded-md text-[14px] font-inter'>Save</button>
+                <FancyButton 
+                    src_img={saveBtnImg} 
+                    hover_src_img={saveBtnHoverImg} 
+                    img_size_classes='w-[175px] h-[44px]' 
+                    className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                    btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Save</span></span>} 
+                    alt_txt='save project btn' 
+                    onClick={handleSave}
+                />
             </div>
         </div>
     </div>

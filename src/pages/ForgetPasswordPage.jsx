@@ -2,8 +2,8 @@ import { ArrowRight, EyeIcon, Info, MailWarningIcon, Menu, MessageSquareMoreIcon
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import loginBtnSubtract from '../assets/svg/btn_subtract2.png'
-import loginBtnHoverSubtract from '../assets/svg/btn_hover_subtract2.png'
+import loginBtnImg from '../assets/svg/btn_subtract_semi.png'
+import loginBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
 
 import FancyButton from '../components/ui/FancyButton'
 
@@ -61,7 +61,14 @@ const ForgetPasswordPage = () => {
 
             </div>
                 <div className='mt-4'>
-                  <FancyButton src_img={loginBtnSubtract} hover_src_img={loginBtnHoverSubtract} img_size_classes='w-[398px]' className='mt-1 font-gridular text-white64 text-[14px] leading-[8.82px]' btn_txt='reset password' onClick={() => {alert('New password set successfully');navigate('/onboarding');}} />
+                  <FancyButton 
+                    src_img={loginBtnImg} 
+                    hover_src_img={loginBtnHoverImg} 
+                    img_size_classes='w-[376px] h-[44px]' 
+                    className='mt-1 font-gridular text-white64 text-[14px] leading-[8.82px]' 
+                    btn_txt='reset password'
+                    onClick={() => {alert('New password set successfully');navigate('/onboarding');}}
+                  />
                 </div>
           </div>
 

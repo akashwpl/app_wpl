@@ -7,10 +7,8 @@ import { useDispatch } from 'react-redux'
 import headerPng from '../assets/images/prdetails_header.png'
 import wpllogo from '../assets/images/wpl_prdetails.png'
 import googleLogo from '../assets/svg/google_symbol.png'
-import loginBtnImg from '../assets/svg/login_btn.png'
-import loginBtnSubtract from '../assets/svg/btn_subtract2.png'
-import loginBtnHoverSubtract from '../assets/svg/btn_hover_subtract2.png'
-import signupBtnImg from '../assets/svg/signup_btn.png'
+import loginBtnImg from '../assets/svg/btn_subtract_semi.png'
+import loginBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
 
 import { setUserId } from '../store/slice/userSlice'
 import { getUserDetails } from '../service/api'
@@ -181,13 +179,13 @@ const OnBoarding = () => {
       {!isSignComplete ?
         <div className='mt-32'>
           {!isSignin ? 
-            <div onClick={navigateToOrgFormPage} className='flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md hover:bg-[#121534] cursor-pointer hover:underline'>
+            <div onClick={navigateToOrgFormPage} className='flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md hover:bg-[#121534] group-hover:underline cursor-pointer'>
               <Zap stroke='#97A0F1' size={12}/>
               <p className='text-white88'>Want to sponsor a Project? </p>
               <p className='text-white48'>Apply to be a part!</p>
             </div>
           : 
-            <div className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px]  rounded-md">
+            <div className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md">
               <Zap stroke='#97A0F1' size={12} />
               <p className='text-white88'>New to WPL?</p>
               <p className='text-white48'>Apply to be a part!</p>
@@ -236,11 +234,15 @@ const OnBoarding = () => {
 
             </div>
                 <div className='mt-4'>
-                  <FancyButton src_img={loginBtnSubtract} hover_src_img={loginBtnHoverSubtract} img_size_classes='w-[398px]' className='mt-1 font-gridular text-white64 text-[14px] leading-[8.82px]' btn_txt={isSignin ? 'login' : 'signup'} onClick={isSignin ? login : signUp} />
+                  <FancyButton 
+                    src_img={loginBtnImg} 
+                    hover_src_img={loginBtnHoverImg} 
+                    img_size_classes='w-[376px] h-[44px]' 
+                    className='mt-1 font-gridular text-white64 text-[14px] leading-[8.82px]' 
+                    btn_txt={isSignin ? 'login' : 'signup'} 
+                    onClick={isSignin ? login : signUp} 
+                  />
                 </div>
-              {/* <div className='mt-4 border border-primaryYellow py-1'>
-                <button onClick={isSignin ? login : signUp} className='w-full flex justify-center items-center text-primaryYellow'>{isSignin ? "Log In" : "Sign Up"}</button>
-              </div> */}
           </div>
 
           <div className='flex justify-center items-center mt-2 gap-2'>
