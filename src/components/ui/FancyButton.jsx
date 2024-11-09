@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-
 const FancyButton = ({
   src_img, 
   hover_src_img=src_img, 
@@ -10,6 +9,7 @@ const FancyButton = ({
   alt_txt='Image alt text', 
   isArrow=false,
   onClick,
+  disabled=false
 }) => {
 
   const [isHovered, setIsHovered] = useState(false);
@@ -18,10 +18,11 @@ const FancyButton = ({
 
   return (
     <button 
-      className='relative' 
+      className={`relative ${disabled && 'cursor-not-allowed'}`}
       onMouseEnter={handleHover}
       onMouseLeave={handleHover}
       onClick={onClick}
+      disabled={disabled}
     >
         <img 
           src={isHovered ? hover_src_img : src_img } 

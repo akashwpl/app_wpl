@@ -1,5 +1,5 @@
 import { submitMilestone, updateProjectDetails } from '../../service/api';
-import { ArrowUpRight, Clock, HeartCrack, Hourglass } from 'lucide-react'
+import { ArrowUpRight, CheckCheck, Clock, HeartCrack, Hourglass, TriangleAlert } from 'lucide-react'
 import { calculateRemainingDaysAndHours } from '../../lib/constants';
 import React, { useEffect } from 'react'
 
@@ -11,6 +11,11 @@ const MilestoneStatusCard = ({ data }) => {
 
     const handleSubmitMilestone = async () => {
         const res = await submitMilestone(data?._id);
+        if(res?.user_status === 'submitted') {
+            alert('Milestone submitted successfully')
+        } else {
+            alert('Something went wrong. Please try again later!')
+        }
     }
 
     const time_remain = calculateRemainingDaysAndHours(new Date(), data?.starts_in);
@@ -23,8 +28,27 @@ const MilestoneStatusCard = ({ data }) => {
                     <p className='text-[12px] text-white32 leading-[16px]'>Milestone Status</p>
                 </div>
                 <div className='flex items-center gap-1 font-inter'>
-                    <Hourglass size={14} className='text-white32'/>
-                    <p className='text-white48 text-[12px] leading-[14px]'>{data?.status}</p>
+                    {data?.status == 'idle' ? 
+                        <>
+                            <Hourglass size={14} className='text-white32'/>
+                            <p className='text-white48 text-[12px] leading-[14px]'>Idle</p>
+                        </>
+                    : data?.status == 'ongoing' ?
+                        <>
+                            <Hourglass size={14} className='text-white32'/>
+                            <p className='text-white48 text-[12px] leading-[14px]'>In Progress</p>
+                        </>
+                    :  data?.status == 'under_review' ?
+                        <>
+                            <TriangleAlert size={14} className='text-cardYellowText'/>
+                            <p className='text-cardYellowText text-[12px] leading-[14px]'>Under Review</p>
+                        </>
+                    :
+                        <>
+                            <CheckCheck size={14} className='text-white32'/>
+                            <p className='text-white48 text-[12px] leading-[14px]'>Completed</p>
+                        </>
+                    }
                 </div>
             </div>
             
@@ -34,7 +58,7 @@ const MilestoneStatusCard = ({ data }) => {
                     <p className='text-[12px] text-white32 leading-[16px]'>Starts in</p>
                 </div>
                 <div className='flex items-center gap-1'>
-                    <p className='text-white88 text-[12px] font-medium font-inter'>{time_remain.days} D {time_remain.hours} H</p>
+                    <p className='text-white88 text-[12px] font-medium font-inter'>{time_remain.days < 0 ? <span className='text-white48'>Project Started</span> : `${time_remain.days} D ${time_remain.hours} H`}</p>
                 </div>
             </div>
 
@@ -56,12 +80,11 @@ const MilestoneStatusCard = ({ data }) => {
                     hover_src_img={btnHoverImg} 
                     img_size_classes='w-[342px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                    btn_txt='submit milestone' 
+                    btn_txt={data?.status == 'under_review' || data?.status == 'closed' ? 're-submit milestone' : 'submit milestone'}  
                     alt_txt='project apply btn' 
                     onClick={handleSubmitMilestone}
                 />
             </div>
-            {/* <button onClick={handleSubmitMilestone} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular hover:bg-primaryYellow/10'>Submit Milestone</button> */}
         </div>
     )
 }

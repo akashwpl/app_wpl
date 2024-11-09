@@ -57,7 +57,7 @@ export const getUserProjects = async () => {
 
 export const updateProjectDetails = async (id, updData) => {
     try {
-        const response = await axiosInstance.put(`/projects/updateWithMilestone/${id}`, updData)
+        const response = await axiosInstance.put(`/projects/update/${id}`, updData)
         return response.data.data
     } catch (error) {
         handleForbiddenError(error)
