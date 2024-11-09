@@ -195,7 +195,14 @@ const SubmissionsPage = () => {
                                     You have rejected this submission
                                 </div>
                             </div> 
-                        :   <div className='flex items-center gap-4'>
+                        :  currentSubmission?._doc?.status == "accepted" 
+                        ?   <div className='text-cardGreenText'>
+                                <div className='flex items-center gap-1'>
+                                    <TriangleAlert size={16}/>
+                                    You have accepted this submission
+                                </div>
+                            </div> 
+                        :<div className='flex items-center gap-4'>
                                 <FancyButton 
                                     src_img={redBtnImg} 
                                     hover_src_img={redBtnHoverImg} 

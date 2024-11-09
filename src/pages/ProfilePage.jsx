@@ -1,23 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import wpllogo from '../assets/images/wpl_prdetails.png'
+import { useMemo, useState } from 'react'
 import headerPng from '../assets/images/prdetails_header.png'
+import wpllogo from '../assets/images/wpl_prdetails.png'
 
+import { ArrowUpRight, DiscIcon, Edit2, Mail, Send, TriangleAlert, X } from 'lucide-react'
+import PoWCard from '../components/profile/PoWCard'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "../components/ui/accordion"
-import PoWCard from '../components/profile/PoWCard'
-import { ArrowUpRight, DiscIcon, Edit2, Mail, Send, TriangleAlert, X } from 'lucide-react'
 
-import dummyPng from '../assets/dummy/Container.png'
-import { Link } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 import { useQuery } from '@tanstack/react-query'
-import { deleteProject, getUserDetails } from '../service/api'
+import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import dummyPng from '../assets/dummy/Container.png'
 import CustomModal from '../components/ui/CustomModal'
-import { BASE_URL } from '../lib/constants'
+import { deleteProject, getUserDetails } from '../service/api'
 
 
 const ProfilePage = () => {

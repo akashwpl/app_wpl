@@ -28,7 +28,7 @@ const OnBoarding = () => {
   const [experience, setExperience] = useState('')
   const [walletAddress, setWalletAddress] = useState('')
 
-  const [isSignin, setIsSignin] = useState(false)
+  const [isSignin, setIsSignin] = useState(true)
 
   const [isSignComplete, setIsSignComplete] = useState(false)
 
@@ -92,6 +92,10 @@ const OnBoarding = () => {
         return
       }
       if(res.status === 404) {
+        setError('Email not found')
+        return
+      }
+      if(res.status === 409) {
         setError('Email not found')
         return
       }
@@ -231,7 +235,7 @@ const OnBoarding = () => {
               </div>}
 
               {isSignin && 
-                <p className='mt-1 text-[12px] text-center text-white32 font-medium text-inter'>Forgot your Password?<span onClick={() => {console.log(setShowForgetPassDialog(true))}} className='text-primaryYellow cursor-pointer ml-[2px] hover:underline'>Reset it</span></p>
+                <p className='mt-1 text-[12px] text-center text-white32 font-medium text-inter'>Forgot your Password?<span onClick={() => {console.log(setShowForgetPassDialog(true))}} className='text-primaryYellow cursor-pointer ml-[4px] hover:underline'>Reset it</span></p>
               }
 
             </div>

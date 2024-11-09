@@ -23,7 +23,7 @@ const Leaderboard = () => {
 
     const [searchInput, setSearchInput] = useState()
     const [currentPage, setCurrentPage] = useState(1)
-    const itemsPerPage = 5
+    const itemsPerPage = 10
 
     const filteredData = useMemo(() => 
         searchInput

@@ -1,32 +1,36 @@
 import { useQuery } from "@tanstack/react-query"
-import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, DollarSign, LayoutGrid, ListFilter, TableProperties, TimerIcon } from "lucide-react"
+import { ArrowUpRight, LayoutGrid, ListFilter, TableProperties } from "lucide-react"
 import { useMemo, useState } from "react"
+import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { getUserDetails, getUserProjects } from "../../service/api"
+import exploreBtnHoverImg from '../../assets/svg/menu_btn_hover_subtract.png'
+import exploreBtnImg from '../../assets/svg/menu_btn_subtract.png'
+import { getUserProjects } from "../../service/api"
+import FancyButton from "../ui/FancyButton"
 import Spinner from "../ui/spinner"
 import Tabs from "../ui/Tabs"
 import ExploreGigsCard from "./ExploreGigsCard"
-import { useSelector } from "react-redux"
-import exploreBtnImg from '../../assets/svg/menu_btn_subtract.png'
-import exploreBtnHoverImg from '../../assets/svg/menu_btn_hover_subtract.png'
-import FancyButton from "../ui/FancyButton"
 
 import listAscendingSvg from '../../assets/svg/list-number-ascending.svg'
 import listDescendingSvg from '../../assets/svg/list-number-descending.svg'
 
+// TODO :: submission Highlight and hover effect
+// TODO ::  Leaderboard page clickable user and rediret to user profile
+
+
 const initialTabs = [
-  {id: 'building', name: 'Building', isActive: true},
-  {id: 'in_review', name: 'In Review', isActive: false},
+  {id: 'all', name: 'All', isActive: true},
+  {id: 'live', name: 'Live', isActive: false},
   {id: 'completed', name: 'Completed', isActive: false}
 ]
 
 const ExploreGigs = ({userId}) => {
 
   const navigate = useNavigate()
-  const { user_id } = useSelector((state) => state)
+  const { user_id, user_role } = useSelector((state) => state)
 
   const [tabs, setTabs] = useState(initialTabs)
-  const [selectedTab, setSelectedTab] = useState('building')
+  const [selectedTab, setSelectedTab] = useState('all')
   const [sortOrder, setSortOrder] = useState('ascending')
   const [sortBy, setSortBy] = useState('prize')
 
@@ -49,9 +53,6 @@ const ExploreGigs = ({userId}) => {
     setSelectedTab(id)
   }
 
-  const navigateToProjectDetails = () => {
-    navigate(`/allprojects`)
-  }
 
   // const filteredProjects = useMemo(() => {
   //   // Filter projects based on the selected tab
@@ -85,9 +86,10 @@ const ExploreGigs = ({userId}) => {
 
   const filteredProjects = useMemo(() => {
     let projectsToSort = [];
-    if (selectedTab === 'building') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
+    if (selectedTab === 'all') projectsToSort = userProjects?.filter(project => project.status == 'idle');
+    else if (selectedTab === 'live') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
     else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
-    else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
+    // else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
     else projectsToSort = userProjects;
 
     return projectsToSort
@@ -114,32 +116,28 @@ const handleWeeksFilterChange = (event) => {
   setWeeksFilter(prevFilter => prevFilter === value ? '' : value);
 };
 
-
-  const ExploreGigsBtn = () => {
-    return (
-      <FancyButton 
-        src_img={exploreBtnImg} 
-        hover_src_img={exploreBtnHoverImg} 
-        img_size_classes='w-[175px] h-[44px]' 
-        className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-        btn_txt={<span className='flex items-center justify-center gap-2'><span>Explore all</span><ArrowUpRight size={18}/></span>} 
-        alt_txt='save project btn' 
-        onClick={navigateToProjectDetails}
-      />
-    )
+const navigateToProjectDetails = () => {
+  if(user_role == 'sponsor') {
+    navigate('/ownedprojects')
+  } else {
+    navigate('/allprojects')
   }
-
-  // const buildingProjects = useMemo(() => userProjects && userProjects?.filter((project) => project?.status == 'ongoing') , [userProjects])
-
-  console.log('userProjects', userProjects)
-  console.log('filteredProjects', filteredProjects)
+}
 
   return (
     <div>
         {userId == user_id ? 
           <div className="flex justify-between items-center">
             <h1 className="font-gridular text-primaryYellow text-[20px]">My Gigs</h1>
-            {ExploreGigsBtn()}
+            <FancyButton 
+              src_img={exploreBtnImg} 
+              hover_src_img={exploreBtnHoverImg} 
+              img_size_classes='w-[175px] h-[44px]' 
+              className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+              btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
+              alt_txt='save project btn' 
+              onClick={navigateToProjectDetails}
+            />
           </div>
           : null
         }
@@ -196,16 +194,32 @@ const handleWeeksFilterChange = (event) => {
               <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
             </div>
               <div className="flex justify-center items-center mt-6">
-                {ExploreGigsBtn()}
+                <FancyButton 
+                  src_img={exploreBtnImg} 
+                  hover_src_img={exploreBtnHoverImg} 
+                  img_size_classes='w-[175px] h-[44px]' 
+                  className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                  btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
+                  alt_txt='save project btn' 
+                  onClick={navigateToProjectDetails}
+                />
               </div>
             </div>
-            : selectedTab !== 'building' && filteredProjects?.length == 0 ? <div className="mt-24">
+            : selectedTab !== 'live' && filteredProjects?.length == 0 ? <div className="mt-24">
               <div className="flex flex-col justify-center items-center gap-2">
                 <div className="font-gridular text-white88 text-[24px]">Oops! Looks like you haven't submitted a project :(</div>
                 <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
               </div>
                 <div className="flex justify-center items-center mt-6">
-                  {ExploreGigsBtn()}
+                  <FancyButton 
+                    src_img={exploreBtnImg} 
+                    hover_src_img={exploreBtnHoverImg} 
+                    img_size_classes='w-[175px] h-[44px]' 
+                    className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                    btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
+                    alt_txt='save project btn' 
+                    onClick={navigateToProjectDetails}
+                  />
                 </div>
             </div>
             : filteredProjects?.map((project, idx) => <div key={idx} className={`my-4 ${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col hover:bg-white4"}`}> 

@@ -37,7 +37,7 @@ const AddProjectPage = () => {
     const [aboutProject, setAboutProject] = useState('');
     const [discordLink, setDiscordLink] = useState('');
     const [logo, setLogo] = useState(null);
-    const [role, setRole] = useState('');
+    const [role, setRole] = useState([]);
     const [logoPreview, setLogoPreview] = useState('');
     const [errors, setErrors] = useState({}); // State for validation errors
 
@@ -287,14 +287,15 @@ const AddProjectPage = () => {
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Role<span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
-                                            <div className='w-full h-full'>
-                                                <select onChange={(e) => setRole(e.target.value)} className="bg-transparent h-[32px] border-transparent focus:outline-0 rounded-[6px] text-white88 placeholder:text-white48 w-full font-inter text-[14px] leading-[16.8px]">
-                                                    <option value="product_designer" className='pl-2'>Designer</option>
-                                                    <option value="frontend" className='pl-2'>Frontend</option>
-                                                    <option value="backend" className='pl-2'>Backend</option>
-                                                    <option value="ui_ux" className='pl-2'>UI/UX</option>
-                                                </select>
-                                            </div>
+                                                <div>
+                                                    <div className='bg-white7 text-white88 rounded-md py-1 px-2 flex justify-between items-center'>
+                                                        role
+                                                        <X size={14} className='cursor-pointer' onClick={() => setRole('')}/>
+                                                    </div>
+                                                </div>
+                                                <div className='w-full h-full'>
+                                                   <input className='bg-white32 w-full rounded-md'/> 
+                                                </div>
                                             </div>
                                             {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
                                         </div>
