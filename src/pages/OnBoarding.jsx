@@ -168,7 +168,6 @@ const OnBoarding = () => {
   },[showForgetPassDialog])
 
   // TODO :: FORGOT PASSWORD
-  // TODO :: filter by USDC and deadline in all projects page
   // TODO :: role UI in project details to update
   // TODO :: project github teammates
   // TODO :: animation same as landing
