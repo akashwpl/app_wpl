@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCheck, CheckCheckIcon, Info, Plus, Search, Upload, X } from 'lucide-react'
+import { ArrowLeft, CheckCheck, CheckCheckIcon, Info, Pen, Plus, Search, Upload, X } from 'lucide-react'
 import React, { useRef, useState } from 'react'
 import CustomModal from '../components/ui/CustomModal'
 import PoWCard from '../components/profile/PoWCard'
@@ -266,28 +266,10 @@ const EditProfilePage = () => {
         
         <div className='w-[340px] md:w-[480px] mt-2 mb-20'>
             <div className='flex items-center gap-4'>
-                {projectDetails.imgPreview ? 
-                    <div className='relative'>
-                        <img src={projectDetails.imgPreview} alt='dummy' className='size-[72px] aspect-square'/>
-                        <div onClick={handleRemoveImg} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
-                    </div>
-                :   <>
-                        <div onClick={handleUploadClick} className='bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'>
-                            <Upload size={16} className='text-white32'/>
-                            <input
-                                name='img'
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleChange}
-                                style={{ display: 'none' }}
-                            />                           
-                        </div>
-                        <div className='text-[14px] font-inter'>
-                            <p className='text-white88'>Add a cover image</p>
-                            <p className='text-white32'>Recommended 1:1 aspect ratio</p>
-                        </div>
-                    </>
-                }
+                <div className='relative'>
+                    <img src={userDetails?.pfp} alt='dummy' className='size-[72px] aspect-square'/>
+                    <div onClick={handleUploadClick} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><Pen size={14} className='text-black/60'/></div>
+                </div>
             </div>
 
             <div className='h-[1px] w-full bg-white7 my-4'/>

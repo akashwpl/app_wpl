@@ -132,7 +132,7 @@ const handleWeeksFilterChange = (event) => {
 
 const navigateToProjectDetails = () => {
   if(user_role == 'sponsor') {
-    navigate('/ownedprojects')
+    navigate('/userprojects')
   } else {
     navigate('/allprojects')
   }

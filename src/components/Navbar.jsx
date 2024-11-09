@@ -108,7 +108,7 @@ const Navbar = () => {
                     className='w-[196px] h-[44px]'
                   />
                   <div className="absolute inset-0 top-1/4 uppercase flex items-center justify-center gap-2 mb-2">
-                    <img src={wolfButton} width={18} alt='wolf' /> 
+                    <img src={userDetail?.pfp} width={18} alt='wolf' /> 
                     <p className='font-gridular text-primaryYellow text-[14px] leading-[8.82px]'>{userDetail?.displayName}</p>
                     <img src={arrow} width={14} alt='down arraow' />
                   </div>
