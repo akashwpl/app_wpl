@@ -13,7 +13,6 @@ const SponsorDashboard = () => {
         queryFn: () => getUserDetails(user_id),
         enabled: !!user_id,
     })
-
     
     return (
         <div className='flex flex-row justify-between mt-4 mx-8'>

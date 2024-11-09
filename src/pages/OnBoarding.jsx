@@ -1,4 +1,4 @@
-import { ArrowRight, EyeIcon, Info, MailWarningIcon, Menu, MessageSquareMoreIcon, Zap } from 'lucide-react'
+import { ArrowRight, EyeIcon, EyeOffIcon, Info, MailWarningIcon, Menu, MessageSquareMoreIcon, Zap } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BASE_URL, email_regex } from '../lib/constants'
@@ -174,15 +174,18 @@ const OnBoarding = () => {
   // TODO :: animation same as landing
   // TODO :: add reward to leaderboard based on user total rewards earned
 
+  // CLIENT_SECRET = "b643efa0e033531ef1d41d987190fe250483793d"
+  // PRIVATE_KEY = "kbDC8BeZIGG1bTKJpvPdj+Rqw9Zf18IFAd21Jw/JBRI="
+
   return (
     <div className='flex justify-center items-center'>
       {!isSignComplete ?
         <div className='mt-32'>
           {!isSignin ? 
-            <div onClick={navigateToOrgFormPage} className='flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md hover:bg-[#121534] group-hover:underline cursor-pointer'>
+            <div onClick={navigateToOrgFormPage} className='flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md hover:bg-[#121534] group  cursor-pointer'>
               <Zap stroke='#97A0F1' size={12}/>
-              <p className='text-white88'>Want to sponsor a Project? </p>
-              <p className='text-white48'>Apply to be a part!</p>
+              <p className='text-white88 group-hover:underline'>Want to sponsor a Project? </p>
+              <p className='text-white48 group-hover:underline'>Apply to be a part!</p>
             </div>
           : 
             <div className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md">
@@ -220,7 +223,7 @@ const OnBoarding = () => {
               </div>
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type={isPass ? 'password' : 'text'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
-                <EyeIcon className='cursor-pointer' onClick={togglePasswordField} stroke='#FFFFFF52'/>
+                {isPass ? <EyeIcon className='cursor-pointer' onClick={togglePasswordField} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={togglePasswordField} stroke='#FFFFFF52'/> }
               </div>
 
               {error && <div className='bg-[#F03D3D1A] rounded-md px-2 py-2 mt-4 flex items-center gap-1'>
