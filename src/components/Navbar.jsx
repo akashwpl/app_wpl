@@ -7,7 +7,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useDispatch, useSelector } from 'react-redux'
 import { getUserDetails } from '../service/api'
-import { LayoutDashboardIcon, LogOut, LucideInfo, SquareChartGantt, User } from 'lucide-react'
+import { Building2, LayoutDashboardIcon, LogOut, LucideInfo, SquareChartGantt, User } from 'lucide-react'
 import GlyphEffect from './ui/GlyphEffect'
 
 import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
@@ -84,6 +84,13 @@ const Navbar = () => {
                   }
                   <Link to={'/'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><LayoutDashboardIcon size={18} color='#FBF1B8' />Dashboard</Link>
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
+                  {
+                    userDetail?.role === 'user' && 
+                    <>
+                      <Link to={'/verifyorg'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><Building2 size={18} color='#FBF1B8' />Join as Org</Link>
+                      <div className='h-[1px] w-full bg-white7 rounded-sm' />
+                    </>
+                  }
                   <div onClick={signout} className='text-[#E38070] hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 rounded-sm gap-2'><LogOut size={18} color='#E38070' />Sign out</div>
                 </div>
               }
