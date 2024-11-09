@@ -2,7 +2,7 @@ import headerPng from '../assets/images/prdetails_header.png'
 import wpl_prdetails from '../assets/images/wpl_prdetails.png'
 
 import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Clock, Download, TriangleAlert, Zap } from 'lucide-react'
+import { ArrowLeft, Clock, Download, Info, TriangleAlert, Zap } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import USDCsvg from '../assets/svg/usdc.svg'
 import MilestoneCard from '../components/projectdetails/MilestoneCard'
@@ -163,7 +163,7 @@ const ProjectDetailsPage = () => {
               </div>
               <p className='text-[14px] text-white32 leading-5'>@{projectDetails?.organisationHandle || orgHandle}</p>
               <div className='flex gap-2 leading-5 font-inter text-[14px] mt-2'>
-                <p className='text-white88'>DUMMY <span className='text-white32'>Interested</span></p>
+                {/* <p className='text-white88'>DUMMY <span className='text-white32'>Interested</span></p> */}
                 <p className='text-white88'>{totalSubmissions} <span className='text-white32'>Submissions</span></p>
               </div>
             </div>
@@ -271,14 +271,15 @@ const ProjectDetailsPage = () => {
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="py-2 border-t border-dashed border-white12">
-                      <MilestoneStatusCard data={milestone}/>
+                      <MilestoneStatusCard data={milestone} projectDetails={projectDetails}/>
                     </AccordionContent>
                   </AccordionItem>
                 ))}
               </Accordion>
             </div>
               
-            {isOwner ? 
+            {isOwner ?
+              projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> :
                <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
                 <FancyButton 
                   src_img={closeProjBtnImg} 
@@ -300,17 +301,22 @@ const ProjectDetailsPage = () => {
                 />
               </div>
             :
-              <div className='mx-4 mt-4'>
-                <FancyButton 
-                  src_img={btnImg} 
-                  hover_src_img={btnHoverImg} 
-                  img_size_classes='w-[342px] h-[44px]' 
-                  className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                  btn_txt='Apply' 
-                  alt_txt='project apply btn' 
-                  onClick={applyForProject}
-                />
-              </div>
+              <>
+                {projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> : 
+              
+                  <div className='mx-4 mt-4'>
+                    <FancyButton 
+                      src_img={btnImg} 
+                      hover_src_img={btnHoverImg} 
+                      img_size_classes='w-[342px] h-[44px]' 
+                      className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                      btn_txt='Apply' 
+                      alt_txt='project apply btn' 
+                      onClick={applyForProject}
+                    />
+                  </div>
+                }
+                </>
             }
           </div>
         </div>
