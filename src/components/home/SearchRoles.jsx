@@ -26,18 +26,18 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                     </div>    
                 </div>
 
-                <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
+                {/* <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
                     <select className='bg-transparent h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
                         <option className='text-white88 font-gridular text-[14px]'>All</option>
                         <option className='text-white88 font-gridular text-[14px]'>Professional</option>
                     </select>
-                </div>
+                </div> */}
 
                 <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
                     <select className='bg-transparent h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
                         <option value="all" className='text-white88 font-gridular text-[14px]'>All</option>
                         <option value="starkware" className='text-white88 font-gridular text-[14px]'>Starkware</option>
-                        <option value="starkwarefoundation" className='text-white88 font-gridular text-[14px]'>Starkware Foundation</option>
+                        <option value="starkwarefoundation" className='text-white88 font-gridular text-[14px]'>Starknet Foundation</option>
                     </select>
                 </div>
             </div>
@@ -46,3 +46,6 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
 }
 
 export default SearchRoles
+
+// TODO :: SPONOSR PROFILE CHNAGES 
+//  BIO NAME IMG SLINKs

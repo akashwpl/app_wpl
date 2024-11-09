@@ -1,21 +1,49 @@
-import { submitMilestone, updateProjectDetails } from '../../service/api';
-import { ArrowUpRight, CheckCheck, Clock, HeartCrack, Hourglass, TriangleAlert } from 'lucide-react'
+import { ArrowUpRight, CheckCheck, Clock, HeartCrack, Hourglass, TriangleAlert, X } from 'lucide-react';
+import { useState } from 'react';
 import { calculateRemainingDaysAndHours } from '../../lib/constants';
-import React, { useEffect } from 'react'
+import { submitMilestone } from '../../service/api';
 
-import FancyButton from '../ui/FancyButton'
-import btnImg from '../../assets/svg/btn_subtract_semi.png'
-import btnHoverImg from '../../assets/svg/btn_hover_subtract.png'
 import { useSelector } from 'react-redux';
-import closeProjBtnImg from '../../assets/svg/close_proj_btn_subtract.png'
-import closeProjBtnHoverImg from '../../assets/svg/close_proj_btn_hover_subtract.png'
+import btnHoverImg from '../../assets/svg/btn_hover_subtract.png';
+import btnImg from '../../assets/svg/btn_subtract_semi.png';
+import closeProjBtnHoverImg from '../../assets/svg/close_proj_btn_hover_subtract.png';
+import closeProjBtnImg from '../../assets/svg/close_proj_btn_subtract.png';
+import CustomModal from '../ui/CustomModal';
+import FancyButton from '../ui/FancyButton';
 
 
 const MilestoneStatusCard = ({ data, projectDetails }) => {
 
     const {user_id, user_role} = useSelector(state => state)
+    const [showSubmitModal, setShowSubmitModal] = useState(false);
+
+    const [linkError, setLinkError] = useState(null);
+    const [descriptionError, setDescriptionError] = useState(null);
+
 
     const handleSubmitMilestone = async () => {
+
+        const linkInput = document.querySelector('input').value;
+        const descriptionTextarea = document.querySelector('textarea').value;
+    
+        let hasError = false;
+    
+        if (!linkInput) {
+            setLinkError('Link is required');
+            hasError = true;
+            return
+        } else {
+            setLinkError(null);
+        }
+    
+        if (!descriptionTextarea) {
+            setDescriptionError('Description is required');
+            hasError = true;
+            return
+        } else {
+            setDescriptionError(null);
+        }
+
         const res = await submitMilestone(data?._id);
         if(res?.user_status === 'submitted') {
             alert('Milestone submitted successfully')
@@ -25,11 +53,12 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
     }
 
     // TODO :: sponsor can accept or reject the milestone
-    const handleMileStone = async (type) => {
+    const handleMileStoneSponsorAction = async (type) => {
 
     }
 
     console.log('user_role', user_role)
+    console.log('data', data)
 
     const time_remain = calculateRemainingDaysAndHours(new Date(), data?.starts_in);
 
@@ -90,7 +119,7 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
             <div className="my-1">
                 {user_id != projectDetails?.user_id && user_role == 'sponsor' ?
                     <div>
-                        {data?.status == 'under_review' 
+                        {data?.status == 'under_review' && projectDetails?.status != 'closed'
                         ? <div className='flex items-center gap-2'>
                             <FancyButton 
                                 src_img={btnImg} 
@@ -99,7 +128,7 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
                                 className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                                 btn_txt='accept'
                                 alt_txt='project apply btn' 
-                                onClick={handleSubmitMilestone}
+                                onClick={() => handleMileStoneSponsorAction('accept')}
                             />
                             <FancyButton 
                                 src_img={closeProjBtnImg} 
@@ -108,7 +137,7 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
                                 className='font-gridular text-[14px] leading-[8.82px] text-primaryRed mt-1.5'
                                 btn_txt='reject'  
                                 alt_txt='project apply btn' 
-                                onClick={handleSubmitMilestone}
+                                onClick={() => handleMileStoneSponsorAction('reject')}
                             />
                         </div>
                         : ""
@@ -123,11 +152,43 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
                         className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                         btn_txt={data?.status == 'under_review' || data?.status == 'closed' ? 're-submit milestone' : 'submit milestone'}  
                         alt_txt='project apply btn' 
-                        onClick={handleSubmitMilestone}
+                        onClick={() => setShowSubmitModal(true)}
                     />
                 
                 }
             </div>
+
+            <CustomModal isOpen={showSubmitModal} closeModal={() => setShowSubmitModal(false)}>
+                <div className='bg-primaryDarkUI border border-white4 rounded-md w-[500px] p-3'>
+                    <div className='flex justify-end'><X size={20} onClick={() => setShowSubmitModal(false)}  className='text-white88 hover:text-white64 cursor-pointer'/></div>
+                    <div>
+                        <p className='text-primaryYellow font-semibold font-gridular'>Add details</p>
+                        <div className='h-[1px] bg-primaryYellow w-full mt-2 mb-5'/>
+                        <div className='flex flex-col'>
+                            <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Link <span className='text-primaryRed'>*</span></label>
+                            <input className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' placeholder='project link..'/>
+                            {linkError && <p className='text-primaryRed text-[12px] mt-1'>{linkError}</p>}
+                        </div>
+                        <div className='flex flex-col mt-4'>
+                            <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Description <span className='text-primaryRed'>*</span></label>
+                            <textarea rows={4} className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' placeholder='Fixed UI Bug'/>
+                            {descriptionError && <p className='text-primaryRed text-[12px] mt-1'>{descriptionError}</p>}
+                        </div>
+                    </div>
+
+                    <div className='mt-6'>
+                        <FancyButton 
+                            src_img={btnImg} 
+                            hover_src_img={btnHoverImg} 
+                            img_size_classes='w-[500px] h-[44px]' 
+                            className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                            btn_txt='submit'  
+                            alt_txt='project apply btn' 
+                            onClick={handleSubmitMilestone}
+                        />
+                    </div>
+                </div>
+            </CustomModal>
         </div>
     )
 }

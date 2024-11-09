@@ -194,9 +194,9 @@ const AddProjectPage = () => {
 
   return (
     <div className='pb-40'>
-        <div className='flex items-center gap-1 pl-20 border-b border-white12 py-2'>
-            <div onClick={() => navigate(-1)} className='cursor-pointer text-white32 hover:text-white48 flex items-center gap-1 w-fit'>
-                <ArrowLeft size={14} />
+        <div className='flex items-center gap-1 pl-20 py-2'>
+            <div onClick={() => navigate(-1)} className='cursor-pointer text-white88 hover:text-white64 flex items-center gap-1 w-fit'>
+                <ArrowLeft size={14} className=''/>
                 <p className='font-inter text-[14px]'>Go back</p>
             </div>
         </div>
@@ -266,7 +266,7 @@ const AddProjectPage = () => {
                                                     className='cursor-not-allowed bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' 
                                                     value={organisationHandle} 
                                                     onChange={(e) => setOrganisationHandle(e.target.value)}
-                                                    disabled
+                                                    
                                                 />
                                             </div>
                                             {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
@@ -518,7 +518,7 @@ const AddProjectPage = () => {
                             hover_src_img={saveBtnHoverImg} 
                             img_size_classes='w-[175px] h-[44px]' 
                             className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                            btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Save</span></span>} 
+                            btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Create</span></span>} 
                             alt_txt='save project btn' 
                             onClick={handleSubmit}
                         />

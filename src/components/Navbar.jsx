@@ -70,16 +70,20 @@ const Navbar = () => {
           <div>
             <div onClick={() => setShowUserMenu((prev) => !prev)} className='relative cursor-pointer flex flex-row items-center justify-center'>
               {showUserMenu &&
-                <div className='absolute top-12 w-[196px] bg-primaryBlue rounded-md transition duration-300 pb-1 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase'>
+                <div className='absolute top-12 w-[196px] bg-[#101C7703] rounded-md transition duration-300 pb-1 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase backdrop-blur-[52px]'>
                   <Link to={'/profile'} className='hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-5 rounded-sm gap-2'><User size={18} color='#FBF1B8' />My Profile</Link>
-                  <div className='h-[1px] w-full bg-white7 rounded-sm' />
-                  <Link to={'/userprojects'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><SquareChartGantt size={18} color='#FBF1B8' />My Projects</Link>
-                  <div className='h-[1px] w-full bg-white7 rounded-sm' />
+                  
+                  {
+                    userDetail?.role != 'user' && 
+                    <>
+                      <Link to={'/userprojects'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><SquareChartGantt size={18} color='#FBF1B8' />List Projects</Link>
+                    </>
+                  }
+                  
                   {
                     userDetail?.role === 'admin' && 
                     <>
                       <Link to={'/requests'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><LucideInfo size={18} color='#FBF1B8' />Requests</Link>
-                      <div className='h-[1px] w-full bg-white7 rounded-sm' />
                     </>
                   }
                   <Link to={'/'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><LayoutDashboardIcon size={18} color='#FBF1B8' />Dashboard</Link>
