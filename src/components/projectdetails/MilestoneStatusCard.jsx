@@ -7,7 +7,8 @@ import FancyButton from '../ui/FancyButton'
 import btnImg from '../../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png'
 
-const MilestoneStatusCard = ({ data }) => {
+
+const MilestoneStatusCard = ({ data, projectDetails }) => {
 
     const handleSubmitMilestone = async () => {
         const res = await submitMilestone(data?._id);
@@ -75,15 +76,17 @@ const MilestoneStatusCard = ({ data }) => {
             </div>
 
             <div className="my-1">
-                <FancyButton 
-                    src_img={btnImg} 
-                    hover_src_img={btnHoverImg} 
-                    img_size_classes='w-[342px] h-[44px]' 
-                    className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                    btn_txt={data?.status == 'under_review' || data?.status == 'closed' ? 're-submit milestone' : 'submit milestone'}  
-                    alt_txt='project apply btn' 
-                    onClick={handleSubmitMilestone}
-                />
+                {projectDetails?.status == 'closed' ? "" : 
+                    <FancyButton 
+                        src_img={btnImg} 
+                        hover_src_img={btnHoverImg} 
+                        img_size_classes='w-[342px] h-[44px]' 
+                        className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                        btn_txt={data?.status == 'under_review' || data?.status == 'closed' ? 're-submit milestone' : 'submit milestone'}  
+                        alt_txt='project apply btn' 
+                        onClick={handleSubmitMilestone}
+                    />
+                }
             </div>
         </div>
     )
