@@ -136,6 +136,24 @@ export const getOrgById = async (id) => {
     }
 }
 
+export const getAllOrgs = async () => {
+    try {
+        const response = await axiosInstance.get(`organisation`)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const approveOrgByAdmin = async (id, data) => {
+    try {
+        const response = await axiosInstance.post(`organisation/updateStatus/${id}`, data)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
 export const getLeaderboardData = async () => {
     try {
         const response = await axiosInstance.get(`/leaderboard`)
@@ -144,6 +162,7 @@ export const getLeaderboardData = async () => {
         handleForbiddenError(error)
     }
 }
+
 
 
 

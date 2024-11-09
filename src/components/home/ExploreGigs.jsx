@@ -158,13 +158,13 @@ const handleWeeksFilterChange = (event) => {
                 </div>
 
                 {showfilterModal && 
-                  <div className="absolute w-[156px] top-10 -left-[70px] rounded-md bg-white4 backdrop-blur-[52px] py-3 flex flex-col px-4 z-50">
+                  <div className="absolute w-[162px] top-10 -left-[74px] rounded-md bg-white4 backdrop-blur-[52px] py-3 flex flex-col px-4 z-50">
                     <div>
                         <p className='text-[12px] font-semibold font-inter mb-3 text-start'>Sort prizes</p>
                         <div onClick={() => {setSortOrder('ascending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'ascending' ? "text-primaryYellow" : 'text-white88'} mb-1 flex items-center gap-1`}><img src={listAscendingSvg} alt='sort' color={sortOrder == 'ascending' ? "#FBF1B8" : "#FFFFFF52"} className={`text-[16px]`} /> Low to High</div>
                         <div onClick={() => {setSortOrder('descending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'descending' ? "text-primaryYellow" : 'text-white88'}  mb-[6px] flex items-center gap-1`}><img src={listDescendingSvg} alt='sort' className={`${sortOrder == 'descending' ? "text-primaryYellow" : "text-white32"}`} /> High to Low</div>
                     </div>
-                    <div className='border border-dashed border-white7 w-full my-5'/>
+                    <div className='border border-dashed border-white7 w-full my-4'/>
                     <div>
                         <p className='text-[12px] font-semibold font-inter mb-3'>Select duration</p>
                         <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>

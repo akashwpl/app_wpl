@@ -1,7 +1,9 @@
-import { ArrowLeft, ArrowRight, Download } from 'lucide-react'
-import React, { useMemo, useState } from 'react'
+import { ArrowLeft, ArrowRight, Check, CircleCheck, CircleX, Download } from 'lucide-react'
+import React, { useEffect, useMemo, useState } from 'react'
 import btnPng from '../assets/images/leaderboard_btn.png'
 import { useNavigate } from 'react-router-dom'
+import { approveOrgByAdmin, getAllOrgs } from '../service/api'
+import { useQuery } from '@tanstack/react-query'
 
 
 const Requests = () => {
@@ -9,7 +11,30 @@ const Requests = () => {
 
     const [searchInput, setSearchInput] = useState()
     const [currentPage, setCurrentPage] = useState(1)
-    const itemsPerPage = 5
+    const [filteredReq, setFilteredReq] = useState([])
+    const itemsPerPage = 8
+
+    const {data: allOrganisations, isLoading: isLoadingAllOrganisations, refetch} = useQuery({
+        queryKey: ['allOrganisations'],
+        queryFn: () => getAllOrgs(),
+    })
+
+    useEffect(() => {
+        if(!isLoadingAllOrganisations) {
+            const pendingReqs = allOrganisations.filter(org => {
+                return org.status === 'pending'
+            })
+            setFilteredReq(pendingReqs);
+        }
+    },[isLoadingAllOrganisations,allOrganisations])
+
+    const handleAcceptRejectRequest = async (id, orgHandle, status) => {
+        const dataObj = { isApproved: status }
+        const res = await approveOrgByAdmin(id, dataObj);
+        if(res._id) alert(`You have ${status ? 'Approved' : 'Rejected'} ${orgHandle} organisation successfully.`)
+        refetch();
+    }
+    
 
     const filteredData = useMemo(() =>  searchInput
         ? projectSubmissions.filter(data =>
@@ -35,41 +60,51 @@ const Requests = () => {
 
     return (
         <div className='size-full'>
-            <div className='mx-20 mt-20'>
+            <div className='mx-20 mt-28'>
                 <h2 className='font-gridular text-xl text-primaryYellow'>Requests to Join WPL as Sponsor</h2>
 
                 {/* TABLE */}
-                <div className='mt-10'>
+                <div className='mt-8'>
                     <div className=''>
-                        <div className='bg-[#091044] rounded-md px-4 py-2'>
-                        <div className='flex justify-between items-center py-2'>
-                            <div className='text-[14px] font-gridular text-white88'>Submission ({projectSubmissions?.length})</div>
-                            <div className='text-[12px] font-gridular text-white48 flex items-center gap-2'>Download as CSV <Download size={18} color='#FFFFFF7A'/></div>
-                        </div>
-                        {currentData?.length == 0 ? <div className='text-[14px] text-primaryYellow font-gridular'>No submissions yet</div> : <>
-                            <div className='grid grid-cols-12 gap-2 mb-2'>
-                                <div className='text-[14px] col-span-1 text-white48 font-inter'>No.</div>
-                                <div className='text-[14px] col-span-3 text-white48 font-inter'>Name</div>
-                                <div className='text-[14px] col-span-4 text-white48 font-inter'>Description</div>
+                        <div className='bg-[#091044] rounded-md py-2'>
+                            <div className='flex justify-between items-center px-4 py-2 mb-1'>
+                                <div className='text-[14px] font-gridular text-white88'>Requests ({filteredReq?.length})</div>
+                                <div className='text-[12px] font-gridular text-white48 flex items-center gap-2'>Download as CSV <Download size={18} color='#FFFFFF7A'/></div>
                             </div>
-                            <div className='max-h-[300px] overflow-y-auto'>
-                            {currentData?.map((submission, index) => (
-                                <div onClick={() => navigateToSubmissions(submission?._id, index + 1)} key={index} className={`grid grid-cols-12 gap-2 py-2 cursor-pointer ${index == 4 ? "" : "border-b border-white7"}`}>
-                                <div className='text-[14px] col-span-1 text-white88 font-inter'>{index + 1}</div>
-                                <div className='text-[14px] col-span-3 text-start text-white88 font-inter'>
-                                    <div className='flex flex-col'>
-                                        <p className='text-white88 text-[14px]'>{submission?.user?.displayName}</p>
-                                        <p className='text-white32 text-[10px]'>@{submission?.user?.organisationHandle}</p>
+                            <div className="border border-dashed border-white88 w-full"></div>
+                            {filteredReq?.length == 0 
+                            ?       <div className='text-[14px] text-primaryYellow font-gridular px-4 py-6 text-center'>No Requests to process</div> 
+                            :
+                                <>
+                                    <div className='grid grid-cols-10 gap-2 my-4 px-4'>
+                                        <div className='text-[14px] col-span-1 text-white48 font-inter'>No.</div>
+                                        <div className='text-[14px] col-span-2 text-white48 font-inter'>Name</div>
+                                        <div className='text-[14px] col-span-5 text-white48 font-inter'>Description</div>
+                                        <div className='text-[14px] col-span-2 text-white48 font-inter'>Action</div>
                                     </div>
-                                </div>
-                                <div className='text-[14px] col-span-4 text-white88 font-inter truncate'>{submission?._doc?.experienceDescription}</div>
-                                </div>
-                            ))}
+                                    <div className="border border-dashed border-white88 w-full"></div>
+                                    <div className='max-h-[515px] overflow-y-hidden'>
+                                        {filteredReq?.map((org, index) => (
+                                            <div 
+                                                key={index} className={`grid grid-cols-10 gap-2 py-3 items-center cursor-pointer px-5 ${index == 4 ? "" : "border-b border-white7 hover:bg-white12"}`}>
+                                                <div className='text-[14px] col-span-1 text-white88 font-inter'>{index + 1}</div>
+                                                <div className='text-[14px] col-span-2 text-start text-white88 font-inter'>
+                                                    <div className='flex flex-col'>
+                                                        {/* <p className='text-white88 text-[14px]'>{org?.user?.displayName}</p> */}
+                                                        <p className='text-white88 text-[14px]'>@{org?.organisationHandle}</p>
+                                                    </div>
+                                                </div>
+                                                <div className='text-[14px] col-span-5 text-white88 font-inter truncate'>{org?.description}</div>
+                                                <div className='col-span-2 flex justify-between w-[90px]'>
+                                                    <CircleCheck onClick={() => handleAcceptRejectRequest(org._id,org.organisationHandle,true)} className='text-cardGreenText/70' size={30} />
+                                                    <CircleX onClick={() => handleAcceptRejectRequest(org._id,org.organisationHandle,false)} className='text-cardRedText/70' size={30} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </>}
                             </div>
-                        </>
-                        }
                         </div>
-                    </div>
 
                     {/* pagination */}
                     <div className="flex justify-end items-center gap-2 md:gap-6 mt-6">
