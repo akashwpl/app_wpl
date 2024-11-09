@@ -11,7 +11,7 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
     }
 
   return (
-    <div onClick={navigateToProjectDetails} className={`cursor-pointer py-2 flex items-center w-full ml-2 ${projectsGridView ? "hover:bg-white4 bg-[#050E52] rounded-md p-2" : ""} relative`}>
+    <div onClick={navigateToProjectDetails} className={`cursor-pointer py-2 flex items-center w-full ml-2 border-b border-white4 ${projectsGridView ? "hover:bg-white4 bg-[#050E52] rounded-md p-2" : ""} relative`}>
         <div className={`flex flex-row justify-between ${projectsGridView ? "items-start" : "items-center"} w-full`}>
             <div className={`${projectsGridView ? "flex-col pl-4 py-4" : "flex-row"} flex `}>
                 <img className='size-16 mr-2 rounded-2xl mb-2' src={data?.image} alt="Gig Profile Picture"/>

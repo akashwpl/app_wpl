@@ -10,7 +10,7 @@ import googleLogo from '../assets/svg/google_symbol.png'
 import loginBtnImg from '../assets/svg/btn_subtract_semi.png'
 import loginBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
 
-import { setUserId } from '../store/slice/userSlice'
+import userSlice, { setUserId } from '../store/slice/userSlice'
 import { getUserDetails } from '../service/api'
 import FancyButton from '../components/ui/FancyButton'
 
@@ -319,11 +319,11 @@ const OnBoarding = () => {
                   <input value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} placeholder='0x101..' className='w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] outline-none text-white'/>
                 </div>
 
-                <div className='mt-8 border border-primaryYellow py-1'>
+                <div className='mt-8 py-1'>
                   <FancyButton 
                     src_img={loginBtnImg} 
                     hover_src_img={loginBtnHoverImg} 
-                    img_size_classes='w-[342px] h-[44px]' 
+                    img_size_classes='w-full h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                     btn_txt='submit'  
                     alt_txt='submit sign up btn' 
@@ -342,3 +342,11 @@ const OnBoarding = () => {
 }
 
 export default OnBoarding
+
+// TODO :: tabs refactor in home page
+// live first for user
+// all first for sponsor
+
+// TODO :: add banner on explore page
+
+

@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, CheckCheck, CheckCheckIcon, CheckCircle2, ChevronDown, Menu, Plus, Trash, Trophy, Upload, X } from 'lucide-react'
+import { ArrowLeft, Check, CheckCheck, CheckCheckIcon, CheckCircle2, ChevronDown, Menu, Plus, Search, Trash, Trophy, Upload, X } from 'lucide-react'
 import React, { useRef, useState, useEffect } from 'react'
 
 import DatePicker from 'react-datepicker';
@@ -47,6 +47,9 @@ const AddProjectPage = () => {
 
     const [submitted, setSubmitted] = useState(false);
     const [createdProjectId, setCreatedProjectId] = useState(null);
+
+    const [searchInput, setSearchInput] = useState()
+
 
     const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
         queryKey: ['userOrganisations', user_id],
@@ -192,6 +195,23 @@ const AddProjectPage = () => {
 
     console.log('ms',milestones);
 
+
+    const handleSearch = (e) => {
+        setSearchInput(e.target.value)
+    }
+
+    const handleRemoveTile = (tile) => {
+        setRole((prev) => prev.filter((t) => t !== tile))
+    }
+
+    const handleKeyboardEnter = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault()
+            setRole((prev) => [...prev, e.target.value?.trim()])
+            setSearchInput('')
+        }
+    }
+
   return (
     <div className='pb-40'>
         <div className='flex items-center gap-1 pl-20 py-2'>
@@ -287,15 +307,17 @@ const AddProjectPage = () => {
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Role<span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
-                                                <div>
-                                                    <div className='bg-white7 text-white88 rounded-md py-1 px-2 flex justify-between items-center'>
-                                                        role
-                                                        <X size={14} className='cursor-pointer' onClick={() => setRole('')}/>
+                                            <div className="w-full rounded-md flex flex-row flex-wrap gap-2">
+                                                {role && role?.map((tile, index) => (
+                                                    <div className="bg-cardBlueBg2 flex justify-between items-center px-2 py-2 border-transparent focus:outline-0 rounded-[6px] text-white88 w-[200px] font-gridular text-[14px] leading-[16.8px]">
+                                                        {tile}
+                                                        <X className='text-white48 w-6 cursor-pointer hover:text-white64 scale-105 transition duration-300' onClick={() => handleRemoveTile(tile)} size={14}/>
                                                     </div>
-                                                </div>
-                                                <div className='w-full h-full'>
-                                                   <input className='bg-white32 w-full rounded-md'/> 
-                                                </div>
+                                                ))}   
+                                                <div className='flex items-center gap-2 w-full border border-white7 rounded-md px-2 h-[32px]'>
+                                                    <input onKeyDown={handleKeyboardEnter} value={searchInput} onChange={handleSearch}  className='bg-transparent w-full outline-none border-none text-white88 placeholder:text-[14px] placeholder:text-white32 placeholder:font-gridular' placeholder='Type in roles ex. Frontend'/>
+                                                </div>    
+                                            </div>
                                             </div>
                                             {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
                                         </div>

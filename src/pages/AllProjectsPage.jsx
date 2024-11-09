@@ -143,7 +143,7 @@ const AllProjectsPage = () => {
                 </div>
 
                 <div className='mt-8'>
-                    <div className={`${projectsGridView ? "grid grid-cols-2" : "flex flex-col"} transition duration-300 gap-4`}>
+                    <div className={`${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col"} transition duration-300`}>
                         {isLoadingAllProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
                             
                             filteredProjects && 
