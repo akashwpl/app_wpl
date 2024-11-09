@@ -11,7 +11,7 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
     }
 
   return (
-    <div onClick={navigateToProjectDetails} className={`cursor-pointer py-2 flex items-center w-full ${projectsGridView ? "hover:bg-white4 bg-[#050E52] rounded-md p-2" : ""} relative`}>
+    <div onClick={navigateToProjectDetails} className={`cursor-pointer py-2 flex items-center w-full ml-2 ${projectsGridView ? "hover:bg-white4 bg-[#050E52] rounded-md p-2" : ""} relative`}>
         <div className={`flex flex-row justify-between ${projectsGridView ? "items-start" : "items-center"} w-full`}>
             <div className={`${projectsGridView ? "flex-col pl-4 py-4" : "flex-row"} flex `}>
                 <img className='size-16 mr-2 rounded-2xl mb-2' src={data?.image} alt="Gig Profile Picture"/>
@@ -34,7 +34,7 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
                 </div>
             </div>
             
-            <div className={`absolute ${projectsGridView ? "right-5 top-4" : "right-0"} flex flex-row justify-evenly items-center font-gridular leading-[19.2px] bg-[#091044] py-2 px-3 gap-[6px] rounded-md`}>
+            <div className={`absolute ${projectsGridView ? "right-5 top-4" : "right-0"} flex flex-row justify-evenly items-center font-gridular leading-[19.2px] bg-[#091044] py-2 mr-4 px-3 gap-[6px] rounded-md`}>
                 <img className='h-[15px]' src={usdc} alt="" />
                 <p className='text-[14px] font-inter text-white88'>{data?.totalPrize}</p>
                 <p className='text-[14px] font-semibold text-white48'>USDC</p>

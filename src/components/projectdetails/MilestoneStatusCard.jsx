@@ -3,6 +3,10 @@ import { ArrowUpRight, Clock, HeartCrack, Hourglass } from 'lucide-react'
 import { calculateRemainingDaysAndHours } from '../../lib/constants';
 import React, { useEffect } from 'react'
 
+import FancyButton from '../ui/FancyButton'
+import btnImg from '../../assets/svg/btn_subtract_semi.png'
+import btnHoverImg from '../../assets/svg/btn_hover_subtract.png'
+
 const MilestoneStatusCard = ({ data }) => {
 
     const handleSubmitMilestone = async () => {
@@ -46,7 +50,18 @@ const MilestoneStatusCard = ({ data }) => {
                 </div>
             </div>
 
-            <button onClick={handleSubmitMilestone} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular hover:bg-primaryYellow/10'>Submit Milestone</button>
+            <div className="my-1">
+                <FancyButton 
+                    src_img={btnImg} 
+                    hover_src_img={btnHoverImg} 
+                    img_size_classes='w-[342px] h-[44px]' 
+                    className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                    btn_txt='submit milestone' 
+                    alt_txt='project apply btn' 
+                    onClick={handleSubmitMilestone}
+                />
+            </div>
+            {/* <button onClick={handleSubmitMilestone} className='border border-primaryYellow w-full text-primaryYellow py-2 rounded-md font-gridular hover:bg-primaryYellow/10'>Submit Milestone</button> */}
         </div>
     )
 }

@@ -10,6 +10,9 @@ import { getUserDetails } from '../service/api'
 import { LayoutDashboardIcon, LogOut, LucideInfo, SquareChartGantt, User } from 'lucide-react'
 import GlyphEffect from './ui/GlyphEffect'
 
+import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
+import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
+
 const Navbar = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -24,6 +27,10 @@ const Navbar = () => {
 
   const [showNavbar, setShowNavbar] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
+
+  const [menuHover, setMenuHover] = useState(false)
+
+  const handleMenuHover = () => setMenuHover(!menuHover);
 
   const handleShowNavbar = () => {
     setShowNavbar(!showNavbar)
@@ -52,26 +59,37 @@ const Navbar = () => {
           </div>
         </div>
 
-        {!pathname?.includes('onboarding') &&
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
           <div>
-            <div onClick={() => setShowUserMenu((prev) => !prev)} className='relative cursor-pointer flex flex-row items-center'>
+            <div onClick={() => setShowUserMenu((prev) => !prev)} className='relative cursor-pointer flex flex-row items-center justify-center'>
               {showUserMenu &&
-                <div className='absolute top-12 -right-6 w-[170px] bg-primaryBlue rounded-md transition duration-300 pb-1 text-primaryYellow font-bienvenue'>
-                  <Link to={'/profile'} className='font-semibold hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-4 rounded-sm gap-2'><User size={20} color='#FBF1B8' />My Profile</Link>
+                <div className='absolute top-12 w-[196px] bg-primaryBlue rounded-md transition duration-300 pb-1 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase'>
+                  <Link to={'/profile'} className='hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-5 rounded-sm gap-2'><User size={18} color='#FBF1B8' />My Profile</Link>
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
-                  <Link to={'/userprojects'} className='font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 rounded-sm gap-2'><SquareChartGantt size={20} color='#FBF1B8' />My Projects</Link>
+                  <Link to={'/userprojects'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><SquareChartGantt size={18} color='#FBF1B8' />My Projects</Link>
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
-                  <Link to={'/requests'} className='font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 rounded-sm gap-2'><LucideInfo size={20} color='#FBF1B8' />Requests</Link>
+                  <Link to={'/requests'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><LucideInfo size={18} color='#FBF1B8' />Requests</Link>
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
-                  <Link to={'/'} className='font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 rounded-sm gap-2'><LayoutDashboardIcon size={20} color='#FBF1B8' />Dashboard</Link>
+                  <Link to={'/'} className='hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2'><LayoutDashboardIcon size={18} color='#FBF1B8' />Dashboard</Link>
                   <div className='h-[1px] w-full bg-white7 rounded-sm' />
-                  <div onClick={signout} className='text-[#E38070] font-semibold hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-4 rounded-sm gap-2'><LogOut size={20} color='#E38070' />Sign out</div>
+                  <div onClick={signout} className='text-[#E38070] hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 rounded-sm gap-2'><LogOut size={18} color='#E38070' />Sign out</div>
                 </div>
               }
-              <button className='text-primaryYellow font-bienvenue flex items-center justify-center gap-2 border border-[#FBF1B8] px-6 py-2 bg-[#D9D9D933]'>
-                <img src={wolfButton} alt='wolf' />
-                {userDetail?.displayName}
-                <img src={arrow} alt='wolf' />
+              <button 
+                className='relative' 
+                onMouseEnter={handleMenuHover}
+                onMouseLeave={handleMenuHover}
+              >
+                  <img 
+                    src={menuHover ? menuBtnImgHover : menuBtnImg } 
+                    alt='menu btn'
+                    className='w-[196px] h-[44px]'
+                  />
+                  <div className="absolute inset-0 top-1/4 uppercase flex items-center justify-center gap-2 mb-2">
+                    <img src={wolfButton} width={18} alt='wolf' /> 
+                    <p className='font-gridular text-primaryYellow text-[14px] leading-[8.82px]'>{userDetail?.displayName}</p>
+                    <img src={arrow} width={14} alt='down arraow' />
+                  </div>
               </button>
             </div>
           </div>

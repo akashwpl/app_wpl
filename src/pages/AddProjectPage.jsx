@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, CheckCheckIcon, CheckCircle2, ChevronDown, Menu, Plus, Trash, Trophy, Upload, X } from 'lucide-react'
+import { ArrowLeft, Check, CheckCheck, CheckCheckIcon, CheckCircle2, ChevronDown, Menu, Plus, Trash, Trophy, Upload, X } from 'lucide-react'
 import React, { useRef, useState, useEffect } from 'react'
 
 import DatePicker from 'react-datepicker';
@@ -18,6 +18,11 @@ import { useQuery } from '@tanstack/react-query';
 import { getUserOrgs } from '../service/api';
 import { useSelector } from 'react-redux';
 import checkSVG from '../assets/svg/check.svg'
+import saveBtnImg from '../assets/svg/menu_btn_subtract.png'
+import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
+import btnImg from '../assets/svg/btn_subtract_semi.png'
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
+import FancyButton from '../components/ui/FancyButton';
 
 const AddProjectPage = () => {
 
@@ -447,10 +452,19 @@ const AddProjectPage = () => {
                         </div>
 
                         <div className='mt-4'>
-                            <button className='flex justify-center items-center w-full border border-primaryYellow h-[43px]' onClick={handleAddMilestone}>
+                            <FancyButton 
+                                src_img={btnImg} 
+                                hover_src_img={btnHoverImg} 
+                                img_size_classes='w-[470px] h-[44px]' 
+                                className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                                btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={14}/><span>Add milestone</span></span>} 
+                                alt_txt='add milestone btn' 
+                                onClick={handleAddMilestone}
+                            />
+                            {/* <button className='flex justify-center items-center w-full border border-primaryYellow h-[43px]' onClick={handleAddMilestone}>
                                 <Plus size={14} className='text-primaryYellow'/>
                                 <p className='text-primaryYellow font-gridular text-[14px]'>Add milestone</p>
-                            </button>
+                            </button> */}
                         </div>                      
                     </div>
                 </div>
@@ -472,8 +486,17 @@ const AddProjectPage = () => {
                             <p className='text-white32 text-[13px] font-semibold font-inter'>You can now view updated details of the project overview</p>
                         </div>
 
-                        <div className='mt-4'>
-                            <button onClick={handleNavigateToProjectDetails} className='flex justify-center items-center py-3 px-4 border border-primaryYellow text-primaryYellow w-full font-gridular'>View Project</button>
+                        <div className='mt-6'>
+                            <FancyButton 
+                                src_img={btnImg} 
+                                hover_src_img={btnHoverImg} 
+                                img_size_classes='w-[490px] h-[44px]' 
+                                className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                                btn_txt='view project' 
+                                alt_txt='view projects btn' 
+                                onClick={handleNavigateToProjectDetails}
+                            />
+                            {/* <button onClick={handleNavigateToProjectDetails} className='flex justify-center items-center py-3 px-4 border border-primaryYellow text-primaryYellow w-full font-gridular'>View Project</button> */}
                         </div>
                     </div>
                 </div>
@@ -490,7 +513,15 @@ const AddProjectPage = () => {
                         </div>
                     </div>
                     <div>
-                        <button disabled={submitted} className={`bg-primaryYellow/10 border border-primaryYellow text-primaryYellow font-gridular text-[14px] px-6 py-2 rounded-md flex justify-center items-center gap-2 ${submitted ? "opacity-25" : ""}`} onClick={handleSubmit}><img src={checkSVG} className='size-[14px]'/> SAVE</button>
+                        <FancyButton 
+                            src_img={saveBtnImg} 
+                            hover_src_img={saveBtnHoverImg} 
+                            img_size_classes='w-[175px] h-[44px]' 
+                            className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                            btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Save</span></span>} 
+                            alt_txt='save project btn' 
+                            onClick={handleSubmit}
+                        />
                     </div>
             </div>
     </div>
