@@ -30,16 +30,17 @@ const AdminDashboard = () => {
     const [searchInput, setSearchInput] = useState()
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 12
-   const filteredData = useMemo(() =>  searchInput
-        ? dummyData.filter(data =>
-            data.name.toLowerCase().includes(searchInput.toLowerCase())
-        )
-        : dummyData
-    , [searchInput])
+    
+    const filteredData = useMemo(() =>  searchInput
+        ? organisationsDetails.filter(data => {
+            return data?.name?.toLowerCase().includes(searchInput.toLowerCase()) || data?.organisationHandle?.toLowerCase().includes(searchInput.toLowerCase())
+        })
+        : organisationsDetails
+    , [searchInput, organisationsDetails])
 
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
-    const currentData = organisationsDetails?.slice(indexOfFirstItem, indexOfLastItem)
+    const currentData = filteredData?.slice(indexOfFirstItem, indexOfLastItem)
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
