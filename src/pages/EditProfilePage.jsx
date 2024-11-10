@@ -1,5 +1,5 @@
 import { ArrowLeft, CheckCheck, CheckCheckIcon, Info, Pen, Plus, Search, Upload, X } from 'lucide-react'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import CustomModal from '../components/ui/CustomModal'
 import PoWCard from '../components/profile/PoWCard'
 import { Link } from 'react-router-dom';
@@ -19,6 +19,8 @@ import saveBtnImg from '../assets/svg/menu_btn_subtract.png'
 import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
 import closeProjBtnImg from '../assets/svg/close_proj_btn_subtract.png'
 import closeProjBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png'
+import { storage } from '../lib/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
 
@@ -41,6 +43,8 @@ const EditProfilePage = () => {
     const [bio, setBio] = useState('')
     const [discord, setDiscord] = useState('')
     const [telegram, setTelegram] = useState('')
+    const [pfpPreview, setPfpPreview] = useState('')
+    const [pfp, setPfp] = useState('')
 
     const [isUpdating, setIsUpdating] = useState(false)
 
@@ -64,15 +68,16 @@ const EditProfilePage = () => {
                 ...prevState,
                 [name]: skillsArray,
             }));
-        } else if (name === 'img') {
+        } else if (name == 'img') {
         const file = e.target.files[0];
+        console.log('file', file)
+        setProjectDetails(prevState => ({
+            ...prevState,
+            img: file,
+        }));
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setProjectDetails(prevState => ({
-                    ...prevState,
-                    [name]: file,
-                }));
                 setProjectDetails(prevState => ({
                     ...prevState,
                     imgPreview: reader.result,
@@ -94,7 +99,19 @@ const EditProfilePage = () => {
     };
 
     const handleUploadClick = () => {
-        fileInputRef.current.click();
+        fileInputRef.current.click()
+    }
+
+    const handleProfilePicChange = (e) => {
+        const file = e.target.files[0];
+        setPfp(file);
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPfpPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     }
 
     const handleAddProject = () => {
@@ -107,11 +124,16 @@ const EditProfilePage = () => {
     }
 
     const handleRemoveImg = () => {
+       setPfp(null)
+        setPfpPreview('')
+    }
+
+    const handleRemoveProjectimg = (idx) => {
         setProjectDetails(prevState => ({
             ...prevState,
             img: '',
             imgPreview: null,
-        }));
+        }))
     }
 
     const validateForm = () => {
@@ -181,13 +203,18 @@ const EditProfilePage = () => {
     }
 
     const handleUploadProject = async () => {
+        console.log('projectDetails', projectDetails)
+        const imageRef = ref(storage, `images/${projectDetails.img}+${Math.random()}`);
+        await uploadBytes(imageRef, projectDetails.img);
+        const imageUrl = await getDownloadURL(imageRef);
+
         const transformedProjects = dummyProjects.map(project => ({
             project: {
                 title: project.title,
                 organisationHandle: "",
                 description: project.desc,
                 discordLink: project.link,
-                // image: project.imgPreview, // Assuming imgPreview is the base64 string
+                image: imageUrl, // Assuming imgPreview is the base64 string
                 status: "idle",
                 type: "sample",
                 about: project.desc,
@@ -196,8 +223,6 @@ const EditProfilePage = () => {
             milestones: []
         }));
         
-        console.log('Transformed Projects:', transformedProjects);
-    
         const response = await fetch(`${BASE_URL}/projects/create/multiple`, {
             method: 'POST',
             headers: {
@@ -211,32 +236,59 @@ const EditProfilePage = () => {
         })
     }
 
+    useEffect(() => {
+        if(!userDetails) return
+        setName(userDetails?.displayName)
+        setEmail(userDetails?.email)
+        setBio(userDetails?.bio)
+        setDiscord(userDetails?.socials?.discord)
+        setTelegram(userDetails?.socials?.telegram)
+        setPfpPreview(userDetails?.pfp)
+        setPfp(userDetails?.pfp)
+    }, [userDetails])
+
     const handleSubmitEditProfile = async () => {
-        if(!document.querySelector('input[name="displayName"]')?.value?.length) {
+        
+        if(name?.length === 0) {
             setErrors({displayName: 'Name is required'})
             return
-        } else if(!document.querySelector('input[name="email"]')?.value?.length) {
+        } else if(!email?.length) {
             setErrors({email: 'Email is required'})
             return
-        } else if(!document.querySelector('textarea[name="bio"]')?.value?.length) {
+        } else if(!bio?.length) {
             setErrors({bio: 'Bio is required'})
             return
-        } else if(!document.querySelector('input[name="discordUsername"]')?.value?.length) {
+        } else if(!discord?.length) {
             setErrors({discord: 'Discord is required'})
             return
-        } else if(!document.querySelector('input[name="telegramUsername"]')?.value?.length) {
+        } else if(!telegram?.length) {
             setErrors({telegram: 'Telegram is required'})
             return
         }
         setErrors({})
         setIsUpdating(true)
+
+
+        let imageUrl = userDetails?.pfp
+
+        if(!pfp) {
+            const imageRef = ref(storage, `images/${pfp.name}`);
+            await uploadBytes(imageRef, pfp);
+            imageUrl = await getDownloadURL(imageRef);
+        }
+
+        // const imageRef = ref(storage, `images/${pfp.name}`);
+        // await uploadBytes(imageRef, pfp);
+        // const imageUrl = await getDownloadURL(imageRef);
+
         const data = {
             "displayName": document.querySelector('input[name="displayName"]').value,
             "bio": document.querySelector('textarea[name="bio"]').value,
             "socials": {
                 "discord": document.querySelector('input[name="discordUsername"]').value,
                 "telegram": document.querySelector('input[name="telegramUsername"]').value,
-            }
+            },
+            "pfp": imageUrl
         }
 
         const response = await fetch(`${BASE_URL}/users/update/`, {
@@ -247,18 +299,16 @@ const EditProfilePage = () => {
             },
             body: JSON.stringify(data)
         }).then(res => res.json())
-        .then((data) => {
+        .then(() => {
             if(dummyProjects?.length) {
                 handleUploadProject()
             }
-            console.log('res edit profile', data)
-        }).finally(() => {
+        })
+        .finally(() => {
             setIsUpdating(false)
             setErrors({})
         })
     }
-
-    console.log('userDetails', userDetails)
 
   return (
     <div className='flex flex-col justify-center items-center'>
@@ -266,10 +316,36 @@ const EditProfilePage = () => {
         
         <div className='w-[340px] md:w-[480px] mt-2 mb-20'>
             <div className='flex items-center gap-4'>
-                <div className='relative'>
+                {/* <div className='relative'>
                     <img src={userDetails?.pfp} alt='dummy' className='size-[72px] aspect-square'/>
                     <div onClick={handleUploadClick} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><Pen size={14} className='text-black/60'/></div>
-                </div>
+                </div> */}
+
+                {pfpPreview ? 
+                    <div className='relative'>
+                        <img src={pfpPreview} alt='dummy' className='size-[72px] aspect-square'/>
+                        <div onClick={handleRemoveImg} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
+                    </div>
+                : <>
+                    <div className='bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'>
+                        <div className='relative'>
+                            <img src={userDetails?.pfp} alt='dummy' className='size-[72px] aspect-square'/>
+                            <div onClick={handleUploadClick} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><Pen size={14} className='text-black/60'/></div>
+                        </div>
+                        <input
+                            name='img'
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleProfilePicChange}
+                            style={{ display: 'none' }}
+                        />                           
+                    </div>
+                    <div className='text-[14px] font-inter'>
+                        <p className='text-white88'>Add a cover image</p>
+                        <p className='text-white32'>Recommended 1:1 aspect ratio</p>
+                    </div>
+                </>
+                }
             </div>
 
             <div className='h-[1px] w-full bg-white7 my-4'/>
@@ -282,15 +358,15 @@ const EditProfilePage = () => {
                     <div className='flex justify-between gap-4'>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Your Name</label>
-                            <input name='displayName' defaultValue={userDetails?.displayName} onChange={(e) => setName(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
-                                placeholder='Jhon Doe'
+                            <input name='displayName' value={name} onChange={(e) => setName(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
+                                placeholder='John Doe'
                             />
                             {errors.displayName && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.displayName}</div>}
                         </div>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Your Email</label>
-                            <input name='email' defaultValue={userDetails?.email} onChange={(e) => setEmail(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none border-none' 
-                                placeholder='Jhon@Doe.com'
+                            <input name='email' value={email} onChange={(e) => setEmail(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none border-none' 
+                                placeholder='John@Doe.com'
                             />
                             {errors.email && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.email}</div>}
                         </div>
@@ -298,7 +374,7 @@ const EditProfilePage = () => {
 
                     <div className='flex flex-col gap-1 w-full'>
                         <label className='text-[13px] font-medium text-white32'>Write your Bio (max 240 characters)</label>
-                        <textarea name='bio' defaultValue={userDetails?.bio} onChange={(e) => setBio(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
+                        <textarea name='bio' value={bio} onChange={(e) => setBio(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
                             placeholder='I am a preety good dev'
                             rows={3}
                         />
@@ -317,7 +393,7 @@ const EditProfilePage = () => {
                             <label className='text-[13px] font-medium text-white32'>Discord Username</label>
                             <div className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] flex items-center'>
                                 <img src={discordSVG} alt='discord' className='size-[16px] mr-2'/>
-                                <input name='discordUsername' defaultValue={userDetails?.socials?.discord} onChange={(e) => setDiscord(e.target.value)} className='bg-transparent outline-none w-full text-white placeholder:text-white32' 
+                                <input name='discordUsername' value={discord} onChange={(e) => setDiscord(e.target.value)} className='bg-transparent outline-none w-full text-white placeholder:text-white32' 
                                     placeholder='John Wick'
                                 />
                             </div>
@@ -327,7 +403,7 @@ const EditProfilePage = () => {
                             <label className='text-[13px] font-medium text-white32'>Telegram Username</label>
                             <div className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] flex items-center'>
                                 <img src={telegramSVG} alt='telegram' className='size-[16px] mr-2'/>
-                                <input name='telegramUsername' defaultValue={userDetails?.socials?.telegram} onChange={(e) => setTelegram(e.target.value)} className='bg-transparent rounded-[6px] text-white placeholder:text-white32 text-[14px]' 
+                                <input name='telegramUsername' value={telegram} onChange={(e) => setTelegram(e.target.value)} className='bg-transparent rounded-[6px] text-white placeholder:text-white32 text-[14px]' 
                                     placeholder='John Wick'
                                 />
                             </div>
@@ -388,7 +464,7 @@ const EditProfilePage = () => {
                             {projectDetails.imgPreview ? 
                                 <div className='relative'>
                                     <img src={projectDetails.imgPreview} alt='dummy' className='size-[72px] aspect-square'/>
-                                    <div onClick={handleRemoveImg} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
+                                    <div onClick={handleRemoveProjectimg} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
                                 </div>
                             : <>
                                 <div onClick={handleUploadClick} className='bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'>

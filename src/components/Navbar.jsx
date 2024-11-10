@@ -105,11 +105,11 @@ const Navbar = () => {
                   <img 
                     src={menuHover ? menuBtnImgHover : menuBtnImg } 
                     alt='menu btn'
-                    className='w-[196px] h-[44px]'
+                    className='w-[200px] h-[44px]'
                   />
                   <div className="absolute inset-0 top-1/4 uppercase flex items-center justify-center gap-2 mb-2">
                     <img src={userDetail?.pfp} width={18} alt='wolf' /> 
-                    <p className='font-gridular text-primaryYellow text-[14px] leading-[8.82px]'>{userDetail?.displayName}</p>
+                    <p className='font-gridular text-primaryYellow text-[14px] leading-[8.82px] truncate'>{userDetail?.displayName?.slice(0, 10)} {userDetail?.displayName?.length > 10 ? "..." : ""}</p>
                     <img src={arrow} width={14} alt='down arraow' />
                   </div>
               </button>
