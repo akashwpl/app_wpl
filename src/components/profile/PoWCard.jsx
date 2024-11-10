@@ -1,10 +1,11 @@
 import React from 'react'
+import wplogo from '../../assets/images/wpl_prdetails.png'
 
 const PoWCard = ({ data }) => {
   return (
     <div className='flex gap-4 items-start mb-4'>
         <div>
-            <img src={data?.imgPreview || data?.img} alt='dummy' className='size-[50px] md:size-[90px] aspect-square rounded-lg'/>
+            <img src={wplogo} alt='dummy' className='size-[50px] md:size-[90px] aspect-square rounded-lg'/>
         </div>
         <div>
             <p className='text-white font-inter'>{data?.title}</p>
