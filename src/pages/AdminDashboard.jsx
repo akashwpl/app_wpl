@@ -4,8 +4,8 @@ import { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import btnPng from '../assets/images/leaderboard_btn.png'
 import wpl_logo from '../assets/images/wpl_prdetails.png'
-import Statistics from '../components/home/Statistics'
-import { getUserDetails } from '../service/api'
+import AdminStatistics from '../components/home/AdminStatistics'
+import { getAllOrganisations, getUserDetails } from '../service/api'
 import { useNavigate } from 'react-router-dom'
 
 
@@ -20,16 +20,23 @@ const AdminDashboard = () => {
         enabled: !!user_id,
     })
 
+    const {data: organisationsDetails, isLoading: isLoadingOrganisationDetails} = useQuery({
+        queryKey: ["allOrganisations"],
+        queryFn: () => getAllOrganisations(user_id),
+    })
+
+    console.log('organisationsDetails', organisationsDetails)
+    
     const [searchInput, setSearchInput] = useState()
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 12
-
+    
     const filteredData = useMemo(() =>  searchInput
-        ? dummyData.filter(data =>
-            data.name.toLowerCase().includes(searchInput.toLowerCase())
-        )
-        : dummyData
-    , [searchInput])
+        ? organisationsDetails.filter(data => {
+            return data?.name?.toLowerCase().includes(searchInput.toLowerCase()) || data?.organisationHandle?.toLowerCase().includes(searchInput.toLowerCase())
+        })
+        : organisationsDetails
+    , [searchInput, organisationsDetails])
 
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
@@ -46,11 +53,12 @@ const AdminDashboard = () => {
         navigate(`/organisation/${id}`)
     }
 
-
+    console.log('organisationsDetails', organisationsDetails)
     return (
         <div className='flex flex-row justify-between mt-4 mx-8'>
             <div className='flex flex-col px-[46px] mt-4 w-full '>
-                <Statistics userDetails={userDetails} />
+                <AdminStatistics userDetails={userDetails} totalOrganisations={organisationsDetails?.length || 0} />
+
                 <div>
                     <div>
                         <h2 className='font-bold text-2xl text-primaryYellow font-gridular'>Organizations</h2>
@@ -68,20 +76,19 @@ const AdminDashboard = () => {
                             </div>
                         </div>
 
-                        {/* table */}
                         <div className='mt-4 grid grid-cols-12 gap-1'>
                             {currentData?.map((data, index) => (
                                 <div key={index} onClick={() => navigateToOrganisationPage(data?._id)} className='flex gap-2 col-span-3 justify-start hover:bg-white4 cursor-pointer py-4 px-2 rounded-md'>
                                     <div>
-                                        <img src={data?.logo} alt='' className='size-[70px] rounded-md'/>
+                                        <img src={data?.logo || wpl_logo} alt='' className='size-[70px] rounded-md'/>
                                     </div>
                                     <div className='flex flex-col justify-between'>
                                         <div>
                                             <h2 className='text-white88 text-[14px]'>{data?.name}</h2>
-                                            <p className='text-white48 text-[14px]'>{data?.org_handle}</p>
+                                            <p className='text-white48 text-[14px]'>{data?.organisationHandle}</p>
                                         </div>
                                         <div className=''>
-                                            <div className='text-white48 text-[14px]'>Project count: <span className='text-white88'>{data?.projects_count}</span></div>
+                                            <div className='text-white48 text-[14px]'>Project count: <span className='text-white88'>{data?.projectsCount || 0}</span></div>
                                         </div>
                                     </div>
                                 </div>
