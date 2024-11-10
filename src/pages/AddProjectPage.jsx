@@ -43,6 +43,7 @@ const AddProjectPage = () => {
     const [logo, setLogo] = useState(null);
     const [role, setRole] = useState([]);
     const [logoPreview, setLogoPreview] = useState('');
+    const [foundation, setFoundation] = useState('');
     const [errors, setErrors] = useState({}); // State for validation errors
 
     const [totalPrize, setTotalPrize] = useState(0);
@@ -61,7 +62,7 @@ const AddProjectPage = () => {
     })
 
     useEffect(() => {
-        if(!isLoadingUserOrgs) {
+        if(!isLoadingUserOrgs || !userOrganisations.length) {
             if(userOrganisations[0]?.status == 'pending') {
                 alert("Your Organisation is not yet approved by Admin. Please try again later.")
                 navigate('/sponsordashboard')
@@ -69,7 +70,7 @@ const AddProjectPage = () => {
             setOrganisationHandle(userOrganisations[0]?.organisationHandle)
             setOrganisationId(userOrganisations[0]?._id)
         }
-    },[isLoadingUserOrgs])
+    },[isLoadingUserOrgs, userOrganisations])
 
     const validateMilestones = () => {
         let isErr = false;
@@ -154,7 +155,8 @@ const AddProjectPage = () => {
                     "status": "idle",
                     "about": aboutProject,
                     "roles": role,
-                    "image" : imageUrl
+                    "image" : imageUrl,
+                    "foundation": foundation
                 },
                 "milestones": updatedMilestones
             }
@@ -218,6 +220,11 @@ const AddProjectPage = () => {
             setRole((prev) => [...prev, e.target.value?.trim()])
             setSearchInput('')
         }
+    }
+
+    const handleFoundationChange = (e) => {
+        console.log('foundation',e.target.value)
+        setFoundation(e.target.value)
     }
 
   return (
@@ -328,6 +335,17 @@ const AddProjectPage = () => {
                                             </div>
                                             </div>
                                             {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
+                                        </div>
+
+                                        <div className='mt-3'>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Foundation</p>
+                                            <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
+                                                <select onChange={handleFoundationChange} className='bg-transparent h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
+                                                    <option value="starkware" className='text-white88 font-gridular text-[14px]'>Starkware</option>
+                                                    <option value="starkwarefoundation" className='text-white88 font-gridular text-[14px]'>Starknet Foundation</option>
+                                                </select>
+                                            </div>
+                                            {errors.discordLink && <p className='text-red-500 font-medium text-[10px]'>{errors.discordLink}</p>} {/* Error message */}
                                         </div>
 
                                         <div className='mt-3'>

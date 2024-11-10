@@ -85,7 +85,7 @@ const SubmissionsPage = () => {
                     <div className='flex flex-col justify-center items-center mb-10'>
                         <div className='w-[350px] md:w-[480px]'>
                             <div className='-translate-y-8'>
-                                <img src={wpllogo} alt="WPL Logo" className='size-[72px]'/>
+                                <img src={currentSubmission?.user?.pfp} alt="WPL Logo" className='size-[72px] rounded-md'/>
                             </div>
 
                             <div>
@@ -118,7 +118,7 @@ const SubmissionsPage = () => {
                                                 >
                                                     Name
                                                 </label>
-                                                <div className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`}>{currentSubmission?.user?.displayName || "--"}</div>
+                                                <div className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`}>{currentSubmission?.user?.displayName || "--"}</div>
                                             </div>
                                             <div className='flex flex-col gap-1 w-44 md:w-full'>
                                                 <label 
@@ -127,7 +127,7 @@ const SubmissionsPage = () => {
                                                 >
                                                     Email
                                                 </label>
-                                                <div className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`}>{currentSubmission?.user?.email}</div>
+                                                <div className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`}>{currentSubmission?.user?.email}</div>
                                             </div>
                                         </div>
 
@@ -138,7 +138,7 @@ const SubmissionsPage = () => {
                                             >
                                                 Experience designing application
                                             </label>
-                                            <textarea value={currentSubmission?._doc?.experienceDescription} readOnly rows={4} className={`bg-white7 w-full text-wrap rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`} /> 
+                                            <textarea value={currentSubmission?._doc?.experienceDescription} readOnly rows={4} className={`bg-white7 w-full text-wrap rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`} /> 
                                         </div>
 
                                         <div className='flex flex-col gap-1 w-44 md:w-full'>
@@ -148,7 +148,7 @@ const SubmissionsPage = () => {
                                         >
                                             Portfolio link
                                         </label>
-                                        <a href={currentSubmission?._doc?.portfolioLink} target='_blank' className={`bg-white7 rounded-[6px] text-white48 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 hover:underline cursor-pointer`}>{currentSubmission?._doc?.portfolioLink}</a>
+                                        <a href={currentSubmission?._doc?.portfolioLink} target='_blank' className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 hover:underline cursor-pointer`}>{currentSubmission?._doc?.portfolioLink}</a>
                                         </div>
 
                                         <div className='flex flex-col gap-1 w-full mb-20'>
@@ -158,7 +158,7 @@ const SubmissionsPage = () => {
                                             >
                                                 ERC-20 Address
                                             </label>
-                                            <div className={`bg-white7 text-white48 rounded-[6px] placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`}>{currentSubmission?.user?.walletAddress}</div>
+                                            <div className={`bg-white7 text-white88 rounded-[6px] placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`}>{currentSubmission?.user?.walletAddress}</div>
                                         </div>
                                 </div>
                             </div>
@@ -241,7 +241,7 @@ const submittedDetails = (projectDetails, navigate) => {
             <div className='max-w-[469px] w-full'>
                 <div className='flex gap-4 border border-dashed border-[#FFFFFF1F] bg-[#FCBF041A] rounded-md px-4 py-3'>
                     <div>
-                        <div className='size-16 rounded-sm bg-white/10'/>
+                        <img src={projectDetails?.image} alt="WPL Logo" className='size-[72px] rounded-md'/>
                     </div>
                     <div>
                         <p className='text-white88 font-gridular text-[20px] leading-[24px] text-wrap'>{projectDetails?.title}</p>
