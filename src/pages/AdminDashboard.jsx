@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import btnPng from '../assets/images/leaderboard_btn.png'
 import wpl_logo from '../assets/images/wpl_prdetails.png'
-import Statistics from '../components/home/Statistics'
+import AdminStatistics from '../components/home/AdminStatistics'
 import { getAllOrganisations, getUserDetails } from '../service/api'
 import { useNavigate } from 'react-router-dom'
 
@@ -30,8 +30,7 @@ const AdminDashboard = () => {
     const [searchInput, setSearchInput] = useState()
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 12
-
-    const filteredData = useMemo(() =>  searchInput
+   const filteredData = useMemo(() =>  searchInput
         ? dummyData.filter(data =>
             data.name.toLowerCase().includes(searchInput.toLowerCase())
         )
@@ -53,11 +52,11 @@ const AdminDashboard = () => {
         navigate(`/organisation/${id}`)
     }
 
-
+    console.log('organisationsDetails', organisationsDetails)
     return (
         <div className='flex flex-row justify-between mt-4 mx-8'>
             <div className='flex flex-col px-[46px] mt-4 w-full '>
-                <Statistics userDetails={userDetails} />
+                <AdminStatistics userDetails={userDetails} totalOrganisations={organisationsDetails?.length || 0} />
 
                 <div>
                     <div>
