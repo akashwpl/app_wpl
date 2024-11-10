@@ -106,7 +106,7 @@ const ProjectDetailsPage = () => {
   }
 
   const closeProject = async () => {
-    const { _id, __v, comments, milestones, totalPrize, created_at, updated_at, ...data } = projectDetails;
+    const { _id, __v, comments, milestones, totalPrize, created_at, updated_at, organisation, ...data } = projectDetails;
     data.status = 'closed';
 
     const res = await updateProjectDetails(projectDetails._id, data);
@@ -289,7 +289,7 @@ const ProjectDetailsPage = () => {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="py-2 border-t border-dashed border-white12">
-                        <MilestoneStatusCard data={milestone} projectDetails={projectDetails}/>
+                        <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails}/>
                       </AccordionContent>
                     </AccordionItem>
                   ))}
@@ -321,7 +321,8 @@ const ProjectDetailsPage = () => {
               :
                 <>
                   {projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> : 
-                
+
+                    isProjApplied || projectDetails?.status != "idle" ? <span></span> : 
                     <div className='mx-4 mt-4'>
                       <FancyButton 
                         src_img={btnImg} 
@@ -334,6 +335,7 @@ const ProjectDetailsPage = () => {
                         disabled={isProjApplied}
                     />
                     </div>
+                    
                   }
                   </>
               }

@@ -62,7 +62,7 @@ const AddProjectPage = () => {
     })
 
     useEffect(() => {
-        if(!isLoadingUserOrgs || !userOrganisations.length) {
+        if(userOrganisations?.length == 0) {
             if(userOrganisations[0]?.status == 'pending') {
                 alert("Your Organisation is not yet approved by Admin. Please try again later.")
                 navigate('/sponsordashboard')
@@ -149,14 +149,14 @@ const AddProjectPage = () => {
                 "project": {
                     "title": title,
                     "organisationHandle": organisationHandle,
-                    "organisationId": organisationId,
+                    "organisationId": foundation,
                     "description": description,
                     "discordLink": discordLink,
                     "status": "idle",
                     "about": aboutProject,
                     "roles": role,
                     "image" : imageUrl,
-                    "foundation": foundation
+                    "foundation": foundation,
                 },
                 "milestones": updatedMilestones
             }
@@ -338,11 +338,11 @@ const AddProjectPage = () => {
                                         </div>
 
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Foundation</p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation</p>
                                             <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
                                                 <select onChange={handleFoundationChange} className='bg-transparent h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
-                                                    <option value="starkware" className='text-white88 font-gridular text-[14px]'>Starkware</option>
-                                                    <option value="starkwarefoundation" className='text-white88 font-gridular text-[14px]'>Starknet Foundation</option>
+                                                    <option value="673067f8797130f180c2846e" className='text-white88 font-gridular text-[14px]'>Starkware</option>
+                                                    <option value="67307ac0d5e10d5d8b55e7da" className='text-white88 font-gridular text-[14px]'>Starknet Foundation</option>
                                                 </select>
                                             </div>
                                             {errors.discordLink && <p className='text-red-500 font-medium text-[10px]'>{errors.discordLink}</p>} {/* Error message */}
