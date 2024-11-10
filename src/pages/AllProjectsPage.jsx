@@ -7,7 +7,7 @@ import listDescendingSvg from '../assets/svg/list-number-descending.svg'
 import ExploreGigsCard from '../components/home/ExploreGigsCard'
 import SearchRoles from '../components/home/SearchRoles'
 import Spinner from '../components/ui/spinner'
-import { getAllProjects, getUserDetails } from '../service/api'
+import { getAllOrganisations, getAllProjects, getUserDetails } from '../service/api'
 
 const AllProjectsPage = () => {
     const { user_id } = useSelector((state) => state)
@@ -89,11 +89,32 @@ const AllProjectsPage = () => {
         setFoundationFilter(prevFilter => prevFilter === value ? '' : value);
     }
 
+    const {data: organisationsDetails, isLoading: isLoadingOrganisationDetails} = useQuery({
+        queryKey: ["allOrganisations"],
+        queryFn: () => getAllOrganisations(user_id),
+    })
+
     console.log('tiles', tiles)
 
     return (
         <div className='flex justify-center items-center'>
             <div className='md:w-[1000px] max-w-[1200px] mt-6 pb-24'>
+
+            <div className="mb-8">
+                <div className="flex flex-row text-primaryBlue">
+                    <div className="mr-3 w-2/4 h-[101px] py-5 px-5 bg-cover bg-[url('assets/images/total_earned_bg.png')] rounded-md">
+                        <p className='font-inter font-medium text-[12px] leading-[14.4px] mb-1'>Total Projects</p>
+                        <p className='font-gridular text-[42px] leading-[50.4px]'>{userDetails ? userDetails?.totalProjectsInWPL : '0'}</p>
+                    </div>
+                    <div className="mr-3 w-2/4 h-[101px] py-5 px-5 bg-cover bg-[url('assets/images/total_earned_bg.png')] rounded-md">
+                        <p className='font-inter font-medium text-[12px] leading-[14.4px] mb-1'>Total Organisations</p>
+                        <p className='font-gridular text-[42px] leading-[42px]'>
+                            {organisationsDetails?.length || '0'}
+                        </p>
+                    </div>
+                    
+                </div>
+            </div>
               
                 <div className='mt-6'>
                     <SearchRoles tiles={tiles} handleRoleChange={handleRoleChange} handleRemoveTile={handleRemoveTile} handleKeyboardEnter={handleKeyboardEnter} searchInput={searchInput} handleSearch={handleSearch} handleFoundationFilterChange={handleFoundationFilterChange}/>
