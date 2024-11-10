@@ -156,7 +156,7 @@ const AddProjectPage = () => {
                     "about": aboutProject,
                     "roles": role,
                     "image" : imageUrl,
-                    "foundation": foundation,
+                    "foundation": foundation == "673067f8797130f180c2846e" ? 'starkware' : "starkwarefoundation",
                 },
                 "milestones": updatedMilestones
             }
@@ -347,6 +347,8 @@ const AddProjectPage = () => {
                                             </div>
                                             {errors.discordLink && <p className='text-red-500 font-medium text-[10px]'>{errors.discordLink}</p>} {/* Error message */}
                                         </div>
+
+        
 
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Discord Link</p>
