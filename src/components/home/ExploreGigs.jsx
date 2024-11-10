@@ -202,7 +202,7 @@ const navigateToProjectDetails = () => {
 
         <div>
           {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
-          filteredProjects && selectedTab == 'building' && !filteredProjects?.length ? <div className="mt-24">
+          filteredProjects && selectedTab == 'live' && filteredProjects?.length == 0 ? <div className="mt-24">
             <div className="flex flex-col justify-center items-center gap-2">
               <div className="font-gridular text-white88 text-[24px]">You haven't applied to any projects :(</div>
               <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
@@ -237,7 +237,7 @@ const navigateToProjectDetails = () => {
                 </div>
             </div>
             : <div className={`${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col"}`}>
-                {filteredProjects?.map((project, idx) => <div key={idx} className={`${projectsGridView ? "" : "hover:bg-white4"}`}> 
+                {filteredProjects?.length == 0 ? <div></div> : filteredProjects?.map((project, idx) => <div key={idx} className={`${projectsGridView ? "" : "hover:bg-white4"}`}> 
                     <div className='col-span-1'>
                       <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
                       {/* {projectsGridView && <div className='border border-x-0 border-t-0 border-b-white7'></div>} */}
