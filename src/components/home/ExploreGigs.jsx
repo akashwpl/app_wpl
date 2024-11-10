@@ -236,13 +236,15 @@ const navigateToProjectDetails = () => {
                   />
                 </div>
             </div>
-            : filteredProjects?.map((project, idx) => <div key={idx} className={`${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col hover:bg-white4"}`}> 
-                <div className='col-span-1'>
-                  <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
-                  {/* {!projectsGridView && <div className='border border-x-0 border-t-0 border-b-white7'></div>} */}
+            : <div className={`${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col"}`}>
+                {filteredProjects?.map((project, idx) => <div key={idx} className={`${projectsGridView ? "" : "hover:bg-white4"}`}> 
+                    <div className='col-span-1'>
+                      <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
+                      {/* {projectsGridView && <div className='border border-x-0 border-t-0 border-b-white7'></div>} */}
+                    </div>
                 </div>
-            </div>
-          )}
+              )}
+            </div>}
         </div>
     </div>
   )

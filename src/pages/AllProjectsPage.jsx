@@ -33,6 +33,7 @@ const AllProjectsPage = () => {
 
     const [searchInput, setSearchInput] = useState()
     const [weeksFilter, setWeeksFilter] = useState()
+    const [foundationFilter, setFoundationFilter] = useState()
 
     const handleSearch = (e) => {
         setSearchInput(e.target.value)
@@ -43,8 +44,8 @@ const AllProjectsPage = () => {
             ?.filter(project => {
                 const matchesType = project?.type?.toLowerCase() === 'bounty';
                 const matchesSearch = searchInput ? project?.title?.toLowerCase().includes(searchInput.toLowerCase()) : true;
-                const matchesRole = roleName && roleName !== 'none' ? project?.role?.toLowerCase() === roleName.toLowerCase() : true;
-
+                const matchesRole = tiles.length > 0 ? tiles.some(tile => project?.roles?.map(role => role.toLowerCase()).includes(tile.toLowerCase())) : true;
+                const matchfoundation = foundationFilter && foundationFilter !== 'all' ? project?.foundation?.toLowerCase() === foundationFilter?.toLowerCase() : true;
                 // Week-based filter
                 const lastMilestone = project?.milestones?.[project.milestones.length - 1];
                 const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;
@@ -55,12 +56,12 @@ const AllProjectsPage = () => {
                     (weeksFilter === 'between2And4' && weeksLeft >= 2 && weeksLeft <= 4) ||
                     (weeksFilter === 'above4' && weeksLeft > 4);
 
-                return matchesSearch && matchesRole && matchesType && matchesWeeks;
+                return matchesSearch && matchesRole && matchesType && matchesWeeks && matchfoundation;
             })
             .sort((a, b) => {
                 return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
         });
-    }, [allProjects, searchInput, roleName, sortOrder, weeksFilter]);
+    }, [allProjects, searchInput, roleName, sortOrder, weeksFilter, foundationFilter]);
 
     const handleRoleChange = (e) => {
         setRoleName(e.target.value)
@@ -83,6 +84,11 @@ const AllProjectsPage = () => {
         setWeeksFilter(prevFilter => prevFilter === value ? '' : value);
     };
 
+    const handleFoundationFilterChange = (event) => {
+        const value = event.target.value;
+        setFoundationFilter(prevFilter => prevFilter === value ? '' : value);
+    }
+
     console.log('tiles', tiles)
 
     return (
@@ -90,7 +96,7 @@ const AllProjectsPage = () => {
             <div className='md:w-[1000px] max-w-[1200px] mt-6 pb-24'>
               
                 <div className='mt-6'>
-                    <SearchRoles tiles={tiles} handleRoleChange={handleRoleChange} handleRemoveTile={handleRemoveTile} handleKeyboardEnter={handleKeyboardEnter} searchInput={searchInput} handleSearch={handleSearch}/>
+                    <SearchRoles tiles={tiles} handleRoleChange={handleRoleChange} handleRemoveTile={handleRemoveTile} handleKeyboardEnter={handleKeyboardEnter} searchInput={searchInput} handleSearch={handleSearch} handleFoundationFilterChange={handleFoundationFilterChange}/>
                 </div>
 
                 <div className='border border-white7 rounded-md h-[56px] flex justify-between items-center'>
@@ -145,7 +151,7 @@ const AllProjectsPage = () => {
                 <div className='mt-8'>
                     <div className={`${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col"} transition duration-300`}>
                         {isLoadingAllProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
-                            
+                            filteredProjects?.length === 0 ? <div className='flex justify-center items-center mt-10'><p className='text-white88 font-gridular text-[24px]'>No projects found :(</p></div> :
                             filteredProjects && 
                             filteredProjects.map((project, idx) => <div key={idx} className={`${!projectsGridView ? "hover:bg-white4 rounded-md" : ''} w-full gap-3`}>
                                     <div className='col-span-1'>
