@@ -55,6 +55,15 @@ export const getUserProjects = async () => {
     }
 }
 
+export const getAllOrganisations = async () => {
+    try {
+        const response = await axiosInstance.get('/organisation')
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
 export const updateProjectDetails = async (id, updData) => {
     try {
         const response = await axiosInstance.put(`/projects/update/${id}`, updData)
