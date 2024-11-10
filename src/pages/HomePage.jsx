@@ -7,6 +7,8 @@ import ProfileDetailsCard from '../components/home/ProfileDetailsCard'
 import RecentActivityCard from '../components/home/RecentActivityCard'
 import Statistics from '../components/home/Statistics'
 import { getUserDetails } from '../service/api'
+import AdminDashboard from './AdminDashboard'
+import SponsorDashboard from './SponsorDashboard'
 
 const HomePage = () => {
 
@@ -17,6 +19,14 @@ const HomePage = () => {
     queryFn: () => getUserDetails(user_id),
     enabled: !!user_id,
   }) 
+
+  if(user_role == 'admin') {
+    return <AdminDashboard />
+  }
+
+  if(user_role == 'sponsor') {
+    return <SponsorDashboard />
+  }
 
   return (
     <div className='flex flex-row justify-between mt-4 mx-8'>

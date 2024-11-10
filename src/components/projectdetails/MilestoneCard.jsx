@@ -33,8 +33,8 @@ const MilestoneCard = ({ data }) => {
                   </>
                 :
                   <>
-                    <CheckCheck size={14} className='text-cardRedText'/>
-                    <p className='text-cardRedText text-[12px] leading-[14px]'>Completed</p>
+                    <CheckCheck size={14} className='text-primaryGreen'/>
+                    <p className='text-primaryGreen text-[12px] leading-[14px]'>Completed</p>
                   </>
                 }
               </div>

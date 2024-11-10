@@ -40,6 +40,7 @@ const EditProfilePage = () => {
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
+    const [username, setUsername] = useState('')
     const [bio, setBio] = useState('')
     const [discord, setDiscord] = useState('')
     const [telegram, setTelegram] = useState('')
@@ -245,6 +246,7 @@ const EditProfilePage = () => {
         setTelegram(userDetails?.socials?.telegram)
         setPfpPreview(userDetails?.pfp)
         setPfp(userDetails?.pfp)
+        setUsername(userDetails?.username)
     }, [userDetails])
 
     const handleSubmitEditProfile = async () => {
@@ -264,22 +266,26 @@ const EditProfilePage = () => {
         } else if(!telegram?.length) {
             setErrors({telegram: 'Telegram is required'})
             return
+        } else if (!username?.length) {
+            setErrors({username: 'Username is required'})
+            return
         }
+
         setErrors({})
         setIsUpdating(true)
 
 
-        let imageUrl = userDetails?.pfp
+        // let imageUrl = userDetails?.pfp
 
-        if(!pfp) {
-            const imageRef = ref(storage, `images/${pfp.name}`);
-            await uploadBytes(imageRef, pfp);
-            imageUrl = await getDownloadURL(imageRef);
-        }
+        // if(!pfp) {
+        //     const imageRef = ref(storage, `images/${pfp.name}`);
+        //     await uploadBytes(imageRef, pfp);
+        //     imageUrl = await getDownloadURL(imageRef);
+        // }
 
-        // const imageRef = ref(storage, `images/${pfp.name}`);
-        // await uploadBytes(imageRef, pfp);
-        // const imageUrl = await getDownloadURL(imageRef);
+        const imageRef = ref(storage, `images/${pfp.name}`);
+        await uploadBytes(imageRef, pfp);
+        const imageUrl = await getDownloadURL(imageRef);
 
         const data = {
             "displayName": document.querySelector('input[name="displayName"]').value,
@@ -288,7 +294,8 @@ const EditProfilePage = () => {
                 "discord": document.querySelector('input[name="discordUsername"]').value,
                 "telegram": document.querySelector('input[name="telegramUsername"]').value,
             },
-            "pfp": imageUrl
+            "pfp": imageUrl,
+            "username": username
         }
 
         const response = await fetch(`${BASE_URL}/users/update/`, {
@@ -371,6 +378,13 @@ const EditProfilePage = () => {
                             {errors.email && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.email}</div>}
                         </div>
                     </div>
+                    <div className='flex flex-col gap-1 w-full'>
+                        <label className='text-[13px] font-medium text-white32'>Username</label>
+                        <input name='email' value={username} onChange={(e) => setUsername(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none border-none' 
+                            placeholder='Johndoe'
+                        />
+                        {errors.username && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.username}</div>}
+                    </div>
 
                     <div className='flex flex-col gap-1 w-full'>
                         <label className='text-[13px] font-medium text-white32'>Write your Bio (max 240 characters)</label>
@@ -443,7 +457,7 @@ const EditProfilePage = () => {
                     hover_src_img={updateBtnHoverImg} 
                     img_size_classes='w-[482px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                    btn_txt={isUpdating ? <Spinner /> : "Update Profile"}  
+                    btn_txt={isUpdating ? <div className='flex justify-center items-center size-full -translate-y-3'> <Spinner /> </div> : "Update Profile"}  
                     alt_txt='update profile btn' 
                     onClick={handleSubmitEditProfile}
                   />

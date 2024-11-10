@@ -1,7 +1,7 @@
 import { ArrowUpRight, CheckCheck, Clock, HeartCrack, Hourglass, TriangleAlert, X } from 'lucide-react';
 import { useState } from 'react';
 import { calculateRemainingDaysAndHours } from '../../lib/constants';
-import { submitMilestone } from '../../service/api';
+import { submitMilestone, updateMilestone } from '../../service/api';
 
 import { useSelector } from 'react-redux';
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png';
@@ -12,7 +12,7 @@ import CustomModal from '../ui/CustomModal';
 import FancyButton from '../ui/FancyButton';
 
 
-const MilestoneStatusCard = ({ data, projectDetails }) => {
+const MilestoneStatusCard = ({ data: milestoneData, projectDetails }) => {
 
     const {user_id, user_role} = useSelector(state => state)
     const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -20,8 +20,12 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
     const [linkError, setLinkError] = useState(null);
     const [descriptionError, setDescriptionError] = useState(null);
 
+    const [showMilestoneSubmissionModal, setShowMilestoneSubmissionModal] = useState(false);
+
 
     const handleSubmitMilestone = async () => {
+
+     
 
         const linkInput = document.querySelector('input').value;
         const descriptionTextarea = document.querySelector('textarea').value;
@@ -44,7 +48,14 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
             setDescriptionError(null);
         }
 
-        const res = await submitMilestone(data?._id);
+        const body = {
+            "submissionLink": linkInput,
+            "submissionDescription": descriptionTextarea
+        }
+
+        const res = await submitMilestone(milestoneData?._id, body);
+        setShowSubmitModal(false);
+        
         if(res?.user_status === 'submitted') {
             alert('Milestone submitted successfully')
         } else {
@@ -55,12 +66,31 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
     // TODO :: sponsor can accept or reject the milestone
     const handleMileStoneSponsorAction = async (type) => {
 
+        const { _id, __v, comments, milestones, totalPrize, created_at, updated_at, ...data } = milestoneData;
+        data.status = type == 'accept' ? "completed" : "rejected";
+        data.deadline = new Date(data.deadline).getTime();
+        data.starts_in = new Date(data.starts_in).getTime();
+
+        const res = await updateMilestone(milestoneData?._id, data);
+        setShowMilestoneSubmissionModal(false);
+
+        console.log('res', res)
+
+        // if(type == 'accept') {
+        //     const res = await updateMilestone(data?._id, data);
+        //     setShowMilestoneSubmissionModal(false);
+
+        // } else {
+        //     const res = await updateMilestone(data?._id, data);
+        //     setShowMilestoneSubmissionModal(false);
+        // }
+
     }
 
     console.log('user_role', user_role)
-    console.log('data', data)
+    console.log('data', milestoneData)
 
-    const time_remain = calculateRemainingDaysAndHours(new Date(), data?.starts_in);
+    const time_remain = calculateRemainingDaysAndHours(new Date(), milestoneData?.starts_in);
 
     return (
         <div className='flex flex-col gap-[14px]'>
@@ -70,17 +100,17 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
                     <p className='text-[12px] text-white32 leading-[16px]'>Milestone Status</p>
                 </div>
                 <div className='flex items-center gap-1 font-inter'>
-                    {data?.status == 'idle' ? 
+                    {milestoneData?.status == 'idle' ? 
                         <>
                             <Hourglass size={14} className='text-white32'/>
                             <p className='text-white48 text-[12px] leading-[14px]'>Idle</p>
                         </>
-                    : data?.status == 'ongoing' ?
+                    : milestoneData?.status == 'ongoing' ?
                         <>
                             <Hourglass size={14} className='text-white32'/>
                             <p className='text-white48 text-[12px] leading-[14px]'>In Progress</p>
                         </>
-                    :  data?.status == 'under_review' ?
+                    :  milestoneData?.status == 'under_review' ?
                         <>
                             <TriangleAlert size={14} className='text-cardYellowText'/>
                             <p className='text-cardYellowText text-[12px] leading-[14px]'>Under Review</p>
@@ -110,47 +140,28 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
                     <p className='text-[12px] text-white32 leading-[16px]'>Need Help?</p>
                 </div>
                 <div className='flex items-center gap-1'>
-                    <a href={data?.help_link[0]} target='_blank' className='cursor-pointer'>
+                    <a href={milestoneData?.help_link[0]} target='_blank' className='cursor-pointer'>
                         <p className='text-[12px] text-white88 leading-[14px] font-medium font-inter flex items-center gap-1'>Join discord <ArrowUpRight size={14} className='text-white32'/></p>
                     </a>
                 </div>
             </div>
 
             <div className="my-1">
+                <div>
+                    <p className='text-white64'>User has submitted the milestone: <span onClick={() => setShowMilestoneSubmissionModal(true)} className='text-primaryYellow underline cursor-pointer hover:text-primaryYellow/90'>view</span></p>
+                </div>
                 {user_id != projectDetails?.user_id && user_role == 'sponsor' ?
                     <div>
-                        {data?.status == 'under_review' && projectDetails?.status != 'closed'
-                        ? <div className='flex items-center gap-2'>
-                            <FancyButton 
-                                src_img={btnImg} 
-                                hover_src_img={btnHoverImg} 
-                                img_size_classes='w-[190px] h-[44px]' 
-                                className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                                btn_txt='accept'
-                                alt_txt='project apply btn' 
-                                onClick={() => handleMileStoneSponsorAction('accept')}
-                            />
-                            <FancyButton 
-                                src_img={closeProjBtnImg} 
-                                hover_src_img={closeProjBtnHoverImg} 
-                                img_size_classes='w-full h-[44px]' 
-                                className='font-gridular text-[14px] leading-[8.82px] text-primaryRed mt-1.5'
-                                btn_txt='reject'  
-                                alt_txt='project apply btn' 
-                                onClick={() => handleMileStoneSponsorAction('reject')}
-                            />
-                        </div>
-                        : ""
-                        }
+                     
                     </div>
                 : 
-                    projectDetails?.status == 'closed' ? "" : 
+                    projectDetails?.status == 'closed' ? "" : user_id == projectDetails?.user_id &&
                     <FancyButton 
                         src_img={btnImg} 
-                        hover_src_img={btnHoverImg} 
+                        hover_src_img={btnHoverImg}
                         img_size_classes='w-[342px] h-[44px]' 
                         className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                        btn_txt={data?.status == 'under_review' || data?.status == 'closed' ? 're-submit milestone' : 'submit milestone'}  
+                        btn_txt={milestoneData?.status == 'under_review' || milestoneData?.status == 'closed' ? 're-submit milestone' : 'submit milestone'}  
                         alt_txt='project apply btn' 
                         onClick={() => setShowSubmitModal(true)}
                     />
@@ -186,6 +197,50 @@ const MilestoneStatusCard = ({ data, projectDetails }) => {
                             alt_txt='project apply btn' 
                             onClick={handleSubmitMilestone}
                         />
+                    </div>
+                </div>
+            </CustomModal>
+
+            <CustomModal isOpen={showMilestoneSubmissionModal} closeModal={() => setShowMilestoneSubmissionModal(false)}>
+                <div className='bg-primaryDarkUI border border-white4 rounded-md w-[500px] p-3'>
+                    <div className='flex justify-end'><X size={20} onClick={() => setShowMilestoneSubmissionModal(false)}  className='text-white88 hover:text-white64 cursor-pointer'/></div>
+                    <div>
+                        <p className='text-primaryYellow font-semibold font-gridular'>Add details</p>
+                        <div className='h-[1px] bg-primaryYellow w-full mt-2 mb-5'/>
+                        <div className='flex flex-col'>
+                            <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Link</label>
+                            <a href={milestoneData?.submissionLink} target='_blank' className='bg-white12 text-white88 py-1 px-2 rounded-md w-ful'>{milestoneData?.submissionLink}</a>
+                        </div>
+                        <div className='flex flex-col mt-4'>
+                            <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Description</label>
+                            <textarea rows={4} value={milestoneData?.submissionDescription} className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' placeholder='Fixed UI Bug'/>
+                        </div>
+                    </div>
+
+                    <div>
+                        {milestoneData?.status == 'under_review' && projectDetails?.status != 'closed'
+                        ? <div className='flex justify-center mt-6 items-center gap-2'>
+                            <FancyButton 
+                                src_img={btnImg} 
+                                hover_src_img={btnHoverImg} 
+                                img_size_classes='w-[190px] h-[44px]' 
+                                className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                                btn_txt='accept'
+                                alt_txt='project apply btn' 
+                                onClick={() => handleMileStoneSponsorAction('accept')}
+                            />
+                            <FancyButton 
+                                src_img={closeProjBtnImg} 
+                                hover_src_img={closeProjBtnHoverImg} 
+                                img_size_classes='w-full h-[44px]' 
+                                className='font-gridular text-[14px] leading-[8.82px] text-primaryRed mt-1.5'
+                                btn_txt='reject'  
+                                alt_txt='project apply btn' 
+                                onClick={() => handleMileStoneSponsorAction('reject')}
+                            />
+                        </div>
+                        : ""
+                        }
                     </div>
                 </div>
             </CustomModal>

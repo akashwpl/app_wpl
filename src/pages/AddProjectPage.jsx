@@ -62,7 +62,7 @@ const AddProjectPage = () => {
     })
 
     useEffect(() => {
-        if(!isLoadingUserOrgs || !userOrganisations) {
+        if(!isLoadingUserOrgs || !userOrganisations.length) {
             if(userOrganisations[0]?.status == 'pending') {
                 alert("Your Organisation is not yet approved by Admin. Please try again later.")
                 navigate('/sponsordashboard')

@@ -109,9 +109,18 @@ export const acceptRejectSubmission = async (submissionData, id) => {
     }
 }
 
-export const submitMilestone = async (id) => {
+export const submitMilestone = async (id, data) => {
     try {
-        const response = await axiosInstance.put(`/projects/milestone/submit/${id}`)
+        const response = await axiosInstance.put(`/projects/milestone/submit/${id}`, data)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const updateMilestone = async (id, data) => {
+    try {
+        const response = await axiosInstance.put(`/projects/milestone/update/${id}`, data)
         return response.data.data
     } catch (error) {
         handleForbiddenError(error)
