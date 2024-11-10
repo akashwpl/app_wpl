@@ -12,7 +12,7 @@ import CustomModal from '../ui/CustomModal';
 import FancyButton from '../ui/FancyButton';
 
 
-const MilestoneStatusCard = ({ data: milestoneData, projectDetails }) => {
+const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProjectDetails }) => {
 
     const {user_id, user_role} = useSelector(state => state)
     const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -24,8 +24,6 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails }) => {
 
 
     const handleSubmitMilestone = async () => {
-
-     
 
         const linkInput = document.querySelector('input').value;
         const descriptionTextarea = document.querySelector('textarea').value;
@@ -147,12 +145,13 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails }) => {
             </div>
 
             <div className="my-1">
-                <div>
-                    <p className='text-white64'>User has submitted the milestone: <span onClick={() => setShowMilestoneSubmissionModal(true)} className='text-primaryYellow underline cursor-pointer hover:text-primaryYellow/90'>view</span></p>
-                </div>
+                    {milestoneData?.status == 'under_review' ? 
+                        <div>
+                            <p className='text-white64'>User has submitted the milestone: <span onClick={() => setShowMilestoneSubmissionModal(true)} className='text-primaryYellow underline cursor-pointer hover:text-primaryYellow/90'>view</span></p>
+                        </div> : null
+}
                 {user_id != projectDetails?.user_id && user_role == 'sponsor' ?
                     <div>
-                     
                     </div>
                 : 
                     projectDetails?.status == 'closed' ? "" : user_id == projectDetails?.user_id &&
