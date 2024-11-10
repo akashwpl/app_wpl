@@ -5,7 +5,7 @@ import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import exploreBtnHoverImg from '../../assets/svg/menu_btn_hover_subtract.png'
 import exploreBtnImg from '../../assets/svg/menu_btn_subtract.png'
-import { getUserProjects } from "../../service/api"
+import { getOrgProjects, getUserProjects } from "../../service/api"
 import FancyButton from "../ui/FancyButton"
 import Spinner from "../ui/spinner"
 import Tabs from "../ui/Tabs"
@@ -28,7 +28,7 @@ const sponsorTabs = [
   {id: 'completed', name: 'Completed', isActive: false}
 ]
 
-const ExploreGigs = ({orgProjects, userId}) => {
+const OrgExplore = ({userId}) => {
 
   const navigate = useNavigate()
   const { user_id, user_role } = useSelector((state) => state)
@@ -42,10 +42,17 @@ const ExploreGigs = ({orgProjects, userId}) => {
   const [projectsGridView, setProjectsGridView] = useState(false)
   const [weeksFilter, setWeeksFilter] = useState()
 
-  const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
-    queryKey: ["userProjects"],
-    queryFn: getUserProjects
-  })
+
+  const {data: orgProjects, isLoading: isLoadingUserProjects} = useQuery({
+    queryKey: ["orgProjects", userId],
+    queryFn: () => getOrgProjects(userId),
+    enabled: !!userId,
+    })
+
+//   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
+//     queryKey: ["userProjects"],
+//     queryFn: getUserProjects
+//   })
 
   useEffect(() => {
     if(user_role == 'sponsor') {
@@ -67,46 +74,13 @@ const ExploreGigs = ({orgProjects, userId}) => {
     setSelectedTab(id)
   }
 
-
-  // const filteredProjects = useMemo(() => {
-  //   // Filter projects based on the selected tab
-  //   let projectsToSort = [];
-  //   if (selectedTab === 'building') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
-  //   else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
-  //   else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
-  //   else projectsToSort = userProjects;
-
-  //   // Sort by the last milestone's deadline
-
-  //   if(sortBy == 'prize') {
-  //     return projectsToSort
-  //       ?.sort((a, b) => {
-  //         return sortOrder === 'ascending' ? a.totalPrize - b.totalPrize : b.totalPrize - a.totalPrize;
-  //       });
-  //   } else {
-  //   return projectsToSort
-  //     ?.sort((a, b) => {
-  //       const dateA = a.milestones && a.milestones.length > 0
-  //         ? new Date(a.milestones[a.milestones.length - 1].deadline)
-  //         : new Date(0); // fallback date if no milestones
-  //       const dateB = b.milestones && b.milestones.length > 0
-  //         ? new Date(b.milestones[b.milestones.length - 1].deadline)
-  //         : new Date(0); // fallback date if no milestones
-        
-  //         return sortOrder === 'ascending' ? dateA - dateB : dateB - dateA;
-  //     });
-  //   }
-  // }, [userProjects, selectedTab, sortOrder]);
-
-
-  
   const filteredProjects = useMemo(() => {
     let projectsToSort = [];
-    if (selectedTab === 'all') projectsToSort = userProjects?.filter(project => project.status == 'idle');
-    else if (selectedTab === 'live') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
-    else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
-    // else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
-    else projectsToSort = userProjects;
+    if (selectedTab === 'all') projectsToSort = orgProjects?.filter(project => project.status == 'idle');
+    else if (selectedTab === 'live') projectsToSort = orgProjects?.filter(project => project.status === 'ongoing');
+    else if (selectedTab === 'completed') projectsToSort = orgProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
+    // else if (selectedTab === 'in_review') projectsToSort = orgProjects?.filter(project => project.status === 'submitted');
+    else projectsToSort = orgProjects;
 
     return projectsToSort
         ?.filter(project => {
@@ -125,7 +99,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
         .sort((a, b) => {
             return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
     });
-}, [userProjects, sortOrder, weeksFilter, selectedTab]);
+}, [orgProjects, sortOrder, weeksFilter, selectedTab]);
 
 const handleWeeksFilterChange = (event) => {
   const value = event.target.value;
@@ -252,4 +226,4 @@ const navigateToProjectDetails = () => {
   )
 }
 
-export default ExploreGigs
+export default OrgExplore

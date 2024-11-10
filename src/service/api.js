@@ -46,6 +46,16 @@ export const getUserDetails = async (id) => {
     }
 }
 
+
+export const getOrgProjects = async (id) => {
+    try {
+        const response = await axiosInstance.get(`/organisation/${id}/projects`)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
 export const getUserProjects = async () => {
     try {
         const response = await axiosInstance.get('/projects/user')
