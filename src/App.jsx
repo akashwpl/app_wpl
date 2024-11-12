@@ -21,11 +21,18 @@ import OrganisationPage from "./pages/OrganisationPage"
 import Requests from "./pages/Requests"
 import ForgetPasswordPage from "./pages/ForgetPasswordPage"
 import RequestsPage from "./pages/RequestsPage"
+import Portal from "./components/ui/Portal"
+import Snackbar from "./components/ui/Snackbar"
+import { useSelector } from "react-redux"
 
 function App() {
 
+  const { snackBar } = useSelector(state => state)
+
+  console.log('snackbar', snackBar);
+
   return (
-    <div>
+    <div className="relative">
       <div className="fixed top-0 left-0 w-full z-[100]">
         <Navbar />
       </div>
@@ -55,6 +62,14 @@ function App() {
           <Route path="/forgetpassword" element={<ForgetPasswordPage />} />
         </Routes>
       </div>
+      <div>hi</div>
+      {snackBar?.show && (
+            <Portal>
+                <div className='fixed bottom-20 left-1/2 transform -translate-x-1/2 z-[1000] w-full max-w-md bg-primaryBlue border-white64 h-12 rounded-md'>
+                    <Snackbar text={snackBar?.text} />
+                </div>
+            </Portal>
+        )}
     </div>
   )
 }
