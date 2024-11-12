@@ -199,6 +199,7 @@ const OnBoarding = () => {
   }
 
   const swtichOnboardingType = () => {
+    setError("")
     setIsSignin(!isSignin)
   }
 
@@ -339,7 +340,7 @@ const OnBoarding = () => {
                           style={{ display: 'none' }}
                         />                           
                       </div>
-                      <div className='text-[14px] font-inter'>
+                      <div className='text-[14px] font-inter mt-1'>
                           <p className='text-white88'>Add a profile image</p>
                           <p className='text-white32'>Recommended 1:1 aspect ratio</p>
                       </div>
