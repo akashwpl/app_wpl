@@ -46,6 +46,12 @@ const OnBoarding = () => {
 
   const fileInputRef = useRef(null);
 
+  const [errors, setErrors] = useState({
+    displayName: '',
+    experience: '',
+    walletAddress: '',
+    img: ''
+  });
 
   const signUp = async () => {
     if (!email || !password) {
@@ -148,9 +154,17 @@ const OnBoarding = () => {
   }
 
   const updateProfile = async () => {
-    if(!displayName || !experience || !walletAddress) {
-      alert('Please fill all the fields')
-      return
+    const newErrors = {
+      displayName: !displayName ? 'Please fill the name field' : '',
+      experience: !experience ? 'Please fill the experience field' : '',
+      walletAddress: !walletAddress ? 'Please fill the wallet address field' : '',
+      img: !img ? 'Please upload a profile image' : ''
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some(error => error)) {
+      return;
     }
 
     const imageRef = ref(storage, `images/${img.name}`);
@@ -230,12 +244,12 @@ const OnBoarding = () => {
               <p className='text-white88 group-hover:underline'>Want to sponsor a Project? </p>
               <p className='text-white48 group-hover:underline'>Apply to be a part!</p>
             </div>
-          : 
-            <div onClick={navigateToOrgFormPage} className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md group cursor-pointer">
-              <Zap stroke='#97A0F1' size={12} />
-              <p className='text-white88 group-hover:underline'>New to WPL?</p>
-              <p className='text-white48 group-hover:underline'>Apply to be a part!</p>
-            </div>
+          :  null
+            // <div onClick={navigateToOrgFormPage} className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md group cursor-pointer">
+            //   <Zap stroke='#97A0F1' size={12} />
+            //   <p className='text-white88 group-hover:underline'>New to WPL?</p>
+            //   <p className='text-white48 group-hover:underline'>Apply to be a part!</p>
+            // </div>
           }
           
           <div className='mt-4'>
@@ -329,6 +343,7 @@ const OnBoarding = () => {
                           <p className='text-white88'>Add a profile image</p>
                           <p className='text-white32'>Recommended 1:1 aspect ratio</p>
                       </div>
+                      {errors.img && <span className='text-red-500 text-sm'>{errors.img}</span>}
                     </>
                 }
               </div>
@@ -354,11 +369,14 @@ const OnBoarding = () => {
               <div className='h-[1px] w-full bg-primaryYellow my-4'/>
 
               <div>
-                <div className='flex items-center gap-4 w-full'>
+                <div className='flex items-start gap-4 w-full'>
                   <div className='w-full'>
-                    <div className='text-white32 font-semibold font-inter text-[13px]'>Your Name</div>
-                    <div className='bg-[#FFFFFF12] rounded-md'>
-                      <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} type='text' placeholder='John' className='w-full bg-transparent py-2 px-2 outline-none text-white'/>
+                    <div>
+                      <div className='text-white32 font-semibold font-inter text-[13px]'>Your Name</div>
+                      <div className='bg-[#FFFFFF12] rounded-md'>
+                        <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} type='text' placeholder='John' className='w-full bg-transparent py-2 px-2 outline-none text-white'/>
+                      </div>
+                      {errors.displayName && <span className='text-red-500 text-sm'>{errors.displayName}</span>}
                     </div>
                   </div>
                   <div className='w-full'>
@@ -372,12 +390,14 @@ const OnBoarding = () => {
                 <div className='mt-4'>
                   <div className='text-white32 font-semibold font-inter text-[13px]'>Do you have experience designing application?</div>
                   <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder='Yes, I have 5 years of experience in designing applications' className='w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] text-white' rows={4}/>
+                  {errors.experience && <span className='text-red-500 text-sm'>{errors.experience}</span>}
                 </div>
 
 
                 <div className='mt-4'>
                   <div className='text-white32 font-semibold font-inter text-[13px]'>Enter ypur ERC-20 Address</div>
                   <input value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} placeholder='0x101..' className='w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] outline-none text-white'/>
+                  {errors.walletAddress && <span className='text-red-500 text-sm'>{errors.walletAddress}</span>}
                 </div>
 
                 <div className='mt-8 py-1'>
