@@ -16,6 +16,7 @@ import FancyButton from '../components/ui/FancyButton'
 
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../lib/firebase'
+import { displaySnackbar } from '../store/thunkMiddleware'
 
 const OnBoarding = () => {
 
@@ -215,6 +216,10 @@ const OnBoarding = () => {
     fileInputRef.current.click();
   }
 
+  const handleGoogleLogin = () => {
+    dispatch(displaySnackbar('Feature coming soon!'))
+  }
+
   return (
     <div className='flex justify-center items-center'>
       {!isSignComplete ?
@@ -226,10 +231,10 @@ const OnBoarding = () => {
               <p className='text-white48 group-hover:underline'>Apply to be a part!</p>
             </div>
           : 
-            <div className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md">
+            <div onClick={navigateToOrgFormPage} className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md group cursor-pointer">
               <Zap stroke='#97A0F1' size={12} />
-              <p className='text-white88'>New to WPL?</p>
-              <p className='text-white48'>Apply to be a part!</p>
+              <p className='text-white88 group-hover:underline'>New to WPL?</p>
+              <p className='text-white48 group-hover:underline'>Apply to be a part!</p>
             </div>
           }
           
@@ -247,13 +252,13 @@ const OnBoarding = () => {
 
           <div className='bg-white4 rounded-lg p-3 mt-6 min-w-[400px]'>
             <div className='bg-[#091044] rounded-lg p-3'>
-              <div className='flex justify-between items-center group cursor-pointer'>
-                <div className='flex items-center gap-1 text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Log in" : "Sign up with"} <img src={googleLogo} width={12} height={12} />Google</div>
+              <div onClick={handleGoogleLogin} className='flex justify-between items-center group cursor-pointer'>
+                <div className='flex items-center gap-1 text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Log in" : "Sign up with"} Google <img src={googleLogo} width={12} height={12} /></div>
                 <div><ArrowRight size={18} stroke='#FFFFFF52'/></div>
               </div>
               <div className='my-4 border border-dashed border-[#FFFFFF12]'/>
               <div>
-                <p className='text-white32 font-medium font-inter text-[13px] leading-[15.6px]'>Or, {isSignin ? "Log in" : "Sign up"} with Email</p>
+                <p className='text-white32 font-medium font-inter text-[13px] leading-[15.6px]'>{isSignin ? "Log in" : "Sign up"} with Email</p>
               </div>
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type="email" placeholder="User@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
