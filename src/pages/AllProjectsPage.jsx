@@ -172,7 +172,7 @@ const AllProjectsPage = () => {
                 <div className='mt-8'>
                     <div className={`${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col"} transition duration-300`}>
                         {isLoadingAllProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
-                            filteredProjects?.length === 0 ? <div className='flex justify-center items-center mt-10'><p className='text-white88 font-gridular text-[24px]'>No projects found :(</p></div> :
+                            filteredProjects?.length === 0 ? <div className='flex justify-center items-center mt-10 col-span-2'><p className='text-white88 font-gridular text-[24px]'>No projects found :(</p></div> :
                             filteredProjects && 
                             filteredProjects.map((project, idx) => <div key={idx} className={`${!projectsGridView ? "hover:bg-white4 rounded-md" : ''} w-full gap-3`}>
                                     <div className='col-span-1'>

@@ -1,4 +1,4 @@
-import { ArrowRight, EyeIcon, EyeOffIcon, Info, MailWarningIcon, Menu, MessageSquareMoreIcon, Upload, X, Zap } from 'lucide-react'
+import { ArrowRight, EyeIcon, EyeOffIcon, Info, Mail, MailWarningIcon, Menu, MessageSquareMoreIcon, Upload, X, Zap } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BASE_URL, email_regex } from '../lib/constants'
@@ -17,6 +17,8 @@ import FancyButton from '../components/ui/FancyButton'
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '../lib/firebase'
 import { displaySnackbar } from '../store/thunkMiddleware'
+
+import mailSVG from '../assets/svg/mail.svg'
 
 const OnBoarding = () => {
 
@@ -277,7 +279,7 @@ const OnBoarding = () => {
               </div>
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type="email" placeholder="User@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
-                <MessageSquareMoreIcon stroke='#FFFFFF52'/>
+                <img src={mailSVG} alt='email' className='w-[22px] h-[22px]'/>
               </div>
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type={isPass ? 'password' : 'text'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
