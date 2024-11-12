@@ -59,7 +59,7 @@ const ProfilePage = () => {
       <div className='flex flex-col justify-center items-center pb-20'>
         <div className='w-[350px] md:w-[480px]'>
           <div className='-translate-y-8'>
-            <img src={userDetails?.pfp} alt="WPL Logo" className='size-[72px] rounded-md'/>
+            <img src={userDetails?.pfp || wpllogo} alt="WPL Logo" className='size-[72px] rounded-md'/>
           </div>
 
           <div>
