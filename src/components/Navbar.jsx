@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Building2, LayoutDashboardIcon, LogOut, LucideInfo, SquareChartGantt, User } from 'lucide-react'
+import { Building2, LayoutDashboardIcon, LogOut, LucideInfo, SquareChartGantt, SquareDashedBottom, Trophy, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -108,7 +108,7 @@ const Navbar = () => {
                     className='w-[200px] h-[44px]'
                   />
                   <div className="absolute inset-0 top-1/4 uppercase flex items-center justify-center gap-2 mb-2">
-                    <img src={userDetail?.pfp} width={18} alt='wolf' /> 
+                    <img src={userDetail?.pfp || wpllogo} width={18} alt='wolf' /> 
                     <p className='font-gridular text-primaryYellow text-[14px] leading-[8.82px] truncate'>{userDetail?.displayName?.slice(0, 10)} {userDetail?.displayName?.length > 10 ? "..." : ""}</p>
                     <img src={arrow} width={14} alt='down arraow' />
                   </div>
@@ -136,8 +136,10 @@ const Navbar = () => {
 
         <div className={`absolute -top-8 left-0 ${showNavbar ? 'translate-y-0' : '-translate-y-[900px]'} transition-all duration-500 w-full bg-[#16237F] z-50`}>
           <div className='flex flex-col justify-center items-center text-center bg-[#16237F] text-white font-bienvenue mt-20'>
-            <Link to={'/allprojects'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2'>EXPLORE</h2></Link>
-            <Link to={'/leaderboard'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2'>LEADERBOARD</h2></Link>
+            <Link to={'/profile'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2 flex items-center gap-1'><User size={18} color='#FBF1B8' /> MY PROFILE</h2></Link>
+            <Link to={'/allprojects'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2 flex items-center gap-1'><LayoutDashboardIcon size={18} color='#FBF1B8' /> EXPLORE</h2></Link>
+            <Link to={'/leaderboard'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2 flex items-center gap-1'><Trophy size={18} color='#FBF1B8'/> LEADERBOARD</h2></Link>
+            <Link to={'/'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2 flex items-center gap-1'><SquareDashedBottom size={18} color='#FBF1B8'/> DASHBOARD</h2></Link>
             <h2 className='text-[24px] text-primary w-[90%] mb-2'>FAQ</h2>
           </div>
         </div>
