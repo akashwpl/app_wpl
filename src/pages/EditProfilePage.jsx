@@ -244,8 +244,6 @@ const EditProfilePage = () => {
         setBio(userDetails?.bio)
         setDiscord(userDetails?.socials?.discord)
         setTelegram(userDetails?.socials?.telegram)
-        setPfpPreview(userDetails?.pfp)
-        setPfp(userDetails?.pfp)
         setUsername(userDetails?.username)
     }, [userDetails])
 
@@ -283,9 +281,6 @@ const EditProfilePage = () => {
         //     imageUrl = await getDownloadURL(imageRef);
         // }
 
-        const imageRef = ref(storage, `images/${pfp.name}`);
-        await uploadBytes(imageRef, pfp);
-        const imageUrl = await getDownloadURL(imageRef);
 
         const data = {
             "displayName": document.querySelector('input[name="displayName"]').value,
@@ -294,8 +289,17 @@ const EditProfilePage = () => {
                 "discord": document.querySelector('input[name="discordUsername"]').value,
                 "telegram": document.querySelector('input[name="telegramUsername"]').value,
             },
-            "pfp": imageUrl,
             "username": username
+        }
+
+        if(pfp) {
+            const imageRef = ref(storage, `images/${pfp.name}`);
+            await uploadBytes(imageRef, pfp);
+            const imageUrl = await getDownloadURL(imageRef);
+    
+            data.pfp = imageUrl
+        } else {
+            data.pfp = userDetails?.pfp
         }
 
         const response = await fetch(`${BASE_URL}/users/update/`, {
