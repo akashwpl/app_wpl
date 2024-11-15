@@ -4,7 +4,7 @@ import CustomModal from '../components/ui/CustomModal'
 import PoWCard from '../components/profile/PoWCard'
 import { Link } from 'react-router-dom';
 import { getUserDetails } from '../service/api';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { BASE_URL } from '../lib/constants';
 
@@ -21,6 +21,7 @@ import closeProjBtnImg from '../assets/svg/close_proj_btn_subtract.png'
 import closeProjBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png'
 import { storage } from '../lib/firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { displaySnackbar } from '../store/thunkMiddleware';
 
 const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
 
@@ -28,6 +29,7 @@ const EditProfilePage = () => {
 
     const fileInputRef = useRef(null);
     const { user_id } = useSelector((state) => state)
+    const dispatch = useDispatch()
 
     const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
         queryKey: ["userDetails", user_id],
@@ -318,6 +320,7 @@ const EditProfilePage = () => {
         .finally(() => {
             setIsUpdating(false)
             setErrors({})
+            dispatch(displaySnackbar('Profile updated successfully'))
         })
     }
 
