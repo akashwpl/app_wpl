@@ -15,7 +15,7 @@ import { getUserDetails } from '../service/api'
 import FancyButton from '../components/ui/FancyButton'
 
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../lib/firebase'
+import { auth, provider, signInWithPopup, storage } from '../lib/firebase'
 import { displaySnackbar } from '../store/thunkMiddleware'
 
 import mailSVG from '../assets/svg/mail.svg'
@@ -236,6 +236,19 @@ const OnBoarding = () => {
   const handleGoogleLogin = () => {
     dispatch(displaySnackbar('Feature coming soon!'))
   }
+
+  // const handleGoogleLogin = async () => {
+  //   try {
+  //     const result = await signInWithPopup(auth, provider);
+  //     const { uid, displayName, email, photoURL } = result.user;
+
+  //     console.log("User signed in with Google:", result.user);
+
+  //     console.log("User signed in and stored in MongoDB");
+  //   } catch (error) {
+  //     console.error("Error signing in with Google:", error);
+  //   }
+  // };
 
   return (
     <div className='flex justify-center items-center'>

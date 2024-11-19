@@ -43,7 +43,7 @@ const AddProjectPage = () => {
     const [logo, setLogo] = useState(null);
     const [role, setRole] = useState([]);
     const [logoPreview, setLogoPreview] = useState('');
-    const [foundation, setFoundation] = useState('');
+    const [foundation, setFoundation] = useState('673067f8797130f180c2846e');
     const [errors, setErrors] = useState({}); // State for validation errors
 
     const [totalPrize, setTotalPrize] = useState(0);
