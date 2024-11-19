@@ -26,6 +26,7 @@ import FancyButton from '../components/ui/FancyButton';
 import { storage } from '../lib/firebase';
 
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import Spinner from '../components/ui/spinner';
 
 
 const AddProjectPage = () => {
@@ -54,6 +55,8 @@ const AddProjectPage = () => {
     const [createdProjectId, setCreatedProjectId] = useState(null);
 
     const [searchInput, setSearchInput] = useState()
+
+    const [isCreatingProject, setIsCreatingProject] = useState(false);
 
 
     const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
@@ -141,6 +144,8 @@ const AddProjectPage = () => {
         
         if (validateFields()) {
 
+            setIsCreatingProject(true);
+
             const imageRef = ref(storage, `images/${logo.name}`);
             await uploadBytes(imageRef, logo);
             const imageUrl = await getDownloadURL(imageRef);
@@ -172,6 +177,7 @@ const AddProjectPage = () => {
             .then(data => {
                 console.log('Success: project created', data);
                 setCreatedProjectId(data?.data?.project?._id);
+                setIsCreatingProject(false);
             })
 
             console.log('Form submitted');
@@ -567,9 +573,15 @@ const AddProjectPage = () => {
                         <FancyButton 
                             src_img={saveBtnImg} 
                             hover_src_img={saveBtnHoverImg} 
+                            disabled={isCreatingProject}
                             img_size_classes='w-[175px] h-[44px]' 
                             className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                            btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Create</span></span>} 
+                            btn_txt={<span className='flex items-center justify-center gap-2'>
+                                {isCreatingProject ? <div className='flex justify-center items-center -translate-y-1'><Spinner /></div> : <>
+                                    <CheckCheck size={14}/><span>Create</span>
+                                </>
+                            }
+                            </span>} 
                             alt_txt='save project btn' 
                             onClick={handleSubmit}
                         />
