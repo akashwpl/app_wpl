@@ -45,6 +45,7 @@ const OnBoarding = () => {
 
   const [img, setImg] = useState(null)
   const [imgPreview, setImgPreview] = useState(null)
+  const [googleImg, setGoogleImg] = useState(null)
 
   const fileInputRef = useRef(null);
 
@@ -183,7 +184,7 @@ const OnBoarding = () => {
         "displayName": displayName,
         "experienceDescription": experience,
         "walletAddress": walletAddress,
-        "pfp": imageUrl
+        "pfp": googleImg || imageUrl
        }),
     })
     const data = await response;
@@ -233,22 +234,57 @@ const OnBoarding = () => {
     fileInputRef.current.click();
   }
 
-  const handleGoogleLogin = () => {
-    dispatch(displaySnackbar('Feature coming soon!'))
-  }
+  // const handleGoogleSignUp = () => {
+  //   dispatch(displaySnackbar('Feature coming soon!'))
+  // }
 
-  // const handleGoogleLogin = async () => {
-  //   try {
-  //     const result = await signInWithPopup(auth, provider);
-  //     const { uid, displayName, email, photoURL } = result.user;
+  // Handle 400 
 
-  //     console.log("User signed in with Google:", result.user);
+  const handleGoogleSignUp = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const { accessToken, displayName, email, photoURL } = result.user;
+    
+      const response = fetch(`${BASE_URL}/account/loginWithFirebase`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({ email }),
+      }).then((res) => res.json())
+      .then((data) => {
+        console.log('signup', data)
+        if(data?.data?.token) {
+          localStorage.setItem('token_app_wpl', data?.data?.token)
+          dispatch(setUserId(data?.data?.userId))
 
-  //     console.log("User signed in and stored in MongoDB");
-  //   } catch (error) {
-  //     console.error("Error signing in with Google:", error);
-  //   }
-  // };
+          if(isSignin) {
+            getUserDetails(data?.data?.userId).then((data) => {
+              navigate('/allprojects')
+              return
+            })
+          }
+          setIsSignComplete(true)
+          setError('')
+          setEmail(email)
+          setDisplayName(displayName)
+          setGoogleImg(photoURL)
+          setImgPreview(photoURL)
+          setImg(photoURL)
+          return
+        } 
+        if(data.message === `This email ${email} already exists`) {
+          setError(data.message)
+        }
+      })
+
+      console.log("User signed in with Google:", result.user);
+
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+    }
+  };
 
   return (
     <div className='flex justify-center items-center'>
@@ -282,7 +318,7 @@ const OnBoarding = () => {
 
           <div className='bg-white4 rounded-lg p-3 mt-6 min-w-[400px]'>
             <div className='bg-[#091044] rounded-lg p-3'>
-              <div onClick={handleGoogleLogin} className='flex justify-between items-center group cursor-pointer'>
+              <div onClick={handleGoogleSignUp} className='flex justify-between items-center group cursor-pointer'>
                 <div className='flex items-center gap-1 text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Log in" : "Sign up with"} Google <img src={googleLogo} width={12} height={12} /></div>
                 <div><ArrowRight size={18} stroke='#FFFFFF52'/></div>
               </div>
