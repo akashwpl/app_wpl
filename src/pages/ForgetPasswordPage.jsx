@@ -1,4 +1,4 @@
-import { ArrowRight, EyeIcon, Info, MailWarningIcon, Menu, MessageSquareMoreIcon, Zap } from 'lucide-react'
+import { ArrowRight, EyeIcon, MailWarningIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -7,6 +7,7 @@ import loginBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
 
 import FancyButton from '../components/ui/FancyButton'
 
+import mailSVG from '../assets/svg/mail.svg'
 
 const ForgetPasswordPage = () => {
 
@@ -44,7 +45,7 @@ const ForgetPasswordPage = () => {
 
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type="email" placeholder="User@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
-                <MessageSquareMoreIcon stroke='#FFFFFF52'/>
+                <img src={mailSVG} alt='email' className='w-[22px] h-[22px]'/>
               </div>
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type={isPass ? 'password' : 'text'} placeholder="New Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
