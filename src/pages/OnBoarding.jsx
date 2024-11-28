@@ -1,24 +1,23 @@
-import { ArrowRight, EyeIcon, EyeOffIcon, Info, Mail, MailWarningIcon, Menu, MessageSquareMoreIcon, Upload, X, Zap } from 'lucide-react'
+import { ArrowRight, EyeIcon, EyeOffIcon, Info, MailWarningIcon, Menu, Upload, X, Zap } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BASE_URL, email_regex } from '../lib/constants'
 
 import { useDispatch } from 'react-redux'
 import headerPng from '../assets/images/prdetails_header.png'
-import wpllogo from '../assets/images/wpl_prdetails.png'
-import googleLogo from '../assets/svg/google_symbol.png'
-import loginBtnImg from '../assets/svg/btn_subtract_semi.png'
 import loginBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
+import loginBtnImg from '../assets/svg/btn_subtract_semi.png'
+import googleLogo from '../assets/svg/google_symbol.png'
 
-import userSlice, { setUserId } from '../store/slice/userSlice'
-import { getUserDetails } from '../service/api'
 import FancyButton from '../components/ui/FancyButton'
+import { getUserDetails } from '../service/api'
+import { setUserId } from '../store/slice/userSlice'
 
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { auth, provider, signInWithPopup, storage } from '../lib/firebase'
-import { displaySnackbar } from '../store/thunkMiddleware'
 
 import mailSVG from '../assets/svg/mail.svg'
+import { Button } from '../components/ui/moving-borders'
 
 const OnBoarding = () => {
 
@@ -220,23 +219,10 @@ const OnBoarding = () => {
     },10000)
   },[showForgetPassDialog])
 
-  // TODO :: FORGOT PASSWORD
-  // TODO :: role UI in project details to update
-  // TODO :: project github teammates
-  // TODO :: animation same as landing
-  // TODO :: add reward to leaderboard based on user total rewards earned
-
-  // CLIENT_SECRET = "b643efa0e033531ef1d41d987190fe250483793d"
-  // PRIVATE_KEY = "kbDC8BeZIGG1bTKJpvPdj+Rqw9Zf18IFAd21Jw/JBRI="
-
-
   const handleUploadClick = () => {
     fileInputRef.current.click();
   }
 
-  // const handleGoogleSignUp = () => {
-  //   dispatch(displaySnackbar('Feature coming soon!'))
-  // }
 
   // Handle 400 
 
@@ -286,16 +272,44 @@ const OnBoarding = () => {
     }
   };
 
+  const [text, setText] = useState("Sign Up");
+  const [isHovering, setIsHovering] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const controlledVariants = ["NGIS PU", "GNIS PU", "NGIS PU", "$Sign Up",  "Sign Up"]; // Predefined variations
+
+  const handleMouseEnter = () => {
+    if(isSignin) {
+      setHovered(true);
+      return
+    }
+    if (isHovering) return;
+    setIsHovering(true);
+
+    let step = 0;
+
+    const interval = setInterval(() => {
+      if (step < controlledVariants.length) {
+        setText(controlledVariants[step]);
+        step++;
+      } else {
+        clearInterval(interval);
+        setIsHovering(false);
+      }
+    }, 600);
+  };
+
   return (
     <div className='flex justify-center items-center'>
       {!isSignComplete ?
         <div className='mt-32'>
           {!isSignin ? 
-            <div onClick={navigateToOrgFormPage} className='flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md hover:bg-[#121534] group  cursor-pointer'>
+           <Button borderRadius='6px' className="w-[300px] h-[32px]">
+             <div onClick={navigateToOrgFormPage} className='flex items-center bg-[#091044] h-full w-full p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md hover:bg-[#121534] group  cursor-pointer'>
               <Zap stroke='#97A0F1' size={12}/>
               <p className='text-white88 group-hover:underline'>Want to sponsor a Project? </p>
               <p className='text-white48 group-hover:underline'>Apply to be a part!</p>
             </div>
+           </Button>
           :  null
             // <div onClick={navigateToOrgFormPage} className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md group cursor-pointer">
             //   <Zap stroke='#97A0F1' size={12} />
@@ -345,13 +359,34 @@ const OnBoarding = () => {
               }
 
             </div>
-                <div className='mt-4'>
+                <div className='mt-4 overflow-hidden' onMouseEnter={handleMouseEnter} onMouseLeave={() => setHovered(false)}>
                   <FancyButton 
                     src_img={loginBtnImg} 
                     hover_src_img={loginBtnHoverImg} 
                     img_size_classes='w-[376px] h-[44px]' 
-                    className='mt-1 font-gridular text-white64 text-[14px] leading-[8.82px]' 
-                    btn_txt={isSignin ? 'login' : 'signup'} 
+                    className='mt-2 font-gridular text-white64 text-[14px] leading-[8.82px]' 
+                    btn_txt={isSignin ? 
+                      <>
+                        <span
+                        className={`absolute left-0 -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ${
+                          hovered ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"
+                        }`}
+                      >
+                        Login
+                      </span>
+          
+                        <span
+                          className={`absolute left-full -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ease-out ${
+                            hovered
+                              ? "-translate-x-full opacity-100 scale-110"
+                              : "translate-x-0 opacity-0"
+                          }`}
+                        >
+                          We&apos;re so back!
+                        </span>
+                      </>
+                      : text
+                    } 
                     onClick={isSignin ? login : signUp} 
                   />
                 </div>
@@ -458,7 +493,7 @@ const OnBoarding = () => {
                     hover_src_img={loginBtnHoverImg} 
                     img_size_classes='w-[350px] md:w-[480px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                    btn_txt='submit'  
+                    btn_txt='submit'
                     alt_txt='submit sign up btn' 
                     onClick={updateProfile}
                   />
