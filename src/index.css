@@ -207,3 +207,13 @@ input:-webkit-autofill:focus {
 input[data-autocompleted] {
   background-color: transparent !important;
 }
+
+.wolf-tilt-left {
+  transform: rotate(0deg);
+  opacity: 1;
+}
+
+.wolf-tilt-right {
+  transform: translateX(100%) rotate(20deg);
+  opacity: 0;
+}
