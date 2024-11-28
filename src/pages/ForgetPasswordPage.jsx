@@ -18,20 +18,17 @@ const ForgetPasswordPage = () => {
   const [error, setError] = useState('')
 
   const [isPass, setIsPass ] = useState(true);
+  const [hovered, setHovered] = useState(false);
 
   const togglePasswordField = () => {
     setIsPass(!isPass)
   }
 
+  const handleHover = () => setHovered(!hovered)
+
   return (
     <div className='flex justify-center items-center'>
         <div className='mt-32'>
-            <div className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px]  rounded-md">
-              <Zap className='text-[#97A0F1]' size={12}></Zap>
-              <p className='text-white88'>New to WPL?</p>
-              <p className='text-white48'>Apply to be a part!</p>
-            </div>
-          
           <div className='mt-4'>
             <div className='text-primaryYellow font-gridular text-[24px] leading-[28.8px]'>Start contributing Onchain</div>
             <p className='text-white48 font-semibold text-[12px] font-inter'>Earn in crypto by contributing to your fav projects</p>
@@ -60,13 +57,33 @@ const ForgetPasswordPage = () => {
               </div>}
 
             </div>
-                <div className='mt-4'>
+                <div className='mt-4 overflow-hidden' onMouseEnter={handleHover} onMouseLeave={handleHover}>
                   <FancyButton 
                     src_img={loginBtnImg} 
                     hover_src_img={loginBtnHoverImg} 
                     img_size_classes='w-[376px] h-[44px]' 
                     className='mt-1 font-gridular text-white64 text-[14px] leading-[8.82px]' 
-                    btn_txt='reset password'
+                    btn_txt={
+                      <>
+                        <span
+                        className={`absolute left-0 -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ${
+                          hovered ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"
+                        }`}
+                      >
+                        reset password
+                      </span>
+          
+                        <span
+                          className={`absolute left-full -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ease-out ${
+                            hovered
+                              ? "-translate-x-full opacity-100 scale-110"
+                              : "translate-x-0 opacity-0"
+                          }`}
+                        >
+                          tsk tsk, ngmi
+                        </span>
+                      </>
+                    }
                     onClick={() => {alert('New password set successfully');navigate('/onboarding');}}
                   />
                 </div>
