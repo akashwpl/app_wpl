@@ -224,8 +224,6 @@ const OnBoarding = () => {
   }
 
 
-  // Handle 400 
-
   const handleGoogleSignUp = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
