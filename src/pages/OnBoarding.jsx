@@ -1,4 +1,4 @@
-import { ArrowRight, EyeIcon, EyeOffIcon, Info, MailWarningIcon, Menu, Upload, X, Zap } from 'lucide-react'
+import { ArrowRight, EyeIcon, EyeOffIcon, Info, MailWarningIcon, Menu, Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { BASE_URL, email_regex } from '../lib/constants'
@@ -16,8 +16,8 @@ import { setUserId } from '../store/slice/userSlice'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { auth, provider, signInWithPopup, storage } from '../lib/firebase'
 
+import videoMp4 from '../assets/dummy/v1.mp4'
 import mailSVG from '../assets/svg/mail.svg'
-import { Button } from '../components/ui/moving-borders'
 
 const OnBoarding = () => {
 
@@ -303,13 +303,23 @@ const OnBoarding = () => {
       {!isSignComplete ?
         <div className='mt-32'>
           {!isSignin ? 
-           <Button borderRadius='6px' className="w-[300px] h-[32px]">
-             <div onClick={navigateToOrgFormPage} className='flex items-center bg-[#091044] h-full w-full p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md hover:bg-[#121534] group  cursor-pointer'>
-              <Zap stroke='#97A0F1' size={12}/>
-              <p className='text-white88 group-hover:underline'>Want to sponsor a Project? </p>
-              <p className='text-white48 group-hover:underline'>Apply to be a part!</p>
-            </div>
-           </Button>
+          <div onClick={navigateToOrgFormPage} className='w-[300px] cursor-pointer'>
+            <video 
+             autoPlay
+             loop
+             muted
+             playsInline
+            >
+              <source src={videoMp4} type="video/mp4"/>
+            </video>
+          </div>
+          //  <Button borderRadius='6px' className="w-[320px] h-[32px]">
+          //    <div onClick={navigateToOrgFormPage} className='flex items-center bg-[#091044] h-full w-full p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md hover:bg-[#121534] group cursor-pointer'>
+          //     <Zap stroke='#97A0F1' strokeDasharray={50} size={18} className='zap-svg'/>
+          //     <p className='text-white88 group-hover:underline'>Want to sponsor a Project? </p>
+          //     <p className='text-white48 group-hover:underline'>Apply to be a part!</p>
+          //   </div>
+          //  </Button>
           :  null
             // <div onClick={navigateToOrgFormPage} className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md group cursor-pointer">
             //   <Zap stroke='#97A0F1' size={12} />

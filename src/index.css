@@ -217,3 +217,18 @@ input[data-autocompleted] {
   transform: translateX(100%) rotate(20deg);
   opacity: 0;
 }
+
+/* .zap-svg{
+  stroke-width: 3px;
+  animation: wave 3s linear infinite;
+}
+
+@keyframes wave {
+  0% {
+    stroke-dashoffset: -100px;
+  }
+  100% {
+    stroke-dashoffset: 0px;
+  }
+} */
+
