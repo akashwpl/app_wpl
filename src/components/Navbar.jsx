@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Building2, LayoutDashboardIcon, LogOut, LucideInfo, SquareChartGantt, SquareDashedBottom, Trophy, User } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import wolfButton from '../assets/images/BW.png'
@@ -46,6 +46,34 @@ const Navbar = () => {
     localStorage.removeItem('token_app_wpl')
     navigate('/onboarding')
   }
+
+  const rewardRef = useRef(null);
+
+  const letters = document?.querySelectorAll('.letter');
+  useEffect(() => {
+    let currentIndex = 0;
+    let timeout
+    console.log('letters', letters)
+    if(letters == undefined || letters == null || letters?.length == 0) return
+    function animateLetter() {
+      const letter = letters[currentIndex];
+      letter.style.transition = 'transform 0.01s';
+      letter.style.transform = 'translateY(-7px)';
+
+      timeout = setTimeout(() => {
+        letter.style.transform = 'translateY(0)';
+        currentIndex = (currentIndex + 1) % letters.length;
+        animateLetter();
+      }, 135);
+    }
+    
+    animateLetter();
+
+    return () => {
+      clearTimeout(animateLetter);
+      clearTimeout(timeout);
+    }
+  }, [rewardRef, letters])
 
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
@@ -108,7 +136,16 @@ const Navbar = () => {
                   />
                   <div className="absolute inset-0 top-1/4 uppercase flex items-center justify-center gap-2 mb-2">
                     <img src={userDetail?.pfp || wpllogo} width={18} alt='wolf' /> 
-                    <p className='font-gridular text-primaryYellow text-[14px] leading-[8.82px] truncate'>{userDetail?.displayName?.slice(0, 10)} {userDetail?.displayName?.length > 10 ? "..." : ""}</p>
+                    <p className='font-gridular text-primaryYellow truncate'>
+                      {/* {userDetail?.displayName?.slice(0, 10)} {userDetail?.displayName?.length > 10 ? "..." : ""} */}
+                      <div className='flex justify-center items-center gap-4 lg:gap-6'>
+                        <span ref={rewardRef} className='text-primaryYellow text-[14px] tracking-[0.12rem] flex'>
+                          {Array.from(userDetail?.displayName)?.map((letter, index) => (
+                            <span key={index} className='letter'>{letter}</span>
+                          ))}
+                        </span>
+                      </div>
+                    </p>
                     <img src={arrow} width={14} alt='down arraow' />
                   </div>
               </button>
