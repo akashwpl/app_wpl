@@ -207,3 +207,85 @@ input:-webkit-autofill:focus {
 input[data-autocompleted] {
   background-color: transparent !important;
 }
+
+/* .zap-svg{
+  stroke-width: 3px;
+  animation: wave 3s linear infinite;
+}
+
+@keyframes wave {
+  0% {
+    stroke-dashoffset: -100px;
+  }
+  100% {
+    stroke-dashoffset: 0px;
+  }
+} */
+
+/* Outer Rotating Border */
+.border-animation {
+  position: absolute;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 0, 150, 1) 0%,
+    rgba(0, 204, 255, 1) 50%,
+    rgba(255, 0, 150, 1) 100%
+  );
+  background-size: 200% 200%;
+  animation: rotate-border 3s linear infinite;
+  border: 2px solid transparent;
+  z-index: 1;
+}
+
+/* Keyframes for Border Animation */
+@keyframes rotate-border {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* Mask for Zap SVG */
+/* Rotating Border */
+.border-animation {
+  position: absolute;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 0, 150, 1),
+    rgba(0, 204, 255, 1),
+    rgba(255, 0, 150, 1)
+  );
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  border: 2px solid transparent;
+  animation: rotate-border 2s linear infinite;
+  padding: 3px; /* Thickness of the rotating border */
+  z-index: 1;
+}
+
+/* Border Rotation Animation */
+@keyframes rotate-border {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Content Styling */
+.text-white88 {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.text-white48 {
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.group-hover\\:underline:hover {
+  text-decoration: underline;
+}
