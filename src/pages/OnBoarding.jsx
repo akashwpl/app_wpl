@@ -223,7 +223,6 @@ const OnBoarding = () => {
     fileInputRef.current.click();
   }
 
-
   const handleGoogleSignUp = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
@@ -238,33 +237,41 @@ const OnBoarding = () => {
         body: JSON.stringify({ email }),
       }).then((res) => res.json())
       .then((data) => {
+
         console.log('signup', data)
         if(data?.data?.token) {
           localStorage.setItem('token_app_wpl', data?.data?.token)
           dispatch(setUserId(data?.data?.userId))
 
-          if(isSignin) {
-            getUserDetails(data?.data?.userId).then((data) => {
+          getUserDetails(data?.data?.userId).then((data) => {
+            if(
+                data.displayName ||
+                data.experienceDescription ||
+                data.walletAddress
+              ) {
               navigate('/allprojects')
+              return              
+            } else {
+              setIsSignComplete(true)
+              setError('')
+              setEmail(email)
+              setDisplayName(displayName)
+              setGoogleImg(photoURL)
+              setImgPreview(photoURL)
+              setImg(photoURL)
               return
-            })
-          }
-          setIsSignComplete(true)
-          setError('')
-          setEmail(email)
-          setDisplayName(displayName)
-          setGoogleImg(photoURL)
-          setImgPreview(photoURL)
-          setImg(photoURL)
-          return
+            }
+          })
         } 
         if(data.message === `This email ${email} already exists`) {
           setError(data.message)
         }
+        // Handle invalid bearer token scenario
+        if(data.message === 'invalid google sign in creds') {
+          setError("Invalid Google Sign in credentials. Please try again.")
+        }
       })
-
       console.log("User signed in with Google:", result.user);
-
     } catch (error) {
       console.error("Error signing in with Google:", error);
     }
