@@ -23,11 +23,14 @@ const Tabs = ({ tabs, handleTabClick, selectedTab, submissionsCount }) => {
     const [isClicked, setIsClicked] = useState(false);
   
     useEffect(() => {
-      if (isClicked) {
-        setTimeout(() => {
-          setIsClicked(false);
-        }, 1500);
-      }
+      if (!isClicked) return
+
+      const timeout = setTimeout(() => {
+        setIsClicked(false);
+      }, 1500);
+
+      return () => clearTimeout(timeout);
+      
     }, [isClicked]);
 
     return (
@@ -36,7 +39,12 @@ const Tabs = ({ tabs, handleTabClick, selectedTab, submissionsCount }) => {
                 {tabs.map((tab, index) => (
                     <div 
                       ref={el => tabRefs.current[index] = el} 
-                      onClick={() => {handleTabClick(tab.id);tab.name === "Completed" && setIsClicked(!isClicked);}} 
+                      onClick={() => {
+                        handleTabClick(tab.id); 
+                        setTimeout(() => {
+                          setIsClicked((prev) => !prev);
+                        }, 100);
+                      }} 
                       key={tab.id} 
                       className={
                         `px-4 h-[56px] 
@@ -47,21 +55,19 @@ const Tabs = ({ tabs, handleTabClick, selectedTab, submissionsCount }) => {
                         ? "rounded-tl-md rounded-bl-md" 
                         : ''} 
                         font-gridular text-[14px] leading-[16.8px] transition duration-150 cursor-pointer flex justify-center items-center 
-                        ${tab.name == 'Completed' 
-                        ? "relative overflow-hidden"
-                        : ""}
+                        overflow-hidden relative
                       `}
                       >
-                        {tab.name === 'Completed' && 
+                        {tab?.name?.toLowerCase() == selectedTab ?
                           <img
-                            className={`absolute bottom-0 right-0 w-5 h-5 transition-all duration-500 ease-in-out ${
+                            className={`absolute bottom-0 right-0 w-5 h-5 transition-all duration-1000 ease-in-out ${
                               isClicked ? 'wolf-tilt-left' : 'wolf-tilt-right'
                             }`}
                             src={wolfTiltImg}
                             alt="Wolf tilt"
-                          />
+                          /> : null
                         }
-                        {tab.name} 
+                        {tab.name}
                         {submissionsCount 
                         ? tab.name == 'Submissions' 
                         ? <span className='text-primaryYellow ml-2'>
