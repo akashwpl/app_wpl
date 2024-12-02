@@ -83,7 +83,6 @@ const Navbar = () => {
     }, 300);
   }
 
-
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
       <div className='hidden md:flex justify-between items-center w-full'>
@@ -174,7 +173,7 @@ const Navbar = () => {
                   <img src={userDetail?.pfp || wpllogo} width={18} alt="wolf" />
                   <p className="font-gridular text-primaryYellow truncate">
                     <span className="text-primaryYellow text-[14px] tracking-[0.12rem] flex">
-                      {userDetail &&
+                      {userDetail && userDetail.displayName &&
                         Array.from(userDetail?.displayName)?.map((letter, index) => (
                           <span key={index} className="letter">
                             {letter}
