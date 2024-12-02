@@ -223,10 +223,7 @@ const OnBoarding = () => {
     fileInputRef.current.click();
   }
 
-
-  // Handle 400 
-
-  const handleGoogleSignUp = async () => {
+  const handleGoogleSignUp = async (isSignin) => {
     try {
       const result = await signInWithPopup(auth, provider);
       const { accessToken, displayName, email, photoURL } = result.user;
@@ -240,33 +237,41 @@ const OnBoarding = () => {
         body: JSON.stringify({ email }),
       }).then((res) => res.json())
       .then((data) => {
+
         console.log('signup', data)
         if(data?.data?.token) {
           localStorage.setItem('token_app_wpl', data?.data?.token)
           dispatch(setUserId(data?.data?.userId))
 
-          if(isSignin) {
-            getUserDetails(data?.data?.userId).then((data) => {
+          getUserDetails(data?.data?.userId).then((data) => {
+            if(
+                data.displayName ||
+                data.experienceDescription ||
+                data.walletAddress
+              ) {
               navigate('/allprojects')
+              return              
+            } else {
+              setIsSignComplete(true)
+              setError('')
+              setEmail(email)
+              setDisplayName(displayName)
+              setGoogleImg(photoURL)
+              setImgPreview(photoURL)
+              setImg(photoURL)
               return
-            })
-          }
-          setIsSignComplete(true)
-          setError('')
-          setEmail(email)
-          setDisplayName(displayName)
-          setGoogleImg(photoURL)
-          setImgPreview(photoURL)
-          setImg(photoURL)
-          return
+            }
+          })
         } 
         if(data.message === `This email ${email} already exists`) {
           setError(data.message)
         }
+        // Handle invalid bearer token scenario
+        if(data.message === 'invalid google sign in creds') {
+          setError("Invalid Google Sign in credentials. Please try again.")
+        }
       })
-
       console.log("User signed in with Google:", result.user);
-
     } catch (error) {
       console.error("Error signing in with Google:", error);
     }
@@ -332,7 +337,7 @@ const OnBoarding = () => {
 
           <div className='bg-white4 rounded-lg p-3 mt-6 min-w-[400px]'>
             <div className='bg-[#091044] rounded-lg p-3'>
-              <div onClick={handleGoogleSignUp} className='flex justify-between items-center group cursor-pointer'>
+              <div onClick={() => handleGoogleSignUp(isSignin)} className='flex justify-between items-center group cursor-pointer'>
                 <div className='flex items-center gap-1 text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Log in" : "Sign up with"} Google <img src={googleLogo} width={12} height={12} /></div>
                 <div><ArrowRight size={18} stroke='#FFFFFF52'/></div>
               </div>
