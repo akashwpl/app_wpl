@@ -223,7 +223,7 @@ const OnBoarding = () => {
     fileInputRef.current.click();
   }
 
-  const handleGoogleSignUp = async (isSignin) => {
+  const handleGoogleSignUp = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const { accessToken, displayName, email, photoURL } = result.user;
@@ -337,7 +337,7 @@ const OnBoarding = () => {
 
           <div className='bg-white4 rounded-lg p-3 mt-6 min-w-[400px]'>
             <div className='bg-[#091044] rounded-lg p-3'>
-              <div onClick={() => handleGoogleSignUp(isSignin)} className='flex justify-between items-center group cursor-pointer'>
+              <div onClick={handleGoogleSignUp} className='flex justify-between items-center group cursor-pointer'>
                 <div className='flex items-center gap-1 text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Log in" : "Sign up with"} Google <img src={googleLogo} width={12} height={12} /></div>
                 <div><ArrowRight size={18} stroke='#FFFFFF52'/></div>
               </div>
