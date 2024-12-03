@@ -212,7 +212,7 @@ const ProjectDetailsPage = () => {
                     </div>
 
                     <div className='pb-32'>
-                      <Accordion type={projectDetails?.milestones?.length <= 1 ? "single" : 'multiple'} defaultValue="item-1" collapsible>
+                      <Accordion type={projectDetails?.milestones?.length <= 1 ? "single" : 'multiple'} defaultValue={projectDetails?.milestones?.length <= 1 ? "item-1" : ''} collapsible>
                         {projectDetails?.milestones?.map((milestone, index) => (
                           <AccordionItem value={`item-${index + 1}`} key={index} className="border-white7">
                             <AccordionTrigger className="text-white48 font-inter hover:no-underline">Milestone {index + 1}</AccordionTrigger>

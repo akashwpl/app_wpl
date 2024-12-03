@@ -18,6 +18,7 @@ import { auth, provider, signInWithPopup, storage } from '../lib/firebase'
 
 import videoMp4 from '../assets/dummy/v1.mp4'
 import mailSVG from '../assets/svg/mail.svg'
+import GlyphEffect from '../components/ui/GlyphEffect'
 
 const OnBoarding = () => {
 
@@ -26,8 +27,6 @@ const OnBoarding = () => {
 
   const [email, setEmail] = useState('') // Changed from firstName to email
   const [password, setPassword] = useState('')
-
-  // const []
 
   const [displayName, setDisplayName] = useState('') // Changed from firstName to email
   const [experience, setExperience] = useState('')
@@ -45,6 +44,8 @@ const OnBoarding = () => {
   const [img, setImg] = useState(null)
   const [imgPreview, setImgPreview] = useState(null)
   const [googleImg, setGoogleImg] = useState(null)
+
+  const [imgUploadHover, setImgUploadHover] = useState(false)
 
   const fileInputRef = useRef(null);
 
@@ -287,20 +288,20 @@ const OnBoarding = () => {
       setHovered(true);
       return
     }
-    if (isHovering) return;
-    setIsHovering(true);
+    // if (isHovering) return;
+    // setIsHovering(true);
 
-    let step = 0;
+    // let step = 0;
 
-    const interval = setInterval(() => {
-      if (step < controlledVariants.length) {
-        setText(controlledVariants[step]);
-        step++;
-      } else {
-        clearInterval(interval);
-        setIsHovering(false);
-      }
-    }, 600);
+    // const interval = setInterval(() => {
+    //   if (step < controlledVariants.length) {
+    //     setText(controlledVariants[step]);
+    //     step++;
+    //   } else {
+    //     clearInterval(interval);
+    //     setIsHovering(false);
+    //   }
+    // }, 600);
   };
 
   return (
@@ -383,12 +384,12 @@ const OnBoarding = () => {
                     btn_txt={isSignin ? 
                       <>
                         <span
-                        className={`absolute left-0 -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ${
-                          hovered ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"
-                        }`}
-                      >
-                        Login
-                      </span>
+                          className={`absolute left-0 -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ${
+                            hovered ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"
+                          }`}
+                        >
+                          Login
+                        </span>
           
                         <span
                           className={`absolute left-full -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ease-out ${
@@ -400,7 +401,7 @@ const OnBoarding = () => {
                           We&apos;re so back!
                         </span>
                       </>
-                      : text
+                      : <GlyphEffect text={'SIGN UP'} isNav={false} />
                     } 
                     onClick={isSignin ? login : signUp} 
                   />
@@ -431,8 +432,13 @@ const OnBoarding = () => {
                         <div onClick={() => {removeImgPrveiew()}} className='absolute -top-1 -right-1 bg-white64 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
                     </div>
                 :   <>
-                      <div onClick={handleUploadClick} className='bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'>
-                        <Upload size={16} className='text-white32'/>
+                      <div 
+                        onMouseEnter={() => setImgUploadHover(true)} 
+                        onMouseLeave={() => setImgUploadHover(false)} 
+                        onClick={handleUploadClick} 
+                        className={'relative bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'}
+                      >
+                        <Upload size={16} className={`text-white32 absolute ${imgUploadHover ? "animate-hovered" : ""}`}/>
                         <input
                           name='img'
                           type="file"

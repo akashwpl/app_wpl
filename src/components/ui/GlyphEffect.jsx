@@ -1,6 +1,6 @@
 import React from 'react'
 
-const GlyphEffect = ({text, nav}) => {
+const GlyphEffect = ({text, isNav=true}) => {
     const GLYPHS =
     'ラドクリフマラソンわたしワタシんょンョたばこタバコとうきょうトウキョウ0123456789±!@#$%^&*()_+ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   
@@ -10,7 +10,7 @@ const GlyphEffect = ({text, nav}) => {
           {text?.split('').map((char, index) => {
             return (
               <span
-                className='nav_btn__span'
+                className={`${isNav ? "nav_btn__span" : "nav_btn__span2"}`}
                 data-char={char}
                 style={{
                   '--index': index,

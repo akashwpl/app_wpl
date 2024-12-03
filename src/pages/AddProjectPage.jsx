@@ -58,6 +58,7 @@ const AddProjectPage = () => {
 
     const [isCreatingProject, setIsCreatingProject] = useState(false);
 
+    const [imgUploadHover, setImgUploadHover] = useState(false)
 
     const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
         queryKey: ['userOrganisations', user_id],
@@ -264,8 +265,13 @@ const AddProjectPage = () => {
                                                         <div onClick={() => {setLogoPreview(null)}} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
                                                     </div>
                                                 :   <>
-                                                        <div onClick={handleUploadClick} className='bg-[#FCBF041A] size-[72px] rounded-[8px] border-[1px] border-primaryYellow flex justify-center items-center cursor-pointer'>
-                                                            <Upload size={16} className='text-white32'/>
+                                                        <div
+                                                            onMouseEnter={() => setImgUploadHover(true)} 
+                                                            onMouseLeave={() => setImgUploadHover(false)} 
+                                                            onClick={handleUploadClick} 
+                                                            className='relative bg-[#FCBF041A] size-[72px] rounded-[8px] border-[1px] border-primaryYellow flex justify-center items-center cursor-pointer'
+                                                        >
+                                                            <Upload size={16} className={`text-white32 absolute ${imgUploadHover ? "animate-hovered" : ""}`}/>
                                                             <input
                                                                 name='img'
                                                                 type="file"
