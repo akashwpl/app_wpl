@@ -87,6 +87,10 @@ export default {
           '50%': { transform: 'translateX(-10%)', opacity: '1' },
           '100%': { transform: 'translateX(100%)', opacity: '0' },
         },
+        bounce: {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(-5px)' },
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -97,6 +101,7 @@ export default {
 
         'menu-slide-in': 'menuSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
         'menu-slide-out': 'menuSlideOut 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+        'hovered': 'bounce 0.5s ease-in-out forwards' 
       },
     },
   },

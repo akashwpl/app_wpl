@@ -103,61 +103,64 @@ const Navbar = () => {
               className="relative cursor-pointer flex flex-row items-center justify-center"
             >
               {showUserMenu && (
-                <div
-                  className={`absolute top-12 right-0 w-[196px] bg-[#101C7703] rounded-md transition pb-1 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase backdrop-blur-[60px] ${
-                    slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
-                  }`}
-                >
-                  <Link
-                    to="/profile"
-                    className="hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-5 rounded-sm gap-2"
-                  >
-                    My Profile
-                  </Link>
-                  {userDetail?.role !== 'user' && (
-                    <>
-                      <Link
-                        to="/userprojects"
-                        className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
-                      >
-                        List Projects
-                      </Link>
-                    </>
-                  )}
-                  {userDetail?.role === 'admin' && (
-                    <>
-                      <Link
-                        to="/requests"
-                        className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
-                      >
-                        Requests
-                      </Link>
-                    </>
-                  )}
-                  <Link
-                    to="/"
-                    className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
-                  >
-                    Dashboard
-                  </Link>
-                  {userDetail?.role === 'user' && (
-                    <>
-                      <Link
-                        to="/verifyorg"
-                        className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
-                      >
-                        Join as Org
-                      </Link>
-                      <div className="h-[1px] w-full bg-white7 rounded-sm" />
-                    </>
-                  )}
+                <>
                   <div
-                    onClick={signout}
-                    className="text-[#E38070] hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 rounded-sm gap-2"
+                    className={`${userDetail?.role === 'admin' ? 'h-[180px]' : 'h-[139px]'} bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
+                      slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
+                    }`}
+                    style={{backgroundImage: `url('src/assets/svg/menu_dropdown_${userDetail?.role === 'admin' ? 'admin' : 'user'}.png')`}}
                   >
-                    Sign out
+                    <Link
+                      to="/profile"
+                      className="hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-5 rounded-sm gap-2"
+                    >
+                      My Profile
+                    </Link>
+                    {userDetail?.role !== 'user' && (
+                      <>
+                        <Link
+                          to="/userprojects"
+                          className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
+                        >
+                          List Projects
+                        </Link>
+                      </>
+                    )}
+                    {userDetail?.role === 'admin' && (
+                      <>
+                        <Link
+                          to="/requests"
+                          className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
+                        >
+                          Requests
+                        </Link>
+                      </>
+                    )}
+                    <Link
+                      to="/"
+                      className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
+                    >
+                      Dashboard
+                    </Link>
+                    {userDetail?.role === 'user' && (
+                      <>
+                        <Link
+                          to="/verifyorg"
+                          className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
+                        >
+                          Join as Org
+                        </Link>
+                        <div className="h-[1px] w-full bg-white7 rounded-sm" />
+                      </>
+                    )}
+                    <div
+                      onClick={signout}
+                      className="text-[#E38070] hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 rounded-sm gap-2"
+                    >
+                      Sign out
+                    </div>
                   </div>
-                </div>
+                </>
               )}
               <button
                 className="relative"

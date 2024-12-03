@@ -172,6 +172,11 @@ body{
   color: transparent;
 }
 
+.nav_btn > .nav_btn__span2:not(.sr-only) {
+  position: relative;
+  color: transparent;
+}
+
 .nav_btn > .nav_btn__span:not(.sr-only)::after {
   content: attr(data-char);
   position: absolute;
@@ -185,7 +190,24 @@ body{
   align-items: center;
 }
 
+.nav_btn > .nav_btn__span2:not(.sr-only)::after {
+  content: attr(data-char);
+  position: absolute;
+  display: inline-block;
+  inset: 0;
+  color: #FFFFFFA3;
+  font-family: 'Gridular';
+  text-align: center;
+  display: flex;
+  justify-content: center ;
+  align-items: center;
+}
+
 .nav_btn:is(:hover, :focus-visible) > .nav_btn__span:not(.sr-only)::after {
+  animation: flash calc(var(--speed, 0.25) * 1s) calc(var(--index, 0) * 0.05s) steps(1, end);
+}
+
+.nav_btn:is(:hover, :focus-visible) > .nav_btn__span2:not(.sr-only)::after {
   animation: flash calc(var(--speed, 0.25) * 1s) calc(var(--index, 0) * 0.05s) steps(1, end);
 }
 

@@ -61,6 +61,8 @@ const EditProjectPage = () => {
 
     const [submitted, setSubmitted] = useState(false);
 
+    const [imgUploadHover, setImgUploadHover] = useState(false)
+
     const [milestones, setMilestones] = useState(projectDetails?.milestones || [])
 
     const setMilestonesHelper = (index,event) => {
@@ -237,8 +239,13 @@ const EditProjectPage = () => {
                                                     <div onClick={() => {}} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
                                                 </div>
                                             :   <> */}
-                                                    <div onClick={() => {}} className='bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'>
-                                                        <Upload size={16} className='text-white32'/>
+                                                    <div
+                                                        onMouseEnter={() => setImgUploadHover(true)} 
+                                                        onMouseLeave={() => setImgUploadHover(false)} 
+                                                        onClick={() => {}} 
+                                                        className='relative bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'
+                                                    >
+                                                        <Upload size={16} className={`text-white32 absolute ${imgUploadHover ? "animate-hovered" : ""}`}/>
                                                         <input
                                                             name='img'
                                                             type="file"
