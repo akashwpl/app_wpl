@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import headerPng from '../assets/images/prdetails_header.png'
 import wpllogo from '../assets/images/wpl_prdetails.png'
 
-import { ArrowUpRight, DiscIcon, Edit2, Mail, Send, TriangleAlert, X } from 'lucide-react'
+import { ArrowUpRight, Edit2, TriangleAlert, X } from 'lucide-react'
 import PoWCard from '../components/profile/PoWCard'
 import {
   Accordion,
@@ -18,6 +18,9 @@ import dummyPng from '../assets/dummy/Container.png'
 import CustomModal from '../components/ui/CustomModal'
 import { deleteProject, getUserDetails } from '../service/api'
 
+import discordSVG from '../assets/icons/pixel-icons/discord.svg'
+import twitterSVG from '../assets/icons/pixel-icons/twitter.svg'
+import mailSVG from '../assets/icons/pixel-icons/mail.svg'
 
 const ProfilePage = () => {
 
@@ -132,7 +135,7 @@ const ProfilePage = () => {
                   <div className='flex flex-col gap-4'>
                     <div className='flex justify-between items-center'>
                       <div className='flex items-center gap-1'>
-                        <DiscIcon size={16} className='text-white32'/>
+                        <img src={discordSVG} alt='discord' className='w-[18px] h-[18px]'/>
                         <p className='text-[14px] text-white32'>Discord</p>
                       </div>
                       <div className='flex items-center gap-1 group'>
@@ -143,7 +146,7 @@ const ProfilePage = () => {
 
                     <div className='flex justify-between items-center'>
                       <div className='flex items-center gap-1'>
-                        <Send size={16} className='text-white32'/>
+                        <img src={twitterSVG} alt='twitter' className='w-[16px] h-[16px]'/>
                         <p className='text-[14px] text-white32'>Telegram</p>
                       </div>
                       <a href={`https://t.me/${userDetails?.socials?.telegram}`} target='_blank' className='flex items-center gap-1 group text-white88'>
@@ -155,7 +158,7 @@ const ProfilePage = () => {
 
                     <div className='flex justify-between items-center'>
                       <div className='flex items-center gap-1'>
-                        <Mail size={16} className='text-white32'/>
+                        <img src={mailSVG} alt='mail' className='w-[18px] h-[18px]'/>
                         <p className='text-[14px] text-white32'>Email</p>
                       </div>
                       <div className='flex items-center gap-1'>

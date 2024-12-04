@@ -1,11 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
-import { Clock, Hourglass, Zap } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { calculateRemainingDaysAndHours, convertTimestampToDate } from '../../../src/lib/constants'
 import { getProjectDetails, getUserDetails } from '../../../src/service/api'
 import wpl_pr_details from '../../assets/images/wpl_prdetails.png'
+
+import clockSVG from '../../assets/icons/pixel-icons/watch.svg'
+import zapBlueSVG from '../../assets/icons/pixel-icons/zap-blue.svg'
+import hourglassSVG from '../../assets/icons/pixel-icons/hourglass.svg'
 
 const BugFixCard = () => {
 
@@ -52,8 +55,8 @@ const BugFixCard = () => {
     <div onClick={navigateToProjectDetails} className='flex flex-col justify-between w-full h-[226px] bg-cardBlueBg hover:bg-cardBlueBg/15 rounded-md mb-6 cursor-pointer'>
       <div className='flex flex-row justify-between px-4 mt-3'>
             <img width={40} src={wpl_pr_details} alt="WPL PR details" />
-            <div className='flex flex-row justify-evenly text-cardBlueText bg-[#233579] w-32 h-[20px] items-center rounded-md'>
-                <Zap size={12} />
+            <div className='flex flex-row py-1 gap-1 text-cardBlueText bg-[#233579] w-32 h-[25px] items-center rounded-md'>
+                <img src={zapBlueSVG} alt='zap-blue' className='w-[14px] h-[14px] ml-2'/>
                 <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Currently doing</p>
             </div>
         </div>
@@ -61,16 +64,16 @@ const BugFixCard = () => {
         <p className='text-[13px] text-white48 font-inter leading-[15.6px] font-medium px-4 truncate text-ellipsis'>{projectData?.description}</p>
         <div className='border border-white12 border-dashed w-full'></div>
         <div className='flex flex-row justify-between text-white32 px-4'>
-          <div className='flex flex-row'>
-            <Clock size={14}/>
+          <div className='flex flex-row items-center'>
+            <img src={clockSVG} alt='clock' className='w-[16px] h-[16px]'/>
             <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Progress</p>
           </div>
           <p className='text-[13px] text-white font-inter leading-[15.6px] font-medium'>Milestone {milestoneindex} in progress</p>
         </div>
         <div className=' w-full'></div>
         <div className='flex flex-row justify-between items-center px-4  text-white32 bg-white4 w-full h-[42px] border-t border-white12 border-dashed rounded-b-md'>
-          <div className='flex flex-row'>
-            <Hourglass size={14}/>
+          <div className='flex flex-row items-center'>
+            <img src={hourglassSVG} alt='hourglass' className='w-[16px] h-[16px]'/>
             <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Deadline</p>
           </div>
           <p className='text-[13px] text-white font-inter leading-[15.6px] font-medium'>{remainingDays?.days}d {remainingDays?.hours?.toString()?.replace('-', '')}h</p>
