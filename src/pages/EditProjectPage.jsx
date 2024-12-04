@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCheck, CheckCircle2, ChevronDown, Menu, Plus, Trash, Trophy, Upload, X } from 'lucide-react'
+import { ArrowLeft, CheckCheck, Menu, Plus, Trash, Upload, X } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
 import {
@@ -8,7 +8,7 @@ import {
     AccordionTrigger,
 } from "../components/ui/accordion"
 import USDCsvg from '../assets/svg/usdc.svg'
-import DiscordSvg from '../assets/svg/discord.svg'
+import DiscordSVG from '../assets/icons/pixel-icons/discord.svg'
 import { getProjectDetails, getUserOrgs, updateProjectDetails } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -20,6 +20,9 @@ import btnImg from '../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import FancyButton from '../components/ui/FancyButton'
 import { useSelector } from 'react-redux'
+
+import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
+import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
 
 const calcDaysUntilDate = (futureDate) => {
     const today = new Date();
@@ -58,6 +61,7 @@ const EditProjectPage = () => {
     const [description, setDescription] = useState(projectDetails?.description || '');
     const [discordLink, setDiscordLink] = useState(projectDetails?.discordLink || '');
     const [about, setAbout] = useState(projectDetails?.about || '');
+    const [imageUrl, setImageUrl] = useState(projectDetails?.image || '')
 
     const [submitted, setSubmitted] = useState(false);
 
@@ -172,7 +176,7 @@ const EditProjectPage = () => {
             setOrganisationId(userOrganisations[0]?._id)
         }
     },[isLoadingUserOrgs])
-
+    
   return (
     <div className='mb-20'>
         <div className='flex items-center gap-1 pl-20 border-b border-white12 py-2'>
@@ -267,7 +271,7 @@ const EditProjectPage = () => {
                                     <div className='mt-3'>
                                         <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Discord Link</p>
                                         <div className='bg-white7 rounded-md px-3 py-2 flex items-center gap-2'>
-                                            <img src={DiscordSvg} alt='discord' className='size-[20px]'/>
+                                            <img src={DiscordSVG} alt='discord' className='size-[20px]'/>
                                             <input
                                                 type='text'
                                                 value={discordLink}
@@ -314,7 +318,7 @@ const EditProjectPage = () => {
                                     <div className="flex w-full border-b border-primaryYellow justify-between items-center">
                                         <AccordionTrigger className="w-[425px] text-white48 font-inter hover:no-underline">
                                             <div className='flex items-center gap-1'>
-                                                <Trophy size={14} className='text-primaryYellow'/>
+                                                <img src={trophySVG} alt="trophy" className='size-[18px]'/>
                                                 <div className='text-primaryYellow font-inter text-[14px]'>Milestone {index + 1}</div>
                                             </div>
                                         </AccordionTrigger>
@@ -431,7 +435,7 @@ const EditProjectPage = () => {
                 <div className='max-w-[469px] w-full'>
                     <div className='flex gap-4 border border-dashed border-[#FFFFFF1F] bg-[#FCBF041A] rounded-md px-4 py-3'>
                         <div>
-                            <img src='' alt='Profile Image' className='size-[72px] aspect-square rounded-md'/>
+                            <img src={imageUrl} alt='Profile Image' className='size-[72px] aspect-square rounded-md'/>
                         </div>
                         <div>
                             <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
@@ -440,7 +444,7 @@ const EditProjectPage = () => {
                     </div>
 
                     <div className='flex flex-col justify-center items-center mt-8'>
-                        <div><CheckCircle2 fill='#FBF1B8' strokeWidth={1} size={54}/></div>
+                        <img src={tickFilledImg} alt='tick-filled' className='size-[54px] mb-4'/>
                         <div className='text-white font-inter'>Updated Project details</div>
                         <p className='text-white32 text-[13px] font-semibold font-inter'>You can now view updated details of the project overview</p>
                     </div>

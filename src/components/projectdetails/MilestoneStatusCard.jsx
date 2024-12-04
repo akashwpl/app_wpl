@@ -11,6 +11,11 @@ import closeProjBtnImg from '../../assets/svg/close_proj_btn_subtract.png';
 import CustomModal from '../ui/CustomModal';
 import FancyButton from '../ui/FancyButton';
 
+import hourglassSVG from '../../assets/icons/pixel-icons/hourglass2.svg'
+import warningSVG from '../../assets/icons/pixel-icons/warning.svg'
+import clockSVG from '../../assets/icons/pixel-icons/watch.svg'
+import questionSVG from '../../assets/icons/pixel-icons/question-mark.svg'
+import heartSVG from '../../assets/icons/pixel-icons/heart-handshake.svg'
 
 const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProjectDetails }) => {
 
@@ -94,23 +99,23 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
         <div className='flex flex-col gap-[14px]'>
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
-                    <p className='text-[14px] text-white32 ml-1'>?</p>
+                    <img src={questionSVG} alt='question-mark' className='size-[16px]'/>
                     <p className='text-[12px] text-white32 leading-[16px]'>Milestone Status</p>
                 </div>
                 <div className='flex items-center gap-1 font-inter'>
                     {milestoneData?.status == 'idle' ? 
                         <>
-                            <Hourglass size={14} className='text-white32'/>
+                            <img src={hourglassSVG} alt='hourglass' className='size-[14px]'/>
                             <p className='text-white48 text-[12px] leading-[14px]'>Idle</p>
                         </>
                     : milestoneData?.status == 'ongoing' ?
                         <>
-                            <Hourglass size={14} className='text-white32'/>
+                            <img src={hourglassSVG} alt='hourglass' className='size-[14px]'/>
                             <p className='text-white48 text-[12px] leading-[14px]'>In Progress</p>
                         </>
                     :  milestoneData?.status == 'under_review' ?
                         <>
-                            <TriangleAlert size={14} className='text-cardYellowText'/>
+                            <img src={warningSVG} alt='warning' className='size-[14px]'/>
                             <p className='text-cardYellowText text-[12px] leading-[14px]'>Under Review</p>
                         </>
                     :
@@ -124,7 +129,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
-                    <Clock size={14} className='text-white32'/>
+                    <img src={clockSVG} alt='clock' className='size-[16px]'/>
                     <p className='text-[12px] text-white32 leading-[16px]'>Starts in</p>
                 </div>
                 <div className='flex items-center gap-1'>
@@ -134,7 +139,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
 
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
-                    <HeartCrack size={14} className='text-white32'/>
+                    <img src={heartSVG} alt='heart' className='size-[16px]'/>
                     <p className='text-[12px] text-white32 leading-[16px]'>Need Help?</p>
                 </div>
                 <div className='flex items-center gap-1'>

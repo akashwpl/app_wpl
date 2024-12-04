@@ -56,7 +56,7 @@ const BugFixCard = () => {
       <div className='flex flex-row justify-between px-4 mt-3'>
             <img width={40} src={wpl_pr_details} alt="WPL PR details" />
             <div className='flex flex-row py-1 gap-1 text-cardBlueText bg-[#233579] w-32 h-[25px] items-center rounded-md'>
-                <img src={zapBlueSVG} alt='zap-blue' className='w-[14px] h-[14px] ml-2'/>
+                <img src={zapBlueSVG} alt='zap-blue' className='size-[14px] ml-2'/>
                 <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Currently doing</p>
             </div>
         </div>
@@ -65,7 +65,7 @@ const BugFixCard = () => {
         <div className='border border-white12 border-dashed w-full'></div>
         <div className='flex flex-row justify-between text-white32 px-4'>
           <div className='flex flex-row items-center'>
-            <img src={clockSVG} alt='clock' className='w-[16px] h-[16px]'/>
+            <img src={clockSVG} alt='clock' className='size-[16px]'/>
             <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Progress</p>
           </div>
           <p className='text-[13px] text-white font-inter leading-[15.6px] font-medium'>Milestone {milestoneindex} in progress</p>
@@ -73,7 +73,7 @@ const BugFixCard = () => {
         <div className=' w-full'></div>
         <div className='flex flex-row justify-between items-center px-4  text-white32 bg-white4 w-full h-[42px] border-t border-white12 border-dashed rounded-b-md'>
           <div className='flex flex-row items-center'>
-            <img src={hourglassSVG} alt='hourglass' className='w-[16px] h-[16px]'/>
+            <img src={hourglassSVG} alt='hourglass' className='size-[16px]'/>
             <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Deadline</p>
           </div>
           <p className='text-[13px] text-white font-inter leading-[15.6px] font-medium'>{remainingDays?.days}d {remainingDays?.hours?.toString()?.replace('-', '')}h</p>

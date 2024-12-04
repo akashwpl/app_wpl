@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Building2, LayoutDashboardIcon, LogOut, LucideInfo, SquareChartGantt, SquareDashedBottom, Trophy, User } from 'lucide-react'
+import { Building2, LayoutDashboardIcon, LogOut, LogOutIcon, LucideInfo, SquareChartGantt, SquareDashedBottom, Trophy, User } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -12,6 +12,12 @@ import GlyphEffect from './ui/GlyphEffect'
 import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
 import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
 import { setUserRole } from '../store/slice/userSlice'
+
+import profileSVG from '../assets/icons/pixel-icons/profile-yellow.svg'
+import docSVG from '../assets/icons/pixel-icons/document2-yellow.svg'
+import hourglassSVG from '../assets/icons/pixel-icons/hourglass-yellow.svg'
+import listSVG from '../assets/icons/pixel-icons/search-list-yellow.svg'
+import tickSVG from '../assets/icons/pixel-icons/tick-outline-yellow.svg'
 
 const Navbar = () => {
   const navigate = useNavigate()
@@ -114,7 +120,10 @@ const Navbar = () => {
                       to="/profile"
                       className="hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-5 rounded-sm gap-2"
                     >
-                      My Profile
+                      <div className="flex items-center gap-2">
+                        <img src={profileSVG} alt="profile" className='size-[20px]' />
+                        <p>My Profile</p>
+                      </div>
                     </Link>
                     {userDetail?.role !== 'user' && (
                       <>
@@ -122,7 +131,10 @@ const Navbar = () => {
                           to="/userprojects"
                           className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
                         >
-                          List Projects
+                          <div className="flex items-center gap-2">
+                            <img src={docSVG} alt="projects" className='size-[20px]' />
+                            <p>List Projects</p>
+                          </div>                          
                         </Link>
                       </>
                     )}
@@ -132,7 +144,10 @@ const Navbar = () => {
                           to="/requests"
                           className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
                         >
-                          Requests
+                          <div className="flex items-center gap-2">
+                            <img src={hourglassSVG} alt="requests" className='size-[20px]' />
+                            <p>Requests</p>
+                          </div> 
                         </Link>
                       </>
                     )}
@@ -140,7 +155,10 @@ const Navbar = () => {
                       to="/"
                       className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
                     >
-                      Dashboard
+                      <div className="flex items-center gap-2">
+                        <img src={listSVG} alt="dashboard" className='size-[20px]' />
+                        <p>Dashboard</p>
+                      </div> 
                     </Link>
                     {userDetail?.role === 'user' && (
                       <>
@@ -148,7 +166,10 @@ const Navbar = () => {
                           to="/verifyorg"
                           className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
                         >
-                          Join as Org
+                          <div className="flex items-center gap-2">
+                            <img src={tickSVG} alt="Join as org icon" className='size-[20px]' />
+                            <p>Join as Org</p>
+                          </div> 
                         </Link>
                         <div className="h-[1px] w-full bg-white7 rounded-sm" />
                       </>
@@ -157,7 +178,11 @@ const Navbar = () => {
                       onClick={signout}
                       className="text-[#E38070] hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 rounded-sm gap-2"
                     >
-                      Sign out
+                      <div className="flex items-center gap-2">
+                        <LogOutIcon size={18} className='rotate-180'/>
+                        {/* <img src={} alt="logout" className='size-[20px]' /> */}
+                        <p>Sign out</p>
+                      </div> 
                     </div>
                   </div>
                 </>

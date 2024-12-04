@@ -135,7 +135,7 @@ const ProfilePage = () => {
                   <div className='flex flex-col gap-4'>
                     <div className='flex justify-between items-center'>
                       <div className='flex items-center gap-1'>
-                        <img src={discordSVG} alt='discord' className='w-[18px] h-[18px]'/>
+                        <img src={discordSVG} alt='discord' className='size-[18px]'/>
                         <p className='text-[14px] text-white32'>Discord</p>
                       </div>
                       <div className='flex items-center gap-1 group'>
@@ -146,7 +146,7 @@ const ProfilePage = () => {
 
                     <div className='flex justify-between items-center'>
                       <div className='flex items-center gap-1'>
-                        <img src={twitterSVG} alt='twitter' className='w-[16px] h-[16px]'/>
+                        <img src={twitterSVG} alt='twitter' className='size-[16px]'/>
                         <p className='text-[14px] text-white32'>Telegram</p>
                       </div>
                       <a href={`https://t.me/${userDetails?.socials?.telegram}`} target='_blank' className='flex items-center gap-1 group text-white88'>
@@ -158,7 +158,7 @@ const ProfilePage = () => {
 
                     <div className='flex justify-between items-center'>
                       <div className='flex items-center gap-1'>
-                        <img src={mailSVG} alt='mail' className='w-[18px] h-[18px]'/>
+                        <img src={mailSVG} alt='mail' className='size-[18px]'/>
                         <p className='text-[14px] text-white32'>Email</p>
                       </div>
                       <div className='flex items-center gap-1'>
