@@ -1,6 +1,10 @@
-import { ArrowRight, CheckCheck, FileText, LoaderCircle, TextSearch, Users } from 'lucide-react'
-import twitterIcon from '../../assets/images/twitter.png'
+import { ArrowRight, CheckCheck, LoaderCircle } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+
+import profileSVG from '../../assets/icons/pixel-icons/profile.svg'
+import listSVG from '../../assets/icons/pixel-icons/search-list.svg'
+import twitterSVG from '../../assets/icons/pixel-icons/twitter.svg'
+import docSVG from '../../assets/icons/pixel-icons/document2.svg'
 
 const ProfileDetailsCard = () => {
 
@@ -21,32 +25,32 @@ const ProfileDetailsCard = () => {
       </div>
       <div className='border border-white12 stroke-2 border-dashed w-full'></div>
       <div className='flex flex-row justify-between my-3 text-white32 mx-4'>
-        <div className='flex flex-row'>
-          <Users size={16}/>
+        <div className='flex flex-row items-center'>
+          <img src={profileSVG} alt='profile' className='w-[16px] h-[16px]'/>
           <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Create basic profile</p>
         </div>
         <CheckCheck size={16} />
       </div>
       {/* <div className='border border-white12 border-dashed w-full'></div> */}
       {/* <div className='flex flex-row justify-between py-3 text-white64 px-4'>
-        <div className='flex flex-row'>
-          <TextSearch size={16}/>
+        <div className='flex flex-row items-center'>
+          <img src={listSVG} alt='search-list' className='w-[18px] h-[18px]'/>
           <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Set Job preferences</p>
         </div>
         <ArrowRight size={16} onClick={navigateToEditProfile}/>
       </div> */}
       <div className='border border-white12 border-dashed w-full'></div>
       <div className='flex flex-row justify-between py-3 text-white64 px-4'>
-        <div className='flex flex-row'>
-          <img src={twitterIcon} width={16} alt="twitter icon" />
+        <div className='flex flex-row items-center'>
+          <img src={twitterSVG} alt="twitter icon" className='w-[16px] h-[16px]' />
           <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Social Links</p>
         </div>
         <ArrowRight size={16} onClick={navigateToEditProfile}/>
       </div>
       <div className='border border-white12 border-dashed w-full'></div>
       <div className='flex flex-row justify-between py-3 text-white64 px-4'>
-        <div className='flex flex-row'>
-          <FileText size={16}/>
+        <div className='flex flex-row items-center'>
+          <img src={docSVG} alt="Doc icon" className='w-[18px] h-[18px]' />
           <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Add work / Samples</p>
         </div>
         <ArrowRight size={16} onClick={navigateToEditProfile}/>
