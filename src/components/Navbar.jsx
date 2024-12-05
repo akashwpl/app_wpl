@@ -20,6 +20,8 @@ import hourglassSVG from '../assets/icons/pixel-icons/hourglass-yellow.svg'
 import listSVG from '../assets/icons/pixel-icons/search-list-yellow.svg'
 import tickSVG from '../assets/icons/pixel-icons/tick-outline-yellow.svg'
 
+import menuBorderSVG from '../assets/svg/Button.svg'
+
 const Navbar = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -39,6 +41,7 @@ const Navbar = () => {
 
   const [menuHover, setMenuHover] = useState(false)
 
+  const token = localStorage.getItem('token_app_wpl')
 
   const handleMenuHover = () => setMenuHover(!menuHover);
 
@@ -63,7 +66,6 @@ const Navbar = () => {
 
     let currentIndex = 0;
     let timeout
-    console.log('letters', letters)
     let isStopped = false;
 
     if (!letters || letters.length === 0) return;
@@ -118,16 +120,16 @@ const Navbar = () => {
         {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
           <div>
             <div
-              onClick={handleMenuToggle}
-              className="relative cursor-pointer flex flex-row items-center justify-center"
+              onClick={() => {token ? handleMenuToggle() : navigate('/onboarding')}}
+              className="relative cursor-pointer flex flex-row items-center justify-center z-50"
             >
-              {showUserMenu && (
+              {showUserMenu && token && (
                 <>
                   <div
-                    className={`${userDetail?.role === 'admin' ? 'h-[200px]' : 'h-[180px]'} rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
+                    className={`${userDetail?.role === 'admin' ? 'h-[200px]' : 'h-[180px]'} z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
                       slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                     }`}
-                    style={{backgroundImage: `url('src/assets/svg/Button.svg')`}}
+                    style={{backgroundImage: `url(${menuBorderSVG})`, zIndex: 100}}
                   >
                     <Link
                       to={`/profile/${userDetail?.socials?.discord}`}
@@ -205,27 +207,23 @@ const Navbar = () => {
                   </div>
                 </>
               )}
-              <button
-                className="relative"
-                onMouseEnter={() => {}}
-                onMouseLeave={() => {}}
-              >
+              <button className="relative">
                 <img
                   src={menuHover ? menuBtnImgHover : menuBtnImg}
                   alt="menu btn"
                   className="w-[200px] h-[44px]"
                 />
                 <div className="absolute inset-0 top-1/4 uppercase flex items-center justify-center gap-2 mb-2">
-                  <img src={userDetail?.pfp || wpllogo} width={18} alt="wolf" />
+                  <img src={token ?userDetail?.pfp || wpllogo : wpllogo} width={18} alt="wolf" />
                   <p className="font-gridular text-primaryYellow truncate">
-                    <span className="text-primaryYellow text-[14px] tracking-[0.12rem] flex">
+                    {token ? <span className="text-primaryYellow text-[14px] tracking-[0.12rem] flex">
                       {userDetail && userDetail.displayName &&
                         Array.from(userDetail?.displayName)?.map((letter, index) => (
                           <span key={index} className="letter">
                             {letter}
                           </span>
                         ))}
-                    </span>
+                    </span> : "Login"}
                   </p>
                   <img
                     src={arrow}

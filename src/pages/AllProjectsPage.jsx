@@ -94,8 +94,6 @@ const AllProjectsPage = () => {
         queryFn: () => getAllOrganisations(user_id),
     })
 
-    console.log('tiles', tiles)
-
     return (
         <div className='flex justify-center items-center'>
             <div className='md:w-[1000px] max-w-[1200px] mt-6 pb-24'>

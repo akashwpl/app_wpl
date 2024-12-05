@@ -16,8 +16,6 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
     }
 
     const [hovered, setHovered] = useState(false);
-    console.log('clock',data);
-    
 
   return (
     <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)} onClick={navigateToProjectDetails} className={`cursor-pointer py-2 mt-2 flex items-center w-full border-b border-white4 ${projectsGridView ? "hover:bg-white4 bg-[#050E52] rounded-md p-2" : ""} relative`}>

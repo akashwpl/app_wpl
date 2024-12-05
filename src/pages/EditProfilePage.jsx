@@ -2,7 +2,7 @@ import { ArrowLeft, CheckCheck, CheckCheckIcon, Info, Pen, Plus, Search, Upload,
 import React, { useEffect, useRef, useState } from 'react'
 import CustomModal from '../components/ui/CustomModal'
 import PoWCard from '../components/profile/PoWCard'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getUserDetails } from '../service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
@@ -30,6 +30,7 @@ const EditProfilePage = () => {
     const fileInputRef = useRef(null);
     const { user_id } = useSelector((state) => state)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
         queryKey: ["userDetails", user_id],
@@ -336,7 +337,7 @@ const EditProfilePage = () => {
 
   return (
     <div className='flex flex-col justify-center items-center'>
-        <Link to={'/profile'} className='w-full text-left text-white32 text-[13px] font-medium border-t border-b border-white7 flex items-center gap-1 py-2 px-20 mt-[1px]'><ArrowLeft size={14} className='text-white32'/> Back to your Profile</Link>
+        <div onClick={() => navigate(-1)} className='w-full text-left text-white32 text-[13px] font-medium border-t border-b border-white7 flex items-center gap-1 py-2 px-20 mt-[1px]'><ArrowLeft size={14} className='text-white32'/> Back to your Profile</div>
         
         <div className='w-[340px] md:w-[480px] mt-2 mb-20'>
             <div className='flex items-center gap-4'>
@@ -475,7 +476,7 @@ const EditProfilePage = () => {
                     img_size_classes='w-[482px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                     btn_txt={isUpdating ? <div className='flex justify-center items-center size-full -translate-y-3'> <Spinner /> </div> : "Update Profile"}  
-                    alt_txt='update profile btn' 
+                    alt_txt='update profile btn'
                     onClick={handleSubmitEditProfile}
                   />
             </div>
