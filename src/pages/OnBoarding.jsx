@@ -17,7 +17,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { auth, provider, signInWithPopup, storage } from '../lib/firebase'
 
 import videoMp4 from '../assets/dummy/v1.mp4'
-import mailSVG from '../assets/svg/mail.svg'
+import mailSVG from '../assets/icons/pixel-icons/mail.svg'
 import GlyphEffect from '../components/ui/GlyphEffect'
 
 const OnBoarding = () => {

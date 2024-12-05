@@ -32,6 +32,7 @@ const Navbar = () => {
 
   const [menuHover, setMenuHover] = useState(false)
 
+
   const handleMenuHover = () => setMenuHover(!menuHover);
 
   const handleShowNavbar = () => {
@@ -52,29 +53,40 @@ const Navbar = () => {
 
   const letters = document?.querySelectorAll('.letter');
   useEffect(() => {
+
     let currentIndex = 0;
     let timeout
     console.log('letters', letters)
-    if(letters == undefined || letters == null || letters?.length == 0) return
+    let isStopped = false;
+
+    if (!letters || letters.length === 0) return;
+
     function animateLetter() {
+      if (!letters[currentIndex]) return;
+
       const letter = letters[currentIndex];
-      letter.style.transition = 'transform 0.01s';
-      letter.style.transform = 'translateY(-7px)';
+      letter.style.transition = "transform 0.01s";
+      letter.style.transform = "translateY(-7px)";
 
       timeout = setTimeout(() => {
-        letter.style.transform = 'translateY(0)';
+        letter.style.transform = "translateY(0)";
         currentIndex = (currentIndex + 1) % letters.length;
-        animateLetter();
+
+        // If animation is stopped, only continue until the current cycle completes
+        if (showUserMenu || (!showUserMenu && currentIndex !== 0)) {
+          animateLetter();
+        }
       }, 135);
     }
     
     animateLetter();
 
     return () => {
+      isStopped = true; // Signal to stop the animation
       clearTimeout(animateLetter);
       clearTimeout(timeout);
     }
-  }, [rewardRef, letters])
+  }, [rewardRef, letters, showUserMenu])
 
   const handleMenuToggle = () => {
     setSlideUserMenu((prev) => !prev);
