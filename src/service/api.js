@@ -37,6 +37,15 @@ export const getAllProjects = async () => {
     }
 }
 
+export const getAllUers = async () => {
+    try {
+        const response = await axiosInstance.get('/users')
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
 export const getUserDetails = async (id) => {
     try {
         const response = await axiosInstance.get(`/users/${id}`)
@@ -76,7 +85,7 @@ export const getAllOrganisations = async () => {
 
 export const updateProjectDetails = async (id, updData) => {
     try {
-        const response = await axiosInstance.put(`/projects/update/${id}`, updData)
+        const response = await axiosInstance.put(`/projects/updateWithMilestone/${id}`, updData)
         return response.data.data
     } catch (error) {
         handleForbiddenError(error)

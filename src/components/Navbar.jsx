@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import wolfButton from '../assets/images/BW.png'
 import arrow from '../assets/images/arrow.png'
 import wpllogo from '../assets/svg/wolf_logo.svg'
+import NavmenuBG from '../assets/svg/Button.svg'
 import { getUserDetails } from '../service/api'
 import GlyphEffect from './ui/GlyphEffect'
 
@@ -117,13 +118,13 @@ const Navbar = () => {
               {showUserMenu && (
                 <>
                   <div
-                    className={`${userDetail?.role === 'admin' ? 'h-[180px]' : 'h-[139px]'} bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
+                    className={`${userDetail?.role === 'admin' ? 'h-[200px]' : 'h-[180px]'} rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
                       slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                     }`}
-                    style={{backgroundImage: `url('src/assets/svg/menu_dropdown_${userDetail?.role === 'admin' ? 'admin' : 'user'}.png')`}}
+                    style={{backgroundImage: `url('src/assets/svg/Button.svg')`}}
                   >
                     <Link
-                      to="/profile"
+                      to={`/profile/${userDetail?.socials?.discord}`}
                       className="hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-5 rounded-sm gap-2"
                     >
                       My Profile
@@ -153,6 +154,12 @@ const Navbar = () => {
                       className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
                     >
                       Dashboard
+                    </Link>
+                    <Link
+                      to="/rewards"
+                      className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
+                    >
+                      Rewards
                     </Link>
                     {userDetail?.role === 'user' && (
                       <>
