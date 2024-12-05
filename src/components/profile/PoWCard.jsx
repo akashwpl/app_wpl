@@ -5,7 +5,7 @@ const PoWCard = ({ data }) => {
   return (
     <div className='flex gap-4 items-start mb-4'>
         <div>
-            <img src={wplogo} alt='dummy' className='size-[50px] md:size-[90px] aspect-square rounded-lg'/>
+            <img src={data?.imgPreview || data?.image} alt='dummy' className='size-[50px] md:size-[90px] aspect-square rounded-lg'/>
         </div>
         <div>
             <p className='text-white font-inter'>{data?.title}</p>

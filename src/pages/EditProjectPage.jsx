@@ -66,11 +66,8 @@ const EditProjectPage = () => {
     const [description, setDescription] = useState(projectDetails?.description || '');
     const [discordLink, setDiscordLink] = useState(projectDetails?.discordLink || '');
     const [about, setAbout] = useState(projectDetails?.about || '');
-    const [imageUrl, setImageUrl] = useState(projectDetails?.image || '')
 
     const [submitted, setSubmitted] = useState(false);
-
-    const [imgUploadHover, setImgUploadHover] = useState(false)
 
     const [milestones, setMilestones] = useState(projectDetails?.milestones || [])
    
@@ -276,65 +273,37 @@ const EditProjectPage = () => {
 
                                     <div className='flex justify-between items-center mt-4'>
                                         <div className='flex items-center gap-4'>
-                                            {/* {projectDetails.imgPreview ? 
-                                                <div className='relative'>
-                                                    <img src={projectDetails.imgPreview} alt='dummy' className='size-[72px] aspect-square'/>
-                                                    <div onClick={() => {}} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
-                                                </div>
-                                            :   <> */}
                                             {pfpPreview ? 
                                                 <div className='relative'>
-                                                            <img src={pfpPreview || projectDetails?.image}  onError={(e) => {
-                                                                    e.currentTarget.onerror = null;
-                                                                    e.currentTarget.src = projectDetails?.image;
-                                                                }} 
-                                                                alt='dummy' className='size-[72px] aspect-square rounded-md'/
-                                                            >
-                                                            <div onClick={() => {setPfpPreview(null)}} className='absolute -top-2 -right-1 bg-white64 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
-                                                        </div>
-                                                    : <>
-                                                        <div className='bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'>
-                                                            <div className='relative'>
-                                                                <img src={projectDetails?.image} alt='dummy' className='size-[72px] aspect-square'/>
-                                                                <div onClick={handleUploadClick} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><Pen size={14} className='text-black/60'/></div>
-                                                            </div>
-                                                            <input
-                                                                name='img'
-                                                                type="file"
-                                                                ref={fileInputRef}
-                                                                onChange={handleProfilePicChange}
-                                                                style={{ display: 'none' }}
-                                                            />                           
-                                                        </div>
-                                                        <div className='text-[14px] font-inter'>
-                                                            <p className='text-white88'>Add a cover image</p>
-                                                            <p className='text-white32'>Recommended 1:1 aspect ratio</p>
-                                                        </div>
-                                                    </>
-                                                    }
-                                                    {/* <div
-                                                        onMouseEnter={() => setImgUploadHover(true)} 
-                                                        onMouseLeave={() => setImgUploadHover(false)} 
-                                                        onClick={() => {}} 
-                                                        className='relative bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'
+                                                    <img src={pfpPreview || projectDetails?.image}  onError={(e) => {
+                                                            e.currentTarget.onerror = null;
+                                                            e.currentTarget.src = projectDetails?.image;
+                                                        }} 
+                                                        alt='dummy' className='size-[72px] aspect-square rounded-md'/
                                                     >
-                                                        <Upload size={16} className={`text-white32 absolute ${imgUploadHover ? "animate-hovered" : ""}`}/>
+                                                    <div onClick={() => {setPfpPreview(null)}} className='absolute -top-2 -right-1 bg-white64 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
+                                                </div>
+                                                : <>
+                                                    <div className='bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'>
+                                                        <div className='relative'>
+                                                            <img src={projectDetails?.image} alt='dummy' className='size-[72px] aspect-square'/>
+                                                            <div onClick={handleUploadClick} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><Pen size={14} className='text-black/60'/></div>
+                                                        </div>
                                                         <input
                                                             name='img'
                                                             type="file"
-                                                            // ref={fileInputRef}
-                                                            onChange={() => {}}
+                                                            ref={fileInputRef}
+                                                            onChange={handleProfilePicChange}
                                                             style={{ display: 'none' }}
                                                         />                           
                                                     </div>
                                                     <div className='text-[14px] font-inter'>
                                                         <p className='text-white88'>Add a cover image</p>
                                                         <p className='text-white32'>Recommended 1:1 aspect ratio</p>
-                                                    </div> */}
-                                                {/* </> */}
-                                            {/* } */}
+                                                    </div>
+                                                </>
+                                            }
                                         </div>
-                                        {/* <div className='flex items-center gap-1'><Trash stroke='#E38070' size={15}/> <span className='text-[#E38070] text-[14px] font-inter'>Delete</span></div> */}
                                     </div>
 
                                     <div className='mt-3'>

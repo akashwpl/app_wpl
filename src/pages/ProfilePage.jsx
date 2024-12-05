@@ -33,7 +33,7 @@ const ProfilePage = () => {
   //   enabled: !!id || !!user_id,
   // })
 
-  const {data: allUsers, isLoading: isLoadingUses} = useQuery({
+  const {data: allUsers, isLoading: isLoadingUses, refetch} = useQuery({
     queryKey: ["users"],
     queryFn: () => getAllUers(),
   })
@@ -68,7 +68,7 @@ const ProfilePage = () => {
     }
   }, [allUsers])
 
-  const sampleProjects = useMemo(() =>  userDetails?.projects?.owned?.filter((proj) => proj.type == 'sample'), [userDetails])
+  const sampleProjects = useMemo(() =>  userDetails?.projects?.owned?.filter((proj) => proj.type == 'sample'), [userDetails, allUsers])
 
   return (
     <div className='overflow-x-hidden'>

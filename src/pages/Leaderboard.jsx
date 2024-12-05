@@ -5,9 +5,12 @@ import wpl_logo from '../assets/images/wpl_prdetails.png'
 import btnPng from '../assets/images/leaderboard_btn.png'
 import { useQuery } from '@tanstack/react-query'
 import { getLeaderboardData } from '../service/api'
+import { Link, useNavigate } from 'react-router-dom'
 
 
 const Leaderboard = () => {
+
+    const navigate = useNavigate()
 
 
     const {data: leaderboardData, isLoading: isLoadingLeaderboard, refetch} = useQuery({
@@ -61,6 +64,10 @@ const Leaderboard = () => {
         });
         setShowFilterModal(false)   
     }
+
+    const navigateToProfile = (id) => {
+
+    }
      
   return (
     <div className='flex justify-center items-center'>
@@ -110,11 +117,13 @@ const Leaderboard = () => {
                                 currentData?.map((data, index) => (
                                     <tr key={index} className="text-[14px] text-white48 font-inter border-b border-white7 h-fit">
                                         <td className="py-4 text-[14px] text-end pr-3">#{index + 1}</td>
-                                        <td className="py-4 w-[200px] truncate text-ellipsis">
-                                            <p className="flex items-center gap-1 text-white88 text-[14px]">
-                                                <img src={wpl_logo} alt="USDC" className="size-4" />
-                                                {data.discordIdentifier}
-                                            </p>
+                                        <td className="py-4 w-[200px] truncate text-ellipsis hover:bg-white7 cursor-pointer rounded-md">
+                                            <Link to={`/profile/${data.discordIdentifier}`} className='flex items-center gap-1'>
+                                                <p className="flex items-center gap-1 text-white88 text-[14px]">
+                                                    <img src={wpl_logo} alt="USDC" className="size-4" />
+                                                    {data.discordIdentifier}
+                                                </p>
+                                            </Link>
                                         </td>
                                         <td className="py-4 text-[14px] text-end text-white88">
                                             <p className='flex justify-end items-center gap-1'>
