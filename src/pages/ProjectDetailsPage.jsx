@@ -149,6 +149,7 @@ const ProjectDetailsPage = () => {
     }
   }
 
+  const token = localStorage.getItem('token_app_wpl')
 
   return (
     <div className='relative'>
@@ -324,7 +325,7 @@ const ProjectDetailsPage = () => {
                   {projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> : 
 
                     isProjApplied || projectDetails?.status != "idle" ? <span></span> : 
-                    <div className='mx-4 mt-4'>
+                    token ? <div className='mx-4 mt-4'>
                       <FancyButton 
                         src_img={btnImg} 
                         hover_src_img={isProjApplied ? btnImg : btnHoverImg} 
@@ -335,6 +336,19 @@ const ProjectDetailsPage = () => {
                         onClick={applyForProject}
                         disabled={isProjApplied}
                     />
+                    </div>
+                    :
+                    <div className='mx-4 mt-4'>
+                      <FancyButton 
+                        src_img={btnImg} 
+                        hover_src_img={isProjApplied ? btnImg : btnHoverImg} 
+                        img_size_classes='w-[342px] h-[44px]' 
+                        className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5 ${isProjApplied && 'cursor-not-allowed'}`}
+                        btn_txt={'Login'} 
+                        alt_txt='project apply btn' 
+                        onClick={() => navigate('/onboarding')}
+                        disabled={isProjApplied}
+                      />
                     </div>
                   }
                   </>

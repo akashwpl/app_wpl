@@ -64,7 +64,6 @@ const Navbar = () => {
 
     let currentIndex = 0;
     let timeout
-    console.log('letters', letters)
     let isStopped = false;
 
     if (!letters || letters.length === 0) return;
@@ -119,10 +118,10 @@ const Navbar = () => {
         {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
           <div>
             <div
-              onClick={handleMenuToggle}
+              onClick={() => {token ? handleMenuToggle() : navigate('/onboarding')}}
               className="relative cursor-pointer flex flex-row items-center justify-center"
             >
-              {showUserMenu && (
+              {showUserMenu && token && (
                 <>
                   <div
                     className={`${userDetail?.role === 'admin' ? 'h-[200px]' : 'h-[180px]'} rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
