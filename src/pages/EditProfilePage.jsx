@@ -57,6 +57,7 @@ const EditProfilePage = () => {
         title: '',
         desc: '',
         skills: [],
+        img: null,
         link: '',
         imgPreview: null,
     })
@@ -74,7 +75,6 @@ const EditProfilePage = () => {
             }));
         } else if (name == 'img') {
         const file = e.target.files[0];
-        console.log('file', file)
         setProjectDetails(prevState => ({
             ...prevState,
             img: file,
@@ -207,26 +207,33 @@ const EditProfilePage = () => {
     }
 
     const handleUploadProject = async () => {
-        console.log('projectDetails', projectDetails)
-        const imageRef = ref(storage, `images/${projectDetails.img}+${Math.random()}`);
-        await uploadBytes(imageRef, projectDetails.img);
-        const imageUrl = await getDownloadURL(imageRef);
-
-        const transformedProjects = dummyProjects.map(project => ({
-            project: {
-                title: project.title,
-                organisationHandle: "",
-                description: project.desc,
-                discordLink: project.link,
-                image: imageUrl, // Assuming imgPreview is the base64 string
-                status: "idle",
-                type: "sample",
-                about: project.desc,
-                skills: project.skills,
-            },
-            milestones: []
-        }));
+        setIsUpdating(true)
+        const transformedProjects = await Promise.all(
+            dummyProjects.map(async (project) => {
+                // Create a new imageRef for each project
+                const imageRef = ref(storage, `images/${project.img?.name}`);
+                // Upload the image and get the URL
+                await uploadBytes(imageRef, project?.img);
+                const imageUrl = await getDownloadURL(imageRef);
         
+                // Return the transformed project with the uploaded image URL
+                return {
+                    project: {
+                        title: project.title,
+                        organisationHandle: "",
+                        description: project.desc,
+                        discordLink: project.link,
+                        image: imageUrl, // Set the uploaded image URL
+                        status: "idle",
+                        type: "sample",
+                        about: project.desc,
+                        skills: project.skills,
+                    },
+                    milestones: [],
+                };
+            })
+        );
+                
         const response = await fetch(`${BASE_URL}/projects/create/multiple`, {
             method: 'POST',
             headers: {
@@ -237,6 +244,8 @@ const EditProfilePage = () => {
         }).then(res => res.json())
         .then((data) => {
             console.log('res add project', data)
+        }).finally(() => {
+            setIsUpdating(false)
         })
     }
 

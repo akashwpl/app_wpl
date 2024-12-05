@@ -63,12 +63,12 @@ function App() {
         </Routes>
       </div>
       {snackBar?.show && (
-            <Portal>
-                <div className='fixed bottom-20 left-1/2 transform -translate-x-1/2 z-[1000] w-full max-w-md bg-primaryBlue border-white64 h-12 rounded-md'>
-                    <Snackbar text={snackBar?.text} />
-                </div>
-            </Portal>
-        )}
+        <Portal>
+          <div className='fixed bottom-20 left-1/2 transform -translate-x-1/2 z-[1000] w-full max-w-md bg-primaryBlue border-white64 h-12 rounded-md'>
+            <Snackbar text={snackBar?.text} />
+          </div>
+        </Portal>
+      )}
     </div>
   )
 }
