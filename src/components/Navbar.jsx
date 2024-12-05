@@ -20,6 +20,8 @@ import hourglassSVG from '../assets/icons/pixel-icons/hourglass-yellow.svg'
 import listSVG from '../assets/icons/pixel-icons/search-list-yellow.svg'
 import tickSVG from '../assets/icons/pixel-icons/tick-outline-yellow.svg'
 
+import menuBorderSVG from '../assets/svg/Button.svg'
+
 const Navbar = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -119,15 +121,15 @@ const Navbar = () => {
           <div>
             <div
               onClick={() => {token ? handleMenuToggle() : navigate('/onboarding')}}
-              className="relative cursor-pointer flex flex-row items-center justify-center"
+              className="relative cursor-pointer flex flex-row items-center justify-center z-50"
             >
               {showUserMenu && token && (
                 <>
                   <div
-                    className={`${userDetail?.role === 'admin' ? 'h-[200px]' : 'h-[180px]'} rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
+                    className={`${userDetail?.role === 'admin' ? 'h-[200px]' : 'h-[180px]'} z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
                       slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                     }`}
-                    style={{backgroundImage: `url('src/assets/svg/Button.svg')`}}
+                    style={{backgroundImage: `url(${menuBorderSVG})`, zIndex: 100}}
                   >
                     <Link
                       to={`/profile/${userDetail?.socials?.discord}`}
@@ -205,11 +207,7 @@ const Navbar = () => {
                   </div>
                 </>
               )}
-              <button
-                className="relative"
-                onMouseEnter={() => {}}
-                onMouseLeave={() => {}}
-              >
+              <button className="relative">
                 <img
                   src={menuHover ? menuBtnImgHover : menuBtnImg}
                   alt="menu btn"
