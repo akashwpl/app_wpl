@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { acceptRejectSubmission, getProjectDetails, getProjectSubmissions } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom';
 import headerPng from '../assets/images/prdetails_header.png'
-import { AlignLeft, CheckCheck, CheckCircle2, ChevronLeft, ChevronRight, TriangleAlert, X } from 'lucide-react';
+import { AlignLeft, CheckCheck, ChevronLeft, ChevronRight, TriangleAlert, X } from 'lucide-react';
 import wpllogo from '../assets/images/wpl_prdetails.png'
 import greenBtnImg from '../assets/svg/green_btn_subtract.png'
 import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png'
@@ -12,6 +12,8 @@ import redBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png'
 import btnImg from '../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import FancyButton from '../components/ui/FancyButton';
+
+import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
 
 const SubmissionsPage = () => {
 
@@ -249,7 +251,7 @@ const submittedDetails = (projectDetails, navigate) => {
                     </div>
                 </div>
                 <div className='flex flex-col justify-center items-center mt-8'>
-                    <div><CheckCircle2 fill='#FBF1B8' strokeWidth={1} size={54}/></div>
+                    <img src={tickFilledImg} alt='tick-filled' className='size-[54px] mb-4'/>
                     <div className='text-white font-inter'>Updated details</div>
                     <p className='text-white32 text-[13px] font-semibold font-inter'>You can now view updated details of the project overview</p>
                 </div>

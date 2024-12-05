@@ -1,7 +1,12 @@
 import React from 'react'
-import { CalendarCheck, CheckCheck, Clock, Hourglass, TriangleAlert, Trophy } from 'lucide-react'
+import { CheckCheck } from 'lucide-react'
 import USDCsvg from '../../assets/svg/usdc.svg'
 import { calcDaysUntilDate, convertTimestampToDate } from '../../lib/constants'
+
+import hourglassSVG from '../../assets/icons/pixel-icons/hourglass2.svg'
+import warningSVG from '../../assets/icons/pixel-icons/warning.svg'
+import clockSVG from '../../assets/icons/pixel-icons/watch.svg'
+import calenderSVG from '../../assets/icons/pixel-icons/calender.svg'
 
 const MilestoneCard = ({ data }) => {
 
@@ -15,20 +20,20 @@ const MilestoneCard = ({ data }) => {
           <div className='flex items-start justify-between'>
             <h2 className='text-[20px] text-white88 font-semibold leading-[27px]'>{data?.title}</h2>
             <div className='flex justify-start items-start gap-1'>
-              <div className='bg-[#091044] min-w-[70px] rounded-[6px] font-inter font-medium flex items-center gap-1 py-3 px-2 ml-8'>
+              <div className={`${data?.status === "under_review" ? "bg-cardYellowBg" : "bg-[#091044]"} "min-w-[70px] rounded-[6px] font-inter font-medium flex items-center gap-1 py-3 px-2 ml-8"`}>
                 {data?.status == 'idle' ? 
                   <>
-                    <Hourglass size={14} className='text-white32'/>
+                    <img src={hourglassSVG} alt='hourglass' className='size-[14px]'/>
                     <p className='text-white48 text-[12px] leading-[14px]'>Idle</p>
                   </>
                 : data?.status == 'ongoing' ?
                   <>
-                    <Hourglass size={14} className='text-white32'/>
+                    <img src={hourglassSVG} alt='hourglass' className='size-[14px]'/>
                     <p className='text-white48 text-[12px] leading-[14px]'>In Progress</p>
                   </>
                 : data?.status == 'under_review' ?
                   <>
-                    <TriangleAlert size={14} className='text-cardYellowText'/>
+                    <img src={warningSVG} alt='warning' className='size-[14px]'/>
                     <p className='text-cardYellowText text-[12px] leading-[14px]'>Under Review</p>
                   </>
                 :
@@ -45,12 +50,10 @@ const MilestoneCard = ({ data }) => {
             </div>
           </div>
           <div className='text-[12px] text-white32 font-semibold leading-[14px] flex items-center gap-1 mt-4'>
-              <Clock size={14} className='text-white32'/>
-              <p>Start date: {date} </p>
-              <CalendarCheck size={14} className='text-white32 ml-2'/>
-              <p>Delivery time: {deadline?.deliveryTime} {deadline?.timeUnit}</p>
-              {/* <Trophy size={14} className='text-white32 ml-2'/>
-              <p>DUMMY METRIC</p> */}
+            <img src={clockSVG} alt='clock' className='size-[16px]'/>
+            <p>Start date: {date} </p>
+            <img src={calenderSVG} alt='calender' className='size-[16px] ml-2'/>
+            <p>Delivery time: {deadline?.deliveryTime} {deadline?.timeUnit}</p>
           </div>
         </div>
 

@@ -10,7 +10,7 @@ const KYC_Card = () => {
       <div className='flex flex-row justify-between'>
         <img width={32} src={kyc_profile} alt="KYC profile image" />
         <div className='flex flex-row justify-evenly text-cardPurpleText bg-[#131742] w-32 h-[20px] items-center rounded-md'>
-          <img src={zapSVG} alt='zap' className='w-[18px] h-[18px]'/>
+          <img src={zapSVG} alt='zap' className='size-[18px]'/>
           <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Recommended</p>
         </div>
       </div>
@@ -19,7 +19,7 @@ const KYC_Card = () => {
       <div className='border border-white12 border-dashed w-full'></div>
       <div className='flex flex-row justify-between items-center text-cardPurpleText'>
         <div className="flex flex-row items-center gap-1">
-          <img src={tickOutlineSVG} alt='tick-filled' className='w-[18px] h-[18px]'/>
+          <img src={tickOutlineSVG} alt='tick' className='size-[18px]'/>
           <p className='font-inter text-[13px] leading-[15.6px] font-medium'>Complete KYC</p>
         </div>
         <ArrowRight size={16} />

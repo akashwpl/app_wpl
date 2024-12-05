@@ -6,7 +6,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "../components/ui/accordion"
-import { ArrowLeft, CheckCircle2, Globe, Menu, Send, Trash, Upload, X } from 'lucide-react';
+import { ArrowLeft, Globe, Menu, Send, Trash, Upload, X } from 'lucide-react';
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
 import { useSelector } from 'react-redux';
@@ -14,6 +14,8 @@ import { createOrganisation } from '../service/api';
 import FancyButton from '../components/ui/FancyButton';
 import btnImg from '../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
+
+import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
 
 const VerifyOrgForm = () => {
     const fileInputRef = useRef(null);
@@ -107,7 +109,7 @@ const VerifyOrgForm = () => {
                             </div>
 
                             <div className='flex flex-col justify-center items-center mt-8'>
-                                <div><CheckCircle2 fill='#FBF1B8' strokeWidth={1} size={54}/></div>
+                                <img src={tickFilledImg} alt='tick-filled' className='size-[54px] mb-4'/>
                                 <div className='text-white font-inter'>Submitted your details</div>
                                 <p className='text-white32 text-[13px] font-semibold font-inter'>You will be notified once the verification is compeleted</p>
                             </div>

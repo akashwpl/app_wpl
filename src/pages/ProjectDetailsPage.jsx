@@ -27,6 +27,8 @@ import { calculateRemainingDaysAndHours, convertTimestampToDate } from '../lib/c
 import { getOrgById, getProjectDetails, getProjectSubmissions, getUserProjects, updateProjectDetails } from '../service/api'
 
 import alertPng from '../assets/images/alert.png'
+import clockSVG from '../assets/icons/pixel-icons/watch.svg'
+import zapSVG from '../assets/icons/pixel-icons/zap-yellow.svg'
 
 const initialTabs = [
   {id: 'overview', name: 'Overview', isActive: true},
@@ -175,13 +177,13 @@ const ProjectDetailsPage = () => {
                 <div className='flex items-center gap-2'>
                   <p className='text-[24px] text-primaryYellow font-gridular leading-7'>{projectDetails?.title}</p>
                   <div className='text-[12px] font-medium text-[#FCBF04] flex items-center gap-1 bg-[#FCBF041A] rounded-[4px] px-2 py-1 font-inter'>
-                    <Zap size={14} className='text-[#FCBF04]'/>
+                    <img src={zapSVG} alt='zap' className='size-[16px]'/>
+                    {/* <Zap size={14} className='text-[#FCBF04]'/> */}
                     <p className='capitalize'>{projectDetails?.type}</p>
                   </div>
                 </div>
                 <p className='text-[14px] text-white32 leading-5'>@{projectDetails?.organisationHandle || orgHandle}</p>
                 <div className='flex gap-2 leading-5 font-inter text-[14px] mt-2'>
-                  {/* <p className='text-white88'>DUMMY <span className='text-white32'>Interested</span></p> */}
                   <p className='text-white88'>{totalSubmissions} <span className='text-white32'>Submissions</span></p>
                 </div>
               </div>
@@ -262,7 +264,7 @@ const ProjectDetailsPage = () => {
           <div className='mt-[35px]'>
             <div className='w-[372px] h-fit pb-4 bg-white4 rounded-[10px]'>
               <div className='flex items-center gap-2 mx-4 py-4'>
-                <Clock size={14} className='text-white32'/>
+                <img src={clockSVG} alt='clock' className='size-[16px]'/>
                 <p className='text-[14px] text-white32 leading-[20px] font-inter'>Project Deadline in <span className='text-white88 ml-1'>{remain.days < 0 ? <span className='text-cardRedText'>Overdue</span> : `${remain.days} D ${remain.hours} H`}</span></p>
               </div>
               <div className='h-[1px] w-full'>
