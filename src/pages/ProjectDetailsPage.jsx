@@ -77,7 +77,7 @@ const ProjectDetailsPage = () => {
 
   useEffect(() => {
     const fetchOrgHandle = async () => {
-      if(!isLoadingProjectDetails && !projectDetails.organisationHandle) {
+      if(!isLoadingProjectDetails && !projectDetails?.organisationHandle) {
         const org = await getOrgById(projectDetails.organisationId);
         setOrgHandle(org[0].organisationHandle);
       }
@@ -148,7 +148,6 @@ const ProjectDetailsPage = () => {
       navigate(-1)
     }
   }
-
 
 
   return (
@@ -269,7 +268,7 @@ const ProjectDetailsPage = () => {
                 <p className='text-[14px] text-white32 leading-[20px] font-inter'>Project Deadline in <span className='text-white88 ml-1'>{remain.days < 0 ? <span className='text-cardRedText'>Overdue</span> : `${remain.days} D ${remain.hours} H`}</span></p>
               </div>
               <div className='h-[1px] w-full'>
-                <div className='h-[1px] w-[40%] bg-primaryYellow'/>
+                <div className='h-[1px] w-full bg-primaryYellow'/>
                 <div className='h-[1px] translate-y-[-1px] w-full bg-white7'/>
               </div>
               <div className='flex flex-col justify-center items-center mt-8'>
@@ -337,7 +336,6 @@ const ProjectDetailsPage = () => {
                         disabled={isProjApplied}
                     />
                     </div>
-                    
                   }
                   </>
               }
