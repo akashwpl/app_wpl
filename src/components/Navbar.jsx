@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Building2, LayoutDashboardIcon, LogOut, LogOutIcon, LucideInfo, SquareChartGantt, SquareDashedBottom, Trophy, User } from 'lucide-react'
+import { LayoutDashboardIcon, LogOutIcon, SquareDashedBottom, Trophy, User } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -180,7 +180,6 @@ const Navbar = () => {
                     >
                       <div className="flex items-center gap-2">
                         <LogOutIcon size={18} className='rotate-180'/>
-                        {/* <img src={} alt="logout" className='size-[20px]' /> */}
                         <p>Sign out</p>
                       </div> 
                     </div>
@@ -239,15 +238,53 @@ const Navbar = () => {
         {showNavbar && <div onClick={handleShowNavbar} className='absolute -top-8 left-0 h-screen w-full bg-[#16237F]/30 backdrop-blur-sm z-[50]' />}
 
         <div className={`absolute -top-8 left-0 ${showNavbar ? 'translate-y-0' : '-translate-y-[900px]'} transition-all duration-500 w-full bg-[#16237F] z-50`}>
-          <div className='flex flex-col justify-center items-center text-center bg-[#16237F] text-white font-bienvenue mt-20'>
-            <Link to={'/profile'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2 flex items-center gap-1'><User size={18} color='#FBF1B8' /> MY PROFILE</h2></Link>
-            <Link to={'/allprojects'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2 flex items-center gap-1'><LayoutDashboardIcon size={18} color='#FBF1B8' /> EXPLORE</h2></Link>
-            <Link to={'/leaderboard'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2 flex items-center gap-1'><Trophy size={18} color='#FBF1B8'/> LEADERBOARD</h2></Link>
-            <Link to={'/'}><h2 className='text-[24px] text-primary border-b border-white/5 w-[90%] mb-2 flex items-center gap-1'><SquareDashedBottom size={18} color='#FBF1B8'/> DASHBOARD</h2></Link>
-            <h2 className='text-[24px] text-primary w-[90%] mb-2'>FAQ</h2>
+          <div className='flex flex-col justify-center items-center text-center bg-[#16237F] font-bienvenue mt-20 text-[24px] text-primaryYellow'>
+            <Link to={'/profile'}>
+              <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
+                <img src={profileSVG} alt="profile" className='size-[20px]' />
+                <p>Profile</p>
+              </div>
+            </Link>
+            {userDetail?.role !== 'user' && (
+              <Link to={'/allprojects'}>
+                <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
+                  <img src={docSVG} alt="projects" className='size-[20px]' />
+                  <p>Explore</p>
+                </div>
+              </Link>
+            )}
+            {userDetail?.role === 'admin' && (
+              <Link to={'/requests'}>
+                <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
+                  <img src={hourglassSVG} alt="requests" className='size-[20px]' />
+                  <p>Requests</p>
+                </div>
+              </Link>
+            )}
+            <Link to={'/'}>
+              <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
+                <img src={listSVG} alt="dashboard" className='size-[20px]' />
+                <p>Dashboard</p>
+              </div>
+            </Link>
+            {userDetail?.role === 'user' && (
+                <Link
+                  to="/verifyorg"
+                >
+                  <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
+                    <img src={tickSVG} alt="Join as org icon" className='size-[20px]' />
+                    <p>Join as Org</p>
+                  </div> 
+                </Link>
+            )}
+            <div onClick={signout} className='text-[#E38070]'>
+              <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
+                <LogOutIcon size={30} className='rotate-180'/>
+                <p>Logout</p>
+              </div>
+            </div>
           </div>
         </div>
-
       </div>
     </div>
   )
