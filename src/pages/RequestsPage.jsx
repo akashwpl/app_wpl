@@ -6,7 +6,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "../components/ui/accordion"
-import { ArrowLeft, CheckCheck, CheckCircle2, Globe, Menu, Send, Trash, Upload, X } from 'lucide-react';
+import { ArrowLeft, CheckCheck, Globe, Menu, Send, Trash, Upload, X } from 'lucide-react';
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
 import { useSelector } from 'react-redux';

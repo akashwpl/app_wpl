@@ -29,18 +29,18 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
                     <p className='font-gridular text-[16px] leading-[19.2px] text-white88 mb-3'>{data?.title}</p>     
                     <div className={`flex flex-row ${projectsGridView ? 'flex-col' : "flex-row"} gap-2 text-white32 w-full mt-1`}>
                         <div className={`flex items-center gap-1 ${projectsGridView ? "mt-2" : ""}`}>
-                            <img src={clockSVG} alt='clock' className='w-[16px] h-[16px]'/>
+                            <img src={clockSVG} alt='clock' className='size-[16px]'/>
                             <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Due in <span className='text-white64'>{data?.deadline}</span></p>
                             <Dot size={16} />
-                            <img src={calenderSVG} alt='calender' className='w-[16px] h-[16px]'/>
+                            <img src={calenderSVG} alt='calender' className='size-[16px]'/>
                             <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Delivery time: <span className='text-white64'>2 weeks</span></p>
                             {!projectsGridView && <Dot size={16} />}
                         </div>
                         <div className={`flex items-center gap-1 ${projectsGridView ? "mt-2" : ""}`}>
-                            <img src={profileSVG} alt='profile' className='w-[16px] h-[16px]'/>
+                            <img src={profileSVG} alt='profile' className='size-[16px]'/>
                             <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Role: <span className='text-white64'>Frontend</span></p>
                             <Dot size={16} />
-                            <img src={zapSVG} alt='zap' className='w-[16px] h-[16px]'/>
+                            <img src={zapSVG} alt='zap' className='size-[16px]'/>
                             <p className='font-inter font-medium text-cardYellowText text-[12px] leading-[14.4px] capitalize'>{data?.type}</p>
                         </div>
                     </div>

@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, CheckCheck, CheckCheckIcon, CheckCircle2, ChevronDown, Menu, Plus, Search, Trash, Trophy, Upload, X } from 'lucide-react'
+import { ArrowLeft, Check, CheckCheck, CheckCheckIcon, ChevronDown, Menu, Plus, Search, Trash, Trophy, Upload, X } from 'lucide-react'
 import React, { useRef, useState, useEffect } from 'react'
 
 import DatePicker from 'react-datepicker';
@@ -28,6 +28,7 @@ import { storage } from '../lib/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Spinner from '../components/ui/spinner';
 
+import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
 
 const AddProjectPage = () => {
 
@@ -544,7 +545,7 @@ const AddProjectPage = () => {
                         </div>
 
                         <div className='flex flex-col justify-center items-center mt-8'>
-                            <div><CheckCircle2 fill='#FBF1B8' strokeWidth={1} size={54}/></div>
+                            <img src={tickFilledImg} alt='tick-filled' className='size-[54px] mb-4'/>
                             <div className='text-white font-inter'>Added Project</div>
                             <p className='text-white32 text-[13px] font-semibold font-inter'>You can now view updated details of the project overview</p>
                         </div>
