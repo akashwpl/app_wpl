@@ -39,6 +39,7 @@ const Navbar = () => {
 
   const [menuHover, setMenuHover] = useState(false)
 
+  const token = localStorage.getItem('token_app_wpl')
 
   const handleMenuHover = () => setMenuHover(!menuHover);
 
@@ -216,16 +217,16 @@ const Navbar = () => {
                   className="w-[200px] h-[44px]"
                 />
                 <div className="absolute inset-0 top-1/4 uppercase flex items-center justify-center gap-2 mb-2">
-                  <img src={userDetail?.pfp || wpllogo} width={18} alt="wolf" />
+                  <img src={token ?userDetail?.pfp || wpllogo : wpllogo} width={18} alt="wolf" />
                   <p className="font-gridular text-primaryYellow truncate">
-                    <span className="text-primaryYellow text-[14px] tracking-[0.12rem] flex">
+                    {token ? <span className="text-primaryYellow text-[14px] tracking-[0.12rem] flex">
                       {userDetail && userDetail.displayName &&
                         Array.from(userDetail?.displayName)?.map((letter, index) => (
                           <span key={index} className="letter">
                             {letter}
                           </span>
                         ))}
-                    </span>
+                    </span> : "Login"}
                   </p>
                   <img
                     src={arrow}

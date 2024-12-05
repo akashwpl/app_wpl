@@ -475,7 +475,7 @@ const EditProfilePage = () => {
                     img_size_classes='w-[482px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                     btn_txt={isUpdating ? <div className='flex justify-center items-center size-full -translate-y-3'> <Spinner /> </div> : "Update Profile"}  
-                    alt_txt='update profile btn' 
+                    alt_txt='update profile btn'
                     onClick={handleSubmitEditProfile}
                   />
             </div>
