@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { LayoutDashboardIcon, LogOutIcon, SquareDashedBottom, Trophy, User } from 'lucide-react'
+import { Bell, LayoutDashboardIcon, LogOutIcon, SquareDashedBottom, Trophy, User } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -96,10 +96,15 @@ const Navbar = () => {
           <Link to={'/allprojects'}><GlyphEffect text={'EXPLORE'} /></Link>
           <Link to={'/leaderboard'}><GlyphEffect text={'LEADERBOARD'} /></Link>
         </div>
-        <div className='-translate-x-10'>
+        <div className='translate-x-48'>
           <div className='z-[100]'>
             <Link to={'/allprojects'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]' /></Link>
           </div>
+        </div>
+        <div className='translate-x-72'>
+          <Link to='/notifications'>
+            <Bell size={25} className='text-primaryYellow'/>
+          </Link>
         </div>
 
         {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
@@ -111,7 +116,7 @@ const Navbar = () => {
               {showUserMenu && (
                 <>
                   <div
-                    className={`${userDetail?.role === 'admin' ? 'h-[180px]' : 'h-[139px]'} bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
+                    className={`${userDetail?.role === 'admin' ? 'h-[180px]' : 'h-[139px]'} backdrop-blur-3xl bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
                       slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                     }`}
                     style={{backgroundImage: `url('src/assets/svg/menu_dropdown_${userDetail?.role === 'admin' ? 'admin' : 'user'}.png')`}}
