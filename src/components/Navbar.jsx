@@ -35,10 +35,10 @@ const Navbar = () => {
     enabled: !!user_id
   })
 
-  const {data: notificationsDetails, isLoading: isLoadingNotificationsDetails, refetch} = useQuery({
-    queryKey: ['notificationsDetails'],
-    queryFn: () => getNotifications()
-  })
+  // const {data: notificationsDetails, isLoading: isLoadingNotificationsDetails, refetch} = useQuery({
+  //   queryKey: ['notificationsDetails'],
+  //   queryFn: () => getNotifications()
+  // })
 
   const [showNavbar, setShowNavbar] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
@@ -116,10 +116,12 @@ const Navbar = () => {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
-      await handleGetNotifications();
+    if(!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token) {
+      const fetchData = async () => {
+        await handleGetNotifications();
+      }
+      fetchData();
     }
-    fetchData();
   },[])
 
   return (
