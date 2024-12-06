@@ -74,6 +74,44 @@ export function calculateRemainingDaysAndHours(startDate, targetDate) {
     };
   }
 
+  export function calculateRemainingDaysHoursAndMinutes(startDate, targetDate) {
+    // Create a Date object for the target date
+    const targetDateTime = new Date(targetDate);
+  
+    // Get the current time
+    const currentTime = new Date(startDate);
+  
+    // Calculate the time difference in milliseconds
+    const timeDifferenceMs = targetDateTime - currentTime;
+  
+    // Ensure the target date is in the future
+    if (timeDifferenceMs <= 0) {
+      return {
+        days: 0,
+        hours: 0,
+        minutes: 0,
+      };
+    }
+  
+    // Convert milliseconds to seconds, minutes, hours, and days
+    const timeDifferenceSeconds = Math.floor(timeDifferenceMs / 1000);
+    const timeDifferenceMinutes = Math.floor(timeDifferenceSeconds / 60);
+    const timeDifferenceHours = Math.floor(timeDifferenceMinutes / 60);
+    const timeDifferenceDays = Math.floor(timeDifferenceHours / 24);
+  
+    // Calculate remaining hours after accounting for days
+    const remainingHours = timeDifferenceHours % 24;
+  
+    // Calculate remaining minutes after accounting for hours
+    const remainingMinutes = timeDifferenceMinutes % 60;
+  
+    return {
+      days: timeDifferenceDays,
+      hours: remainingHours,
+      minutes: remainingMinutes,
+    };
+  }
+
   export function convertTimestampToDate(timestamp) {
     const date = new Date(timestamp);
     const options = { year: 'numeric', month: 'short', day: 'numeric' };

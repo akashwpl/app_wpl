@@ -200,8 +200,20 @@ export const getLeaderboardData = async () => {
     }
 }
 
+export const getNotifications = async () => {
+    try {
+        const response = await axiosInstance.get(`/notifications/fetchByUserId`)
+        return response.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
 
-
-
-
-
+export const updNotification = async (id, data) => {
+    try {
+        const response = await axiosInstance.put(`/notifications/updateNotification/${id}`, data)
+        return response.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
