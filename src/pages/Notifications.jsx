@@ -1,16 +1,31 @@
 import { CircleCheck, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { calculateRemainingDaysHoursAndMinutes } from '../lib/constants'
-import { getNotifications, updNotification } from '../service/api'
+import { getNotifications, getUserDetails, updNotification } from '../service/api'
 import { useQuery } from '@tanstack/react-query'
+import { useSelector } from 'react-redux'
 
 const Notifications = () => {
+
+  const { user_id } = useSelector((state) => state);
+
   const {data: notificationsDetails, isLoading: isLoadingNotificationsDetails, refetch} = useQuery({
     queryKey: ['notificationsDetails'],
     queryFn: () => getNotifications()
   })
+
+  const { data: userDetail, isLoading: isLoadingUserDetails } = useQuery({
+    queryKey: ['userDetails', user_id],
+    queryFn: () => getUserDetails(user_id),
+    enabled: !!user_id
+  })
   
+  const [userName, setUsername] = useState('WPL user');
   const [notifications, setNotifications] = useState(notificationsDetails || []);
+
+  useEffect(() => {
+    if(!isLoadingUserDetails) setUsername(userDetail?.displayName)
+  },[isLoadingUserDetails])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,8 +64,8 @@ const Notifications = () => {
   
   return (
     <>
-      <div className="flex flex-col items-center justify-center gap-6">
-        <p className="font-gridular pt-20 text-primaryYellow text-[20px] leading-[24px] relative right-52">Hey Rahul, Se what you've missed.</p>
+      <div className="flex flex-col items-center justify-center gap-6 mb-20">
+        <p className="font-gridular pt-20 text-primaryYellow text-[20px] leading-[24px] relative right-52">Hey {userName}, See what you've missed.</p>
           <div className="h-[101px] w-1/2 py-5 px-5 bg-cover bg-[url('assets/images/total_earned_bg.png')] rounded-md">
             <p className='font-gridular text-[23px] leading-[27.6px] mb-1'>Start Accepting payments</p>
             <p className='font-inter font-medium text-[13px] leading-[15.6px]'>Complete your KYC on onlydust for smoother expereince.</p>

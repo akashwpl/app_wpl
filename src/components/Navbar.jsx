@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-import { Bell, LayoutDashboardIcon, LogOutIcon, SquareDashedBottom, Trophy, User } from 'lucide-react'
+import { Bell, LogOutIcon } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import wolfButton from '../assets/images/BW.png'
 import arrow from '../assets/images/arrow.png'
 import wpllogo from '../assets/svg/wolf_logo.svg'
-import { getUserDetails } from '../service/api'
+import { getNotifications, getUserDetails } from '../service/api'
 import GlyphEffect from './ui/GlyphEffect'
 
 import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
@@ -36,15 +35,19 @@ const Navbar = () => {
     enabled: !!user_id
   })
 
+  const {data: notificationsDetails, isLoading: isLoadingNotificationsDetails, refetch} = useQuery({
+    queryKey: ['notificationsDetails'],
+    queryFn: () => getNotifications()
+  })
+
   const [showNavbar, setShowNavbar] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [slideUserMenu, setSlideUserMenu] = useState(false)
 
   const [menuHover, setMenuHover] = useState(false)
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const token = localStorage.getItem('token_app_wpl')
-
-  const handleMenuHover = () => setMenuHover(!menuHover);
 
   const handleShowNavbar = () => {
     setShowNavbar(!showNavbar)
@@ -105,6 +108,20 @@ const Navbar = () => {
     }, 300);
   }
 
+  const handleGetNotifications = async () => {
+    const resp = await getNotifications();
+    const notis = resp.data
+      .filter((notification) => !notification.isRead && !notification.isHidden ) // Filter out hidden and red notifications
+    setNotificationCount(notis.length);
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await handleGetNotifications();
+    }
+    fetchData();
+  },[])
+
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
       <div className='hidden md:flex justify-between items-center w-full'>
@@ -119,8 +136,11 @@ const Navbar = () => {
         </div>
         {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
           <div className='translate-x-28 xl:translate-x-72'>
-            <Link to='/notifications'>
+            <Link className='relative' to='/notifications'>
               <Bell size={25} className='text-primaryYellow'/>
+              {notificationCount > 0 && 
+                <p className='absolute left-3 bottom-4 text-white88 bg-cardRedText/90 rounded-full text-[10px] size-4 text-center'>{notificationCount}</p>
+              }
             </Link>
           </div>
         }
