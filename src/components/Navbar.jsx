@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import wolfButton from '../assets/images/BW.png'
 import arrow from '../assets/images/arrow.png'
 import wpllogo from '../assets/svg/wolf_logo.svg'
+import NavmenuBG from '../assets/svg/Button.svg'
 import { getUserDetails } from '../service/api'
 import GlyphEffect from './ui/GlyphEffect'
 
@@ -18,6 +19,8 @@ import docSVG from '../assets/icons/pixel-icons/document2-yellow.svg'
 import hourglassSVG from '../assets/icons/pixel-icons/hourglass-yellow.svg'
 import listSVG from '../assets/icons/pixel-icons/search-list-yellow.svg'
 import tickSVG from '../assets/icons/pixel-icons/tick-outline-yellow.svg'
+
+import menuBorderSVG from '../assets/svg/Button.svg'
 
 const Navbar = () => {
   const navigate = useNavigate()
@@ -37,6 +40,8 @@ const Navbar = () => {
   const [slideUserMenu, setSlideUserMenu] = useState(false)
 
   const [menuHover, setMenuHover] = useState(false)
+
+  const token = localStorage.getItem('token_app_wpl')
 
   const handleMenuHover = () => setMenuHover(!menuHover);
 
@@ -58,29 +63,39 @@ const Navbar = () => {
 
   const letters = document?.querySelectorAll('.letter');
   useEffect(() => {
+
     let currentIndex = 0;
     let timeout
-    console.log('letters', letters)
-    if(letters == undefined || letters == null || letters?.length == 0) return
+    let isStopped = false;
+
+    if (!letters || letters.length === 0) return;
+
     function animateLetter() {
+      if (!letters[currentIndex]) return;
+
       const letter = letters[currentIndex];
-      letter.style.transition = 'transform 0.01s';
-      letter.style.transform = 'translateY(-7px)';
+      letter.style.transition = "transform 0.01s";
+      letter.style.transform = "translateY(-7px)";
 
       timeout = setTimeout(() => {
-        letter.style.transform = 'translateY(0)';
+        letter.style.transform = "translateY(0)";
         currentIndex = (currentIndex + 1) % letters.length;
-        animateLetter();
+
+        // If animation is stopped, only continue until the current cycle completes
+        if (showUserMenu || (!showUserMenu && currentIndex !== 0)) {
+          animateLetter();
+        }
       }, 135);
     }
     
     animateLetter();
 
     return () => {
+      isStopped = true; // Signal to stop the animation
       clearTimeout(animateLetter);
       clearTimeout(timeout);
     }
-  }, [rewardRef, letters])
+  }, [rewardRef, letters, showUserMenu])
 
   const handleMenuToggle = () => {
     setSlideUserMenu((prev) => !prev);
@@ -110,19 +125,20 @@ const Navbar = () => {
         {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
           <div>
             <div
-              onClick={handleMenuToggle}
-              className="relative cursor-pointer flex flex-row items-center justify-center"
+              onClick={() => {token ? handleMenuToggle() : navigate('/onboarding')}}
+              className="relative cursor-pointer flex flex-row items-center justify-center z-50"
             >
-              {showUserMenu && (
+              {showUserMenu && token && (
                 <>
                   <div
-                    className={`${userDetail?.role === 'admin' ? 'h-[180px]' : 'h-[139px]'} backdrop-blur-3xl bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
+
+                    className={`${userDetail?.role === 'admin' ? 'h-[200px]' : 'h-[180px]'} z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
                       slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                     }`}
-                    style={{backgroundImage: `url('src/assets/svg/menu_dropdown_${userDetail?.role === 'admin' ? 'admin' : 'user'}.png')`}}
+                    style={{backgroundImage: `url(${menuBorderSVG})`, zIndex: 100}}
                   >
                     <Link
-                      to="/profile"
+                      to={`/profile/${userDetail?.socials?.discord}`}
                       className="hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-5 rounded-sm gap-2"
                     >
                       <div className="flex items-center gap-2">
@@ -165,6 +181,12 @@ const Navbar = () => {
                         <p>Dashboard</p>
                       </div> 
                     </Link>
+                    <Link
+                      to="/rewards"
+                      className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
+                    >
+                      Rewards
+                    </Link>
                     {userDetail?.role === 'user' && (
                       <>
                         <Link
@@ -191,27 +213,23 @@ const Navbar = () => {
                   </div>
                 </>
               )}
-              <button
-                className="relative"
-                onMouseEnter={() => {}}
-                onMouseLeave={() => {}}
-              >
+              <button className="relative">
                 <img
                   src={menuHover ? menuBtnImgHover : menuBtnImg}
                   alt="menu btn"
                   className="w-[200px] h-[44px]"
                 />
                 <div className="absolute inset-0 top-1/4 uppercase flex items-center justify-center gap-2 mb-2">
-                  <img src={userDetail?.pfp || wpllogo} width={18} alt="wolf" />
+                  <img src={token ?userDetail?.pfp || wpllogo : wpllogo} width={18} alt="wolf" />
                   <p className="font-gridular text-primaryYellow truncate">
-                    <span className="text-primaryYellow text-[14px] tracking-[0.12rem] flex">
+                    {token ? <span className="text-primaryYellow text-[14px] tracking-[0.12rem] flex">
                       {userDetail && userDetail.displayName &&
                         Array.from(userDetail?.displayName)?.map((letter, index) => (
                           <span key={index} className="letter">
                             {letter}
                           </span>
                         ))}
-                    </span>
+                    </span> : "Login"}
                   </p>
                   <img
                     src={arrow}

@@ -1,5 +1,5 @@
-import { ArrowLeft, CheckCheck, Menu, Plus, Trash, Upload, X } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { ArrowLeft, CheckCheck, Menu, Pen, Plus, Trash, Upload, X } from 'lucide-react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import {
     Accordion,
@@ -21,6 +21,9 @@ import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import FancyButton from '../components/ui/FancyButton'
 import { useSelector } from 'react-redux'
 
+import { storage } from '../lib/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+
 import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
 
@@ -40,6 +43,8 @@ const calcDaysUntilDate = (futureDate) => {
 
 const EditProjectPage = () => {
     const navigate = useNavigate();
+
+    const fileInputRef = useRef(null);
 
     const { id } = useParams();
     const user_id = useSelector((state) => state.user_id)
@@ -61,13 +66,15 @@ const EditProjectPage = () => {
     const [description, setDescription] = useState(projectDetails?.description || '');
     const [discordLink, setDiscordLink] = useState(projectDetails?.discordLink || '');
     const [about, setAbout] = useState(projectDetails?.about || '');
-    const [imageUrl, setImageUrl] = useState(projectDetails?.image || '')
 
     const [submitted, setSubmitted] = useState(false);
 
-    const [imgUploadHover, setImgUploadHover] = useState(false)
-
     const [milestones, setMilestones] = useState(projectDetails?.milestones || [])
+   
+    const [pfpPreview, setPfpPreview] = useState('')
+    const [pfp, setPfp] = useState('')
+
+
 
     const setMilestonesHelper = (index,event) => {
         setMilestones(prevMilestones => {
@@ -116,6 +123,23 @@ const EditProjectPage = () => {
         return Object.keys(newErrors).length === 0;
     };
 
+
+    const handleUploadClick = () => {
+        fileInputRef.current.click();   
+    }
+
+    const handleProfilePicChange = (e) => {
+        const file = e.target.files[0];
+        setPfp(file);
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPfpPreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
     const handleSave = async () => {
         const updatedMilestones = milestones.map(milestone => ({
             ...milestone,
@@ -123,6 +147,7 @@ const EditProjectPage = () => {
         }));
 
         if (validateFields()) {
+
             // Proceed with saving the data
             const updData = {
                 project: {
@@ -132,10 +157,21 @@ const EditProjectPage = () => {
                     organisationId: organisationId,
                     discordLink: discordLink,
                     about: about,
+                    image: projectDetails?.image,
                 },
                 milestones: updatedMilestones
             }
             console.log(updData);
+
+            if(pfp) {
+                const imageRef = ref(storage, `images/${pfp.name}`);
+                await uploadBytes(imageRef, pfp);
+                const imageUrl = await getDownloadURL(imageRef);
+        
+                updData.project.image = imageUrl
+            } else {
+                updData.project.image = projectDetails?.image
+            }
             
             const res = await updateProjectDetails(projectDetails._id, updData);
             console.log('response', res);
@@ -237,24 +273,27 @@ const EditProjectPage = () => {
 
                                     <div className='flex justify-between items-center mt-4'>
                                         <div className='flex items-center gap-4'>
-                                            {/* {projectDetails.imgPreview ? 
+                                            {pfpPreview ? 
                                                 <div className='relative'>
-                                                    <img src={projectDetails.imgPreview} alt='dummy' className='size-[72px] aspect-square'/>
-                                                    <div onClick={() => {}} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
-                                                </div>
-                                            :   <> */}
-                                                    <div
-                                                        onMouseEnter={() => setImgUploadHover(true)} 
-                                                        onMouseLeave={() => setImgUploadHover(false)} 
-                                                        onClick={() => {}} 
-                                                        className='relative bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'
+                                                    <img src={pfpPreview || projectDetails?.image}  onError={(e) => {
+                                                            e.currentTarget.onerror = null;
+                                                            e.currentTarget.src = projectDetails?.image;
+                                                        }} 
+                                                        alt='dummy' className='size-[72px] aspect-square rounded-md'/
                                                     >
-                                                        <Upload size={16} className={`text-white32 absolute ${imgUploadHover ? "animate-hovered" : ""}`}/>
+                                                    <div onClick={() => {setPfpPreview(null)}} className='absolute -top-2 -right-1 bg-white64 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
+                                                </div>
+                                                : <>
+                                                    <div className='bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'>
+                                                        <div className='relative'>
+                                                            <img src={projectDetails?.image} alt='dummy' className='size-[72px] aspect-square'/>
+                                                            <div onClick={handleUploadClick} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><Pen size={14} className='text-black/60'/></div>
+                                                        </div>
                                                         <input
                                                             name='img'
                                                             type="file"
-                                                            // ref={fileInputRef}
-                                                            onChange={() => {}}
+                                                            ref={fileInputRef}
+                                                            onChange={handleProfilePicChange}
                                                             style={{ display: 'none' }}
                                                         />                           
                                                     </div>
@@ -262,10 +301,9 @@ const EditProjectPage = () => {
                                                         <p className='text-white88'>Add a cover image</p>
                                                         <p className='text-white32'>Recommended 1:1 aspect ratio</p>
                                                     </div>
-                                                {/* </> */}
-                                            {/* } */}
+                                                </>
+                                            }
                                         </div>
-                                        <div className='flex items-center gap-1'><Trash stroke='#E38070' size={15}/> <span className='text-[#E38070] text-[14px] font-inter'>Delete</span></div>
                                     </div>
 
                                     <div className='mt-3'>
@@ -435,8 +473,7 @@ const EditProjectPage = () => {
                 <div className='max-w-[469px] w-full'>
                     <div className='flex gap-4 border border-dashed border-[#FFFFFF1F] bg-[#FCBF041A] rounded-md px-4 py-3'>
                         <div>
-                            <img src={imageUrl} alt='Profile Image' className='size-[72px] aspect-square rounded-md'/>
-                        </div>
+                         </div>
                         <div>
                             <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
                             <p className='text-white32 font-semibold text-[13px] font-inter'>@{organisationHandle}</p>
@@ -463,9 +500,9 @@ const EditProjectPage = () => {
                 </div>
             </div>
         }
-
+        
+        {!submitted &&
         <div className='bg-[#091044] px-20 py-4 fixed bottom-0 left-0 w-full flex justify-between items-center'>
-            
             <div className='flex items-center gap-2'>
                 <p className='text-white88 font-semibold font-inter text-[13px]'>Project Total Sum</p>
                 <div className='bg-white4 rounded-md flex items-center gap-1 h-8 px-3'>
@@ -486,6 +523,7 @@ const EditProjectPage = () => {
                 />
             </div>
         </div>
+        }
     </div>
   )
 }

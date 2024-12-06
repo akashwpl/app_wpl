@@ -13,10 +13,10 @@ import {
 
 import { useQuery } from '@tanstack/react-query'
 import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import dummyPng from '../assets/dummy/Container.png'
 import CustomModal from '../components/ui/CustomModal'
-import { deleteProject, getUserDetails } from '../service/api'
+import { deleteProject, getAllUers, getUserDetails } from '../service/api'
 
 import discordSVG from '../assets/icons/pixel-icons/discord.svg'
 import twitterSVG from '../assets/icons/pixel-icons/twitter.svg'
@@ -24,12 +24,18 @@ import mailSVG from '../assets/icons/pixel-icons/mail.svg'
 
 const ProfilePage = () => {
 
+  const { id } = useParams();
   const { user_id } = useSelector((state) => state)
 
-  const {data: userDetails, isLoading: isLoadingUserDetails, refetch} = useQuery({
-    queryKey: ["userDetails", user_id],
-    queryFn: () => getUserDetails(user_id),
-    enabled: !!user_id,
+  // const {data: userDetail, isLoading: isLoadingUserDetails, refetch} = useQuery({
+  //   queryKey: ["userDetails", id, user_id],
+  //   queryFn: () => getUserDetails(id || user_id),
+  //   enabled: !!id || !!user_id,
+  // })
+
+  const {data: allUsers, isLoading: isLoadingUses, refetch} = useQuery({
+    queryKey: ["users"],
+    queryFn: () => getAllUers(),
   })
 
   const [selectedProjectToDelete, setSelectedProjectToDelete] = useState(null)
@@ -51,7 +57,18 @@ const ProfilePage = () => {
     refetch()
   }
 
-  const sampleProjects = useMemo(() =>  userDetails?.projects?.owned?.filter((proj) => proj.type == 'sample'), [userDetails])
+
+  const userDetails = useMemo(() => {
+    if (allUsers) {
+      if(id) {
+        return allUsers.find((user) => user.socials?.discord == id)
+      } else {
+        return allUsers.find((user) => user._id == user_id)
+      }
+    }
+  }, [allUsers])
+
+  const sampleProjects = useMemo(() =>  userDetails?.projects?.owned?.filter((proj) => proj.type == 'sample'), [userDetails, allUsers])
 
   return (
     <div className='overflow-x-hidden'>

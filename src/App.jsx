@@ -41,7 +41,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/projectdetails/:id" element={<ProjectDetailsPage />} />
           <Route path="/rewards" element={<RewardsPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/editprofile" element={<EditProfilePage />} />
           <Route path="/signup/form" element={<FormPage />} />
           <Route path="/projectdetails/form/:id" element={<FormPage />} />
@@ -63,12 +63,12 @@ function App() {
         </Routes>
       </div>
       {snackBar?.show && (
-            <Portal>
-                <div className='fixed bottom-20 left-1/2 transform -translate-x-1/2 z-[1000] w-full max-w-md bg-primaryBlue border-white64 h-12 rounded-md'>
-                    <Snackbar text={snackBar?.text} />
-                </div>
-            </Portal>
-        )}
+        <Portal>
+          <div className='fixed bottom-20 left-1/2 transform -translate-x-1/2 z-[1000] w-full max-w-md bg-primaryBlue border-white64 h-12 rounded-md'>
+            <Snackbar text={snackBar?.text} />
+          </div>
+        </Portal>
+      )}
     </div>
   )
 }
