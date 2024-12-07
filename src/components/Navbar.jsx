@@ -268,6 +268,7 @@ const Navbar = () => {
                   src={menuHover ? menuBtnImgHover : menuBtnImg}
                   alt="menu btn"
                   className="w-[200px] h-[44px]"
+                  onMouseOver={() => setMenuHover(!menuHover)}
                 />
                 <div className="absolute inset-0 top-1/4 uppercase flex items-center justify-center gap-2 mb-2">
                   <img src={token ?userDetail?.pfp || wpllogo : wpllogo} width={18} alt="wolf" />
