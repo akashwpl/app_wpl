@@ -1,15 +1,16 @@
-import { ArrowLeft, ArrowRight, Check, CircleCheck, CircleX, Download } from 'lucide-react'
-import React, { useEffect, useMemo, useState } from 'react'
+import { ArrowLeft, ArrowRight, CircleCheck, CircleX, Download } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 import btnPng from '../assets/images/leaderboard_btn.png'
 import { useNavigate } from 'react-router-dom'
-import { approveOrgByAdmin, getAllOrgs } from '../service/api'
+import { approveOrgByAdmin, createNotification, getAllOrgs } from '../service/api'
 import { useQuery } from '@tanstack/react-query'
+import { useSelector } from 'react-redux'
 
 
 const Requests = () => {
     const navigate = useNavigate()
+    const { user_id } = useSelector((state) => state)
 
-    const [searchInput, setSearchInput] = useState()
     const [currentPage, setCurrentPage] = useState(1)
     const [filteredReq, setFilteredReq] = useState([])
     const itemsPerPage = 8
@@ -21,6 +22,8 @@ const Requests = () => {
 
     useEffect(() => {
         if(!isLoadingAllOrganisations) {
+            // console.log('org',allOrganisations);
+            
             const pendingReqs = allOrganisations.filter(org => {
                 return org.status === 'pending'
             })
@@ -28,10 +31,19 @@ const Requests = () => {
         }
     },[isLoadingAllOrganisations,allOrganisations])
 
-    const handleAcceptRejectRequest = async (id, orgHandle, status) => {
+    const handleAcceptRejectRequest = async (id, userId, orgHandle, status) => {
         const dataObj = { isApproved: status }
         const res = await approveOrgByAdmin(id, dataObj);
-        if(res._id) alert(`You have ${status ? 'Approved' : 'Rejected'} ${orgHandle} organisation successfully.`)
+        if(res._id) {
+            const notiObj = {
+                msg: `Admin has ${status ? "approved" : "rejected"} your request to become a sponsor.`,
+                type: 'response_msg',
+                fromId: user_id,
+                user_id: userId,
+            }
+            const res = await createNotification(notiObj)
+            alert(`You have ${status ? 'Approved' : 'Rejected'} ${orgHandle} organisation successfully.`)
+        } 
         refetch();
     }
 
@@ -88,8 +100,8 @@ const Requests = () => {
                                                 </div>
                                                 <div onClick={() =>navigateToRequests(org._id)} className='text-[14px] col-span-5 text-white88 font-inter truncate'>{org?.description}</div>
                                                 <div className='col-span-2 flex justify-between w-[90px]'>
-                                                    <CircleCheck onClick={() => handleAcceptRejectRequest(org._id,org.organisationHandle,true)} className='text-cardGreenText/70' size={30} />
-                                                    <CircleX onClick={() => handleAcceptRejectRequest(org._id,org.organisationHandle,false)} className='text-cardRedText/70' size={30} />
+                                                    <CircleCheck onClick={() => handleAcceptRejectRequest(org._id,org.userId,org.organisationHandle,true)} className='text-cardGreenText/70' size={30} />
+                                                    <CircleX onClick={() => handleAcceptRejectRequest(org._id,org.userId,org.organisationHandle,false)} className='text-cardRedText/70' size={30} />
                                                 </div>
                                             </div>
                                         ))}

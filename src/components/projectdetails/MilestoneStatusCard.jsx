@@ -1,7 +1,7 @@
 import { ArrowUpRight, CheckCheck, Clock, HeartCrack, Hourglass, TriangleAlert, X } from 'lucide-react';
 import { useState } from 'react';
 import { calculateRemainingDaysAndHours } from '../../lib/constants';
-import { submitMilestone, updateMilestone } from '../../service/api';
+import { createNotification, submitMilestone, updateMilestone } from '../../service/api';
 
 import { useSelector } from 'react-redux';
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png';
@@ -17,7 +17,7 @@ import clockSVG from '../../assets/icons/pixel-icons/watch.svg'
 import questionSVG from '../../assets/icons/pixel-icons/question-mark.svg'
 import heartSVG from '../../assets/icons/pixel-icons/heart-handshake.svg'
 
-const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProjectDetails }) => {
+const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProjectDetails, username }) => {
 
     const {user_id, user_role} = useSelector(state => state)
     const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -52,12 +52,23 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
         }
 
         const body = {
-            "submissionLink": linkInput,
-            "submissionDescription": descriptionTextarea
+            submissionLink: linkInput,
+            submissionDescription: descriptionTextarea,
+            // submitterId: user_id
         }
 
         const res = await submitMilestone(milestoneData?._id, body);
-        setShowSubmitModal(false);
+        if(res?._id) {
+            const notiObj = {
+              msg: `${username} has submitted a milestone for..`,
+              type: 'project_req',
+              fromId: user_id,
+              user_id: projectDetails.owner_id,
+              project_id: projectDetails._id
+            }
+            const notiRes = await createNotification(notiObj);
+            setShowSubmitModal(false);
+        }
         
         if(res?.user_status === 'submitted') {
             alert('Milestone submitted successfully')
@@ -65,6 +76,9 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             alert('Something went wrong. Please try again later!')
         }
     }
+
+    console.log('md',milestoneData);
+    
 
     // TODO :: sponsor can accept or reject the milestone
     const handleMileStoneSponsorAction = async (type) => {
@@ -75,9 +89,18 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
         data.starts_in = new Date(data.starts_in).getTime();
 
         const res = await updateMilestone(milestoneData?._id, data);
-        setShowMilestoneSubmissionModal(false);
 
-        console.log('res', res)
+        if(res?._id) {
+            const notiObj = {
+                msg: `${username} has ${type}ed your milestone submission...`,
+                type: 'project_req',
+                fromId: user_id,
+                // user_id: milestoneData.submitterId,                   // submitterId to be added to milestone schema
+                project_id: projectDetails._id
+            }
+            const notiRes = await createNotification(notiObj)
+            setShowMilestoneSubmissionModal(false);
+        }
 
         // if(type == 'accept') {
         //     const res = await updateMilestone(data?._id, data);
@@ -89,9 +112,6 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
         // }
 
     }
-
-    console.log('user_role', user_role)
-    console.log('data', milestoneData)
 
     const time_remain = calculateRemainingDaysAndHours(new Date(), milestoneData?.starts_in);
 

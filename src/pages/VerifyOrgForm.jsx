@@ -10,7 +10,7 @@ import { ArrowLeft, Globe, Menu, Send, Trash, Upload, X } from 'lucide-react';
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
 import { useSelector } from 'react-redux';
-import { createOrganisation } from '../service/api';
+import { createNotification, createOrganisation, getAdmins } from '../service/api';
 import FancyButton from '../components/ui/FancyButton';
 import btnImg from '../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
@@ -35,7 +35,16 @@ const VerifyOrgForm = () => {
     const [submitted, setSubmitted] = useState(false);
     const [imgUploadHover, setImgUploadHover] = useState(false)
 
-    const validateFields = () => {
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0, 
+            left: 0, 
+            behavior: 'smooth' 
+        }); 
+    }
+
+    const validateFields = async () => {
+        console.log('userId',user_id);
         const newErrors = {};
         if (!name) newErrors.name = 'Name is required';
         if (!organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
@@ -43,6 +52,7 @@ const VerifyOrgForm = () => {
         if (!discordLink && !twitterLink && !telegramLink) newErrors.socialHandleLink = 'Please provide at least one social media handle link';
         if (!logo) newErrors.logo = 'Logo is required';
         setErrors(newErrors);
+        scrollToTop();
         return Object.keys(newErrors).length === 0; // Return true if no errors
     };
 
@@ -76,11 +86,26 @@ const VerifyOrgForm = () => {
             const res = await createOrganisation(data);
             
             if(res.err == 'Organisation already exists') {
-                const errorObj = {...errors,organisationHandle: res.err};
-                setErrors(errorObj)
+                const errorObj = {organisationHandle: 'Oops! The Handle is already taken. Please try a different one.'};
+                setErrors(errorObj);
+                scrollToTop();
                 return;
             }
-            
+
+            // notification to be created for Admin as someone raised a req to become an org
+            const notification = {
+                msg: `Company ${name} has requested to become a sponsor.`,
+                type: 'org_request',
+                fromId: `${user_id}`,
+                project_id: res._id
+            }
+
+            const adminList = await getAdmins();
+            adminList.data.map(async(admin) => {
+                const notiRes = await createNotification({...notification, user_id: admin._id});
+                // console.log(notiRes);
+            });
+
             setSubmitted(true);
         }
     }
@@ -147,14 +172,14 @@ const VerifyOrgForm = () => {
                                                 {logoPreview ? 
                                                     <div className='relative'>
                                                         <img src={logoPreview} alt='dummy' className='size-[72px] aspect-square rounded-md'/>
-                                                        <div onClick={() => {setLogoPreview(null)}} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
+                                                        <div onClick={() => {setLogoPreview(null);setLogo(null)}} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
                                                     </div>
                                                 :   <>
                                                         <div 
                                                             onMouseEnter={() => setImgUploadHover(true)} 
                                                             onMouseLeave={() => setImgUploadHover(false)} 
                                                             onClick={handleUploadClick} 
-                                                            className='relative bg-[#FCBF041A] size-[72px] rounded-[8px] border-[1px] border-primaryYellow flex justify-center items-center cursor-pointer'
+                                                            className={`relative bg-[#FCBF041A] size-[72px] rounded-[8px] border-[1px] ${errors.logo ? "border-cardRedText" : "border-primaryYellow"} flex justify-center items-center cursor-pointer`}
                                                         >
                                                             <Upload size={16} className={`text-white32 absolute ${imgUploadHover ? "animate-hovered" : ""}`}/>
                                                             <input
@@ -174,16 +199,16 @@ const VerifyOrgForm = () => {
                                                 }
                                             </div>
                                             {logoPreview &&
-                                                <div onClick={() => {setLogoPreview(null)}} className='flex items-center gap-1 cursor-pointer'><Trash stroke='#E38070' size={15}/> <span className='text-[#E38070] text-[14px] font-inter'>Delete</span></div>
+                                                <div onClick={() => {setLogoPreview(null);setLogo(null)}} className='flex items-center gap-1 cursor-pointer'><Trash stroke='#E38070' size={15}/> <span className='text-[#E38070] text-[14px] font-inter'>Delete</span></div>
                                             }
                                         </div>
 
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Company Name <span className='text-[#F03D3D]'>*</span></p>
-                                            <div className='bg-white7 rounded-md px-3 py-2'>
+                                            <div className={`bg-white7 rounded-md px-3 py-2 ${errors.name && "border border-cardRedText"}`}>
                                                 <input 
                                                     type='text' 
-                                                    className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' 
+                                                    className={`bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full`}
                                                     value={name} 
                                                     onChange={(e) => setName(e.target.value)} 
                                                 />
@@ -192,7 +217,7 @@ const VerifyOrgForm = () => {
                                         </div>
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation handle <span className='text-[#F03D3D]'>*</span></p>
-                                            <div className='bg-white7 rounded-md px-3 py-2'>
+                                            <div className={`bg-white7 rounded-md px-3 py-2 ${errors.organisationHandle && "border border-cardRedText"}`}>
                                                 <input 
                                                     type='text' 
                                                     className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' 
@@ -204,7 +229,7 @@ const VerifyOrgForm = () => {
                                         </div>
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description (240 character) <span className='text-[#F03D3D]'>*</span></p>
-                                            <div className='bg-white7 rounded-md px-3 py-2'>
+                                            <div className={`bg-white7 rounded-md px-3 py-2 ${errors.description && "border border-cardRedText"}`}>
                                                 <textarea 
                                                     type='text' 
                                                     className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' 

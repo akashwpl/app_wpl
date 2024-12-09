@@ -54,7 +54,6 @@ const EditProfilePage = () => {
     const [imgUploadHover, setImgUploadHover] = useState(false)
 
     const [projectDetails, setProjectDetails] = useState({
-        img: '',
         title: '',
         desc: '',
         skills: [],

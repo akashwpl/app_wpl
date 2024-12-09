@@ -57,7 +57,6 @@ const Navbar = () => {
         menuRef.current && 
         !menuRef.current.contains(event.target)
       ) {
-        console.log("Clicked outside the component!");
         setSlideUserMenu(false);
         setTimeout(() => {
           setShowUserMenu(false);
