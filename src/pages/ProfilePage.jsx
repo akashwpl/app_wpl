@@ -89,8 +89,7 @@ const ProfilePage = () => {
                 <p className='text-[14px] text-white32 font-inter'>@{userDetails?.username}</p>
               </div>
               <div className='bg-white7 rounded-[6px] flex gap-1 items-center h-[32px] px-2 py-1'>
-                <Link to={'/editprofile'}><p className='text-[12px] text-white48 font-medium font-inter'>Edit Profile</p></Link>
-                <Edit2 size={14} className='text-white32'/>
+                <Link to={'/editprofile'}><p className='text-[12px] text-white48 font-medium font-inter'>Edit Profile <Edit2 size={14} className='inline-block text-white32'/></p></Link>
               </div>
             </div>
 

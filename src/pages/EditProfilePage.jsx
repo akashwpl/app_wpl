@@ -336,7 +336,7 @@ const EditProfilePage = () => {
 
   return (
     <div className='flex flex-col justify-center items-center'>
-        <div onClick={() => navigate(-1)} className='w-full text-left text-white32 text-[13px] font-medium border-t border-b border-white7 flex items-center gap-1 py-2 px-20 mt-[1px]'><ArrowLeft size={14} className='text-white32'/> Back to your Profile</div>
+        <div onClick={() => navigate(-1)} className='w-full text-left text-white32 text-[13px] font-medium cursor-pointer border-t border-b border-white7 flex items-center gap-1 py-2 px-20 mt-[1px]'><ArrowLeft size={14} className='text-white32'/> Back to your Profile</div>
         
         <div className='w-[340px] md:w-[480px] mt-2 mb-20'>
             <div className='flex items-center gap-4'>
@@ -382,14 +382,14 @@ const EditProfilePage = () => {
                     <div className='flex justify-between gap-4'>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Your Name</label>
-                            <input name='displayName' value={name} onChange={(e) => setName(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
+                            <input name='displayName' value={name} onChange={(e) => setName(e.target.value)} className={`bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none ${errors.displayName ? 'border border-cardRedText' : 'border-none'}`}
                                 placeholder='John Doe'
                             />
                             {errors.displayName && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.displayName}</div>}
                         </div>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Your Email</label>
-                            <input name='email' value={email} onChange={(e) => setEmail(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none border-none' 
+                            <input name='email' value={email} onChange={(e) => setEmail(e.target.value)} className={`bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none ${errors.email ? 'border border-cardRedText' : 'border-none'}`} 
                                 placeholder='John@Doe.com'
                             />
                             {errors.email && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.email}</div>}
@@ -397,7 +397,7 @@ const EditProfilePage = () => {
                     </div>
                     <div className='flex flex-col gap-1 w-full'>
                         <label className='text-[13px] font-medium text-white32'>Username</label>
-                        <input name='email' value={username} onChange={(e) => setUsername(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none border-none' 
+                        <input name='email' value={username} onChange={(e) => setUsername(e.target.value)} className={`bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none ${errors.username ? 'border border-cardRedText' : 'border-none'}`} 
                             placeholder='Johndoe'
                         />
                         {errors.username && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.username}</div>}
@@ -405,7 +405,7 @@ const EditProfilePage = () => {
 
                     <div className='flex flex-col gap-1 w-full'>
                         <label className='text-[13px] font-medium text-white32'>Write your Bio (max 240 characters)</label>
-                        <textarea name='bio' value={bio} onChange={(e) => setBio(e.target.value)} className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px]' 
+                        <textarea name='bio' value={bio} onChange={(e) => setBio(e.target.value)} className={`bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none ${errors.bio ? 'border border-cardRedText' : 'border-none'}`} 
                             placeholder='I am a preety good dev'
                             rows={3}
                         />
@@ -422,7 +422,7 @@ const EditProfilePage = () => {
                     <div className='flex justify-between gap-4'>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Discord Username</label>
-                            <div className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] flex items-center'>
+                            <div className={`bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] flex items-center ${errors.discord ? 'border border-cardRedText' : 'border-none'}`}>
                                 <img src={discordSVG} alt='discord' className='size-[16px] mr-2'/>
                                 <input name='discordUsername' value={discord} onChange={(e) => setDiscord(e.target.value)} className='bg-transparent outline-none w-full text-white placeholder:text-white32' 
                                     placeholder='John Wick'
@@ -432,9 +432,9 @@ const EditProfilePage = () => {
                         </div>
                         <div className='flex flex-col gap-1 w-full'>
                             <label className='text-[13px] font-medium text-white32'>Telegram Username</label>
-                            <div className='bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] flex items-center'>
+                            <div className={`bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] flex items-center ${errors.telegram ? 'border border-cardRedText' : 'border-none'}`}>
                                 <img src={telegramSVG} alt='telegram' className='size-[16px] mr-2'/>
-                                <input name='telegramUsername' value={telegram} onChange={(e) => setTelegram(e.target.value)} className='bg-transparent rounded-[6px] text-white placeholder:text-white32 text-[14px]' 
+                                <input name='telegramUsername' value={telegram} onChange={(e) => setTelegram(e.target.value)} className='bg-transparent outline-none w-full text-white placeholder:text-white32 text-[14px]' 
                                     placeholder='John Wick'
                                 />
                             </div>
