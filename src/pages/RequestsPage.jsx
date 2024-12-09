@@ -10,10 +10,8 @@ import { ArrowLeft, CheckCheck, Globe, Menu, Send, Trash, Upload, X } from 'luci
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
 import { useSelector } from 'react-redux';
-import { approveOrgByAdmin, createOrganisation, getOrgById } from '../service/api';
+import { approveOrgByAdmin, createNotification, getOrgById } from '../service/api';
 import FancyButton from '../components/ui/FancyButton';
-import btnImg from '../assets/svg/btn_subtract_semi.png'
-import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import { useQuery } from '@tanstack/react-query';
 import greenBtnImg from '../assets/svg/green_btn_subtract.png'
 import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png'
@@ -25,29 +23,24 @@ const RequestsPage = () => {
     const navigate = useNavigate();
 
     const { id } = useParams();
+    
     const [orgState, setOrgState] = useState({})
 
     const {data: orgById, isLoading: isLoadingOrgById} = useQuery({
       queryKey: ['orgById', id],
       queryFn: () => getOrgById(id),
-  })
+    })
 
-  useEffect(() => {
-    if(!isLoadingOrgById) {
-      setOrgState(orgById[0])
-    }
-  },[isLoadingOrgById])
+    useEffect(() => {
+        if(!isLoadingOrgById) {
+            console.log(orgById);
+            setOrgState(orgById[0])
+        }
+    },[isLoadingOrgById])
 
     const { user_id } = useSelector((state) => state)
-    const [name, setName] = useState('')
-    const [organisationHandle, setOrganisationHandle] = useState('');
-    const [description, setDescription] = useState('');
-    const [discordLink, setDiscordLink] = useState('');
-    const [twitterLink, setTwitterLink] = useState('');
-    const [telegramLink, setTelegramLink] = useState('');
     const [logo, setLogo] = useState(null);
     const [logoPreview, setLogoPreview] = useState('');
-    const [errors, setErrors] = useState({}); // State for validation errors
     const [imgUploadHover, setImgUploadHover] = useState(false)
 
     const handleUploadClick = () => {
@@ -62,12 +55,17 @@ const RequestsPage = () => {
         }
     };
 
-    const submitted = false
-
     const handleAcceptRejectRequest = async (status) => {
       const dataObj = { isApproved: status }
       const res = await approveOrgByAdmin(orgState._id, dataObj);
       if(res._id) {
+        const notiObj = {
+            msg: `Admin has ${status ? "approved" : "rejected"} your request to become a sponsor.`,
+            type: 'response_msg',
+            fromId: user_id,
+            user_id: orgState.userId
+        }
+        const res = await createNotification(notiObj)
         alert(`You have ${status ? 'Approved' : 'Rejected'} ${orgState?.organisationHandle} organisation successfully.`)
         navigate('/requests')
       } 

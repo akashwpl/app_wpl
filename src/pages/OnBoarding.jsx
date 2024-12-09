@@ -22,7 +22,7 @@ import GlyphEffect from '../components/ui/GlyphEffect'
 import DiscordSvg from '../assets/svg/discord.svg'
 
 const addressRegex = /^(0x)[0-9a-fA-F]{40}$/;
-const discordRegex = /^[a-zA-Z0-9_]{2,32}#\d{4}$/
+const discordRegex = /^[a-zA-Z0-9_]+\d{4,}$/
 
 const OnBoarding = () => {
 
@@ -166,7 +166,7 @@ const OnBoarding = () => {
     const newErrors = {
       displayName: !displayName ? 'Please fill the name field' : '',
       experience: !experience ? 'Please fill the experience field' : '',
-      discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Invalid Discord ID. Please enter your Discord ID in the following format: Username#1234.' : '',
+      discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Invalid Discord ID. Please enter your Discord ID in the following format: Username1234.' : '',
       walletAddress: !walletAddress ? 'Please fill the wallet address field' : !addressRegex.test(walletAddress) ? 'Invalid ERC-20 address' : '',
       img: !img ? 'Please upload a profile image' : ''
     };

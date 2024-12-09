@@ -1,10 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import React, { useEffect, useState } from 'react'
-import { acceptRejectSubmission, getProjectDetails, getProjectSubmissions } from '../service/api'
+import { acceptRejectSubmission, createNotification, getProjectDetails, getProjectSubmissions, getUserDetails } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom';
 import headerPng from '../assets/images/prdetails_header.png'
 import { AlignLeft, CheckCheck, ChevronLeft, ChevronRight, TriangleAlert, X } from 'lucide-react';
-import wpllogo from '../assets/images/wpl_prdetails.png'
 import greenBtnImg from '../assets/svg/green_btn_subtract.png'
 import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png'
 import redBtnImg from '../assets/svg/close_proj_btn_subtract.png'
@@ -14,11 +13,15 @@ import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import FancyButton from '../components/ui/FancyButton';
 
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
+import { useSelector } from 'react-redux';
 
 const SubmissionsPage = () => {
 
     const { id, page } = useParams();
     const navigate = useNavigate();
+    const [currentUser, setCurrentUser] = useState({})
+
+    const { user_id } = useSelector((state) => state)
 
     const {data: submissions, isLoading: isLoadingSubmission, refetch} = useQuery({
         queryKey: ["submissions", id],
@@ -31,11 +34,24 @@ const SubmissionsPage = () => {
         enabled: !!id
     })
 
+    const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
+        queryKey: ["userDetails", user_id],
+        queryFn: () => getUserDetails(user_id),
+        enabled: !!user_id,
+    })
+
+    useEffect(() => {
+        if(!isLoadingUserDetails) setCurrentUser(userDetails)
+    },[isLoadingUserDetails])
+
     const [currentPage, setCurrentPage] = useState(page - 1);
     const [projectAccepted, setProjectAccepted] = useState(false);
-
+    
     const totalSubmissions = submissions?.length || 0;
     const currentSubmission = submissions?.[currentPage];
+    
+    console.log(currentSubmission);
+    
 
     const goToNextPage = () => {
         setCurrentPage((prevPage) => Math.min(prevPage + 1, totalSubmissions - 1));
@@ -52,7 +68,7 @@ const SubmissionsPage = () => {
         }
     }, [page])
 
-    const handleAccpetReject = (type) => {
+    const handleAccpetReject = async (type) => {
         const submissionData = {
             email: currentSubmission.user?.email,
             experienceDescription: currentSubmission._doc?.experienceDescription || "",
@@ -63,8 +79,18 @@ const SubmissionsPage = () => {
             userId: currentSubmission.user?._id || "",
             walletAddress: currentSubmission._doc?.walletAddress || "",
         };
-        submissionData.status = type == 'accepted' ? 'accepted' : 'rejected';
-        acceptRejectSubmission(submissionData, currentSubmission?._doc?._id)
+        submissionData.status = type === 'accepted' ? 'accepted' : 'rejected';
+        const res = await acceptRejectSubmission(submissionData, currentSubmission?._doc?._id)
+        if(res?._id) {
+            const notiObj = {
+                msg: `${currentUser?.displayName} has ${type} your request to work on... `,
+                type: 'project_req',
+                fromId: user_id,
+                user_id: currentSubmission?._doc.userId,
+                project_id: currentSubmission?._doc.projectId
+            }
+            const notiRes = await createNotification(notiObj)
+        }
 
         if (type == 'rejected') {
             goToNextPage();

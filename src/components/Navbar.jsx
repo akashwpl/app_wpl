@@ -49,6 +49,26 @@ const Navbar = () => {
 
   const token = localStorage.getItem('token_app_wpl')
 
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        menuRef.current && 
+        !menuRef.current.contains(event.target)
+      ) {
+        setSlideUserMenu(false);
+        setTimeout(() => {
+          setShowUserMenu(false);
+        }, 300);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  },[menuRef])
+
   const handleShowNavbar = () => {
     setShowNavbar(!showNavbar)
   }
@@ -102,9 +122,9 @@ const Navbar = () => {
   }, [rewardRef, letters, showUserMenu])
 
   const handleMenuToggle = () => {
-    setSlideUserMenu((prev) => !prev);
+    setSlideUserMenu(!slideUserMenu);
     setTimeout(() => {
-      setShowUserMenu((prev) => !prev);
+      setShowUserMenu(!showUserMenu);
     }, 300);
   }
 
@@ -150,6 +170,7 @@ const Navbar = () => {
         {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
           <div>
             <div
+              ref={menuRef}
               onClick={() => {token ? handleMenuToggle() : navigate('/onboarding')}}
               className="relative cursor-pointer flex flex-row items-center justify-center z-50"
             >
@@ -246,6 +267,7 @@ const Navbar = () => {
                   src={menuHover ? menuBtnImgHover : menuBtnImg}
                   alt="menu btn"
                   className="w-[200px] h-[44px]"
+                  onMouseOver={() => setMenuHover(!menuHover)}
                 />
                 <div className="absolute inset-0 top-1/4 uppercase flex items-center justify-center gap-2 mb-2">
                   <img src={token ?userDetail?.pfp || wpllogo : wpllogo} width={18} alt="wolf" />
