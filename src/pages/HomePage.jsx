@@ -4,7 +4,7 @@ import BugFixCard from '../components/home/BugFixCard'
 import ExploreGigs from '../components/home/ExploreGigs'
 import KYC_Card from '../components/home/KYC_Card'
 import ProfileDetailsCard from '../components/home/ProfileDetailsCard'
-import RecentActivityCard from '../components/home/RecentActivityCard'
+// import RecentActivityCard from '../components/home/RecentActivityCard'
 import Statistics from '../components/home/Statistics'
 import { getUserDetails } from '../service/api'
 import AdminDashboard from './AdminDashboard'
@@ -47,7 +47,7 @@ const HomePage = () => {
           {!token || userDetails?.projectsOngoing == 0 ? null :
             <BugFixCard />
           }
-          <RecentActivityCard />
+          {/* <RecentActivityCard /> */}
         </div>
       }
     </div>
