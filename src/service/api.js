@@ -17,6 +17,10 @@ const handleForbiddenError = async (error) => {
         console.error('error', error);
         return { err: error?.response?.data?.message }
     }
+    if (error?.status === 409) {
+        console.error('error', error);
+        return { err: error?.response?.data?.message }
+    }
 };
 
 export const getProjectDetails = async (id) => {
@@ -106,7 +110,7 @@ export const applyForProject = async (id, data) => {
         const response = await axiosInstance.post(`/submissions/submit/${id}`, data)
         return response.data.data
     } catch (error) {
-        handleForbiddenError(error)
+        return handleForbiddenError(error)
     }
 }
 
@@ -200,8 +204,38 @@ export const getLeaderboardData = async () => {
     }
 }
 
+export const getNotifications = async () => {
+    try {
+        const response = await axiosInstance.get(`/notifications/fetchByUserId`)
+        return response.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
 
+export const createNotification = async (data) => {
+    try {
+        const response = await axiosInstance.post(`/notifications/addNotification`, data)
+        return response.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
 
+export const updNotification = async (id, data) => {
+    try {
+        const response = await axiosInstance.put(`/notifications/updateNotification/${id}`, data)
+        return response.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
 
-
-
+export const getAdmins = async () => {
+    try {
+        const response = await axiosInstance.get('/users/admins')
+        return response.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}

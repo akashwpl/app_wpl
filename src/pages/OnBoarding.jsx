@@ -19,6 +19,10 @@ import { auth, provider, signInWithPopup, storage } from '../lib/firebase'
 import videoMp4 from '../assets/dummy/v1.mp4'
 import mailSVG from '../assets/icons/pixel-icons/mail.svg'
 import GlyphEffect from '../components/ui/GlyphEffect'
+import DiscordSvg from '../assets/svg/discord.svg'
+
+const addressRegex = /^(0x)[0-9a-fA-F]{40}$/;
+const discordRegex = /^[a-zA-Z0-9_]+\d{4,}$/
 
 const OnBoarding = () => {
 
@@ -31,6 +35,7 @@ const OnBoarding = () => {
   const [displayName, setDisplayName] = useState('') // Changed from firstName to email
   const [experience, setExperience] = useState('')
   const [walletAddress, setWalletAddress] = useState('')
+  const [discord, setDiscord] = useState('')
 
   const [isSignin, setIsSignin] = useState(true)
 
@@ -52,6 +57,7 @@ const OnBoarding = () => {
   const [errors, setErrors] = useState({
     displayName: '',
     experience: '',
+    discord: '',
     walletAddress: '',
     img: ''
   });
@@ -160,7 +166,8 @@ const OnBoarding = () => {
     const newErrors = {
       displayName: !displayName ? 'Please fill the name field' : '',
       experience: !experience ? 'Please fill the experience field' : '',
-      walletAddress: !walletAddress ? 'Please fill the wallet address field' : '',
+      discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Invalid Discord ID. Please enter your Discord ID in the following format: Username1234.' : '',
+      walletAddress: !walletAddress ? 'Please fill the wallet address field' : !addressRegex.test(walletAddress) ? 'Invalid ERC-20 address' : '',
       img: !img ? 'Please upload a profile image' : ''
     };
 
@@ -181,10 +188,13 @@ const OnBoarding = () => {
         'authorization': 'Bearer ' + localStorage.getItem('token_app_wpl')
       },
       body: JSON.stringify({ 
-        "displayName": displayName,
-        "experienceDescription": experience,
-        "walletAddress": walletAddress,
-        "pfp": googleImg || imageUrl
+        displayName: displayName,
+        experienceDescription: experience,
+        socials: {
+          discord: discord
+        },
+        walletAddress: walletAddress,
+        pfp: googleImg || imageUrl
        }),
     })
     const data = await response;
@@ -308,30 +318,18 @@ const OnBoarding = () => {
     <div className='flex justify-center items-center'>
       {!isSignComplete ?
         <div className='mt-32'>
-          {!isSignin ? 
+          {!isSignin &&
           <div onClick={navigateToOrgFormPage} className='w-[300px] cursor-pointer'>
             <video 
              autoPlay
              loop
              muted
              playsInline
+             disablePictureInPicture
             >
               <source src={videoMp4} type="video/mp4"/>
             </video>
           </div>
-          //  <Button borderRadius='6px' className="w-[320px] h-[32px]">
-          //    <div onClick={navigateToOrgFormPage} className='flex items-center bg-[#091044] h-full w-full p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md hover:bg-[#121534] group cursor-pointer'>
-          //     <Zap stroke='#97A0F1' strokeDasharray={50} size={18} className='zap-svg'/>
-          //     <p className='text-white88 group-hover:underline'>Want to sponsor a Project? </p>
-          //     <p className='text-white48 group-hover:underline'>Apply to be a part!</p>
-          //   </div>
-          //  </Button>
-          :  null
-            // <div onClick={navigateToOrgFormPage} className="flex items-center bg-[#091044] w-fit p-2 gap-1 font-inter font-medium text-[12px] leading-[14.4px] rounded-md group cursor-pointer">
-            //   <Zap stroke='#97A0F1' size={12} />
-            //   <p className='text-white88 group-hover:underline'>New to WPL?</p>
-            //   <p className='text-white48 group-hover:underline'>Apply to be a part!</p>
-            // </div>
           }
           
           <div className='mt-4'>
@@ -436,7 +434,7 @@ const OnBoarding = () => {
                         onMouseEnter={() => setImgUploadHover(true)} 
                         onMouseLeave={() => setImgUploadHover(false)} 
                         onClick={handleUploadClick} 
-                        className={'relative bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer'}
+                        className={`relative bg-[#091044] size-[72px] rounded-[8px] border-[3px] border-[#16237F] flex justify-center items-center cursor-pointer ${errors.img ? 'border border-[#F03D3D]' : ""} `}
                       >
                         <Upload size={16} className={`text-white32 absolute ${imgUploadHover ? "animate-hovered" : ""}`}/>
                         <input
@@ -448,7 +446,7 @@ const OnBoarding = () => {
                         />                           
                       </div>
                       <div className='text-[14px] font-inter mt-1'>
-                          <p className='text-white88'>Add a profile image</p>
+                          <p className='text-white88'>Add a profile image <span className='text-[#F03D3D]'>*</span></p>
                           <p className='text-white32'>Recommended 1:1 aspect ratio</p>
                       </div>
                       {errors.img && <span className='text-red-500 text-sm'>{errors.img}</span>}
@@ -480,8 +478,8 @@ const OnBoarding = () => {
                 <div className='flex items-start gap-4 w-full'>
                   <div className='w-full'>
                     <div>
-                      <div className='text-white32 font-semibold font-inter text-[13px]'>Your Name</div>
-                      <div className='bg-[#FFFFFF12] rounded-md'>
+                      <div className='text-white32 font-semibold font-inter text-[13px]'>Your Name <span className='text-[#F03D3D]'>*</span></div>
+                      <div className={`bg-[#FFFFFF12] rounded-md ${errors.displayName ? 'border border-[#F03D3D]' : ""}`}>
                         <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} type='text' placeholder='John' className='w-full bg-transparent py-2 px-2 outline-none text-white'/>
                       </div>
                       {errors.displayName && <span className='text-red-500 text-sm'>{errors.displayName}</span>}
@@ -496,15 +494,31 @@ const OnBoarding = () => {
                 </div>
 
                 <div className='mt-4'>
-                  <div className='text-white32 font-semibold font-inter text-[13px]'>Do you have experience designing application?</div>
-                  <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder='Yes, I have 5 years of experience in designing applications' className='w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] text-white' rows={4}/>
+                  <div className='text-white32 font-semibold font-inter text-[13px]'>Do you have experience designing application? <span className='text-[#F03D3D]'>*</span></div>
+                  <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder='Yes, I have 5 years of experience in designing applications' className={`w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] text-white outline-none ${errors.experience ? 'border border-[#F03D3D]' : ""}`} rows={4}/>
                   {errors.experience && <span className='text-red-500 text-sm'>{errors.experience}</span>}
                 </div>
 
 
                 <div className='mt-4'>
-                  <div className='text-white32 font-semibold font-inter text-[13px]'>Enter ypur ERC-20 Address</div>
-                  <input value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} placeholder='0x101..' className='w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] outline-none text-white'/>
+                  <div className='text-white32 font-semibold font-inter text-[13px]'>Discord ID <span className='text-[#F03D3D]'>*</span></div>
+                  <div className='bg-white7 rounded-md px-3 py-2 flex items-center gap-2'>
+                    <img src={DiscordSvg} alt='discord' className='size-[20px]'/>
+                    <input 
+                      type='text' 
+                      placeholder='discord.gg' 
+                      className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full' 
+                      value={discord} 
+                      onChange={(e) => setDiscord(e.target.value)} 
+                    />
+                  </div>
+                  {/* <input value={discord} onChange={(e) => setDiscord(e.target.value)} placeholder='' className={`w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] ${errors.discord ? 'border border-[#F03D3D]' : ""} outline-none text-white`}/> */}
+                  {errors.discord && <span className='text-red-500 text-sm'>{errors.discord}</span>}
+                </div>
+
+                <div className='mt-4'>
+                  <div className='text-white32 font-semibold font-inter text-[13px]'>Enter ypur ERC-20 Address <span className='text-[#F03D3D]'>*</span></div>
+                  <input value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} placeholder='0x101..' className={`w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] ${errors.walletAddress ? 'border border-[#F03D3D]' : ""} outline-none text-white`}/>
                   {errors.walletAddress && <span className='text-red-500 text-sm'>{errors.walletAddress}</span>}
                 </div>
 
@@ -531,11 +545,3 @@ const OnBoarding = () => {
 }
 
 export default OnBoarding
-
-// TODO :: tabs refactor in home page
-// live first for user
-// all first for sponsor
-
-// TODO :: add banner on explore page
-
-

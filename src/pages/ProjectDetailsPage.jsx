@@ -24,7 +24,7 @@ import {
 import FancyButton from '../components/ui/FancyButton'
 import Tabs from '../components/ui/Tabs'
 import { calculateRemainingDaysAndHours, convertTimestampToDate } from '../lib/constants'
-import { getOrgById, getProjectDetails, getProjectSubmissions, getUserProjects, updateProjectDetails } from '../service/api'
+import { getOrgById, getProjectDetails, getProjectSubmissions, getUserDetails, getUserProjects, updateProjectDetails } from '../service/api'
 
 import alertPng from '../assets/images/alert.png'
 import clockSVG from '../assets/icons/pixel-icons/watch.svg'
@@ -41,9 +41,21 @@ const isOwnerTabs = [
 const ProjectDetailsPage = () => {
 
   const { id } = useParams();
+  const navigate = useNavigate()
   const { user_id } = useSelector((state) => state)
   const [orgHandle, setOrgHandle] = useState('');
   const [isProjApplied, setIsProjApplied] = useState(false);
+  const [username, setUsername] = useState('A user');
+
+  const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
+    queryKey: ["userDetails", user_id],
+    queryFn: () => getUserDetails(user_id),
+    enabled: !!user_id,
+  })
+  
+  useEffect(() => {
+    if(!isLoadingUserDetails) setUsername(userDetails.displayName);
+  },[isLoadingUserDetails])
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
     queryKey: ["userProjects"],
@@ -59,10 +71,6 @@ const ProjectDetailsPage = () => {
       }
     })
   },[])
-  
-
-  console.log('user projects', userProjects)
-  const navigate = useNavigate()
   
   const {data: projectDetails, isLoading: isLoadingProjectDetails, refetch: refetchProjectDetails} = useQuery({
     queryKey: ['projectDetails', id],
@@ -291,7 +299,7 @@ const ProjectDetailsPage = () => {
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="py-2 border-t border-dashed border-white12">
-                        <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails}/>
+                        <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails} username={username} />
                       </AccordionContent>
                     </AccordionItem>
                   ))}

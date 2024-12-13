@@ -12,7 +12,7 @@ import GithubTeamSearchBox from '../components/form/GithubTeamSearchBox';
 import akashProfile from '../assets/dummy/akash_profile.png'
 import sumeetProfile from '../assets/dummy/sumeet_profile.png'
 import rahulProfile from '../assets/dummy/rahul_profile.png'
-import { applyForProject, getProjectDetails, getProjectSubmissions, getUserDetails } from '../service/api';
+import { applyForProject, createNotification, getProjectDetails, getProjectSubmissions, getUserDetails } from '../service/api';
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 
@@ -67,9 +67,6 @@ const FormPage = () => {
     enabled: !!id
   })
 
-  console.log();
-  
-
   const submittedDetails = () => {
     return(
       <div className='flex flex-col justify-evenly gap-4 h-[230px] items-center'>
@@ -113,19 +110,16 @@ const FormPage = () => {
     const {name, value} = e.target;
     if(name == 'gitTeammates') return;
       setFormData((prevdata) => ({...prevdata,[name]: value}))
-      console.log(formData);
       setErrors(prevErrors => ({
         ...prevErrors,
         [name]: '',
     }));
   }
 
-  const handleSubmitForm = () => {
+  const handleSubmitForm = async () => {
     if(validateForm()) {
 
       const data = {
-        // name: formData.username,
-        // email: formData.emailId,
         name: userDetails?.displayName,
         email: userDetails?.email,
         userId: user_id,
@@ -137,10 +131,25 @@ const FormPage = () => {
         status: 'submitted'
       }
 
-      const res = applyForProject(projectDetails._id, data);
-      setIsSubmitDone(true)
-    } else {
-      console.log('Invalid form');
+      const res = await applyForProject(projectDetails._id, data);
+      if(res?.err === "user has already submitted a proposal") {
+        alert(res.err);
+        navigate(-1); 
+      }
+      
+      if(res?._id) {
+        console.log('apply res',res);
+        
+        const notiObj = {
+          msg: `${userDetails.displayName} has applied for a project.`,
+          type: 'project_req',
+          fromId: user_id,
+          user_id: projectDetails.owner_id,
+          project_id: projectDetails._id
+        }
+        const notiRes = await createNotification(notiObj);
+        setIsSubmitDone(true)
+      }
     }
   }
 
