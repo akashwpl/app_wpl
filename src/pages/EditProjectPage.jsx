@@ -19,13 +19,14 @@ import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
 import btnImg from '../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import FancyButton from '../components/ui/FancyButton'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { storage } from '../lib/firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
+import { displaySnackbar } from '../store/thunkMiddleware'
 
 const calcDaysUntilDate = (futureDate) => {
     const today = new Date();
@@ -45,6 +46,7 @@ const EditProjectPage = () => {
     const navigate = useNavigate();
 
     const fileInputRef = useRef(null);
+    const dispatch = useDispatch();
 
     const { id } = useParams();
     const user_id = useSelector((state) => state.user_id)
@@ -205,7 +207,7 @@ const EditProjectPage = () => {
     useEffect(() => {
         if(!isLoadingUserOrgs) {
             if(userOrganisations[0]?.status == 'pending') {
-                alert("Your Organisation is not yet approved by Admin. Please try again later.")
+                dispatch(displaySnackbar('Your Organisation is not yet approved by Admin. Please try again later.'))
                 navigate('/sponsordashboard')
             }
             setOrganisationHandle(userOrganisations[0]?.organisationHandle)

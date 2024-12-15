@@ -8,10 +8,13 @@ import loginBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import FancyButton from '../components/ui/FancyButton'
 
 import mailSVG from '../assets/svg/mail.svg'
+import { useDispatch } from 'react-redux'
+import { displaySnackbar } from '../store/thunkMiddleware'
 
 const ForgetPasswordPage = () => {
 
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const [email, setEmail] = useState('') // Changed from firstName to email
   const [password, setPassword] = useState('')
@@ -85,7 +88,10 @@ const ForgetPasswordPage = () => {
                         </span>
                       </>
                     }
-                    onClick={() => {alert('New password set successfully');navigate('/onboarding');}}
+                    onClick={() => {
+                      dispatch(displaySnackbar('New password set successfully'))
+                      navigate('/onboarding');
+                    }}
                   />
                 </div>
           </div>

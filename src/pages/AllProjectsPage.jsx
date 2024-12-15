@@ -45,7 +45,7 @@ const AllProjectsPage = () => {
                 const matchesType = project?.type?.toLowerCase() === 'bounty';
                 const matchesSearch = searchInput ? project?.title?.toLowerCase().includes(searchInput.toLowerCase()) : true;
                 const matchesRole = tiles.length > 0 ? tiles.some(tile => project?.roles?.map(role => role.toLowerCase()).includes(tile.toLowerCase())) : true;
-                const matchfoundation = foundationFilter && foundationFilter !== 'all' ? project?.foundation?.toLowerCase() === foundationFilter?.toLowerCase() : true;
+                const matchfoundation = foundationFilter && foundationFilter !== 'All' ? project?.foundation?.toLowerCase() === foundationFilter?.toLowerCase() : true;
                 // Week-based filter
                 const lastMilestone = project?.milestones?.[project.milestones.length - 1];
                 const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;
@@ -84,8 +84,7 @@ const AllProjectsPage = () => {
         setWeeksFilter(prevFilter => prevFilter === value ? '' : value);
     };
 
-    const handleFoundationFilterChange = (event) => {
-        const value = event.target.value;
+    const handleFoundationFilterChange = (value) => {
         setFoundationFilter(prevFilter => prevFilter === value ? '' : value);
     }
 

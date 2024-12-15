@@ -21,6 +21,7 @@ import mailSVG from '../assets/icons/pixel-icons/mail.svg'
 import GlyphEffect from '../components/ui/GlyphEffect'
 import DiscordSvg from '../assets/svg/discord.svg'
 import axios from 'axios'
+import { displaySnackbar } from '../store/thunkMiddleware'
 
 const addressRegex = /^(0x)[0-9a-fA-F]{40}$/;
 const discordRegex = /^[a-zA-Z0-9_]+\d{4,}$/
@@ -65,7 +66,7 @@ const OnBoarding = () => {
 
   const signUp = async () => {
     if (!email || !password) {
-      alert('Please enter email and password')
+      dispatch(displaySnackbar('Please enter email and password'))
       return
     }
     const validEmail = email_regex.test(email)
@@ -98,7 +99,7 @@ const OnBoarding = () => {
 
   const login = async () => {
     if (!email || !password) {
-      alert('Please enter email and password')
+      dispatch(displaySnackbar('Please enter email and password'))
       return
     }
     const validEmail = email_regex.test(email)
@@ -183,7 +184,7 @@ const OnBoarding = () => {
     if(data.status === 200){
       navigate('/')
     } else {
-      alert('Something went wrong')
+      dispatch(displaySnackbar('Something went wrong'))
     }
 
     console.log('update profile', data)
