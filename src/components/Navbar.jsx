@@ -21,11 +21,14 @@ import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
 
 import menuBorderSVG from '../assets/svg/Button.svg'
 import adminMenuBorderSVG from '../assets/svg/admin_menu_bg.svg'
+import useNavBar from './useNavHook'
 
 const Navbar = () => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const dispatch = useDispatch()
+
+  const { notificationCount } = useNavBar()
 
   const { user_id } = useSelector((state) => state)
 
@@ -35,17 +38,13 @@ const Navbar = () => {
     enabled: !!user_id
   })
 
-  // const {data: notificationsDetails, isLoading: isLoadingNotificationsDetails, refetch} = useQuery({
-  //   queryKey: ['notificationsDetails'],
-  //   queryFn: () => getNotifications()
-  // })
-
+ 
   const [showNavbar, setShowNavbar] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [slideUserMenu, setSlideUserMenu] = useState(false)
 
   const [menuHover, setMenuHover] = useState(false)
-  const [notificationCount, setNotificationCount] = useState(0);
+  // const [notificationCount, setNotificationCount] = useState(0);
 
   const token = localStorage.getItem('token_app_wpl')
 
@@ -128,21 +127,21 @@ const Navbar = () => {
     }, 300);
   }
 
-  const handleGetNotifications = async () => {
-    const resp = await getNotifications();
-    const notis = resp.data
-      .filter((notification) => !notification.isRead && !notification.isHidden ) // Filter out hidden and red notifications
-    setNotificationCount(notis.length);
-  }
+  // const handleGetNotifications = async () => {
+  //   const resp = await getNotifications();
+  //   const notis = resp.data
+  //     .filter((notification) => !notification.isRead && !notification.isHidden ) // Filter out hidden and red notifications
+  //   setNotificationCount(notis.length);
+  // }
 
-  useEffect(() => {
-    if(!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token) {
-      const fetchData = async () => {
-        await handleGetNotifications();
-      }
-      fetchData();
-    }
-  },[])
+  // useEffect(() => {
+  //   if(!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token) {
+  //     const fetchData = async () => {
+  //       await handleGetNotifications();
+  //     }
+  //     fetchData();
+  //   }
+  // },[])
 
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
@@ -151,13 +150,13 @@ const Navbar = () => {
           <Link to={'/allprojects'}><GlyphEffect text={'EXPLORE'} /></Link>
           <Link to={'/leaderboard'}><GlyphEffect text={'LEADERBOARD'} /></Link>
         </div>
-        <div className={`${(!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')) ? token && "translate-x-48" : "-translate-x-10"}`}>
+        <div className={``}>
           <div className='z-[100]'>
             <Link to={'/allprojects'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]' /></Link>
           </div>
         </div>
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
-          <div className='translate-x-28 xl:translate-x-72'>
+        {/* {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
+          <div className='translate-x-28 xl:translate-x-'>
             <Link className='relative' to='/notifications'>
               <Bell size={25} className='text-primaryYellow'/>
               {notificationCount > 0 && 
@@ -165,10 +164,18 @@ const Navbar = () => {
               }
             </Link>
           </div>
-        }
+        } */}
 
         {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
-          <div>
+          <div className='flex items-center gap-4'>
+            <div className='hidden md:block'>
+              <Link className='relative' to='/notifications'>
+                <Bell size={25} className='text-primaryYellow'/>
+                {notificationCount > 0 && 
+                  <p className='absolute left-3 bottom-4 text-white88 bg-cardRedText/90 rounded-full text-[10px] size-4 text-center'>{notificationCount}</p>
+                }
+              </Link>
+            </div>
             <div
               ref={menuRef}
               onClick={() => {token ? handleMenuToggle() : navigate('/onboarding')}}
@@ -300,14 +307,16 @@ const Navbar = () => {
         <div className='z-[100]'>
           <Link to={'/'}><img src={wpllogo} alt='wolf logo' className='translate-x-14 w-6 h-7' /></Link>
         </div>
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
-            <div className='translate-x-60'>
+        
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
+        <div className='flex items-center gap-4'>
+          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
+            <div className='-translate-x-12'>
               <Link to='/notifications'>
                 <Bell size={25} className='text-primaryYellow'/>
               </Link>
             </div>
           }
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
           <div onClick={handleShowNavbar} className='h-[28px] -translate-x-10 cursor-pointer z-[100]'>
             <div id="nav-icon3" className={showNavbar ? 'open' : ''}>
               <span></span>
@@ -315,6 +324,7 @@ const Navbar = () => {
               <span></span>
               <span></span>
             </div>
+          </div>
           </div>
         }
 
