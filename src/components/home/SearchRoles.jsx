@@ -3,6 +3,8 @@ import { Search, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { getAllOrganisations } from '../../service/api';
 import Spinner from '../ui/spinner';
+import arrow from '../../assets/images/arrow.png';
+
 
 const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput, handleSearch, handleFoundationFilterChange }) => {
 
@@ -71,16 +73,24 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                     onClick={() => {handleMenuToggle()}}
                     className="relative cursor-pointer flex flex-row items-center z-50 w-[250px] bg-white7 border border-white7 rounded-md p-2 text-primaryYellow font-gridular text-[14px]"
                 >
+                  <div className='flex justify-between items-center w-full'>
                     <p>{selectedOrd}</p>
+                      <img
+                        src={arrow}
+                        width={18}
+                        alt="down arrow"
+                        className={`${showUserMenu ? "animate-step-rotate" : "animate-step-rotate-back"} transition-all`}
+                      />
+                  </div>
                     {showUserMenu && (
                         <>
                             <div
-                                className={`z-50 rounded-lg backdrop-blur-2xl bg-black/10  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] font-gridular uppercase h-[400px] overflow-y-auto ${
+                                className={`z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] font-gridular uppercase h-[400px] overflow-y-auto ${
                                 slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                                 }`}
                             >
                                 {isLoadingOrganisationDetails ? <Spinner /> : [{name: "All"}, ...organisationsDetails]?.map((org, idx) => (
-                                    <div key={idx} onClick={() => {handleFoundationFilterChange(org?.name); setSelectedOrg(org.name)}} className='mb-[2px] p-2 hover:bg-white12 cursor-pointer rounded-md'>
+                                    <div key={idx} onClick={() => {handleFoundationFilterChange(org?.name); setSelectedOrg(org.name)}} className='p-2 hover:bg-white12 cursor-pointer rounded-md'>
                                         {org.name}
                                     </div>
                                 ))}  
