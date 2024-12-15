@@ -151,7 +151,7 @@ const Navbar = () => {
           <Link to={'/leaderboard'}><GlyphEffect text={'LEADERBOARD'} /></Link>
         </div>
         <div className={``}>
-          <div className='z-[100]'>
+          <div className='z-[100] translate-x-7'>
             <Link to={'/allprojects'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]' /></Link>
           </div>
         </div>
