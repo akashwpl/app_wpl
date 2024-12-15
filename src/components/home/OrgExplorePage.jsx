@@ -162,12 +162,12 @@ const navigateToProjectDetails = () => {
                             <label htmlFor='1'>{`<`} 2 weeks</label>
                         </div>
                         <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>
-                            <input type='checkbox' name='duration' value='between2And4' onChange={(e) => handleWeeksFilterChange(e)} checked={weeksFilter === 'between2And4'} id='1' className='border border-primaryYellow cursor-pointer'/>
-                            <label htmlFor='1'>2-4 weeks</label>
+                            <input type='checkbox' name='duration' value='between2And4' onChange={(e) => handleWeeksFilterChange(e)} checked={weeksFilter === 'between2And4'} id='2' className='border border-primaryYellow cursor-pointer'/>
+                            <label htmlFor='2'>2-4 weeks</label>
                         </div>
                         <div className=' flex items-center gap-2 text-white88 text-[14px] font-gridular'>
-                            <input type='checkbox' name='duration' value='above4' onChange={(e) => handleWeeksFilterChange(e)} checked={weeksFilter === 'above4'} id='1' className='border border-primaryYellow cursor-pointer'/>
-                            <label htmlFor='1'>{`>`} 4 week</label>
+                            <input type='checkbox' name='duration' value='above4' onChange={(e) => handleWeeksFilterChange(e)} checked={weeksFilter === 'above4'} id='3' className='border border-primaryYellow cursor-pointer'/>
+                            <label htmlFor='3'>{`>`} 4 week</label>
                         </div>
                     </div>
                   </div>
