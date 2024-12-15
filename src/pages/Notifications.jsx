@@ -57,6 +57,20 @@ const Notifications = () => {
     refetch();
   }
 
+  useEffect(() => {
+    if(notificationsDetails?.length == 0) return;
+
+    const readNotification = async () => {
+      const unreadNotifications = notificationsDetails?.filter((notification) => !notification.isRead);
+      const updatePromises = unreadNotifications.map((notification) =>
+        updateNotification(notification._id, "read")
+      );
+      await Promise.all(updatePromises);
+    }
+
+    readNotification();
+  }, [notificationsDetails, isLoadingNotificationsDetails])
+
   const indexOfLastItem = currentPage * itemsPerPage
   const indexOfFirstItem = indexOfLastItem - itemsPerPage
   const currentData = useMemo(() => notificationsDetails?.slice(indexOfFirstItem, indexOfLastItem), [notificationsDetails, indexOfFirstItem, indexOfLastItem, isLoadingNotificationsDetails]) 
@@ -110,7 +124,6 @@ const Notifications = () => {
                           </td>
                           
                           <td className='flex justify-center items-center gap-2 pt-2.5 w-[90px]'>
-                            <CircleCheck onClick={() => {updateNotification(notification._id, 'read')}} className={`${notification.isRead ? "text-primaryYellow/20 cursor-not-allowed" : "text-primaryYellow/70 cursor-pointer"}`} size={20} />
                             <Trash2 onClick={() => {updateNotification(notification._id, 'delete')}} className='text-primaryYellow/70 cursor-pointer' size={20} />
                           </td>
 
