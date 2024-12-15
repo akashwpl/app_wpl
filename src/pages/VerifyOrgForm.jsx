@@ -6,6 +6,8 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "../components/ui/accordion"
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { storage } from '../lib/firebase';
 import { ArrowLeft, Globe, Menu, Send, Trash, Upload, X } from 'lucide-react';
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
@@ -70,6 +72,11 @@ const VerifyOrgForm = () => {
 
     const submitForm = async () => {
         const isValid = validateFields();
+
+        const imageRef = ref(storage, `images/${logo.name}`);
+        await uploadBytes(imageRef, logo);
+        const imageUrl = await getDownloadURL(imageRef);
+
         if (isValid) {
             const data = {
                 userId: user_id,
@@ -81,7 +88,8 @@ const VerifyOrgForm = () => {
                     telegram: telegramLink,
                     discord: discordLink
                 },
-                status: 'pending'
+                status: 'pending',
+                img: imageUrl
             }
             const res = await createOrganisation(data);
             

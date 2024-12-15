@@ -163,7 +163,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                     <p className='text-[12px] text-white32 leading-[16px]'>Need Help?</p>
                 </div>
                 <div className='flex items-center gap-1'>
-                    <a href={milestoneData?.help_link[0]} target='_blank' className='cursor-pointer'>
+                    <a href={projectDetails?.project.discordLink} target='_blank' className='cursor-pointer'>
                         <p className='text-[12px] text-white88 leading-[14px] font-medium font-inter flex items-center gap-1'>Join discord <ArrowUpRight size={14} className='text-white32'/></p>
                     </a>
                 </div>

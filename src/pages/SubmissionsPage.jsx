@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { acceptRejectSubmission, createNotification, getProjectDetails, getProjectSubmissions, getUserDetails } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom';
 import headerPng from '../assets/images/prdetails_header.png'
-import { AlignLeft, CheckCheck, ChevronLeft, ChevronRight, TriangleAlert, X } from 'lucide-react';
+import { AlignLeft, ArrowLeft, CheckCheck, ChevronLeft, ChevronRight, TriangleAlert, X } from 'lucide-react';
 import greenBtnImg from '../assets/svg/green_btn_subtract.png'
 import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png'
 import redBtnImg from '../assets/svg/close_proj_btn_subtract.png'
@@ -105,6 +105,12 @@ const SubmissionsPage = () => {
         <div className='relative'>
             <div>
                 <img src={headerPng} alt='header' className='h-[200px] w-full'/>
+            </div>
+            
+            <div className='absolute top-1 left-0 w-full py-1'>
+                <div onClick={() => {navigate(-1)}} className='flex items-center gap-1 mx-20 text-white text-[14px] font-inter cursor-pointer hover:text-white88 w-fit'>
+                <ArrowLeft size={18}/> Go Back
+                </div>
             </div>
 
             {projectAccepted 

@@ -40,12 +40,12 @@ const AdminDashboard = () => {
 
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
-    const currentData = filteredData?.slice(indexOfFirstItem, indexOfLastItem)
+    const currentData = filteredData?.filter((org) => org?.status == "approved")?.slice(indexOfFirstItem, indexOfLastItem)
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(filteredData?.length / itemsPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(currentData?.length / itemsPerPage); i++) {
       pageNumbers?.push(i);
     }
 
@@ -53,7 +53,6 @@ const AdminDashboard = () => {
         navigate(`/organisation/${id}`)
     }
 
-    console.log('organisationsDetails', organisationsDetails)
     return (
         <div className='flex flex-row justify-between mt-4 mx-8'>
             <div className='flex flex-col px-[46px] mt-4 w-full '>
@@ -80,7 +79,7 @@ const AdminDashboard = () => {
                             {currentData?.map((data, index) => (
                                 <div key={index} onClick={() => navigateToOrganisationPage(data?._id)} className='flex gap-2 col-span-3 justify-start hover:bg-white4 cursor-pointer py-4 px-2 rounded-md'>
                                     <div>
-                                        <img src={data?.logo || wpl_logo} alt='' className='size-[70px] rounded-md'/>
+                                        <img src={data?.img || data?.logo || wpl_logo} alt='' className='size-[70px] rounded-md'/>
                                     </div>
                                     <div className='flex flex-col justify-between'>
                                         <div>

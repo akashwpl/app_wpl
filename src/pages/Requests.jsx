@@ -73,7 +73,7 @@ const Requests = () => {
                         <div className='bg-[#091044] rounded-md py-2'>
                             <div className='flex justify-between items-center px-4 py-2 mb-1'>
                                 <div className='text-[14px] font-gridular text-white88'>Requests ({filteredReq?.length})</div>
-                                <div className='text-[12px] font-gridular text-white48 flex items-center gap-2'>Download as CSV <Download size={18} color='#FFFFFF7A'/></div>
+                                {/* <div className='text-[12px] font-gridular text-white48 flex items-center gap-2'>Download as CSV <Download size={18} color='#FFFFFF7A'/></div> */}
                             </div>
                             <div className="border border-dashed border-white88 w-full"></div>
                             {filteredReq?.length == 0 

@@ -142,8 +142,7 @@ const ProjectDetailsPage = () => {
   const totalSubmissions = useMemo(() => projectSubmissions?.length, [projectSubmissions])
 
   const tmpMilestones = projectDetails?.milestones;
-  const lastMilestone = tmpMilestones?.reduce((acc, curr) => {
-    
+  const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((acc, curr) => {
     return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
   });
 
@@ -240,7 +239,7 @@ const ProjectDetailsPage = () => {
                   <div className='bg-[#091044] rounded-md py-2'>
                     <div className='flex justify-between items-center py-2 px-4'>
                       <div className='text-[14px] font-gridular text-white88'>Submission ({totalSubmissions})</div>
-                      <div className='text-[12px] font-gridular text-white48 flex items-center gap-2'>Download as CSV <Download size={18} color='#FFFFFF7A'/></div>
+                      {/* <div className='text-[12px] font-gridular text-white48 flex items-center gap-2'>Download as CSV <Download size={18} color='#FFFFFF7A'/></div> */}
                     </div>
                     {totalSubmissions == 0 ? <div className='text-[14px] text-primaryYellow font-gridular'>No submissions yet</div> : <>
                       <div className='grid grid-cols-12 gap-2 mb-2 px-4'>

@@ -274,11 +274,12 @@ const Navbar = () => {
                   <p className="font-gridular text-primaryYellow truncate">
                     {token ? <span className="text-primaryYellow text-[14px] tracking-[0.12rem] flex">
                       {userDetail && userDetail.displayName &&
-                        Array.from(userDetail?.displayName)?.map((letter, index) => (
+                        Array.from(userDetail?.displayName)?.slice(0, 8)?.map((letter, index) => (
                           <span key={index} className="letter">
                             {letter}
                           </span>
                         ))}
+                        {userDetail?.displayName?.length > 8 && "..."}
                     </span> : "Login"}
                   </p>
                   <img
@@ -306,17 +307,20 @@ const Navbar = () => {
               </Link>
             </div>
           }
-        <div onClick={handleShowNavbar} className='h-[28px] -translate-x-10 cursor-pointer z-[100]'>
-          <div id="nav-icon3" className={showNavbar ? 'open' : ''}>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
+          <div onClick={handleShowNavbar} className='h-[28px] -translate-x-10 cursor-pointer z-[100]'>
+            <div id="nav-icon3" className={showNavbar ? 'open' : ''}>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </div>
-        </div>
+        }
 
         {showNavbar && <div onClick={handleShowNavbar} className='absolute -top-8 left-0 h-screen w-full bg-[#16237F]/30 backdrop-blur-sm z-[50]' />}
 
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
         <div className={`absolute -top-8 left-0 ${showNavbar ? 'translate-y-0' : '-translate-y-[900px]'} transition-all duration-500 w-full bg-[#16237F] z-50`}>
           <div className='flex flex-col justify-center items-center text-center bg-[#16237F] font-bienvenue mt-20 text-[24px] text-primaryYellow'>
             <Link to={'/profile'}>
@@ -370,7 +374,7 @@ const Navbar = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   )
