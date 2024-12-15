@@ -20,6 +20,7 @@ import videoMp4 from '../assets/dummy/v1.mp4'
 import mailSVG from '../assets/icons/pixel-icons/mail.svg'
 import GlyphEffect from '../components/ui/GlyphEffect'
 import DiscordSvg from '../assets/svg/discord.svg'
+import axios from 'axios'
 
 const addressRegex = /^(0x)[0-9a-fA-F]{40}$/;
 const discordRegex = /^[a-zA-Z0-9_]+\d{4,}$/
@@ -105,49 +106,30 @@ const OnBoarding = () => {
       setError('Please enter a valid email')
       return
     }
-    const response = fetch(`${BASE_URL}/account/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    }).then((res) => {
-      if(res.status === 401) {
-        setError('Password is not matching')
-        return
-      }
-      if(res.status === 404) {
-        setError('Email not found')
-        return
-      }
-      if(res.status === 409) {
-        setError('Email not found')
-        return
-      }
-      if(res.status === 500) {
-        setError('Something went wrong')
-        return
-      }
-      return res.json()
-    }).then((data) => {
-      console.log('login', data)
-      if(data.message === 'Password is not matching') {
-        setError(data.message)
+
+    try {
+      const res = await axios.post(`${BASE_URL}/account/login`,{email,password});
+      localStorage.setItem('token_app_wpl', res?.data?.data?.token)
+      dispatch(setUserId(res?.data?.data?.userId))
+  
+      getUserDetails(res?.data?.data?.userId).then((data) => {
+        setError('')
+        console.log('data', data)
+        data?.role == 'sponsor' ? navigate('/sponsordashboard') : navigate('/allprojects')
+      })
+    } catch (error) {
+      console.log(error.response);
+      if(error.status == '409') {
+        setError(error.response.data.message);
         return
       } else {
-        localStorage.setItem('token_app_wpl', data?.data?.token)
-        dispatch(setUserId(data?.data?.userId))
-
-        getUserDetails(data?.data?.userId).then((data) => {
-          setError('')
-          console.log('data', data)
-          data?.role == 'sponsor' ? navigate('/sponsordashboard') : navigate('/allprojects')
-        })        
+        setError('Something went wrong. Try again after sometime!')
+        return
       }
-    }).finally(() => {
+    } finally {
       setEmail('')
       setPassword('')
-    })
+    }
   }
 
   const handleUploadProfileimage = async (e) => {
@@ -288,7 +270,7 @@ const OnBoarding = () => {
     }
   };
 
-  const [text, setText] = useState("Sign Up");
+  const [text, setText] = useState("Sign Up");  
   const [isHovering, setIsHovering] = useState(false);
   const [hovered, setHovered] = useState(false);
   const controlledVariants = ["NGIS PU", "GNIS PU", "NGIS PU", "$Sign Up",  "Sign Up"]; // Predefined variations
