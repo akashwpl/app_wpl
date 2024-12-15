@@ -18,6 +18,7 @@ import btnImg from '../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
+import Spinner from '../components/ui/spinner';
 
 const VerifyOrgForm = () => {
     const fileInputRef = useRef(null);
@@ -36,6 +37,8 @@ const VerifyOrgForm = () => {
 
     const [submitted, setSubmitted] = useState(false);
     const [imgUploadHover, setImgUploadHover] = useState(false)
+
+    const [isloading, setIsLoading] = useState(false);
 
     const scrollToTop = () => {
         window.scrollTo({
@@ -71,6 +74,7 @@ const VerifyOrgForm = () => {
     };
 
     const submitForm = async () => {
+        setIsLoading(true);
         const isValid = validateFields();
 
         const imageRef = ref(storage, `images/${logo.name}`);
@@ -116,6 +120,7 @@ const VerifyOrgForm = () => {
 
             setSubmitted(true);
         }
+        setIsLoading(false);
     }
 
   return (
@@ -317,7 +322,7 @@ const VerifyOrgForm = () => {
                                 hover_src_img={btnHoverImg} 
                                 img_size_classes='w-[470px] h-[44px]' 
                                 className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                                btn_txt='Verify Org'
+                                btn_txt={isloading ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> : 'Verify Organisation'}
                                 alt_txt='verify org btn' 
                                 onClick={submitForm}
                                 isArrow='true'
