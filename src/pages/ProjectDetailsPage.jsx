@@ -142,8 +142,7 @@ const ProjectDetailsPage = () => {
   const totalSubmissions = useMemo(() => projectSubmissions?.length, [projectSubmissions])
 
   const tmpMilestones = projectDetails?.milestones;
-  const lastMilestone = tmpMilestones?.reduce((acc, curr) => {
-    
+  const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((acc, curr) => {
     return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
   });
 
