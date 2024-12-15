@@ -92,39 +92,10 @@ const RequestsPage = () => {
                                 </AccordionTrigger>
                                 <AccordionContent className="py-2 border-t border-dashed border-white12">
                                     <div>
-                                    <div className='flex justify-between items-center mt-4'>
+                                        <div className='flex justify-between items-center mt-4'>
                                             <div className='flex items-center gap-4'>
-                                                {logoPreview ? 
-                                                    <div className='relative'>
-                                                        <img src={logoPreview} alt='dummy' className='size-[72px] aspect-square rounded-md'/>
-                                                        <div onClick={() => {setLogoPreview(null)}} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
-                                                    </div>
-                                                :   <>
-                                                        <div
-                                                            onMouseEnter={() => setImgUploadHover(true)} 
-                                                            onMouseLeave={() => setImgUploadHover(false)}  
-                                                            onClick={handleUploadClick} 
-                                                            className='relative bg-[#FCBF041A] size-[72px] rounded-[8px] border-[1px] border-primaryYellow flex justify-center items-center cursor-pointer'
-                                                        >
-                                                            <Upload size={16} className={`text-white32 absolute ${imgUploadHover ? "animate-hovered" : ""}`}/>
-                                                            <input
-                                                                name='img'
-                                                                type="file"
-                                                                ref={fileInputRef}
-                                                                onChange={handleLogoChange}
-                                                                style={{ display: 'none' }}
-                                                            />                           
-                                                        </div>
-                                                        <div className='text-[14px] font-inter'>
-                                                            <p className='text-white88'>Add your logo</p>
-                                                            <p className='text-white32'>Recommended 1:1 aspect ratio</p>
-                                                        </div>
-                                                    </>
-                                                }
+                                                <img src={orgState?.img} alt='organisation' className='size-[72px] aspect-square rounded-md'/>
                                             </div>
-                                            {logoPreview &&
-                                                <div onClick={() => {setLogoPreview(null)}} className='flex items-center gap-1 cursor-pointer'><Trash stroke='#E38070' size={15}/> <span className='text-[#E38070] text-[14px] font-inter'>Delete</span></div>
-                                            }
                                         </div>
 
                                         <div className='mt-3'>
