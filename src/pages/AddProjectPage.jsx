@@ -295,7 +295,7 @@ const AddProjectPage = () => {
                                         </div>
 
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title of the project<span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title of the project <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <input 
                                                     type='text' 
@@ -307,7 +307,7 @@ const AddProjectPage = () => {
                                             {errors.title && <p className='text-red-500 font-medium text-[10px]'>{errors.title}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation handle<span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation handle <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='cursor-not-allowed bg-white7 rounded-md px-3 py-2'>
                                                 <input 
                                                     type='text' 
@@ -320,7 +320,7 @@ const AddProjectPage = () => {
                                             {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description (240 character)<span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description (240 character )<span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <textarea 
                                                     type='text' 
@@ -333,11 +333,11 @@ const AddProjectPage = () => {
                                             {errors.description && <p className='text-red-500 font-medium text-[10px]'>{errors.description}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Role<span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Role <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                             <div className="w-full rounded-md flex flex-row flex-wrap gap-2">
                                                 {role && role?.map((tile, index) => (
-                                                    <div className="bg-cardBlueBg2 flex justify-between items-center px-2 py-2 border-transparent focus:outline-0 rounded-[6px] text-white88 w-[200px] font-gridular text-[14px] leading-[16.8px]">
+                                                    <div className="bg-cardBlueBg2 flex justify-between items-center px-2 py-2 border-transparent focus:outline-0 rounded-[6px] text-white88 w-fit font-gridular text-[14px] leading-[16.8px]">
                                                         {tile}
                                                         <X className='text-white48 w-6 cursor-pointer hover:text-white64 scale-105 transition duration-300' onClick={() => handleRemoveTile(tile)} size={14}/>
                                                     </div>

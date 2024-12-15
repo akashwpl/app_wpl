@@ -240,6 +240,10 @@ input[data-autocompleted] {
   opacity: 0;
 }
 
+::-ms-reveal {
+  display: none;
+}
+
 /* .zap-svg{
   stroke-width: 3px;
   animation: wave 3s linear infinite;
