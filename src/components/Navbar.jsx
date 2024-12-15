@@ -5,16 +5,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import arrow from '../assets/images/arrow.png'
 import wpllogo from '../assets/svg/wolf_logo.svg'
-import { getNotifications, getUserDetails } from '../service/api'
+import { getUserDetails } from '../service/api'
 import GlyphEffect from './ui/GlyphEffect'
 
 import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
 import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
 import { setUserRole } from '../store/slice/userSlice'
 
-import profileSVG from '../assets/icons/pixel-icons/profile-yellow.svg'
 import docSVG from '../assets/icons/pixel-icons/document2-yellow.svg'
 import hourglassSVG from '../assets/icons/pixel-icons/hourglass-yellow.svg'
+import profileSVG from '../assets/icons/pixel-icons/profile-yellow.svg'
 import listSVG from '../assets/icons/pixel-icons/search-list-yellow.svg'
 import tickSVG from '../assets/icons/pixel-icons/tick-outline-yellow.svg'
 import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
@@ -309,22 +309,22 @@ const Navbar = () => {
         </div>
         
         {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
-        <div className='flex items-center gap-4'>
-          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
-            <div className='-translate-x-12'>
-              <Link to='/notifications'>
-                <Bell size={25} className='text-primaryYellow'/>
-              </Link>
+          <div className='flex items-center gap-4'>
+            {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
+              <div className='-translate-x-12'>
+                <Link to='/notifications'>
+                  <Bell size={25} className='text-primaryYellow'/>
+                </Link>
+              </div>
+            }
+            <div onClick={handleShowNavbar} className='h-[28px] -translate-x-10 cursor-pointer z-[100]'>
+              <div id="nav-icon3" className={showNavbar ? 'open' : ''}>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
             </div>
-          }
-          <div onClick={handleShowNavbar} className='h-[28px] -translate-x-10 cursor-pointer z-[100]'>
-            <div id="nav-icon3" className={showNavbar ? 'open' : ''}>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </div>
           </div>
         }
 
