@@ -12,6 +12,7 @@ const GlyphEffect = ({text, isNav=true}) => {
               <span
                 className={`${isNav ? "nav_btn__span" : "nav_btn__span2"}`}
                 data-char={char}
+                key={index}
                 style={{
                   '--index': index,
                   '--char-1': `"${
