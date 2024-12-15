@@ -16,7 +16,7 @@ import { BASE_URL, getTimestampFromNow } from '../lib/constants'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query';
 import { getUserOrgs } from '../service/api';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import checkSVG from '../assets/svg/check.svg'
 import saveBtnImg from '../assets/svg/menu_btn_subtract.png'
 import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
@@ -29,11 +29,13 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Spinner from '../components/ui/spinner';
 
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
+import { displaySnackbar } from '../store/thunkMiddleware';
 
 const AddProjectPage = () => {
 
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
+    const dispatch = useDispatch()
     const user_id = useSelector((state) => state.user_id)
 
     const [title, setTitle] = useState('')
@@ -69,7 +71,7 @@ const AddProjectPage = () => {
     useEffect(() => {
         if(userOrganisations?.length == 0) {
             if(userOrganisations[0]?.status == 'pending') {
-                alert("Your Organisation is not yet approved by Admin. Please try again later.")
+                dispatch(displaySnackbar('Your Organisation is not yet approved by Admin. Please try again later.'))
                 navigate('/sponsordashboard')
             }
             setOrganisationHandle(userOrganisations[0]?.organisationHandle)

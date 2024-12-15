@@ -1,8 +1,48 @@
-import { ChevronDown, Search, X } from 'lucide-react'
-import ethereumIcon from '../../assets/images/ethereum-icon.png'
-import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Search, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { getAllOrganisations } from '../../service/api';
+import Spinner from '../ui/spinner';
 
 const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput, handleSearch, handleFoundationFilterChange }) => {
+
+    const [selectedOrd, setSelectedOrg] = useState("All");
+
+    const {data: organisationsDetails, isLoading: isLoadingOrganisationDetails} = useQuery({
+        queryKey: ["allOrganisations"],
+        queryFn: () => getAllOrganisations(),
+    })
+
+
+  const menuRef = useRef(null);
+
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const [slideUserMenu, setSlideUserMenu] = useState(false)
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        menuRef.current && 
+        !menuRef.current.contains(event.target)
+      ) {
+        setSlideUserMenu(false);
+        setTimeout(() => {
+          setShowUserMenu(false);
+        }, 300);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  },[menuRef])
+
+  const handleMenuToggle = () => {
+    setSlideUserMenu(!slideUserMenu);
+    setTimeout(() => {
+      setShowUserMenu(!showUserMenu);
+    }, 300);
+  }
 
     return (
         <div className="bg-black/10 w-full border border-white/10 rounded-lg mb-8 p-4">
@@ -26,21 +66,29 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                     </div>
                 </div>
 
-                {/* <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
-                    <select className='bg-transparent h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
-                        <option className='text-white88 font-gridular text-[14px]'>All</option>
-                        <option className='text-white88 font-gridular text-[14px]'>Ak org</option>
-                        <option className='text-white88 font-gridular text-[14px]'>Karan org</option>
-                    </select>
-                </div> */}
-
-                <div className="min-w-[280px] h-[40px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
-                    <select onChange={handleFoundationFilterChange} className='bg-transparent h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
-                        <option value="all" className='text-white88 font-gridular text-[14px]'>All</option>
-                        <option value="starkware" className='text-white88 font-gridular text-[14px]'>Starkware</option>
-                        <option value="starkwarefoundation" className='text-white88 font-gridular text-[14px]'>Starknet Foundation</option>
-                    </select>
+                <div
+                    ref={menuRef}
+                    onClick={() => {handleMenuToggle()}}
+                    className="relative cursor-pointer flex flex-row items-center z-50 w-[250px] bg-white7 border border-white7 rounded-md p-2 text-primaryYellow font-gridular text-[14px]"
+                >
+                    <p>{selectedOrd}</p>
+                    {showUserMenu && (
+                        <>
+                            <div
+                                className={`z-50 rounded-lg backdrop-blur-2xl bg-black/10  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] font-gridular uppercase h-[400px] overflow-y-auto ${
+                                slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
+                                }`}
+                            >
+                                {isLoadingOrganisationDetails ? <Spinner /> : [{name: "All"}, ...organisationsDetails]?.map((org, idx) => (
+                                    <div key={idx} onClick={() => {handleFoundationFilterChange(org?.name); setSelectedOrg(org.name)}} className='mb-[2px] p-2 hover:bg-white12 cursor-pointer rounded-md'>
+                                        {org.name}
+                                    </div>
+                                ))}  
+                            </div>
+                        </>
+                    )}
                 </div>
+
             </div>
         </div>
     )
