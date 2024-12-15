@@ -29,7 +29,7 @@ const Requests = () => {
             })
             setFilteredReq(pendingReqs);
         }
-    },[isLoadingAllOrganisations,allOrganisations])
+    },[isLoadingAllOrganisations, allOrganisations])
 
     const handleAcceptRejectRequest = async (id, userId, orgHandle, status) => {
         const dataObj = { isApproved: status }
