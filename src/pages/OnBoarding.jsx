@@ -202,7 +202,9 @@ const OnBoarding = () => {
           discord: discord
         },
         walletAddress: walletAddress,
-        pfp: googleImg || imageUrl
+        pfp: googleImg || imageUrl,
+        isKYCVerified: false,
+        kycStatus: "idle"
        }),
     })
     const data = await response;
