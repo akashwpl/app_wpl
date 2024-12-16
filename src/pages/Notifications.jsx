@@ -62,10 +62,10 @@ const Notifications = () => {
 
     const readNotification = async () => {
       const unreadNotifications = notificationsDetails?.filter((notification) => !notification.isRead);
-      const updatePromises = unreadNotifications.map((notification) =>
+      const updatePromises = unreadNotifications?.map((notification) =>
         updateNotification(notification._id, "read")
       );
-      await Promise.all(updatePromises);
+      updatePromises && await Promise.all(updatePromises);
     }
 
     readNotification();
@@ -134,6 +134,7 @@ const Notifications = () => {
                   }
                 </table>
 
+                {notificationsDetails?.length > itemsPerPage &&
                 <div className="flex justify-end items-center gap-2 md:gap-6 mt-6">
                     <button onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} className='relative'>
                         <img src={btnPng} alt='' className='w-[34px] h-[23px]'/>
@@ -162,6 +163,7 @@ const Notifications = () => {
                         <ArrowRight size={20} className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[50%] w-4 h-4 text-white48'/>
                     </button>
                 </div>
+                }
 
                 {currentData?.length == 0 &&
                   <div className='py-8 w-full flex flex-col justify-center items-center bg-[#060e54]'>

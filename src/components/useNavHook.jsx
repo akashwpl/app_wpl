@@ -5,12 +5,15 @@ import { useLocation } from "react-router-dom";
 const useNavBar = () => {
 
     const { pathname } = useLocation()
+    const token = localStorage.getItem('token_app_wpl')
+    const token_flag = token ? true : false;
+    
 
     const {data: notificationCount} = useQuery({
         queryKey: ['notificationsDetails'],
         queryFn: () => handleGetNotifications(),
         refetchInterval: 3000,
-        enabled: pathname !== '/onboarding' && pathname !== '/forgetpassword' && pathname !== '/verifyorg',
+        enabled: pathname !== '/onboarding' && pathname !== '/forgetpassword' && token_flag,
         initialData: 0
     })
 

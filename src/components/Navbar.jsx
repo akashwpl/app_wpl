@@ -44,7 +44,6 @@ const Navbar = () => {
   const [slideUserMenu, setSlideUserMenu] = useState(false)
 
   const [menuHover, setMenuHover] = useState(false)
-  // const [notificationCount, setNotificationCount] = useState(0);
 
   const token = localStorage.getItem('token_app_wpl')
 
@@ -127,22 +126,6 @@ const Navbar = () => {
     }, 300);
   }
 
-  // const handleGetNotifications = async () => {
-  //   const resp = await getNotifications();
-  //   const notis = resp.data
-  //     .filter((notification) => !notification.isRead && !notification.isHidden ) // Filter out hidden and red notifications
-  //   setNotificationCount(notis.length);
-  // }
-
-  // useEffect(() => {
-  //   if(!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token) {
-  //     const fetchData = async () => {
-  //       await handleGetNotifications();
-  //     }
-  //     fetchData();
-  //   }
-  // },[])
-
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
       <div className='hidden md:flex justify-between items-center w-full'>
@@ -155,18 +138,8 @@ const Navbar = () => {
             <Link to={'/allprojects'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]' /></Link>
           </div>
         </div>
-        {/* {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
-          <div className='translate-x-28 xl:translate-x-'>
-            <Link className='relative' to='/notifications'>
-              <Bell size={25} className='text-primaryYellow'/>
-              {notificationCount > 0 && 
-                <p className='absolute left-3 bottom-4 text-white88 bg-cardRedText/90 rounded-full text-[10px] size-4 text-center'>{notificationCount}</p>
-              }
-            </Link>
-          </div>
-        } */}
 
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  && !pathname?.includes('verifyorg') &&
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  && token &&
           <div className='flex items-center gap-4'>
             <div className='hidden md:block'>
               <Link className='relative' to='/notifications'>
@@ -308,9 +281,9 @@ const Navbar = () => {
           <Link to={'/'}><img src={wpllogo} alt='wolf logo' className='translate-x-14 w-6 h-7' /></Link>
         </div>
         
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  && !pathname?.includes('verifyorg') &&
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  && token &&
         <div className='flex items-center gap-4'>
-          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && !pathname?.includes('verifyorg') && token && 
+          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
             <div className='-translate-x-12'>
               <Link to='/notifications'>
                 <Bell size={25} className='text-primaryYellow'/>
@@ -330,7 +303,7 @@ const Navbar = () => {
 
         {showNavbar && <div onClick={handleShowNavbar} className='absolute -top-8 left-0 h-screen w-full bg-[#16237F]/30 backdrop-blur-sm z-[50]' />}
 
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token &&
         <div className={`absolute -top-8 left-0 ${showNavbar ? 'translate-y-0' : '-translate-y-[900px]'} transition-all duration-500 w-full bg-[#16237F] z-50`}>
           <div className='flex flex-col justify-center items-center text-center bg-[#16237F] font-bienvenue mt-20 text-[24px] text-primaryYellow'>
             <Link to={'/profile'}>

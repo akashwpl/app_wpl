@@ -58,11 +58,9 @@ const OnBoarding = () => {
 
   const fileInputRef = useRef(null);
 
-  console.log('email',email);
-  
-
   const [errors, setErrors] = useState({
     email: '',
+    password: '',
     displayName: '',
     experience: '',
     discord: '',
@@ -152,7 +150,8 @@ const OnBoarding = () => {
 
   const updateProfile = async () => {
     const newErrors = {
-      email: !email ? 'Please fill the email field' : !email_regex.test(email) ? 'Please enter a valid email' : '',
+      email: isOrgSignUp && !email ? 'Please fill the email field' : !email_regex.test(email) ? 'Please enter a valid email' : '',
+      password: isOrgSignUp && !password ? 'Please fill the password field' : '',
       displayName: !displayName ? 'Please fill the name field' : '',
       experience: !experience ? 'Please fill the experience field' : '',
       discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Invalid Discord ID. Please enter your Discord ID in the following format: Username1234.' : '',
@@ -172,7 +171,22 @@ const OnBoarding = () => {
 
     if(isOrgSignUp) {
       console.log('yes brotha');
-      
+      try {
+        const res = await axios.post(`${BASE_URL}/users/signup`, {email, password});
+        console.log(res);
+        localStorage.setItem('token_app_wpl', res?.data?.data?.token)
+        dispatch(setUserId(res?.data?.data?.userId))
+        setError('')
+      } catch (error) {
+        console.log(error);
+        if(error.status == '409') {
+          setErrors({email: error.response.data.message});
+          return
+        } else {
+          dispatch(displaySnackbar('Something went wrong. Try again after sometime!'))
+          return
+        }
+      }
     }
 
     const response = fetch(`${BASE_URL}/users/update/`, {
@@ -193,7 +207,11 @@ const OnBoarding = () => {
     })
     const data = await response;
     if(data.status === 200){
-      navigate('/')
+      if(isOrgSignUp) {
+        navigate('/verifyorg')
+      } else {
+        navigate('/')
+      }
     } else {
       dispatch(displaySnackbar('Something went wrong'))
     }
@@ -501,7 +519,7 @@ const OnBoarding = () => {
                   <div className='w-full'>
                     <div className='text-white32 font-semibold font-inter text-[13px]'>Your Email <span className='text-[#F03D3D]'>*</span></div>
                     <div className={`bg-[#FFFFFF12] rounded-md ${errors.email ? 'border border-[#F03D3D]' : ""}`}>
-                      <input value={email} onChange={(e) => email !== "" ? setEmail(e.target.value) : ""} type='email' readOnly={!isOrgSignUp} placeholder='John@wpl.com' className={`w-full bg-transparent py-2 px-2 outline-none text-white ${!isOrgSignUp && "cursor-default"}`} />
+                      <input value={email} onChange={(e) => setEmail(e.target.value)} type='email' readOnly={!isOrgSignUp} placeholder='John@wpl.com' className={`w-full bg-transparent py-2 px-2 outline-none text-white ${!isOrgSignUp && "cursor-default"}`} />
                     </div>
                     {errors.email && <span className='text-red-500 text-sm'>{errors.email}</span>}
                   </div>
