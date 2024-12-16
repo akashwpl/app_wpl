@@ -10,7 +10,7 @@ import GlyphEffect from './ui/GlyphEffect'
 
 import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
 import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
-import { setUserRole } from '../store/slice/userSlice'
+import { setUserId, setUserRole } from '../store/slice/userSlice'
 
 import docSVG from '../assets/icons/pixel-icons/document2-yellow.svg'
 import hourglassSVG from '../assets/icons/pixel-icons/hourglass-yellow.svg'
@@ -44,7 +44,6 @@ const Navbar = () => {
   const [slideUserMenu, setSlideUserMenu] = useState(false)
 
   const [menuHover, setMenuHover] = useState(false)
-  // const [notificationCount, setNotificationCount] = useState(0);
 
   const token = localStorage.getItem('token_app_wpl')
 
@@ -79,6 +78,8 @@ const Navbar = () => {
 
   const signout = () => {
     localStorage.removeItem('token_app_wpl')
+    dispatch(setUserId(''))
+    dispatch(setUserRole(''))
     navigate('/onboarding')
   }
 
@@ -127,22 +128,6 @@ const Navbar = () => {
     }, 300);
   }
 
-  // const handleGetNotifications = async () => {
-  //   const resp = await getNotifications();
-  //   const notis = resp.data
-  //     .filter((notification) => !notification.isRead && !notification.isHidden ) // Filter out hidden and red notifications
-  //   setNotificationCount(notis.length);
-  // }
-
-  // useEffect(() => {
-  //   if(!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token) {
-  //     const fetchData = async () => {
-  //       await handleGetNotifications();
-  //     }
-  //     fetchData();
-  //   }
-  // },[])
-
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
       <div className='hidden md:flex justify-between items-center w-full'>
@@ -155,18 +140,8 @@ const Navbar = () => {
             <Link to={'/allprojects'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]' /></Link>
           </div>
         </div>
-        {/* {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
-          <div className='translate-x-28 xl:translate-x-'>
-            <Link className='relative' to='/notifications'>
-              <Bell size={25} className='text-primaryYellow'/>
-              {notificationCount > 0 && 
-                <p className='absolute left-3 bottom-4 text-white88 bg-cardRedText/90 rounded-full text-[10px] size-4 text-center'>{notificationCount}</p>
-              }
-            </Link>
-          </div>
-        } */}
 
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  && !pathname?.includes('verifyorg') &&
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  && 
           <div className='flex items-center gap-4'>
             <div className='hidden md:block'>
               <Link className='relative' to='/notifications'>
@@ -308,9 +283,9 @@ const Navbar = () => {
           <Link to={'/'}><img src={wpllogo} alt='wolf logo' className='translate-x-14 w-6 h-7' /></Link>
         </div>
         
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  && !pathname?.includes('verifyorg') &&
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  && 
         <div className='flex items-center gap-4'>
-          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && !pathname?.includes('verifyorg') && token && 
+          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
             <div className='-translate-x-12'>
               <Link to='/notifications'>
                 <Bell size={25} className='text-primaryYellow'/>
@@ -330,60 +305,73 @@ const Navbar = () => {
 
         {showNavbar && <div onClick={handleShowNavbar} className='absolute -top-8 left-0 h-screen w-full bg-[#16237F]/30 backdrop-blur-sm z-[50]' />}
 
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && 
         <div className={`absolute -top-8 left-0 ${showNavbar ? 'translate-y-0' : '-translate-y-[900px]'} transition-all duration-500 w-full bg-[#16237F] z-50`}>
-          <div className='flex flex-col justify-center items-center text-center bg-[#16237F] font-bienvenue mt-20 text-[24px] text-primaryYellow'>
-            <Link to={'/profile'}>
-              <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
-                <img src={profileSVG} alt="profile" className='size-[20px]' />
-                <p>Profile</p>
-              </div>
-            </Link>
-            {userDetail?.role !== 'user' && (
-              <Link to={'/allprojects'}>
+          {
+            token ?
+            <div className='flex flex-col justify-center items-center text-center bg-[#16237F] font-bienvenue mt-20 text-[24px] text-primaryYellow'>
+              <Link to={`/profile/${userDetail?.socials?.discord}`} onClick={() => setShowNavbar(false)}>
                 <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
-                  <img src={docSVG} alt="projects" className='size-[20px]' />
-                  <p>Explore</p>
+                  <img src={profileSVG} alt="profile" className='size-[20px]' />
+                  <p>Profile</p>
                 </div>
               </Link>
-            )}
-            {userDetail?.role === 'admin' && (
-              <Link to={'/requests'}>
-                <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
-                  <img src={hourglassSVG} alt="requests" className='size-[20px]' />
-                  <p>Requests</p>
-                </div>
-              </Link>
-            )}
-            <Link to={'/'}>
-              <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
-                <img src={listSVG} alt="dashboard" className='size-[20px]' />
-                <p>Dashboard</p>
-              </div>
-            </Link>
-            <Link to={'/rewards'}>
-              <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
-                <img src={trophySVG} alt="rewards" className='size-[20px]' />
-                <p>Rewards</p>
-              </div>
-            </Link>
-            {userDetail?.role === 'user' && (
-                <Link
-                  to="/verifyorg"
-                >
+              {userDetail?.role !== 'user' && (
+                <Link to={'/allprojects'} onClick={() => setShowNavbar(false)}> 
                   <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
-                    <img src={tickSVG} alt="Join as org icon" className='size-[20px]' />
-                    <p>Join as Org</p>
-                  </div> 
+                    <img src={docSVG} alt="projects" className='size-[20px]' />
+                    <p>Explore</p>
+                  </div>
                 </Link>
-            )}
-            <div onClick={signout} className='text-[#E38070]'>
-              <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
-                <LogOutIcon size={30} className='rotate-180'/>
-                <p>Logout</p>
+              )}
+              {userDetail?.role === 'admin' && (
+                <Link to={'/requests'} onClick={() => setShowNavbar(false)}> 
+                  <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
+                    <img src={hourglassSVG} alt="requests" className='size-[20px]' />
+                    <p>Requests</p>
+                  </div>
+                </Link>
+              )}
+              <Link to={'/'} onClick={() => setShowNavbar(false)}> 
+                <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
+                  <img src={listSVG} alt="dashboard" className='size-[20px]' />
+                  <p>Dashboard</p>
+                </div>
+              </Link>
+              <Link to={'/rewards'} onClick={() => setShowNavbar(false)}> 
+                <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
+                  <img src={trophySVG} alt="rewards" className='size-[20px]' />
+                  <p>Rewards</p>
+                </div>
+              </Link>
+              {userDetail?.role === 'user' && (
+                  <Link
+                    to="/verifyorg"
+                    onClick={() => setShowNavbar(false)}
+                  >
+                    <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
+                      <img src={tickSVG} alt="Join as org icon" className='size-[20px]' />
+                      <p>Join as Org</p>
+                    </div> 
+                  </Link>
+              )}
+              <div onClick={signout} className='text-[#E38070]'>
+                <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2 cursor-pointer" onClick={() => setShowNavbar(false)}>
+                  <LogOutIcon size={30} className='rotate-180'/>
+                  <p>Logout</p>
+                </div>
               </div>
             </div>
-          </div>
+            :
+            <div className='flex flex-col justify-center items-center text-center bg-[#16237F] font-bienvenue mt-20 text-[24px] text-primaryYellow'>
+              <Link to={'/onboarding'} onClick={() => setShowNavbar(false)}>
+                <div className="flex items-center gap-2  w-[90%] mb-6">
+                  <img src={profileSVG} alt="login" className='size-[20px]' />
+                  <p>Login</p>
+                </div>
+              </Link>
+            </div>
+          }
         </div>}
       </div>
     </div>
