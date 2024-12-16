@@ -4,11 +4,13 @@ import btnPng from '../assets/images/leaderboard_btn.png'
 import { useNavigate } from 'react-router-dom'
 import { approveOrgByAdmin, createNotification, getAllOrgs } from '../service/api'
 import { useQuery } from '@tanstack/react-query'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { displaySnackbar } from '../store/thunkMiddleware'
 
 
 const Requests = () => {
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const { user_id } = useSelector((state) => state)
 
     const [currentPage, setCurrentPage] = useState(1)
@@ -29,7 +31,7 @@ const Requests = () => {
             })
             setFilteredReq(pendingReqs);
         }
-    },[isLoadingAllOrganisations,allOrganisations])
+    },[isLoadingAllOrganisations, allOrganisations])
 
     const handleAcceptRejectRequest = async (id, userId, orgHandle, status) => {
         const dataObj = { isApproved: status }
@@ -42,7 +44,7 @@ const Requests = () => {
                 user_id: userId,
             }
             const res = await createNotification(notiObj)
-            alert(`You have ${status ? 'Approved' : 'Rejected'} ${orgHandle} organisation successfully.`)
+            dispatch(displaySnackbar(`You have ${status ? 'Approved' : 'Rejected'} ${orgHandle} organisation successfully.`))
         } 
         refetch();
     }

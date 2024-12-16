@@ -1,39 +1,40 @@
-import { ArrowLeft, Check, CheckCheck, CheckCheckIcon, ChevronDown, Menu, Plus, Search, Trash, Trophy, Upload, X } from 'lucide-react'
-import React, { useRef, useState, useEffect } from 'react'
+import { ArrowLeft, CheckCheck, Menu, Plus, Trash, Trophy, Upload, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
+import { useQuery } from '@tanstack/react-query';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png';
+import btnImg from '../assets/svg/btn_subtract_semi.png';
+import DiscordSvg from '../assets/svg/discord.svg';
+import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png';
+import saveBtnImg from '../assets/svg/menu_btn_subtract.png';
+import USDCsvg from '../assets/svg/usdc.svg';
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-} from "../components/ui/accordion"
-import USDCsvg from '../assets/svg/usdc.svg'
-import DiscordSvg from '../assets/svg/discord.svg'
-import { BASE_URL, getTimestampFromNow } from '../lib/constants'
-import { useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query';
-import { getUserOrgs } from '../service/api';
-import { useSelector } from 'react-redux';
-import checkSVG from '../assets/svg/check.svg'
-import saveBtnImg from '../assets/svg/menu_btn_subtract.png'
-import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
-import btnImg from '../assets/svg/btn_subtract_semi.png'
-import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
+} from "../components/ui/accordion";
 import FancyButton from '../components/ui/FancyButton';
+import { BASE_URL, getTimestampFromNow } from '../lib/constants';
 import { storage } from '../lib/firebase';
+import { getUserOrgs } from '../service/api';
 
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import Spinner from '../components/ui/spinner';
 
-import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
+import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png';
+import { displaySnackbar } from '../store/thunkMiddleware';
 
 const AddProjectPage = () => {
 
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
+    const dispatch = useDispatch()
     const user_id = useSelector((state) => state.user_id)
 
     const [title, setTitle] = useState('')
@@ -69,7 +70,7 @@ const AddProjectPage = () => {
     useEffect(() => {
         if(userOrganisations?.length == 0) {
             if(userOrganisations[0]?.status == 'pending') {
-                alert("Your Organisation is not yet approved by Admin. Please try again later.")
+                dispatch(displaySnackbar('Your Organisation is not yet approved by Admin. Please try again later.'))
                 navigate('/sponsordashboard')
             }
             setOrganisationHandle(userOrganisations[0]?.organisationHandle)

@@ -1,26 +1,28 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useQuery } from '@tanstack/react-query';
+import { ArrowLeft, CheckCheck, Globe, Menu, Send, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import TwitterPng from '../assets/images/twitter.png';
+import redBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png';
+import redBtnImg from '../assets/svg/close_proj_btn_subtract.png';
+import DiscordSvg from '../assets/svg/discord.svg';
+import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png';
+import greenBtnImg from '../assets/svg/green_btn_subtract.png';
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-} from "../components/ui/accordion"
-import { ArrowLeft, CheckCheck, Globe, Menu, Send, Trash, Upload, X } from 'lucide-react';
-import DiscordSvg from '../assets/svg/discord.svg'
-import TwitterPng from '../assets/images/twitter.png'
-import { useSelector } from 'react-redux';
-import { approveOrgByAdmin, createNotification, getOrgById } from '../service/api';
+} from "../components/ui/accordion";
 import FancyButton from '../components/ui/FancyButton';
-import { useQuery } from '@tanstack/react-query';
-import greenBtnImg from '../assets/svg/green_btn_subtract.png'
-import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png'
-import redBtnImg from '../assets/svg/close_proj_btn_subtract.png'
-import redBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png'
+import { approveOrgByAdmin, createNotification, getOrgById } from '../service/api';
+import { displaySnackbar } from '../store/thunkMiddleware';
 
 const RequestsPage = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const { id } = useParams();
     
@@ -66,7 +68,7 @@ const RequestsPage = () => {
             user_id: orgState.userId
         }
         const res = await createNotification(notiObj)
-        alert(`You have ${status ? 'Approved' : 'Rejected'} ${orgState?.organisationHandle} organisation successfully.`)
+        dispatch(displaySnackbar(`You have ${status ? 'Approved' : 'Rejected'} ${orgState?.organisationHandle} organisation successfully.`))
         navigate('/requests')
       } 
     }

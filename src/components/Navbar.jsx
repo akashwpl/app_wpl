@@ -5,16 +5,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import arrow from '../assets/images/arrow.png'
 import wpllogo from '../assets/svg/wolf_logo.svg'
-import { getNotifications, getUserDetails } from '../service/api'
+import { getUserDetails } from '../service/api'
 import GlyphEffect from './ui/GlyphEffect'
 
 import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
 import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
 import { setUserRole } from '../store/slice/userSlice'
 
-import profileSVG from '../assets/icons/pixel-icons/profile-yellow.svg'
 import docSVG from '../assets/icons/pixel-icons/document2-yellow.svg'
 import hourglassSVG from '../assets/icons/pixel-icons/hourglass-yellow.svg'
+import profileSVG from '../assets/icons/pixel-icons/profile-yellow.svg'
 import listSVG from '../assets/icons/pixel-icons/search-list-yellow.svg'
 import tickSVG from '../assets/icons/pixel-icons/tick-outline-yellow.svg'
 import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
@@ -151,7 +151,7 @@ const Navbar = () => {
           <Link to={'/leaderboard'}><GlyphEffect text={'LEADERBOARD'} /></Link>
         </div>
         <div className={``}>
-          <div className='z-[100]'>
+          <div className='z-[100] translate-x-7'>
             <Link to={'/allprojects'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]' /></Link>
           </div>
         </div>

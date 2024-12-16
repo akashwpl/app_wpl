@@ -1,9 +1,9 @@
-import { ArrowUpRight, CheckCheck, Clock, HeartCrack, Hourglass, TriangleAlert, X } from 'lucide-react';
+import { ArrowUpRight, CheckCheck, X } from 'lucide-react';
 import { useState } from 'react';
 import { calculateRemainingDaysAndHours } from '../../lib/constants';
 import { createNotification, submitMilestone, updateMilestone } from '../../service/api';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png';
 import btnImg from '../../assets/svg/btn_subtract_semi.png';
 import closeProjBtnHoverImg from '../../assets/svg/close_proj_btn_hover_subtract.png';
@@ -11,16 +11,19 @@ import closeProjBtnImg from '../../assets/svg/close_proj_btn_subtract.png';
 import CustomModal from '../ui/CustomModal';
 import FancyButton from '../ui/FancyButton';
 
-import hourglassSVG from '../../assets/icons/pixel-icons/hourglass2.svg'
-import warningSVG from '../../assets/icons/pixel-icons/warning.svg'
-import clockSVG from '../../assets/icons/pixel-icons/watch.svg'
-import questionSVG from '../../assets/icons/pixel-icons/question-mark.svg'
-import heartSVG from '../../assets/icons/pixel-icons/heart-handshake.svg'
+import { displaySnackbar } from '../../store/thunkMiddleware';
+import heartSVG from '../../assets/icons/pixel-icons/heart-handshake.svg';
+import hourglassSVG from '../../assets/icons/pixel-icons/hourglass2.svg';
+import questionSVG from '../../assets/icons/pixel-icons/question-mark.svg';
+import warningSVG from '../../assets/icons/pixel-icons/warning.svg';
+import clockSVG from '../../assets/icons/pixel-icons/watch.svg';
 
 const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProjectDetails, username }) => {
 
     const {user_id, user_role} = useSelector(state => state)
     const [showSubmitModal, setShowSubmitModal] = useState(false);
+
+    const dispatch = useDispatch();
 
     const [linkError, setLinkError] = useState(null);
     const [descriptionError, setDescriptionError] = useState(null);
@@ -71,9 +74,9 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
         }
         
         if(res?.user_status === 'submitted') {
-            alert('Milestone submitted successfully')
+            dispatch(displaySnackbar('Milestone submitted successfully'))
         } else {
-            alert('Something went wrong. Please try again later!')
+            dispatch(displaySnackbar('Something went wrong. Please try again later!'))
         }
     }
 
