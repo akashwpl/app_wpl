@@ -141,8 +141,9 @@ const Navbar = () => {
           </div>
         </div>
 
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  && 
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  &&
           <div className='flex items-center gap-4'>
+            {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token &&
             <div className='hidden md:block'>
               <Link className='relative' to='/notifications'>
                 <Bell size={25} className='text-primaryYellow'/>
@@ -150,7 +151,7 @@ const Navbar = () => {
                   <p className='absolute left-3 bottom-4 text-white88 bg-cardRedText/90 rounded-full text-[10px] size-4 text-center'>{notificationCount}</p>
                 }
               </Link>
-            </div>
+            </div>}
             <div
               ref={menuRef}
               onClick={() => {token ? handleMenuToggle() : navigate('/onboarding')}}
