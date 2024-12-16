@@ -10,7 +10,7 @@ const useNavBar = () => {
         queryKey: ['notificationsDetails'],
         queryFn: () => handleGetNotifications(),
         refetchInterval: 3000,
-        enabled: pathname !== '/onboarding' && pathname !== '/forgetpassword',
+        enabled: pathname !== '/onboarding' && pathname !== '/forgetpassword' && pathname !== '/verifyorg',
         initialData: 0
     })
 

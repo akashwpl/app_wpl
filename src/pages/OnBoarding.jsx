@@ -53,9 +53,15 @@ const OnBoarding = () => {
 
   const [imgUploadHover, setImgUploadHover] = useState(false)
 
+  const [isOrgSignUp, setIsOrgSignUp] = useState(false)
+
   const fileInputRef = useRef(null);
 
+  console.log('email',email);
+  
+
   const [errors, setErrors] = useState({
+    email: '',
     displayName: '',
     experience: '',
     discord: '',
@@ -93,7 +99,6 @@ const OnBoarding = () => {
         setError(data.message)
       }
     })
-    
   }
 
   const login = async () => {
@@ -146,6 +151,7 @@ const OnBoarding = () => {
 
   const updateProfile = async () => {
     const newErrors = {
+      email: !email ? 'Please fill the email field' : !email_regex.test(email) ? 'Please enter a valid email' : '',
       displayName: !displayName ? 'Please fill the name field' : '',
       experience: !experience ? 'Please fill the experience field' : '',
       discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Invalid Discord ID. Please enter your Discord ID in the following format: Username1234.' : '',
@@ -163,30 +169,35 @@ const OnBoarding = () => {
     await uploadBytes(imageRef, img);
     const imageUrl = await getDownloadURL(imageRef);
 
-    const response = fetch(`${BASE_URL}/users/update/`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        'authorization': 'Bearer ' + localStorage.getItem('token_app_wpl')
-      },
-      body: JSON.stringify({ 
-        displayName: displayName,
-        experienceDescription: experience,
-        socials: {
-          discord: discord
-        },
-        walletAddress: walletAddress,
-        pfp: googleImg || imageUrl
-       }),
-    })
-    const data = await response;
-    if(data.status === 200){
-      navigate('/')
-    } else {
-      alert('Something went wrong')
+    if(isOrgSignUp) {
+      console.log('yes brotha');
+      
     }
 
-    console.log('update profile', data)
+    // const response = fetch(`${BASE_URL}/users/update/`, {
+    //   method: "PUT",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     'authorization': 'Bearer ' + localStorage.getItem('token_app_wpl')
+    //   },
+    //   body: JSON.stringify({ 
+    //     displayName: displayName,
+    //     experienceDescription: experience,
+    //     socials: {
+    //       discord: discord
+    //     },
+    //     walletAddress: walletAddress,
+    //     pfp: googleImg || imageUrl
+    //    }),
+    // })
+    // const data = await response;
+    // if(data.status === 200){
+    //   navigate('/')
+    // } else {
+    //   alert('Something went wrong')
+    // }
+
+    // console.log('update profile', data)
   }
   const removeImgPrveiew = () => {
     setImg(null)
@@ -296,12 +307,31 @@ const OnBoarding = () => {
     // }, 600);
   };
 
+  // useEffect(() => {
+  //   if(isOrgSignUp) {
+  //     setEmail('');
+  //     setPassword('')
+  //   }
+  // },[isOrgSignUp])
+
+  const handleOrgSignUp = () => {
+    setEmail('');
+    setPassword('');
+    setIsOrgSignUp(true);
+    setIsSignComplete(true);
+    return
+  }
+
   return (
     <div className='flex justify-center items-center'>
       {!isSignComplete ?
         <div className='mt-32'>
           {!isSignin &&
-          <div onClick={navigateToOrgFormPage} className='w-[300px] cursor-pointer'>
+          <div 
+            // onClick={navigateToOrgFormPage} 
+            onClick={handleOrgSignUp} 
+            className='w-[300px] cursor-pointer'
+          >
             <video 
              autoPlay
              loop
@@ -468,12 +498,25 @@ const OnBoarding = () => {
                     </div>
                   </div>
                   <div className='w-full'>
-                    <div className='text-white32 font-semibold font-inter text-[13px]'>Your Email</div>
-                    <div className='bg-[#FFFFFF12] rounded-md'>
-                      <input value={email} type='email' readOnly placeholder='John@gmai.com' className='w-full bg-transparent py-2 px-2 outline-none text-white cursor-default' />
+                    <div className='text-white32 font-semibold font-inter text-[13px]'>Your Email <span className='text-[#F03D3D]'>*</span></div>
+                    <div className={`bg-[#FFFFFF12] rounded-md ${errors.email ? 'border border-[#F03D3D]' : ""}`}>
+                      <input value={email} onChange={(e) => email !== "" ? setEmail(e.target.value) : ""} type='email' readOnly={!isOrgSignUp} placeholder='John@wpl.com' className={`w-full bg-transparent py-2 px-2 outline-none text-white ${!isOrgSignUp && "cursor-default"}`} />
                     </div>
+                    {errors.email && <span className='text-red-500 text-sm'>{errors.email}</span>}
                   </div>
                 </div>
+
+                {
+                  isOrgSignUp && 
+                  <div className='mt-4'>
+                      <div className='text-white32 font-semibold font-inter text-[13px]'>Enter your password <span className='text-[#F03D3D]'>*</span></div>
+                      <div className={`flex items-center justify-center bg-[#FFFFFF12] rounded-md ${errors.password ? 'border border-[#F03D3D]' : ""}`}>
+                        <input value={password} onChange={(e) => setPassword(e.target.value)} type={isPass ? 'password' : 'text'} placeholder='Password' className='w-full bg-transparent py-2 px-2 outline-none text-white'/>
+                        {isPass ? <EyeIcon className='cursor-pointer mr-3' onClick={togglePasswordField} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer mr-3' onClick={togglePasswordField} stroke='#FFFFFF52'/> }
+                      </div>
+                      {errors.password && <span className='text-red-500 text-sm'>{errors.password}</span>}
+                    </div>
+                }
 
                 <div className='mt-4'>
                   <div className='text-white32 font-semibold font-inter text-[13px]'>Do you have experience designing application? <span className='text-[#F03D3D]'>*</span></div>
@@ -484,11 +527,11 @@ const OnBoarding = () => {
 
                 <div className='mt-4'>
                   <div className='text-white32 font-semibold font-inter text-[13px]'>Discord ID <span className='text-[#F03D3D]'>*</span></div>
-                  <div className='bg-white7 rounded-md px-3 py-2 flex items-center gap-2'>
+                  <div className={`bg-white7 rounded-md px-3 py-2 flex items-center gap-2 ${errors.discord ? 'border border-[#F03D3D]' : ""}`}>
                     <img src={DiscordSvg} alt='discord' className='size-[20px]'/>
                     <input 
                       type='text' 
-                      placeholder='discord.gg' 
+                      placeholder='User1234' 
                       className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full' 
                       value={discord} 
                       onChange={(e) => setDiscord(e.target.value)} 
