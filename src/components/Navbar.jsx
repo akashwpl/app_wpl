@@ -10,7 +10,7 @@ import GlyphEffect from './ui/GlyphEffect'
 
 import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
 import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
-import { setUserRole } from '../store/slice/userSlice'
+import { setUserId, setUserRole } from '../store/slice/userSlice'
 
 import docSVG from '../assets/icons/pixel-icons/document2-yellow.svg'
 import hourglassSVG from '../assets/icons/pixel-icons/hourglass-yellow.svg'
@@ -78,6 +78,8 @@ const Navbar = () => {
 
   const signout = () => {
     localStorage.removeItem('token_app_wpl')
+    dispatch(setUserId(''))
+    dispatch(setUserRole(''))
     navigate('/onboarding')
   }
 
@@ -308,14 +310,14 @@ const Navbar = () => {
           {
             token ?
             <div className='flex flex-col justify-center items-center text-center bg-[#16237F] font-bienvenue mt-20 text-[24px] text-primaryYellow'>
-              <Link to={`/profile/${userDetail?.socials?.discord}`} onClick={() => setShowNavbar(false)} >
+              <Link to={`/profile/${userDetail?.socials?.discord}`} onClick={() => setShowNavbar(false)}>
                 <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
                   <img src={profileSVG} alt="profile" className='size-[20px]' />
                   <p>Profile</p>
                 </div>
               </Link>
               {userDetail?.role !== 'user' && (
-                <Link to={'/allprojects'}> onClick={() => setShowNavbar(false)}
+                <Link to={'/allprojects'} onClick={() => setShowNavbar(false)}> 
                   <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
                     <img src={docSVG} alt="projects" className='size-[20px]' />
                     <p>Explore</p>
@@ -323,7 +325,7 @@ const Navbar = () => {
                 </Link>
               )}
               {userDetail?.role === 'admin' && (
-                <Link to={'/requests'}> onClick={() => setShowNavbar(false)}
+                <Link to={'/requests'} onClick={() => setShowNavbar(false)}> 
                   <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
                     <img src={hourglassSVG} alt="requests" className='size-[20px]' />
                     <p>Requests</p>
