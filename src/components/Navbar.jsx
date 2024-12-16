@@ -166,7 +166,7 @@ const Navbar = () => {
           </div>
         } */}
 
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  && !pathname?.includes('verifyorg') &&
           <div className='flex items-center gap-4'>
             <div className='hidden md:block'>
               <Link className='relative' to='/notifications'>
@@ -308,23 +308,23 @@ const Navbar = () => {
           <Link to={'/'}><img src={wpllogo} alt='wolf logo' className='translate-x-14 w-6 h-7' /></Link>
         </div>
         
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
-          <div className='flex items-center gap-4'>
-            {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token && 
-              <div className='-translate-x-12'>
-                <Link to='/notifications'>
-                  <Bell size={25} className='text-primaryYellow'/>
-                </Link>
-              </div>
-            }
-            <div onClick={handleShowNavbar} className='h-[28px] -translate-x-10 cursor-pointer z-[100]'>
-              <div id="nav-icon3" className={showNavbar ? 'open' : ''}>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  && !pathname?.includes('verifyorg') &&
+        <div className='flex items-center gap-4'>
+          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && !pathname?.includes('verifyorg') && token && 
+            <div className='-translate-x-12'>
+              <Link to='/notifications'>
+                <Bell size={25} className='text-primaryYellow'/>
+              </Link>
             </div>
+          }
+          <div onClick={handleShowNavbar} className='h-[28px] -translate-x-10 cursor-pointer z-[100]'>
+            <div id="nav-icon3" className={showNavbar ? 'open' : ''}>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
           </div>
         }
 
