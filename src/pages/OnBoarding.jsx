@@ -174,30 +174,30 @@ const OnBoarding = () => {
       
     }
 
-    // const response = fetch(`${BASE_URL}/users/update/`, {
-    //   method: "PUT",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     'authorization': 'Bearer ' + localStorage.getItem('token_app_wpl')
-    //   },
-    //   body: JSON.stringify({ 
-    //     displayName: displayName,
-    //     experienceDescription: experience,
-    //     socials: {
-    //       discord: discord
-    //     },
-    //     walletAddress: walletAddress,
-    //     pfp: googleImg || imageUrl
-    //    }),
-    // })
-    // const data = await response;
-    // if(data.status === 200){
-    //   navigate('/')
-    // } else {
-    //   alert('Something went wrong')
-    // }
+    const response = fetch(`${BASE_URL}/users/update/`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        'authorization': 'Bearer ' + localStorage.getItem('token_app_wpl')
+      },
+      body: JSON.stringify({ 
+        displayName: displayName,
+        experienceDescription: experience,
+        socials: {
+          discord: discord
+        },
+        walletAddress: walletAddress,
+        pfp: googleImg || imageUrl
+       }),
+    })
+    const data = await response;
+    if(data.status === 200){
+      navigate('/')
+    } else {
+      alert('Something went wrong')
+    }
 
-    // console.log('update profile', data)
+    console.log('update profile', data)
   }
   const removeImgPrveiew = () => {
     setImg(null)
