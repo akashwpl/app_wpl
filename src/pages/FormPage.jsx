@@ -353,7 +353,7 @@ const FormPage = () => {
                               </div>
                             }
                         </div>
-                        <GithubTeamSearchBox teamList={githubTeammatesList} />
+                        {/* <GithubTeamSearchBox teamList={githubTeammatesList} /> */}
                         
                         <div className="mb-56">
                           <FancyButton 
