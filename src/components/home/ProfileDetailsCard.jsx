@@ -1,27 +1,60 @@
-import { ArrowRight, CheckCheck, LoaderCircle } from 'lucide-react'
+import { ArrowRight, CheckCheck } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 import profileSVG from '../../assets/icons/pixel-icons/profile.svg'
 import listSVG from '../../assets/icons/pixel-icons/search-list.svg'
 import twitterSVG from '../../assets/icons/pixel-icons/twitter.svg'
 import docSVG from '../../assets/icons/pixel-icons/document2.svg'
+import { useMemo } from 'react'
+import { buildStyles, CircularProgressbar } from 'react-circular-progressbar'
 
-const ProfileDetailsCard = () => {
+import 'react-circular-progressbar/dist/styles.css';
 
-  const navigate = useNavigate()
+const profileCheckList = [
+  "bio",
+  "displayName",
+  "pfp",
+  "email",
+  "socials",
+  "experienceDescription",
+  "username",
+  "walletAddress"
+]
+
+const ProfileDetailsCard = ({userDetails}) => {
+
+  const navigate = useNavigate();
 
   const navigateToEditProfile = () => {
     navigate('/editprofile')
   }
+
+  const profileProgress = useMemo(() => {
+    let progress = 0;
+    for (const checkItem of profileCheckList) {
+      if (userDetails?.hasOwnProperty(checkItem)) {
+        progress += 10; 
+      }
+    }
+    return progress;
+  },[userDetails])
 
   return (
     <div onClick={navigateToEditProfile} className='flex flex-col w-full h-[200px] bg-white4 rounded-md my-6 cursor-pointer hover:bg-white7'>
       <div className='flex flex-row justify-between items-center px-4 bg-white7 rounded-t-md h-[65px]'>
         <div className='flex flex-col'>
           <p className='font-inter font-medium text-[13px] leading-[15.6px] text-white48 mb-1'>Your Profile is </p>
-          <p className='font-gridular text-[16px] text-white88 leading-[19.2px]'>25% completed</p>
+          <p className='font-gridular text-[16px] text-white88 leading-[19.2px]'>{profileProgress}% completed</p>
         </div>
-        <LoaderCircle color='white' size={36}/>
+        <div className="size-[36px]">
+          <CircularProgressbar 
+            value={profileProgress} 
+            styles={buildStyles({
+              pathColor: '#fff',
+              trailColor: '#16237F'
+            })}
+          />
+        </div>
       </div>
       <div className='border border-white12 stroke-2 border-dashed w-full'></div>
       <div className='flex flex-row justify-between my-3 text-white32 mx-4'>

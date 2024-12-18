@@ -44,7 +44,8 @@ const ExploreGigs = ({orgProjects, userId}) => {
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
     queryKey: ["userProjects"],
-    queryFn: getUserProjects
+    queryFn: getUserProjects,
+    enabled: !!userId
   })
 
   useEffect(() => {

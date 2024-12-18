@@ -82,7 +82,7 @@ const Leaderboard = () => {
             <div className='border border-white7 h-[56px] rounded-md flex justify-between items-center mt-4'>
                 <div className='flex items-center gap-2 w-full ml-3'>
                     <Search className='text-white32' size={16}/>
-                    <input value={searchInput} onChange={(e) => setSearchInput(e.target.value)}  className='bg-transparent w-full outline-none border-none text-white88 placeholder:text-[14px] placeholder:text-white32 placeholder:font-gridular' placeholder='Search for address, name...'/>
+                    <input value={searchInput} onChange={(e) => setSearchInput(e.target.value)}  className='bg-transparent w-full outline-none border-none text-white88 placeholder:text-[14px] placeholder:text-white32 placeholder:font-gridular font-gridular' placeholder='Search for address, name...'/>
                 </div>
                 <div className='border border-white7 min-w-[169px] h-full flex justify-center items-center relative'>
                     <div onClick={() => setShowFilterModal((prev) => !prev)} className='flex items-center justify-center border border-white7 rounded-md px-2 py-[6px] gap-1 cursor-pointer hover:bg-white4'>
@@ -115,9 +115,9 @@ const Leaderboard = () => {
                         <tbody className='h-full'>
                             {isLoadingLeaderboard ? <p>loading..</p> : currentData && currentData?.length > 0 ? (
                                 currentData?.map((data, index) => (
-                                    <tr key={index} className="text-[14px] text-white48 font-inter border-b border-white7 h-fit">
+                                    <tr key={index} className="text-[14px] text-white48 font-inter border-b border-white7 h-fit rounded-md hover:bg-white7">
                                         <td className="py-4 text-[14px] text-end pr-3">#{index + 1}</td>
-                                        <td className="py-4 w-[200px] truncate text-ellipsis hover:bg-white7 cursor-pointer rounded-md">
+                                        <td className="py-4 w-[200px] truncate text-ellipsis cursor-pointer">
                                             <Link to={`/profile/${data.discordIdentifier}`} className='flex items-center gap-1'>
                                                 <p className="flex items-center gap-1 text-white88 text-[14px]">
                                                     <img src={wpl_logo} alt="USDC" className="size-4" />

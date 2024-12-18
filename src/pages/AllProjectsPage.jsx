@@ -171,7 +171,7 @@ const AllProjectsPage = () => {
                         {isLoadingAllProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
                             filteredProjects?.length === 0 ? <div className='flex justify-center items-center mt-10 col-span-2'><p className='text-white88 font-gridular text-[24px]'>No projects found :(</p></div> :
                             filteredProjects && 
-                            filteredProjects.map((project, idx) => <div key={idx} className={`${!projectsGridView ? "hover:bg-white4 rounded-md" : ''} w-full gap-3`}>
+                            filteredProjects.map((project, idx) => <div key={idx} className={`${!projectsGridView ? "hover:bg-white4 px-4 rounded-md" : ''} w-full gap-3`}>
                                     <div className='col-span-1'>
                                         <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
                                     </div>
