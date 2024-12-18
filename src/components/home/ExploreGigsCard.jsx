@@ -44,7 +44,7 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
             <div className={`${projectsGridView ? "flex-col pl-4 py-4" : "flex-row"} flex `}>
                 <img className='size-16 mr-2 rounded-2xl mb-2' src={data?.image} alt="Gig Profile Picture"/>
                 <div className='flex flex-col w-full'>
-                    <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48 mb-1'>{data?.organisationHandle || "--"}</p>
+                    <p className='font-inter font-medium text-[12px] leading-[14.4px] text-white48 mb-1'>{data?.organisationHandle || ""}</p>
                     <p className='font-gridular text-[16px] leading-[19.2px] text-white88 mb-3'>{data?.title}</p>     
                     <div className={`flex flex-row ${projectsGridView ? 'flex-col' : "flex-row"} gap-2 text-white32 w-full mt-1`}>
                         <div className={`flex items-center gap-1 ${projectsGridView ? "mt-2" : ""}`}>
