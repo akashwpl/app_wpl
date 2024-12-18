@@ -1,4 +1,4 @@
-import { ArrowUpRight, CheckCheck, X } from 'lucide-react';
+import { ArrowUpRight, CheckCheck, Info, TriangleAlert, X } from 'lucide-react';
 import { useState } from 'react';
 import { calculateRemainingDaysAndHours } from '../../lib/constants';
 import { createNotification, submitMilestone, updateMilestone } from '../../service/api';
@@ -78,10 +78,8 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
         } else {
             dispatch(displaySnackbar('Something went wrong. Please try again later!'))
         }
+        refetchProjectDetails()
     }
-
-    console.log('md',milestoneData);
-    
 
     // TODO :: sponsor can accept or reject the milestone
     const handleMileStoneSponsorAction = async (type) => {
@@ -92,6 +90,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
         data.starts_in = new Date(data.starts_in).getTime();
 
         const res = await updateMilestone(milestoneData?._id, data);
+       
 
         if(res?._id) {
             const notiObj = {
@@ -104,16 +103,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             const notiRes = await createNotification(notiObj)
             setShowMilestoneSubmissionModal(false);
         }
-
-        // if(type == 'accept') {
-        //     const res = await updateMilestone(data?._id, data);
-        //     setShowMilestoneSubmissionModal(false);
-
-        // } else {
-        //     const res = await updateMilestone(data?._id, data);
-        //     setShowMilestoneSubmissionModal(false);
-        // }
-
+        refetchProjectDetails()
     }
 
     const time_remain = calculateRemainingDaysAndHours(new Date(), milestoneData?.starts_in);
@@ -140,6 +130,11 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                         <>
                             <img src={warningSVG} alt='warning' className='size-[14px]'/>
                             <p className='text-cardYellowText text-[12px] leading-[14px]'>Under Review</p>
+                        </>
+                    :   milestoneData?.status == 'rejected' ?
+                        <>
+                            <TriangleAlert className='size-[14px] text-errorMsgRedText'/>
+                            <p className='text-errorMsgRedText text-[12px] leading-[14px]'>Rejected</p>
                         </>
                     :
                         <>
@@ -173,22 +168,26 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             </div>
 
             <div className="my-1">
-                    {milestoneData?.status == 'under_review' ? 
-                        <div>
-                            <p className='text-white64'>User has submitted the milestone: <span onClick={() => setShowMilestoneSubmissionModal(true)} className='text-primaryYellow underline cursor-pointer hover:text-primaryYellow/90'>view</span></p>
-                        </div> : null
-}
+                    {milestoneData?.status == 'under_review' 
+                        ?
+                            <div className='mb-1'>
+                                <p className='text-white64 text-[12px]'>User has submitted the milestone: <span onClick={() => setShowMilestoneSubmissionModal(true)} className='text-primaryYellow underline cursor-pointer hover:text-primaryYellow/90'>view</span></p>
+                            </div>
+                        : milestoneData?.status == 'completed' ? <div className='text-primaryGreen bg-primaryDarkUI px-3 py-1 rounded-md flex items-center gap-1 font-gridular w-fit'><Info size={16}/> Milestone is completed</div> : ""
+                        }
                 {user_id != projectDetails?.user_id && user_role == 'sponsor' ?
                     <div>
                     </div>
                 : 
-                    projectDetails?.status == 'closed' ? "" : user_id == projectDetails?.user_id &&
+                    projectDetails?.status == 'closed' ? "" :
+                    milestoneData?.status == "completed" ? <div></div> 
+                    : user_id == projectDetails?.user_id &&
                     <FancyButton 
                         src_img={btnImg} 
                         hover_src_img={btnHoverImg}
                         img_size_classes='w-[342px] h-[44px]' 
                         className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                        btn_txt={milestoneData?.status == 'under_review' || milestoneData?.status == 'closed' ? 're-submit milestone' : 'submit milestone'}  
+                        btn_txt={milestoneData?.status == 'under_review' || milestoneData?.status == 'rejected' ? 're-submit milestone' : 'submit milestone'}  
                         alt_txt='project apply btn' 
                         onClick={() => setShowSubmitModal(true)}
                     />

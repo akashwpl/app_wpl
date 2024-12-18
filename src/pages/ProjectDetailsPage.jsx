@@ -158,6 +158,10 @@ const ProjectDetailsPage = () => {
 
   const token = localStorage.getItem('token_app_wpl')
 
+  const allMilestonesCompleted = useMemo(() => {
+    return projectDetails?.milestones?.every(milestone => milestone.status == 'completed')
+  }, [projectDetails])
+
   return (
     <div className='relative'>
       <div>
@@ -306,7 +310,9 @@ const ProjectDetailsPage = () => {
               </div>
                 
               {isOwner ?
-                projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> :
+                projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div>
+                : allMilestonesCompleted ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
+                :
                 <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
                   <FancyButton 
                     src_img={closeProjBtnImg} 
