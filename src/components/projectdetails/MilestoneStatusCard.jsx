@@ -1,7 +1,7 @@
 import { ArrowUpRight, CheckCheck, Info, TriangleAlert, X } from 'lucide-react';
 import { useState } from 'react';
 import { calculateRemainingDaysAndHours } from '../../lib/constants';
-import { createNotification, submitMilestone, updateMilestone } from '../../service/api';
+import { createNotification, submitMilestone, submitOpenMilestone, updateMilestone } from '../../service/api';
 
 import { useDispatch, useSelector } from 'react-redux';
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png';
@@ -30,7 +30,6 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
 
     const [showMilestoneSubmissionModal, setShowMilestoneSubmissionModal] = useState(false);
 
-
     const handleSubmitMilestone = async () => {
 
         const linkInput = document.querySelector('input').value;
@@ -54,10 +53,28 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             setDescriptionError(null);
         }
 
+        if(projectDetails?.isOpenBounty) {
+            const body = {
+                milestone_id: milestoneData?._id,
+                project_id: projectDetails?._id,
+                user_id: user_id,
+                submissionLink: linkInput,
+                submissionDescription: descriptionTextarea,
+                status: 'submitted'
+            }
+            const res = await submitOpenMilestone(milestoneData?._id,body)
+            console.log('Open ms',res);
+            setShowSubmitModal(false);
+            refetchProjectDetails()
+            return;
+            // fix noti for open bounty
+            
+        }
+
         const body = {
             submissionLink: linkInput,
             submissionDescription: descriptionTextarea,
-            // submitterId: user_id
+            // userId: user_id
         }
 
         const res = await submitMilestone(milestoneData?._id, body);
@@ -181,13 +198,13 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                 : 
                     projectDetails?.status == 'closed' ? "" :
                     milestoneData?.status == "completed" ? <div></div> 
-                    : user_id == projectDetails?.user_id &&
+                    : user_id == projectDetails?.user_id || projectDetails?.isOpenBounty &&
                     <FancyButton 
                         src_img={btnImg} 
                         hover_src_img={btnHoverImg}
                         img_size_classes='w-[342px] h-[44px]' 
                         className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                        btn_txt={milestoneData?.status == 'under_review' || milestoneData?.status == 'rejected' ? 're-submit milestone' : 'submit milestone'}  
+                        btn_txt={milestoneData?.status == 'under_review' || milestoneData?.status == 'rejected' || !projectDetails?.isOpenBounty ? 're-submit milestone' : 'submit milestone'}  
                         alt_txt='project apply btn' 
                         onClick={() => setShowSubmitModal(true)}
                     />
