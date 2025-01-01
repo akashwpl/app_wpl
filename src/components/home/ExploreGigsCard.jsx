@@ -4,7 +4,6 @@ import { Dot } from 'lucide-react';
 import { useState } from 'react';
 
 import clockSVG from '../../assets/icons/pixel-icons/watch.svg'
-import calenderSVG from '../../assets/icons/pixel-icons/calender.svg'
 import profileSVG from '../../assets/icons/pixel-icons/profile.svg'
 import zapSVG from '../../assets/icons/pixel-icons/zap-yellow.svg'
 import { calculateRemainingDaysAndHours, convertTimestampToDate } from '../../../src/lib/constants';
@@ -20,10 +19,9 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
     const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((acc, curr) => {
     return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
     });
-    
+
     const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone?.deadline))
     
-
     const [hovered, setHovered] = useState(false);
 
     const renderRoles = () => {
