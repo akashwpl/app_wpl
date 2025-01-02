@@ -50,9 +50,6 @@ const SubmissionsPage = () => {
     const totalSubmissions = submissions?.length || 0;
     const currentSubmission = submissions?.[currentPage];
     
-    console.log(currentSubmission);
-    
-
     const goToNextPage = () => {
         setCurrentPage((prevPage) => Math.min(prevPage + 1, totalSubmissions - 1));
     };

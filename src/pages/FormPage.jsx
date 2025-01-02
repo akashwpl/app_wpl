@@ -138,8 +138,6 @@ const FormPage = () => {
       }
       
       if(res?._id) {
-        console.log('apply res',res);
-        
         const notiObj = {
           msg: `${userDetails.displayName} has applied for a project.`,
           type: 'project_req',

@@ -285,3 +285,11 @@ export const getOpenMilestoneSubmissions = async (milestone_id) => {
     }
 }
 
+export const updOpenMilestoneSubmissions = async (submission_id, data) => {
+    try {
+        const response = await axiosInstance.post(`/openSubmissions/update/${submission_id}`, data)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}

@@ -49,7 +49,6 @@ const VerifyOrgForm = () => {
     }
 
     const validateFields = async () => {
-        console.log('userId',user_id);
         const newErrors = {};
         if (!name) newErrors.name = 'Name is required';
         if (!organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
@@ -115,7 +114,6 @@ const VerifyOrgForm = () => {
             const adminList = await getAdmins();
             adminList.data.map(async(admin) => {
                 const notiRes = await createNotification({...notification, user_id: admin._id});
-                // console.log(notiRes);
             });
 
             setSubmitted(true);
