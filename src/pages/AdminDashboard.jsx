@@ -25,8 +25,6 @@ const AdminDashboard = () => {
         queryFn: () => getAllOrganisations(user_id),
     })
 
-    console.log('organisationsDetails', organisationsDetails)
-    
     const [searchInput, setSearchInput] = useState()
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 12

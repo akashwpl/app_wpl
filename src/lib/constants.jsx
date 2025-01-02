@@ -8,9 +8,6 @@ export function getTimestampFromNow(deliveryTime, timeUnit, starts_in) {
     // const now = new Date(); // Get the current date
     const now = new Date(starts_in)
 
-    console.log('getTimestamp: ',now);
-    
-
     switch (timeUnit.toLowerCase()) {
         case 'day':
         case 'days':
@@ -47,8 +44,6 @@ export const calcDaysUntilDate = (startDate, futureDate) => {
 }
 
 export function calculateRemainingDaysAndHours(startDate, targetDate) {
-    console.log('targetDate', targetDate);
-    
     // Create a Date object for the target date
     const targetDateTime = new Date(targetDate);
   

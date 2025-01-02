@@ -163,7 +163,6 @@ const EditProjectPage = () => {
                 },
                 milestones: updatedMilestones
             }
-            console.log(updData);
 
             if(pfp) {
                 const imageRef = ref(storage, `images/${pfp.name}`);

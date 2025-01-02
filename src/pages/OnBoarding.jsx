@@ -86,7 +86,6 @@ const OnBoarding = () => {
       body: JSON.stringify({ email, password }),
     }).then((res) => res.json())
     .then((data) => {
-      console.log('signup', data)
       if(data?.data?.token) {
         localStorage.setItem('token_app_wpl', data?.data?.token)
         dispatch(setUserId(data?.data?.userId))
@@ -118,11 +117,9 @@ const OnBoarding = () => {
   
       getUserDetails(res?.data?.data?.userId).then((data) => {
         setError('')
-        console.log('data', data)
         data?.role == 'sponsor' ? navigate('/sponsordashboard') : navigate('/allprojects')
       })
     } catch (error) {
-      console.log(error.response);
       if(error.status == '409') {
         setError(error.response.data.message);
         return
@@ -170,15 +167,12 @@ const OnBoarding = () => {
     const imageUrl = await getDownloadURL(imageRef);
 
     if(isOrgSignUp) {
-      console.log('yes brotha');
       try {
         const res = await axios.post(`${BASE_URL}/users/signup`, {email, password});
-        console.log(res);
         localStorage.setItem('token_app_wpl', res?.data?.data?.token)
         dispatch(setUserId(res?.data?.data?.userId))
         setError('')
       } catch (error) {
-        console.log(error);
         if(error.status == '409') {
           setErrors({email: error.response.data.message});
           return
@@ -217,8 +211,6 @@ const OnBoarding = () => {
     } else {
       dispatch(displaySnackbar('Something went wrong'))
     }
-
-    console.log('update profile', data)
   }
   const removeImgPrveiew = () => {
     setImg(null)
@@ -262,8 +254,6 @@ const OnBoarding = () => {
         body: JSON.stringify({ email }),
       }).then((res) => res.json())
       .then((data) => {
-
-        console.log('signup', data)
         if(data?.data?.token) {
           localStorage.setItem('token_app_wpl', data?.data?.token)
           dispatch(setUserId(data?.data?.userId))

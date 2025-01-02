@@ -144,8 +144,6 @@ const AddProjectPage = () => {
             deadline: getTimestampFromNow(milestone.deliveryTime, milestone.timeUnit?.toLowerCase(), milestone.starts_in) // Add timestamp to each milestone
         }));
     
-        console.log('updatedMilestones:', updatedMilestones); // Log the timestamps for each milestone
-        
         if (validateFields()) {
 
             setIsCreatingProject(true);
@@ -174,7 +172,6 @@ const AddProjectPage = () => {
             // create open project
             if(isOpenBounty) {
                 const resp = await createOpenProject(data);
-                console.log('OpenBounty',resp);
                 setCreatedProjectId(resp?.data?.project?._id);
                 setIsCreatingProject(false);
                 setSubmitted(true);
@@ -190,12 +187,10 @@ const AddProjectPage = () => {
                 body: JSON.stringify(data)
             }).then(res => res.json())
             .then(data => {
-                console.log('Success: project created', data);
                 setCreatedProjectId(data?.data?.project?._id);
                 setIsCreatingProject(false);
             })
 
-            console.log('Form submitted');
             setSubmitted(true);
         }
     };
@@ -224,9 +219,6 @@ const AddProjectPage = () => {
         setTotalPrize(total)
     },[milestones])
 
-    console.log('ms',milestones);
-
-
     const handleSearch = (e) => {
         setSearchInput(e.target.value)
     }
@@ -244,7 +236,6 @@ const AddProjectPage = () => {
     }
 
     const handleFoundationChange = (e) => {
-        console.log('foundation',e.target.value)
         setFoundation(e.target.value)
     }
 

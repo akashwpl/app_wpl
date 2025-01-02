@@ -29,6 +29,7 @@ import { getOpenProjectSubmissions, getOrgById, getProjectDetails, getProjectSub
 import alertPng from '../assets/images/alert.png'
 import clockSVG from '../assets/icons/pixel-icons/watch.svg'
 import zapSVG from '../assets/icons/pixel-icons/zap-yellow.svg'
+import OpenMilestoneSubmissions from '../components/projectdetails/OpenMilestoneSubmissions'
 
 const initialTabs = [
   {id: 'overview', name: 'Overview', isActive: true},
@@ -84,9 +85,10 @@ const ProjectDetailsPage = () => {
     queryFn: () => getProjectSubmissions(id),
   })
 
-  const {data: openProjectSubmissions, isLoading: isLoadingOpenProjectSubmissions} = useQuery({
+  const {data: openProjectSubmissions, isLoading: isLoadingOpenProjectSubmissions, refetch: refetchOpenProjectSubmissions} = useQuery({
     queryKey: ['openProjectSubmissions', id],
     queryFn: () => getOpenProjectSubmissions(id),
+    enabled: !!projectDetails?.isOpenBounty
   })
 
   useEffect(() => {
@@ -96,12 +98,13 @@ const ProjectDetailsPage = () => {
         return acc;
       }, {});
       const formattedData = groupedData && Object.entries(groupedData).reduce((acc, [milestone_id, data]) => {
-        const milestoneTitle = projectDetails?.milestones.find(
+        const milestoneData = projectDetails?.milestones.find(
           (item) => item._id === milestone_id
-        )?.title;
-        if (milestoneTitle) {
+        );
+        if (milestoneData) {
           acc.push({
-            title: milestoneTitle,
+            title: milestoneData.title,
+            status: milestoneData.status,
             submissions: data
           })
         }
@@ -282,7 +285,6 @@ const ProjectDetailsPage = () => {
                     { projectDetails?.isOpenBounty ? 
                     openMilestoneSubmissions?.length == 0 ?
                     <div className='text-[14px] px-4 py-2 text-center text-primaryYellow border-t border-white7 font-gridular'>No submissions yet</div> :
-                    <div>
                       <Accordion type="single" defaultValue="item-0" collapsible>
                         {openMilestoneSubmissions?.map((milestone, index) => (
                           <AccordionItem value={`item-${index}`} key={index} className="border-white7">
@@ -302,12 +304,7 @@ const ProjectDetailsPage = () => {
                                   </div>
                                   <div className='max-h-[300px] overflow-y-auto'>
                                   {milestone.submissions?.map((submission, index) => (
-                                    <div onClick={() => {}} key={index} className={`grid grid-cols-12 gap-2 py-2 px-4 rounded-sm hover:bg-white4 cursor-pointer ${index === milestone.submissions.length - 1 ? "" : "border-b border-white7"}`}>
-                                      <div className='text-[14px] col-span-1 text-white88 font-inter'>{index + 1}</div>
-                                      <div className='text-[14px] col-span-2 text-start text-white88 font-inter'>{submission?.user?.displayName}</div>
-                                      <div className='text-[14px] col-span-4 text-white88 font-inter'>{submission?.submissionLink}</div>
-                                      <div className='text-[14px] col-span-5 text-white88 font-inter truncate'>{submission?.submissionDescription}</div>
-                                    </div>
+                                    <OpenMilestoneSubmissions submission={submission} index={index} submission_count={milestone.submissions.length-1} projectStatus={projectDetails?.status} milestoneStatus={milestone?.status} username={userDetails?.displayName} refetchProjectDetails={refetchProjectDetails}/>
                                   ))}
                                   </div>
                                 </>
@@ -316,7 +313,7 @@ const ProjectDetailsPage = () => {
                           </AccordionItem>
                         ))}
                       </Accordion>
-                    </div> :
+                     :
                     totalSubmissions == 0 ? <div className='text-[14px] text-primaryYellow font-gridular'>No submissions yet</div> : <>
                       <div className='grid grid-cols-12 gap-2 mb-2 px-4'>
                         <div className='text-[14px] col-span-1 text-white48 font-inter'>No.</div>
@@ -408,7 +405,8 @@ const ProjectDetailsPage = () => {
               :
                 <>
                   {projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> : 
-
+                    allMilestonesCompleted ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
+                    :
                     isProjApplied || projectDetails?.status != "idle" || projectDetails?.isOpenBounty ? <span></span> : 
                     token ? <div className='mx-4 mt-4'>
                       <FancyButton 
