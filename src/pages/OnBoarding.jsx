@@ -117,7 +117,7 @@ const OnBoarding = () => {
   
       getUserDetails(res?.data?.data?.userId).then((data) => {
         setError('')
-        data?.role == 'sponsor' ? navigate('/sponsordashboard') : navigate('/allprojects')
+        data?.role == 'sponsor' ? navigate('/userprojects') : navigate('/allprojects')
       })
     } catch (error) {
       if(error.status == '409') {
@@ -220,10 +220,6 @@ const OnBoarding = () => {
   const swtichOnboardingType = () => {
     setError("")
     setIsSignin(!isSignin)
-  }
-
-  const navigateToOrgFormPage = () => {
-    navigate('/verifyorg')
   }
 
   const togglePasswordField = () => {
