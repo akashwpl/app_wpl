@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import usdc from '../../assets/images/usdc.png'
+import USDCimg from '../../assets/images/usdc.png'
+import STRKimg from '../../assets/images/strk.png'
 import { Dot } from 'lucide-react';
 import { useState } from 'react';
 
@@ -66,7 +67,7 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
             </div>
             
             <div className={`absolute transition-all duration-500 ${projectsGridView ? (hovered ? "right-3 top-4" : "right-5 top-4") : hovered ? "right-1" : "right-4"} flex flex-row justify-evenly items-center font-gridular leading-[19.2px] bg-[#091044] py-2 px-3 gap-[6px] rounded-md`}>
-                <img className='h-[15px]' src={usdc} alt="currency" />
+                <img className='h-[15px]' src={data?.currency == 'STRK' ? STRKimg : USDCimg} alt="currency" />
                 <p className='text-[14px] font-inter text-white88'>{data?.totalPrize}</p>
                 <p className='text-[14px] font-semibold text-white48'>USDC</p>
             </div>

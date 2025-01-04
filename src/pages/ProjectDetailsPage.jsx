@@ -12,7 +12,8 @@ import closeProjBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.pn
 import closeProjBtnImg from '../assets/svg/close_proj_btn_subtract.png'
 import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
 import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
-import USDCsvg from '../assets/svg/usdc.svg'
+import USDCimg from '../assets/svg/usdc.svg'
+import STRKimg from '../assets/images/strk.png'
 import MilestoneCard from '../components/projectdetails/MilestoneCard'
 import MilestoneStatusCard from '../components/projectdetails/MilestoneStatusCard'
 import {
@@ -355,8 +356,8 @@ const ProjectDetailsPage = () => {
               <div className='flex flex-col justify-center items-center mt-8'>
                 <p className='text-[14px] text-white32 leading-4 font-inter'>Total Prizes</p>
                 <p className='text-[24px] text-white88 leading-[28px] font-gridular flex items-center gap-2'>
-                  <img src={USDCsvg} alt='usdc' className='size-[24px]'/>
-                  {totalPrize} <span className='text-white48'>USDC</span>
+                  <img src={projectDetails?.currency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[24px]'/>
+                  {totalPrize} <span className='text-white48'>{projectDetails?.currency || 'USDC'}</span>
                 </p>
               </div>
 
@@ -367,7 +368,7 @@ const ProjectDetailsPage = () => {
                       <AccordionTrigger className="text-white48 font-inter hover:no-underline">
                         <div className='flex justify-between items-center w-full text-[13px] font-medium text-white88'>
                           <p>Milestone {index + 1}</p>
-                          <p className='flex items-center gap-1'><img src={USDCsvg} alt='usdc' className='size-[14px]'/>{milestone?.prize} <span className='text-white48'>{milestone?.currency}</span></p>
+                          <p className='flex items-center gap-1'><img src={milestone?.currency == 'STRK' ? STRKimg : USDCimg} alt='ms-currency' className='size-[14px]'/>{milestone?.prize} <span className='text-white48'>{milestone?.currency}</span></p>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="py-2 border-t border-dashed border-white12">

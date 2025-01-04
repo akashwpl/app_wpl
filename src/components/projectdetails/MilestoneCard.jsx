@@ -1,6 +1,7 @@
 import React from 'react'
 import { CheckCheck } from 'lucide-react'
-import USDCsvg from '../../assets/svg/usdc.svg'
+import USDCimg from '../../assets/svg/usdc.svg'
+import STRKimg from '../../assets/images/strk.png'
 import { calcDaysUntilDate, convertTimestampToDate } from '../../lib/constants'
 
 import hourglassSVG from '../../assets/icons/pixel-icons/hourglass2.svg'
@@ -44,7 +45,7 @@ const MilestoneCard = ({ data }) => {
                 }
               </div>
               <div className='bg-[#091044] rounded-[6px] flex items-center gap-1 py-3 px-2'>
-                <img src={USDCsvg} alt='usdc' className='size-[14px]'/>
+                <img src={data?.currency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px]'/>
                 <p className='text-[12px] text-white88 leading-[14px] font-medium font-inter'>{data?.prize} <span className='text-white48'>{data?.currency}</span></p>
               </div>
             </div>

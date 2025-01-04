@@ -7,7 +7,8 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "../components/ui/accordion"
-import USDCsvg from '../assets/svg/usdc.svg'
+import USDCimg from '../assets/svg/usdc.svg'
+import STRKimg from '../assets/images/strk.png'
 import DiscordSVG from '../assets/icons/pixel-icons/discord.svg'
 import { getProjectDetails, getUserOrgs, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -68,6 +69,7 @@ const EditProjectPage = () => {
     const [description, setDescription] = useState(projectDetails?.description || '');
     const [discordLink, setDiscordLink] = useState(projectDetails?.discordLink || '');
     const [about, setAbout] = useState(projectDetails?.about || '');
+    const [projCurrency, setProjCurrency] = useState(projectDetails?.currency || 'USDC');
 
     const [submitted, setSubmitted] = useState(false);
 
@@ -92,7 +94,7 @@ const EditProjectPage = () => {
 
     const handleAddMilestone = () => {
         const newMilestoneIndex = milestones.length + 1; // Calculate the new milestone index
-        setMilestones([...milestones, { title: `Milestone ${newMilestoneIndex}`, description: '', prize: '', currency: 'USDC', deliveryTime: '', timeUnit: 'Weeks' }]);
+        setMilestones([...milestones, { title: `Milestone ${newMilestoneIndex}`, description: '', prize: '', currency: projCurrency, deliveryTime: '', timeUnit: 'Weeks' }]);
     };
 
     const handleDeleteMilestone = (index) => {
@@ -160,6 +162,7 @@ const EditProjectPage = () => {
                     discordLink: discordLink,
                     about: about,
                     image: projectDetails?.image,
+                    currency: projCurrency
                 },
                 milestones: updatedMilestones
             }
@@ -313,6 +316,19 @@ const EditProjectPage = () => {
                                         </div>
                                     </div>
 
+                                    {/* Select project milestone currency */}
+                                    <div className='mt-3'>
+                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Select Prize Currency</p>
+                                        <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row gap-2 justify-between items-center">
+                                            <img src={projCurrency === 'STRK' ? STRKimg : USDCimg} className='size-6' />
+                                            <select onChange={(e) => setProjCurrency(e.target.value)} className='bg-cardBlueBg2 h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
+                                                <option value="USDC" className='text-white88 bg- font-gridular text-[14px]'>USDC</option>
+                                                <option value="STRK" className='text-white88 font-gridular text-[14px]'>STRK</option>
+                                            </select>
+                                        </div>
+                                        {errors.projCurrency && <p className='text-red-500 font-medium text-[10px]'>{errors.projCurrency}</p>} {/* Error message */}
+                                    </div>
+
                                     <div className='mt-3'>
                                         <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Discord Link</p>
                                         <div className='bg-white7 rounded-md px-3 py-2 flex items-center gap-2'>
@@ -410,8 +426,8 @@ const EditProjectPage = () => {
                                                 <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
                                                 <div className='flex items-center gap-2 w-full'>
                                                     <div className='bg-[#091044] rounded-md py-2 w-[110px] flex justify-evenly items-center gap-1'>
-                                                        <img src={USDCsvg} alt='usdc' className='size-[14px] rounded-sm'/>
-                                                        <p className='text-white88 font-semibold font-inter text-[12px]'>USDC</p>
+                                                        <img src={projCurrency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px] rounded-sm'/>
+                                                        <p className='text-white88 font-semibold font-inter text-[12px]'>{projCurrency}</p>
                                                     </div>
                                                     <div className='w-full'>
                                                         <div className='bg-white7 rounded-md px-3 py-2'>
@@ -513,9 +529,9 @@ const EditProjectPage = () => {
             <div className='flex items-center gap-2'>
                 <p className='text-white88 font-semibold font-inter text-[13px]'>Project Total Sum</p>
                 <div className='bg-white4 rounded-md flex items-center gap-1 h-8 px-3'>
-                    <img src={USDCsvg} alt='usdc' className='size-[14px]'/>
+                    <img src={projCurrency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px]'/>
                     <p className='text-white88 text-[12px] font-semibold font-inter'>{projectDetails?.totalPrize}</p>
-                    <p className='text-white32 font-semibold font-inter text-[12px]'>USDC</p>
+                    <p className='text-white32 font-semibold font-inter text-[12px]'>{projCurrency}</p>
                 </div>
             </div>
             <div>
