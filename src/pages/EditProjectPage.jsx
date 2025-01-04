@@ -9,7 +9,7 @@ import {
 } from "../components/ui/accordion"
 import USDCsvg from '../assets/svg/usdc.svg'
 import DiscordSVG from '../assets/icons/pixel-icons/discord.svg'
-import { getProjectDetails, getUserOrgs, updateProjectDetails } from '../service/api'
+import { getProjectDetails, getUserOrgs, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getTimestampFromNow } from '../lib/constants'
@@ -163,7 +163,6 @@ const EditProjectPage = () => {
                 },
                 milestones: updatedMilestones
             }
-            console.log(updData);
 
             if(pfp) {
                 const imageRef = ref(storage, `images/${pfp.name}`);
@@ -175,8 +174,14 @@ const EditProjectPage = () => {
                 updData.project.image = projectDetails?.image
             }
             
+            // Edit open project
+            if(projectDetails?.isOpenBounty) {
+                const res = await updateOpenProjectDetails(projectDetails._id, updData);
+                setSubmitted(true)
+                return;
+            }
+            // Edit normal/ Gated project
             const res = await updateProjectDetails(projectDetails._id, updData);
-            console.log('response', res);
             setSubmitted(true);
         }
     };

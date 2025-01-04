@@ -29,8 +29,6 @@ function App() {
 
   const { snackBar } = useSelector(state => state)
 
-  console.log('snackbar', snackBar);
-
   return (
     <div className="relative">
       <div className="fixed top-0 left-0 w-full z-[100]">

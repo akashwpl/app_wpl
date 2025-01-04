@@ -1,7 +1,7 @@
 import { ArrowUpRight, CheckCheck, Info, TriangleAlert, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { calculateRemainingDaysAndHours } from '../../lib/constants';
-import { createNotification, submitMilestone, updateMilestone } from '../../service/api';
+import { createNotification, getOpenMilestoneSubmissions, getOpenProjectSubmissions, submitMilestone, submitOpenMilestone, updateMilestone } from '../../service/api';
 
 import { useDispatch, useSelector } from 'react-redux';
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png';
@@ -17,6 +17,7 @@ import hourglassSVG from '../../assets/icons/pixel-icons/hourglass2.svg';
 import questionSVG from '../../assets/icons/pixel-icons/question-mark.svg';
 import warningSVG from '../../assets/icons/pixel-icons/warning.svg';
 import clockSVG from '../../assets/icons/pixel-icons/watch.svg';
+import { useQuery } from '@tanstack/react-query';
 
 const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProjectDetails, username }) => {
 
@@ -29,7 +30,19 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
     const [descriptionError, setDescriptionError] = useState(null);
 
     const [showMilestoneSubmissionModal, setShowMilestoneSubmissionModal] = useState(false);
+    const [isUserSubmittedOpenMS, setIsUserSubmittedOpenMS] = useState(false);
 
+    const {data: openMilestoneSubmissions, isLoading: isLoadingOpenMilestoneSubmissions, refetch: refetchOpenMS} = useQuery({
+        queryKey: ["openMilestoneSubmissions", milestoneData?._id],
+        queryFn: () => getOpenMilestoneSubmissions(milestoneData?._id),
+        enabled: !!projectDetails?.isOpenBounty,
+    })
+
+    useEffect(() => {
+        if(!isLoadingOpenMilestoneSubmissions && projectDetails?.isOpenBounty) {
+            setIsUserSubmittedOpenMS(openMilestoneSubmissions?.some(ms => ms.user_id == user_id));
+        }
+    },[isLoadingOpenMilestoneSubmissions])
 
     const handleSubmitMilestone = async () => {
 
@@ -54,14 +67,28 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             setDescriptionError(null);
         }
 
-        const body = {
-            submissionLink: linkInput,
-            submissionDescription: descriptionTextarea,
-            // submitterId: user_id
+        let response = {};
+        if(projectDetails?.isOpenBounty) {
+            const body = {
+                milestone_id: milestoneData?._id,
+                project_id: projectDetails?._id,
+                user_id: user_id,
+                submissionLink: linkInput,
+                submissionDescription: descriptionTextarea,
+                status: 'submitted'
+            }
+            response = await submitOpenMilestone(milestoneData?._id,body)
+            setIsUserSubmittedOpenMS(true)
+            refetchOpenMS();
+        } else {
+            const body = {
+                submissionLink: linkInput,
+                submissionDescription: descriptionTextarea,
+            }
+            response = await submitMilestone(milestoneData?._id, body);
         }
 
-        const res = await submitMilestone(milestoneData?._id, body);
-        if(res?._id) {
+        if(response?._id) {
             const notiObj = {
               msg: `${username} has submitted a milestone for..`,
               type: 'project_req',
@@ -73,7 +100,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             setShowSubmitModal(false);
         }
         
-        if(res?.user_status === 'submitted') {
+        if(response?.user_status === 'submitted' || response?.status === 'submitted') {
             dispatch(displaySnackbar('Milestone submitted successfully'))
         } else {
             dispatch(displaySnackbar('Something went wrong. Please try again later!'))
@@ -97,7 +124,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                 msg: `${username} has ${type}ed your milestone submission...`,
                 type: 'project_req',
                 fromId: user_id,
-                // user_id: milestoneData.submitterId,                   // submitterId to be added to milestone schema
+                user_id: projectDetails.user_id,
                 project_id: projectDetails._id
             }
             const notiRes = await createNotification(notiObj)
@@ -181,16 +208,18 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                 : 
                     projectDetails?.status == 'closed' ? "" :
                     milestoneData?.status == "completed" ? <div></div> 
-                    : user_id == projectDetails?.user_id &&
+                    : ((projectDetails?.isOpenBounty && !isUserSubmittedOpenMS) || user_id == projectDetails?.user_id) ? 
                     <FancyButton 
                         src_img={btnImg} 
                         hover_src_img={btnHoverImg}
                         img_size_classes='w-[342px] h-[44px]' 
                         className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                         btn_txt={milestoneData?.status == 'under_review' || milestoneData?.status == 'rejected' ? 're-submit milestone' : 'submit milestone'}  
-                        alt_txt='project apply btn' 
+                        alt_txt='milestone submit btn' 
                         onClick={() => setShowSubmitModal(true)}
                     />
+                    :
+                    isUserSubmittedOpenMS && <p className='text-white88 bg-primaryDarkUI px-3 py-1 rounded-md flex items-center gap-1 font-gridular w-fit'><Info size={16}/> Milestone Already Submitted</p>
                 
                 }
             </div>
@@ -244,7 +273,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                     </div>
 
                     <div>
-                        {milestoneData?.status == 'under_review' && projectDetails?.status != 'closed'
+                        {milestoneData?.status == 'under_review' && projectDetails?.status != 'closed' && user_role == 'sponsor'
                         ? <div className='flex justify-center mt-6 items-center gap-2'>
                             <FancyButton 
                                 src_img={btnImg} 

@@ -35,7 +35,6 @@ const RequestsPage = () => {
 
     useEffect(() => {
         if(!isLoadingOrgById) {
-            console.log(orgById);
             setOrgState(orgById[0])
         }
     },[isLoadingOrgById])

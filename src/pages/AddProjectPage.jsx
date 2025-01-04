@@ -22,7 +22,7 @@ import {
 import FancyButton from '../components/ui/FancyButton';
 import { BASE_URL, getTimestampFromNow } from '../lib/constants';
 import { storage } from '../lib/firebase';
-import { getUserOrgs } from '../service/api';
+import { createOpenProject, getUserOrgs } from '../service/api';
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import Spinner from '../components/ui/spinner';
@@ -47,6 +47,7 @@ const AddProjectPage = () => {
     const [role, setRole] = useState([]);
     const [logoPreview, setLogoPreview] = useState('');
     const [foundation, setFoundation] = useState('673067f8797130f180c2846e');
+    const [isOpenBounty, setIsOpenBounty] = useState(false);
     const [errors, setErrors] = useState({}); // State for validation errors
 
     const [totalPrize, setTotalPrize] = useState(0);
@@ -143,8 +144,6 @@ const AddProjectPage = () => {
             deadline: getTimestampFromNow(milestone.deliveryTime, milestone.timeUnit?.toLowerCase(), milestone.starts_in) // Add timestamp to each milestone
         }));
     
-        console.log('updatedMilestones:', updatedMilestones); // Log the timestamps for each milestone
-        
         if (validateFields()) {
 
             setIsCreatingProject(true);
@@ -164,9 +163,19 @@ const AddProjectPage = () => {
                     "about": aboutProject,
                     "roles": role,
                     "image" : imageUrl,
+                    "isOpenBounty": isOpenBounty,
                     "foundation": foundation == "673067f8797130f180c2846e" ? 'starkware' : "starkwarefoundation",
                 },
                 "milestones": updatedMilestones
+            }
+
+            // create open project
+            if(isOpenBounty) {
+                const resp = await createOpenProject(data);
+                setCreatedProjectId(resp?.data?.project?._id);
+                setIsCreatingProject(false);
+                setSubmitted(true);
+                return; 
             }
             
             const response = await fetch(`${BASE_URL}/projects/create/`, {
@@ -178,12 +187,10 @@ const AddProjectPage = () => {
                 body: JSON.stringify(data)
             }).then(res => res.json())
             .then(data => {
-                console.log('Success: project created', data);
                 setCreatedProjectId(data?.data?.project?._id);
                 setIsCreatingProject(false);
             })
 
-            console.log('Form submitted');
             setSubmitted(true);
         }
     };
@@ -212,9 +219,6 @@ const AddProjectPage = () => {
         setTotalPrize(total)
     },[milestones])
 
-    console.log('ms',milestones);
-
-
     const handleSearch = (e) => {
         setSearchInput(e.target.value)
     }
@@ -232,7 +236,6 @@ const AddProjectPage = () => {
     }
 
     const handleFoundationChange = (e) => {
-        console.log('foundation',e.target.value)
         setFoundation(e.target.value)
     }
 
@@ -333,6 +336,18 @@ const AddProjectPage = () => {
                                             </div>
                                             {errors.description && <p className='text-red-500 font-medium text-[10px]'>{errors.description}</p>} {/* Error message */}
                                         </div>
+                                        
+                                        {/* Add info button for Open and Gated (close) projects description */}
+                                        <div className='mt-3'>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Select bounty type <span className='text-[#F03D3D]'>*</span></p>
+                                            <div className='bg-white7 rounded-md px-3 py-2 text-white64'>
+                                                <input type="radio" id="isOpenTrue" name="isOpen" checked={isOpenBounty} onChange={() => setIsOpenBounty(true)} value={true} />
+                                                <label className='mr-3' for="isOpenTrue"> Open</label>
+                                                <input type="radio" id="isOpenFalse" name="isOpen" checked={!isOpenBounty} onChange={() => setIsOpenBounty(false)} value={false} />
+                                                <label for="isOpenFalse"> Gated</label>
+                                            </div>
+                                        </div>
+
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Role <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>

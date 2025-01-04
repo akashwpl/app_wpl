@@ -239,3 +239,57 @@ export const getAdmins = async () => {
         handleForbiddenError(error)
     }
 }
+
+export const createOpenProject = async (data) => {
+    try {
+        const response = await axiosInstance.post('/openProjects/create/', data)
+        return response.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const updateOpenProjectDetails = async (id, updData) => {
+    try {
+        const response = await axiosInstance.put(`/openProjects/updateWithMilestone/${id}`, updData)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const submitOpenMilestone = async (milestone_id, body) => {
+    try {
+        const response = await axiosInstance.post(`/openProjects/milestone/submit/${milestone_id}`, body)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const getOpenProjectSubmissions = async (project_id) => {
+    try {
+        const response = await axiosInstance.get(`/openSubmissions/project/${project_id}`)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const getOpenMilestoneSubmissions = async (milestone_id) => {
+    try {
+        const response = await axiosInstance.get(`/openSubmissions/${milestone_id}`)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const updOpenMilestoneSubmissions = async (submission_id, data) => {
+    try {
+        const response = await axiosInstance.post(`/openSubmissions/update/${submission_id}`, data)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}

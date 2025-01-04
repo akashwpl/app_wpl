@@ -24,8 +24,6 @@ const Requests = () => {
 
     useEffect(() => {
         if(!isLoadingAllOrganisations) {
-            // console.log('org',allOrganisations);
-            
             const pendingReqs = allOrganisations.filter(org => {
                 return org.status === 'pending'
             })
