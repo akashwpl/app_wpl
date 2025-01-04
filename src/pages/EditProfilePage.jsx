@@ -534,7 +534,7 @@ const EditProfilePage = () => {
                             </div>
                             {errors.title && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.title}</div>}
                             <div className='flex flex-col gap-1 w-full mt-3'>
-                                <label className='text-[13px] font-medium text-white32'>Add a short description (Max 120 characters)</label>
+                                <label className='text-[13px] font-medium text-white32'>Add a short description</label>
                                 <textarea className={`bg-white7 text-white88 outline-none rounded-[6px] placeholder:text-white32 px-3 py-2 text-[14px] ${errors.desc && 'border-[1px] border-[#FF7373]'}`}
                                     placeholder='I did some shiii, ykwim'
                                     rows={3}

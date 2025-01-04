@@ -219,7 +219,7 @@ const Navbar = () => {
                         <p>Rewards</p>
                       </div>
                     </Link>
-                    {userDetail?.role === 'user' && (
+                    {/* {userDetail?.role === 'user' && (
                       <>
                         <Link
                           to="/verifyorg"
@@ -232,7 +232,7 @@ const Navbar = () => {
                         </Link>
                         <div className="h-[1px] w-full bg-white7 rounded-sm" />
                       </>
-                    )}
+                    )} */}
                     <div
                       onClick={signout}
                       className="text-[#E38070] hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 rounded-sm gap-2"
@@ -345,7 +345,7 @@ const Navbar = () => {
                   <p>Rewards</p>
                 </div>
               </Link>
-              {userDetail?.role === 'user' && (
+              {/* {userDetail?.role === 'user' && (
                   <Link
                     to="/verifyorg"
                     onClick={() => setShowNavbar(false)}
@@ -355,7 +355,7 @@ const Navbar = () => {
                       <p>Join as Org</p>
                     </div> 
                   </Link>
-              )}
+              )} */}
               <div onClick={signout} className='text-[#E38070]'>
                 <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2 cursor-pointer" onClick={() => setShowNavbar(false)}>
                   <LogOutIcon size={30} className='rotate-180'/>
