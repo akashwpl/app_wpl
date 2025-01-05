@@ -37,9 +37,9 @@ const RewardsPage = () => {
         <div className='flex justify-center items-center pt-20'>
             <div className='size-full flex flex-col justify-center items-center max-w-[840px]'>
 
-                <div className='w-full'>
+                {/* <div className='w-full'>
                     <Statistics userDetails={userDetail}/>
-                </div>
+                </div> */}
 
                 <div className='flex justify-start w-full mb-10'>
                     <Tabs tabs={tabs} handleTabClick={handleTabClick} selectedTab={selectedTab}/>

@@ -12,7 +12,8 @@ import btnImg from '../assets/svg/btn_subtract_semi.png';
 import DiscordSvg from '../assets/svg/discord.svg';
 import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png';
 import saveBtnImg from '../assets/svg/menu_btn_subtract.png';
-import USDCsvg from '../assets/svg/usdc.svg';
+import USDCimg from '../assets/svg/usdc.svg';
+import STRKimg from '../assets/images/strk.png';
 import {
     Accordion,
     AccordionContent,
@@ -47,6 +48,7 @@ const AddProjectPage = () => {
     const [role, setRole] = useState([]);
     const [logoPreview, setLogoPreview] = useState('');
     const [foundation, setFoundation] = useState('673067f8797130f180c2846e');
+    const [projCurrency, setProjCurrency] = useState('USDC');
     const [isOpenBounty, setIsOpenBounty] = useState(false);
     const [errors, setErrors] = useState({}); // State for validation errors
 
@@ -109,6 +111,7 @@ const AddProjectPage = () => {
         if (!discordLink) newErrors.discordLink = 'Discord link is required';
         if (!logo) newErrors.logo = 'Logo is required';
         if (!role) newErrors.role = 'Role is required';
+        if (!projCurrency) newErrors.projCurrency = 'Prize currency is required';
         if (milestones.length === 0) newErrors.milestones = 'At least one milestone is required';
         if (!aboutProject) newErrors.aboutProject = 'About project is required';
         setErrors(newErrors);
@@ -134,7 +137,7 @@ const AddProjectPage = () => {
     };
 
     const handleAddMilestone = () => {
-        setMilestones([...milestones, { title: '', description: '', prize: '', currency: 'USDC', deliveryTime: '', timeUnit: 'Weeks' }]);
+        setMilestones([...milestones, { title: '', description: '', prize: '', currency: projCurrency, deliveryTime: '', timeUnit: 'Weeks' }]);
     };
 
     const handleSubmit = async () => {
@@ -165,6 +168,7 @@ const AddProjectPage = () => {
                     "image" : imageUrl,
                     "isOpenBounty": isOpenBounty,
                     "foundation": foundation == "673067f8797130f180c2846e" ? 'starkware' : "starkwarefoundation",
+                    "currency": projCurrency    // project currency strk or usdc
                 },
                 "milestones": updatedMilestones
             }
@@ -324,7 +328,7 @@ const AddProjectPage = () => {
                                             {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description (240 character )<span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description<span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <textarea 
                                                     type='text' 
@@ -342,9 +346,9 @@ const AddProjectPage = () => {
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Select bounty type <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2 text-white64'>
                                                 <input type="radio" id="isOpenTrue" name="isOpen" checked={isOpenBounty} onChange={() => setIsOpenBounty(true)} value={true} />
-                                                <label className='mr-3' for="isOpenTrue"> Open</label>
+                                                <label className='mr-3' htmlFor="isOpenTrue"> Open</label>
                                                 <input type="radio" id="isOpenFalse" name="isOpen" checked={!isOpenBounty} onChange={() => setIsOpenBounty(false)} value={false} />
-                                                <label for="isOpenFalse"> Gated</label>
+                                                <label htmlFor="isOpenFalse"> Gated</label>
                                             </div>
                                         </div>
 
@@ -369,7 +373,7 @@ const AddProjectPage = () => {
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation</p>
                                             <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
-                                                <select onChange={handleFoundationChange} className='bg-transparent h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
+                                                <select onChange={handleFoundationChange} className='bg-cardBlueBg2 h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
                                                     <option value="673067f8797130f180c2846e" className='text-white88 font-gridular text-[14px]'>Starkware</option>
                                                     <option value="67307ac0d5e10d5d8b55e7da" className='text-white88 font-gridular text-[14px]'>Starknet Foundation</option>
                                                 </select>
@@ -377,7 +381,18 @@ const AddProjectPage = () => {
                                             {errors.discordLink && <p className='text-red-500 font-medium text-[10px]'>{errors.discordLink}</p>} {/* Error message */}
                                         </div>
 
-        
+                                        {/* Select project milestone currency */}
+                                        <div className='mt-3'>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Select Prize Currency</p>
+                                            <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row gap-2 justify-between items-center">
+                                                <img src={projCurrency === 'STRK' ? STRKimg : USDCimg} className='size-6' />
+                                                <select onChange={(e) => setProjCurrency(e.target.value)} className='bg-cardBlueBg2 h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
+                                                    <option value="USDC" className='text-white88 bg- font-gridular text-[14px]'>USDC</option>
+                                                    <option value="STRK" className='text-white88 font-gridular text-[14px]'>STRK</option>
+                                                </select>
+                                            </div>
+                                            {errors.projCurrency && <p className='text-red-500 font-medium text-[10px]'>{errors.projCurrency}</p>} {/* Error message */}
+                                        </div>
 
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Discord Link</p>
@@ -475,11 +490,46 @@ const AddProjectPage = () => {
                                                     </div>
                                                     {milestone.err?.starts_in && <p className='text-red-500 font-medium text-[10px]'>{milestone.err.starts_in}</p>}
                                                 </div>
+
+                                                {/* new currency dropdown */}
+                                                {/* <div className='mt-3'>
+                                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>MB</p>
+                                                    <div className='flex items-center gap-2 w-full mt-2'>
+                                                        <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
+                                                            <img src={milestone?.currency === 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px] rounded-sm'/>
+                                                            <select 
+                                                                className='bg-[#091044] text-white88 outline-none border-none w-full'
+                                                                value={milestone.currency}
+                                                                onChange={(e) => handleMilestoneChange(index, 'currency', e.target.value)}
+                                                            >
+                                                                <option value="USDC">
+                                                                    <p className='text-white88 font-semibold font-inter text-[12px]'>USDC</p>
+                                                                </option>
+                                                                <option value="STRK">
+                                                                    <p className='text-white88 font-semibold font-inter text-[12px]'>STRK</p>
+                                                                </option>
+                                                            </select>
+                                                        </div>
+                                                        <div className='w-full'>
+                                                            <div className='bg-white7 rounded-md px-3 py-2'>
+                                                                <input 
+                                                                    type='number' 
+                                                                    placeholder='1200' 
+                                                                    className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
+                                                                    value={milestone.prize} 
+                                                                    onChange={(e) => handleMilestoneChange(index, 'prize', e.target.value)} 
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {milestone.err?.prize && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{milestone.err.prize}</p>}
+                                                </div> */}
+
                                                 <div className='mt-3'>
                                                     <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
                                                     <div className='flex items-center gap-2 w-full'>
                                                         <div className='bg-[#091044] rounded-md py-2 w-[110px] flex justify-evenly items-center gap-1'>
-                                                            <img src={USDCsvg} alt='usdc' className='size-[14px] rounded-sm'/>
+                                                            <img src={milestone?.currency === 'STRK' ? STRKimg : USDCimg} alt='usdc' className='size-[16px] rounded-sm'/>
                                                             <p className='text-white88 font-semibold font-inter text-[12px]'>{milestone.currency}</p>
                                                         </div>
                                                         <div className='w-full'>
@@ -587,9 +637,9 @@ const AddProjectPage = () => {
                     <div className='flex items-center gap-2'>
                         <p className='text-white88 font-semibold font-inter text-[13px]'>Project Total Sum</p>
                         <div className='bg-white4 rounded-md flex items-center gap-1 h-8 px-3'>
-                            <img src={USDCsvg} alt='usdc' className='size-[14px]'/>
+                            <img src={projCurrency === 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px]'/>
                             <p className='text-white88 text-[12px] font-semibold font-inter'>{totalPrize}</p>
-                            <p className='text-white32 font-semibold font-inter text-[12px]'>USDC</p>
+                            <p className='text-white32 font-semibold font-inter text-[12px]'>{projCurrency}</p>
                         </div>
                     </div>
                     <div>
