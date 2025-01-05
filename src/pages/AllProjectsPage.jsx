@@ -34,6 +34,7 @@ const AllProjectsPage = () => {
     const [searchInput, setSearchInput] = useState()
     const [weeksFilter, setWeeksFilter] = useState()
     const [foundationFilter, setFoundationFilter] = useState()
+    const [bountyTypeFilter, setBountyTypeFilter] = useState()
 
     const handleSearch = (e) => {
         setSearchInput(e.target.value)
@@ -54,14 +55,20 @@ const AllProjectsPage = () => {
                     !weeksFilter || // if no weeks filter is set
                     (weeksFilter === 'lessThan2' && weeksLeft < 2) ||
                     (weeksFilter === 'between2And4' && weeksLeft >= 2 && weeksLeft <= 4) ||
-                    (weeksFilter === 'above4' && weeksLeft > 4);
+                    (weeksFilter === 'above4' && weeksLeft > 4); 
 
-                return matchesSearch && matchesRole && matchesType && matchesWeeks && matchfoundation;
+                const matchesBountyIsOpen = 
+                bountyTypeFilter == null || // If no checkbox is selected, show all
+                (bountyTypeFilter === 'open' && project?.isOpenBounty) ||
+                (bountyTypeFilter === 'close' && project?.isOpenBounty == false);             
+
+                return matchesSearch && matchesRole && matchesType && matchesWeeks && matchfoundation && matchesBountyIsOpen;
             })
             .sort((a, b) => {
                 return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
         });
-    }, [allProjects, searchInput, roleName, sortOrder, weeksFilter, foundationFilter]);
+    }, [allProjects, searchInput, roleName, sortOrder, weeksFilter, foundationFilter, bountyTypeFilter]);
+
 
     const handleRoleChange = (e) => {
         setRoleName(e.target.value)
@@ -86,6 +93,11 @@ const AllProjectsPage = () => {
 
     const handleFoundationFilterChange = (value) => {
         setFoundationFilter(prevFilter => prevFilter === value ? '' : value);
+    }
+
+    const handleBountyTypeFilterChange = (event) => {
+        const value = event.target.value;
+        setBountyTypeFilter(prevFilter => prevFilter === value ? null : value);
     }
 
     const {data: organisationsDetails, isLoading: isLoadingOrganisationDetails} = useQuery({
@@ -137,13 +149,25 @@ const AllProjectsPage = () => {
                             {showfilterModal && 
                                 <div className="absolute w-[156px] top-10 -left-[70px] rounded-md bg-white4 backdrop-blur-[52px] py-3 flex flex-col px-4 z-50">
                                     <div>
-                                        <p className='text-[12px] font-semibold font-inter mb-3 text-start'>Sort prizes</p>
+                                        <p className='text-[12px] font-semibold font-inter mb-2 text-start'>Sort prizes</p>
                                         <div onClick={() => {setSortOrder('ascending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'ascending' ? "text-primaryYellow" : 'text-white88'} mb-1 flex items-center gap-1`}><img src={listAscendingSvg} alt='sort' color={sortOrder == 'ascending' ? "#FBF1B8" : "#FFFFFF52"} className={`text-[16px]`} /> Low to High</div>
                                         <div onClick={() => {setSortOrder('descending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'descending' ? "text-primaryYellow" : 'text-white88'}  mb-[6px] flex items-center gap-1`}><img src={listDescendingSvg} alt='sort' className={`${sortOrder == 'descending' ? "text-primaryYellow" : "text-white32"}`} /> High to Low</div>
                                     </div>
-                                    <div className='border border-dashed border-white7 w-full my-5'/>
+                                    <div className='border border-dashed border-white7 w-full my-4'/>
                                     <div>
-                                        <p className='text-[12px] font-semibold font-inter mb-3'>Select duration</p>
+                                        <p className='text-[12px] font-semibold font-inter mb-2 text-start'>Bounty type</p>
+                                        <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>
+                                            <input type='checkbox' name='open' value='open' onChange={(e) => handleBountyTypeFilterChange(e)} checked={bountyTypeFilter === 'open'} id='open' className='border border-primaryYellow cursor-pointer'/>
+                                            <label htmlFor='open'>Open</label>
+                                        </div>
+                                        <div className=' flex items-center gap-2 text-white88 text-[14px] font-gridular'>
+                                            <input type='checkbox' name='close' value='close' onChange={(e) => handleBountyTypeFilterChange(e)} checked={bountyTypeFilter === 'close'} id='close' className='border border-primaryYellow cursor-pointer'/>
+                                            <label htmlFor='close'>Close</label>
+                                        </div>
+                                    </div>
+                                    <div className='border border-dashed border-white7 w-full my-4'/>
+                                    <div>
+                                        <p className='text-[12px] font-semibold font-inter mb-2'>Select duration</p>
                                         <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>
                                             {/* <div className='border border-primaryYellow h-[14px] p-0 m-0 flex justify-center items-center rounded-sm'> */}
                                                 <input type='checkbox' name='duration' value='lessThan2' onChange={(e) => handleWeeksFilterChange(e)} checked={weeksFilter === 'lessThan2'} id='1' className='p-0 m-0 cursor-pointer'/>

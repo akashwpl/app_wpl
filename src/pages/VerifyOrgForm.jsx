@@ -239,7 +239,7 @@ const VerifyOrgForm = () => {
                                             {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description (240 character) <span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description <span className='text-[#F03D3D]'>*</span></p>
                                             <div className={`bg-white7 rounded-md px-3 py-2 ${errors.description && "border border-cardRedText"}`}>
                                                 <textarea 
                                                     type='text' 

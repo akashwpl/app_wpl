@@ -269,7 +269,7 @@ const EditProjectPage = () => {
                                         {errors.organisationHandle && <p className='text-[10px] font-medium text-red-500'>{errors.organisationHandle}</p>}
                                     </div>
                                     <div className='mt-3'>
-                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description (240 character)</p>
+                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description</p>
                                         <div className='bg-white7 rounded-md px-3 py-2'>
                                             <textarea
                                                 value={description}

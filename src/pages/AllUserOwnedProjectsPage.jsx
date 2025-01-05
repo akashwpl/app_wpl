@@ -43,7 +43,10 @@ const AllUserOwnedProjectsPage = () => {
                 <div className='mt-8'>
                     <div>
                         {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
-                        userProjects && userProjects?.projects?.owned?.map((project, idx) => <div key={idx} className='hover:bg-white4'> 
+                        userProjects?.projects?.owned?.length === 0 ? <div className="flex flex-col justify-center items-center gap-2 pt-8">
+                            <div className="font-gridular text-white88 text-[24px]">Oops! Looks like you haven't created a project :(</div>
+                        </div> 
+                        : userProjects && userProjects?.projects?.owned?.map((project, idx) => <div key={idx} className='hover:bg-white4'> 
                                 <ExploreGigsCard data={project} type={"project"}/>
                                 <div className=' border border-x-0 border-t-0 border-b-white7'></div>
                             </div>
