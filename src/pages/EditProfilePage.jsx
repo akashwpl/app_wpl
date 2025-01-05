@@ -404,7 +404,7 @@ const EditProfilePage = () => {
                     </div>
 
                     <div className='flex flex-col gap-1 w-full'>
-                        <label className='text-[13px] font-medium text-white32'>Write your Bio (max 240 characters)</label>
+                        <label className='text-[13px] font-medium text-white32'>Write your Bio</label>
                         <textarea name='bio' value={bio} onChange={(e) => setBio(e.target.value)} className={`bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none ${errors.bio ? 'border border-cardRedText' : 'border-none'}`} 
                             placeholder='I am a preety good dev'
                             rows={3}

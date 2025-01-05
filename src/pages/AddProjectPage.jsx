@@ -425,7 +425,7 @@ const AddProjectPage = () => {
                                 </AccordionTrigger>
                                 <AccordionContent className="py-2">
                                     <div>
-                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the project about? (240 character)</p>
+                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the project about?</p>
                                         <div className='bg-white7 rounded-md px-3 py-2'>
                                             <textarea value={aboutProject} onChange={(e) => setAboutProject(e.target.value)} type='text' className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
                                         </div>

@@ -111,13 +111,13 @@ const EditProjectPage = () => {
     const validateFields = () => {
         const newErrors = {};
         if (title.length === 0) newErrors.title = 'Title is required.';
-        if (title.length > 240) newErrors.title = 'Title cannot exceed 240 characters.';
+        if (title.length > 50) newErrors.title = 'Title cannot exceed 50 characters.';
         
         if (organisationHandle.length === 0) newErrors.organisationHandle = 'Organisation handle is required.';
-        if (organisationHandle.length > 240) newErrors.organisationHandle = 'Organisation handle cannot exceed 240 characters.';
+        if (organisationHandle.length > 50) newErrors.organisationHandle = 'Organisation handle cannot exceed 50 characters.';
         
         if (description.length === 0) newErrors.description = 'Description is required.';
-        if (description.length > 240) newErrors.description = 'Description cannot exceed 240 characters.';
+        if (description.length > 1000) newErrors.description = 'Description cannot exceed 1000 characters.';
         
         if (!discordLink.startsWith('https://discord.gg/')) newErrors.discordLink = 'Discord link must start with https://discord.gg/';
         if (!about) newErrors.about = 'About is required.';
@@ -360,7 +360,7 @@ const EditProjectPage = () => {
                             </AccordionTrigger>
                             <AccordionContent className="py-2">
                                 <div>
-                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the project about? (240 character)</p>
+                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the project about?</p>
                                     <div className='bg-white7 rounded-md px-3 py-2'>
                                         <textarea value={about} onChange={(e) => setAbout(e.target.value)} type='text' className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
                                     </div>
