@@ -295,7 +295,7 @@ const FormPage = () => {
                               htmlFor='appExp' 
                               className='text-[13px] leading-[15.6px] font-medium text-white32'
                             >
-                              Highlight details about how you would approach completing this bounty {errors.username && <span className='text-errorMsgRedText'>*</span>}
+                              Elaborate how would you approach completing this bounty {errors.username && <span className='text-errorMsgRedText'>*</span>}
                             </label>
                             <textarea 
                               className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 ${errors.appExp && 'border border-errorMsgRedText'}`}

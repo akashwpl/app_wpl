@@ -54,7 +54,7 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
                             <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Delivery time: <span className='text-white64'>2 weeks</span></p>
                             {!projectsGridView && <Dot size={16} />} */}
                             <img src={zapSVG} alt='zap' className='size-[16px]'/>
-                            <p className='font-inter font-medium text-cardYellowText text-[12px] leading-[14.4px] capitalize'>{data?.type}</p>
+                            <p className='font-inter font-medium text-cardYellowText text-[12px] leading-[14.4px] capitalize'>{data?.isOpenBounty ? 'Open' : 'Gated'}</p>
                             <Dot size={16} />
                         </div>
                         <div className={`flex items-center gap-1 ${projectsGridView ? "mt-2 flex-wrap" : ""}`}>

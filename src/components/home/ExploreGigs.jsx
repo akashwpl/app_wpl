@@ -17,14 +17,14 @@ import listDescendingSvg from '../../assets/svg/list-number-descending.svg'
 // TODO ::  Leaderboard page clickable user and rediret to user profile
 
 const userTabs = [
-  {id: 'live', name: 'Live', isActive: true},
-  {id: 'all', name: 'All', isActive: false},
+  {id: 'live', name: 'Applied', isActive: true},
+  {id: 'all', name: 'My Bounties', isActive: false},
   {id: 'completed', name: 'Completed', isActive: false}
 ]
 
 const sponsorTabs = [
-  {id: 'all', name: 'All', isActive: true},
-  {id: 'live', name: 'Live', isActive: false},
+  {id: 'all', name: 'My Bounties', isActive: true},
+  {id: 'live', name: 'Applied', isActive: false},
   {id: 'completed', name: 'Completed', isActive: false}
 ]
 

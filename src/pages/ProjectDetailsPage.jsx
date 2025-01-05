@@ -229,7 +229,7 @@ const ProjectDetailsPage = () => {
                   <div className='text-[12px] font-medium text-[#FCBF04] flex items-center gap-1 bg-[#FCBF041A] rounded-[4px] px-2 py-1 font-inter'>
                     <img src={zapSVG} alt='zap' className='size-[16px]'/>
                     {/* <Zap size={14} className='text-[#FCBF04]'/> */}
-                    <p className='capitalize'>{projectDetails?.type}</p>
+                    <p className='capitalize'>{projectDetails?.isOpenBounty ? 'Open' : 'Gated'}</p>
                   </div>
                 </div>
                 <p className='text-[14px] text-white32 leading-5'>@{projectDetails?.organisationHandle || orgHandle}</p>
