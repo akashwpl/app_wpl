@@ -1,4 +1,4 @@
-import { ArrowRight, EyeIcon, MailWarningIcon } from 'lucide-react'
+import { ArrowRight, EyeIcon, EyeOffIcon, MailWarningIcon } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -10,6 +10,7 @@ import FancyButton from '../components/ui/FancyButton'
 import mailSVG from '../assets/svg/mail.svg'
 import { useDispatch } from 'react-redux'
 import { displaySnackbar } from '../store/thunkMiddleware'
+import { email_regex } from '../lib/constants'
 
 const ForgetPasswordPage = () => {
 
@@ -18,17 +19,36 @@ const ForgetPasswordPage = () => {
 
   const [email, setEmail] = useState('') // Changed from firstName to email
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   const [error, setError] = useState('')
 
   const [isPass, setIsPass ] = useState(true);
+  const [isConfirmPass, setIsConfirmPass ] = useState(true);
   const [hovered, setHovered] = useState(false);
 
-  const togglePasswordField = () => {
-    setIsPass(!isPass)
-  }
-
   const handleHover = () => setHovered(!hovered)
+  
+  // TO-DO: Update password flow pending on email OTP verification
+  const handleForgotPassSubmit = () => {
+    if (!email || !password) {
+      setError('Please enter email and password')
+      return
+    }
+    const validEmail = email_regex.test(email)
+    if (!validEmail) {
+      setError('Please enter a valid email')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError('Password not matching')
+      return
+    }
+    
+    dispatch(displaySnackbar('New password set successfully'))
+    navigate('/onboarding');
+  }
 
   return (
     <div className='flex justify-center items-center'>
@@ -48,11 +68,16 @@ const ForgetPasswordPage = () => {
 
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type="email" placeholder="User@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
-                <img src={mailSVG} alt='email' className='w-[22px] h-[22px]'/>
+                <img src={mailSVG} alt='email' className='w-[22px] h-[22px] mr-3'/>
               </div>
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type={isPass ? 'password' : 'text'} placeholder="New Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
-                <EyeIcon className='cursor-pointer' onClick={togglePasswordField} stroke='#FFFFFF52'/>
+                {isPass ? <EyeIcon className='cursor-pointer mr-3' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer mr-3' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
+              </div>
+
+              <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                <input type={isConfirmPass ? 'password' : 'text'} placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                {isConfirmPass ? <EyeIcon className='cursor-pointer mr-3' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer mr-3' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> }
               </div>
 
               {error && <div className='bg-[#F03D3D1A] rounded-md px-2 py-2 mt-4 flex items-center gap-1'>
@@ -88,10 +113,7 @@ const ForgetPasswordPage = () => {
                         </span>
                       </>
                     }
-                    onClick={() => {
-                      dispatch(displaySnackbar('New password set successfully'))
-                      navigate('/onboarding');
-                    }}
+                    onClick={handleForgotPassSubmit}
                   />
                 </div>
           </div>

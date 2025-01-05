@@ -33,6 +33,7 @@ const OnBoarding = () => {
 
   const [email, setEmail] = useState('') // Changed from firstName to email
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   const [displayName, setDisplayName] = useState('') // Changed from firstName to email
   const [experience, setExperience] = useState('')
@@ -46,6 +47,7 @@ const OnBoarding = () => {
   const [error, setError] = useState('')
 
   const [isPass, setIsPass ] = useState(true);
+  const [isConfirmPass, setIsConfirmPass ] = useState(true);
   const [showForgetPassDialog, setShowForgetPassDialog] = useState(false);
 
   const [img, setImg] = useState(null)
@@ -70,12 +72,17 @@ const OnBoarding = () => {
 
   const signUp = async () => {
     if (!email || !password) {
-      dispatch(displaySnackbar('Please enter email and password'))
+      setError('Please enter email and password')
       return
     }
     const validEmail = email_regex.test(email)
     if (!validEmail) {
       setError('Please enter a valid email')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError('Password not matching')
       return
     }
     const response = fetch(`${BASE_URL}/users/signup`, {
@@ -101,7 +108,7 @@ const OnBoarding = () => {
 
   const login = async () => {
     if (!email || !password) {
-      dispatch(displaySnackbar('Please enter email and password'))
+      setError('Please enter email and password')
       return
     }
     const validEmail = email_regex.test(email)
@@ -148,7 +155,7 @@ const OnBoarding = () => {
   const updateProfile = async () => {
     const newErrors = {
       email: isOrgSignUp && !email ? 'Please fill the email field' : !email_regex.test(email) ? 'Please enter a valid email' : '',
-      password: isOrgSignUp && !password ? 'Please fill the password field' : '',
+      password: isOrgSignUp && !password ? 'Please fill the password field' : password !== confirmPassword ? 'Password not matching' : '',
       displayName: !displayName ? 'Please fill the name field' : '',
       experience: !experience ? 'Please fill the experience field' : '',
       discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Invalid Discord ID. Please enter your Discord ID in the following format: Username1234.' : '',
@@ -177,7 +184,7 @@ const OnBoarding = () => {
           setErrors({email: error.response.data.message});
           return
         } else {
-          dispatch(displaySnackbar('Something went wrong. Try again after sometime!'))
+          setErrors('Something went wrong. Try again after sometime!')
           return
         }
       }
@@ -209,7 +216,7 @@ const OnBoarding = () => {
         navigate('/')
       }
     } else {
-      dispatch(displaySnackbar('Something went wrong'))
+      setErrors('Something went wrong. Try again after sometime!')
     }
   }
   const removeImgPrveiew = () => {
@@ -220,10 +227,6 @@ const OnBoarding = () => {
   const swtichOnboardingType = () => {
     setError("")
     setIsSignin(!isSignin)
-  }
-
-  const togglePasswordField = () => {
-    setIsPass(!isPass)
   }
 
   useEffect(() => {
@@ -324,6 +327,7 @@ const OnBoarding = () => {
   const handleOrgSignUp = () => {
     setEmail('');
     setPassword('');
+    setConfirmPassword('');
     setIsOrgSignUp(true);
     setIsSignComplete(true);
     return
@@ -379,8 +383,14 @@ const OnBoarding = () => {
               </div>
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type={isPass ? 'password' : 'text'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
-                {isPass ? <EyeIcon className='cursor-pointer' onClick={togglePasswordField} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={togglePasswordField} stroke='#FFFFFF52'/> }
+                {isPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
               </div>
+              {!isSignin &&
+              <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                <input type={isConfirmPass ? 'password' : 'text'} placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                {isConfirmPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> }
+              </div>
+              }
 
               {error && <div className='bg-[#F03D3D1A] rounded-md px-2 py-2 mt-4 flex items-center gap-1'>
                 <MailWarningIcon stroke='#F03D3D' size={14} className='mr-1'/>
@@ -515,14 +525,25 @@ const OnBoarding = () => {
 
                 {
                   isOrgSignUp && 
-                  <div className='mt-4'>
-                      <div className='text-white32 font-semibold font-inter text-[13px]'>Enter your password <span className='text-[#F03D3D]'>*</span></div>
-                      <div className={`flex items-center justify-center bg-[#FFFFFF12] rounded-md ${errors.password ? 'border border-[#F03D3D]' : ""}`}>
-                        <input value={password} onChange={(e) => setPassword(e.target.value)} type={isPass ? 'password' : 'text'} placeholder='Password' className='w-full bg-transparent py-2 px-2 outline-none text-white'/>
-                        {isPass ? <EyeIcon className='cursor-pointer mr-3' onClick={togglePasswordField} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer mr-3' onClick={togglePasswordField} stroke='#FFFFFF52'/> }
+                  <>
+                    <div className='mt-4 flex items-start gap-4 w-full'>
+                      <div>
+                        <p className='text-white32 font-semibold font-inter text-[13px]'>Enter your password <span className='text-[#F03D3D]'>*</span></p>
+                        <div className={`flex items-center justify-center bg-[#FFFFFF12] rounded-md ${errors.password ? 'border border-[#F03D3D]' : ""}`}>
+                          <input value={password} onChange={(e) => setPassword(e.target.value)} type={isPass ? 'password' : 'text'} placeholder='Password' className='w-full bg-transparent py-2 px-2 outline-none text-white'/>
+                          {isPass ? <EyeIcon className='cursor-pointer mr-3' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer mr-3' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
+                        </div>
                       </div>
-                      {errors.password && <span className='text-red-500 text-sm'>{errors.password}</span>}
+                      <div>
+                          <div className='text-white32 font-semibold font-inter text-[13px]'>Confirm your password <span className='text-[#F03D3D]'>*</span></div>
+                          <div className={`flex items-center justify-center bg-[#FFFFFF12] rounded-md ${errors.password ? 'border border-[#F03D3D]' : ""}`}>
+                            <input value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} type={isConfirmPass ? 'password' : 'text'} placeholder='Confirm Password' className='w-full bg-transparent py-2 px-2 outline-none text-white'/>
+                            {isConfirmPass ? <EyeIcon className='cursor-pointer mr-3' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer mr-3' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> }
+                          </div>
+                      </div>
                     </div>
+                    {errors.password && <span className='text-red-500 text-sm'>{errors.password}</span>}
+                  </>
                 }
 
                 <div className='mt-4'>
