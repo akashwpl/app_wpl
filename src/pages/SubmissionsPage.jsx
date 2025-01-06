@@ -187,7 +187,7 @@ const SubmissionsPage = () => {
                                             htmlFor='ercAddress' 
                                             className='text-[13px] leading-[15.6px] font-medium text-white32'
                                             >
-                                                ERC-20 Address
+                                                Starknet wallet address
                                             </label>
                                             <div className={`bg-white7 text-white88 rounded-[6px] placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`}>{currentSubmission?.user?.walletAddress}</div>
                                         </div>

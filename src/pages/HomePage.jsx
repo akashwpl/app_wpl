@@ -9,10 +9,13 @@ import Statistics from '../components/home/Statistics'
 import { getUserDetails } from '../service/api'
 import AdminDashboard from './AdminDashboard'
 import SponsorDashboard from './SponsorDashboard'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const HomePage = () => {
 
   const { user_id, user_role } = useSelector((state) => state)
+  const navigate = useNavigate();
 
   const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
     queryKey: ["userDetails", user_id],
@@ -29,6 +32,10 @@ const HomePage = () => {
   if(user_role == 'sponsor') {
     return <SponsorDashboard />
   }
+
+  useEffect(() => {
+    if(!token) navigate('/allprojects')
+  },[])
 
   return (
     <div className='flex flex-row justify-between mt-4 mx-8'>

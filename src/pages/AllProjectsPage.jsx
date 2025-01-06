@@ -46,7 +46,7 @@ const AllProjectsPage = () => {
                 const matchesType = project?.type?.toLowerCase() === 'bounty';
                 const matchesSearch = searchInput ? project?.title?.toLowerCase().includes(searchInput.toLowerCase()) : true;
                 const matchesRole = tiles.length > 0 ? tiles.some(tile => project?.roles?.map(role => role.toLowerCase()).includes(tile.toLowerCase())) : true;
-                const matchfoundation = foundationFilter && foundationFilter !== 'All' ? project?.foundation?.toLowerCase() === foundationFilter?.toLowerCase() : true;
+                const matchfoundation = foundationFilter && foundationFilter !== 'All' ? project?.organisation?.organisationHandle?.toLowerCase() === foundationFilter?.toLowerCase() : true;
                 // Week-based filter
                 const lastMilestone = project?.milestones?.[project.milestones.length - 1];
                 const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;
@@ -140,8 +140,8 @@ const AllProjectsPage = () => {
                             <div className='h-full border border-r border-white/10'></div>
                             <TableProperties onClick={() => {setProjectsGridView((prev) => !prev)}} className={`${!projectsGridView ? "text-primaryYellow" : "text-white32"} cursor-pointer`} size={14} rotate={90}/>
                         </div>
-                        <div className="flex flex-row justify-center items-center cursor-pointer relative">
-                            <div onClick={() => setShowFilterModal((prev) => !prev)} className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[89px] h-[32px]">
+                        <div className="flex flex-row justify-center items-center relative">
+                            <div onClick={() => setShowFilterModal((prev) => !prev)} className="flex flex-row justify-evenly items-center border border-white/10 rounded-lg w-[89px] h-[32px] cursor-pointer">
                                 <ListFilter size={12}/>
                                 <p className='font-gridular text-[14px] leading-[16.8px]'>Filter</p>
                             </div>
@@ -150,19 +150,19 @@ const AllProjectsPage = () => {
                                 <div className="absolute w-[156px] top-10 -left-[70px] rounded-md bg-white4 backdrop-blur-[52px] py-3 flex flex-col px-4 z-50">
                                     <div>
                                         <p className='text-[12px] font-semibold font-inter mb-2 text-start'>Sort prizes</p>
-                                        <div onClick={() => {setSortOrder('ascending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'ascending' ? "text-primaryYellow" : 'text-white88'} mb-1 flex items-center gap-1`}><img src={listAscendingSvg} alt='sort' color={sortOrder == 'ascending' ? "#FBF1B8" : "#FFFFFF52"} className={`text-[16px]`} /> Low to High</div>
-                                        <div onClick={() => {setSortOrder('descending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'descending' ? "text-primaryYellow" : 'text-white88'}  mb-[6px] flex items-center gap-1`}><img src={listDescendingSvg} alt='sort' className={`${sortOrder == 'descending' ? "text-primaryYellow" : "text-white32"}`} /> High to Low</div>
+                                        <div onClick={() => {setSortOrder('ascending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] cursor-pointer ${sortOrder == 'ascending' ? "text-primaryYellow" : 'text-white88'} mb-1 flex items-center gap-1`}><img src={listAscendingSvg} alt='sort' color={sortOrder == 'ascending' ? "#FBF1B8" : "#FFFFFF52"} className={`text-[16px]`} /> Low to High</div>
+                                        <div onClick={() => {setSortOrder('descending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] cursor-pointer ${sortOrder == 'descending' ? "text-primaryYellow" : 'text-white88'}  mb-[6px] flex items-center gap-1`}><img src={listDescendingSvg} alt='sort' className={`${sortOrder == 'descending' ? "text-primaryYellow" : "text-white32"}`} /> High to Low</div>
                                     </div>
                                     <div className='border border-dashed border-white7 w-full my-4'/>
                                     <div>
                                         <p className='text-[12px] font-semibold font-inter mb-2 text-start'>Bounty type</p>
                                         <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>
                                             <input type='checkbox' name='open' value='open' onChange={(e) => handleBountyTypeFilterChange(e)} checked={bountyTypeFilter === 'open'} id='open' className='border border-primaryYellow cursor-pointer'/>
-                                            <label htmlFor='open'>Open</label>
+                                            <label className='cursor-pointer' htmlFor='open'>Open</label>
                                         </div>
                                         <div className=' flex items-center gap-2 text-white88 text-[14px] font-gridular'>
                                             <input type='checkbox' name='close' value='close' onChange={(e) => handleBountyTypeFilterChange(e)} checked={bountyTypeFilter === 'close'} id='close' className='border border-primaryYellow cursor-pointer'/>
-                                            <label htmlFor='close'>Close</label>
+                                            <label className='cursor-pointer' htmlFor='close'>Gated</label>
                                         </div>
                                     </div>
                                     <div className='border border-dashed border-white7 w-full my-4'/>
@@ -172,15 +172,15 @@ const AllProjectsPage = () => {
                                             {/* <div className='border border-primaryYellow h-[14px] p-0 m-0 flex justify-center items-center rounded-sm'> */}
                                                 <input type='checkbox' name='duration' value='lessThan2' onChange={(e) => handleWeeksFilterChange(e)} checked={weeksFilter === 'lessThan2'} id='1' className='p-0 m-0 cursor-pointer'/>
                                             {/* </div> */}
-                                            <label htmlFor='1'>{`<`} 2 weeks</label>
+                                            <label className='cursor-pointer' htmlFor='1'>{`<`} 2 weeks</label>
                                         </div>
                                         <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>
                                             <input type='checkbox' name='duration' value='between2And4' onChange={(e) => handleWeeksFilterChange(e)} checked={weeksFilter === 'between2And4'} id='2' className='border border-primaryYellow cursor-pointer'/>
-                                            <label htmlFor='2'>2-4 weeks</label>
+                                            <label className='cursor-pointer' htmlFor='2'>2-4 weeks</label>
                                         </div>
                                         <div className=' flex items-center gap-2 text-white88 text-[14px] font-gridular'>
                                             <input type='checkbox' name='duration' value='above4' onChange={(e) => handleWeeksFilterChange(e)} checked={weeksFilter === 'above4'} id='3' className='border border-primaryYellow cursor-pointer'/>
-                                            <label htmlFor='3'>{`>`} 4 week</label>
+                                            <label className='cursor-pointer' htmlFor='3'>{`>`} 4 week</label>
                                         </div>
                                     </div>
                                 </div>

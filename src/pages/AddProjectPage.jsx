@@ -36,18 +36,15 @@ const AddProjectPage = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const dispatch = useDispatch()
-    const user_id = useSelector((state) => state.user_id)
+    const {user_id, user_role} = useSelector((state) => state)
 
-    const [title, setTitle] = useState('')
-    const [organisationHandle, setOrganisationHandle] = useState('');
-    const [organisationId, setOrganisationId] = useState('');
+    const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [aboutProject, setAboutProject] = useState('');
-    const [discordLink, setDiscordLink] = useState('');
-    const [logo, setLogo] = useState(null);
+    const [discordLink, setDiscordLink] = useState();
     const [role, setRole] = useState([]);
+    const [logo, setLogo] = useState(null);
     const [logoPreview, setLogoPreview] = useState('');
-    const [foundation, setFoundation] = useState('673067f8797130f180c2846e');
     const [projCurrency, setProjCurrency] = useState('USDC');
     const [isOpenBounty, setIsOpenBounty] = useState(false);
     const [errors, setErrors] = useState({}); // State for validation errors
@@ -65,21 +62,26 @@ const AddProjectPage = () => {
 
     const [imgUploadHover, setImgUploadHover] = useState(false)
 
+    const [userOrg, setUserOrg] = useState({})
+
     const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
         queryKey: ['userOrganisations', user_id],
         queryFn: () => getUserOrgs(user_id),
     })
 
     useEffect(() => {
-        if(userOrganisations?.length == 0) {
-            if(userOrganisations[0]?.status == 'pending') {
+        if(!isLoadingUserOrgs) {
+            if(userOrganisations?.length >= 0 && user_role == 'user') {
                 dispatch(displaySnackbar('Your Organisation is not yet approved by Admin. Please try again later.'))
-                navigate('/sponsordashboard')
+                navigate('/')
+            } else {
+                const approvedOrg = userOrganisations.filter(org => org.status === 'approved');
+                setUserOrg(approvedOrg[0]);
+                setDiscordLink(approvedOrg[0]?.socialHandleLink?.discord)
+                setLogoPreview(approvedOrg[0]?.img)
             }
-            setOrganisationHandle(userOrganisations[0]?.organisationHandle)
-            setOrganisationId(userOrganisations[0]?._id)
         }
-    },[isLoadingUserOrgs, userOrganisations])
+    },[isLoadingUserOrgs])
 
     const validateMilestones = () => {
         let isErr = false;
@@ -106,11 +108,15 @@ const AddProjectPage = () => {
     const validateFields = () => {
         const newErrors = {};
         if (!title) newErrors.title = 'Title is required';
-        if (!organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
+        if (!userOrg?.organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
         if (!description) newErrors.description = 'Description is required';
-        if (!discordLink) newErrors.discordLink = 'Discord link is required';
-        if (!logo) newErrors.logo = 'Logo is required';
-        if (!role) newErrors.role = 'Role is required';
+        if (!discordLink) {
+            newErrors.discordLink = 'Discord server link is required';
+        } else if(!discordLink.startsWith('https://discord.gg/')) {
+            newErrors.discordLink = 'Discord link must start with https://discord.gg/'
+        }  
+        if (!logoPreview) newErrors.logo = 'Logo is required';
+        if (!role.length > 0) newErrors.role = 'Role/s is/are required';
         if (!projCurrency) newErrors.projCurrency = 'Prize currency is required';
         if (milestones.length === 0) newErrors.milestones = 'At least one milestone is required';
         if (!aboutProject) newErrors.aboutProject = 'About project is required';
@@ -140,35 +146,50 @@ const AddProjectPage = () => {
         setMilestones([...milestones, { title: '', description: '', prize: '', currency: projCurrency, deliveryTime: '', timeUnit: 'Weeks' }]);
     };
 
+    // Firebase image upload code
+    const handleFirebaseImgUpload = async () => {
+        let imageUrl = '';
+        if(logo) {
+            const imageRef = ref(storage, `images/${logo.name}`);
+            await uploadBytes(imageRef, logo);
+            imageUrl = await getDownloadURL(imageRef);
+        }
+        return imageUrl;
+    }
+
     const handleSubmit = async () => {
         
         const updatedMilestones = milestones.map(milestone => ({
             ...milestone,
             deadline: getTimestampFromNow(milestone.deliveryTime, milestone.timeUnit?.toLowerCase(), milestone.starts_in) // Add timestamp to each milestone
         }));
-    
+        
+        const tmpMilestones = [...updatedMilestones];
+        const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((last, curr) => { 
+            return new Date(parseInt(last.deadline)) < new Date(parseInt(curr.deadline)) ? curr : last;
+        });
+        
         if (validateFields()) {
 
             setIsCreatingProject(true);
 
-            const imageRef = ref(storage, `images/${logo.name}`);
-            await uploadBytes(imageRef, logo);
-            const imageUrl = await getDownloadURL(imageRef);
+            // Firebase image upload code
+            const imageUrl = await handleFirebaseImgUpload();
 
             const data = {
                 "project": {
                     "title": title,
-                    "organisationHandle": organisationHandle,
-                    "organisationId": foundation,
+                    "organisationHandle": userOrg?.organisationHandle,
+                    "organisationId": userOrg?._id,
                     "description": description,
                     "discordLink": discordLink,
                     "status": "idle",
                     "about": aboutProject,
                     "roles": role,
-                    "image" : imageUrl,
+                    "image" : imageUrl || userOrg?.img,
                     "isOpenBounty": isOpenBounty,
-                    "foundation": foundation == "673067f8797130f180c2846e" ? 'starkware' : "starkwarefoundation",
-                    "currency": projCurrency    // project currency strk or usdc
+                    "currency": projCurrency,    // project currency strk or usdc
+                    "deadline": lastMilestone?.deadline
                 },
                 "milestones": updatedMilestones
             }
@@ -239,10 +260,6 @@ const AddProjectPage = () => {
         }
     }
 
-    const handleFoundationChange = (e) => {
-        setFoundation(e.target.value)
-    }
-
   return (
     <div className='pb-40'>
         <div className='flex items-center gap-1 pl-20 py-2'>
@@ -292,7 +309,7 @@ const AddProjectPage = () => {
                                                         <div className='text-[14px] font-inter'>
                                                             <p className='text-white88'>Add your logo</p>
                                                             <p className='text-white32'>Recommended 1:1 aspect ratio</p>
-                                                            {errors.logo && <p className='text-red-500 font-medium text-[10px]'>{errors.logo}</p>} {/* Error message for logo */}
+                                                            {errors.logo && <p className='text-red-500 font-medium text-[12px]'>{errors.logo}</p>} {/* Error message for logo */}
                                                         </div>
                                                     </>
                                                 }
@@ -312,7 +329,7 @@ const AddProjectPage = () => {
                                                     onChange={(e) => setTitle(e.target.value)} 
                                                 />
                                             </div>
-                                            {errors.title && <p className='text-red-500 font-medium text-[10px]'>{errors.title}</p>} {/* Error message */}
+                                            {errors.title && <p className='text-red-500 font-medium text-[12px]'>{errors.title}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation handle <span className='text-[#F03D3D]'>*</span></p>
@@ -320,12 +337,11 @@ const AddProjectPage = () => {
                                                 <input 
                                                     type='text' 
                                                     className='cursor-not-allowed bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' 
-                                                    value={organisationHandle} 
-                                                    onChange={(e) => setOrganisationHandle(e.target.value)}
-                                                    
+                                                    value={userOrg?.organisationHandle} 
+                                                    disabled
                                                 />
                                             </div>
-                                            {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
+                                            {errors.organisationHandle && <p className='text-red-500 font-medium text-[12px]'>{errors.organisationHandle}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description<span className='text-[#F03D3D]'>*</span></p>
@@ -338,7 +354,7 @@ const AddProjectPage = () => {
                                                     onChange={(e) => setDescription(e.target.value)} 
                                                 />
                                             </div>
-                                            {errors.description && <p className='text-red-500 font-medium text-[10px]'>{errors.description}</p>} {/* Error message */}
+                                            {errors.description && <p className='text-red-500 font-medium text-[12px]'>{errors.description}</p>} {/* Error message */}
                                         </div>
                                         
                                         {/* Add info button for Open and Gated (close) projects description */}
@@ -367,10 +383,10 @@ const AddProjectPage = () => {
                                                 </div>    
                                             </div>
                                             </div>
-                                            {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
+                                            {errors.role && <p className='text-red-500 font-medium text-[12px]'>{errors.role}</p>} {/* Error message */}
                                         </div>
 
-                                        <div className='mt-3'>
+                                        {/* <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation</p>
                                             <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row justify-between">
                                                 <select onChange={handleFoundationChange} className='bg-cardBlueBg2 h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
@@ -378,8 +394,8 @@ const AddProjectPage = () => {
                                                     <option value="67307ac0d5e10d5d8b55e7da" className='text-white88 font-gridular text-[14px]'>Starknet Foundation</option>
                                                 </select>
                                             </div>
-                                            {errors.discordLink && <p className='text-red-500 font-medium text-[10px]'>{errors.discordLink}</p>} {/* Error message */}
-                                        </div>
+                                            {errors.discordLink && <p className='text-red-500 font-medium text-[12px]'>{errors.discordLink}</p>}
+                                        </div> */}
 
                                         {/* Select project milestone currency */}
                                         <div className='mt-3'>
@@ -391,22 +407,22 @@ const AddProjectPage = () => {
                                                     <option value="STRK" className='text-white88 font-gridular text-[14px]'>STRK</option>
                                                 </select>
                                             </div>
-                                            {errors.projCurrency && <p className='text-red-500 font-medium text-[10px]'>{errors.projCurrency}</p>} {/* Error message */}
+                                            {errors.projCurrency && <p className='text-red-500 font-medium text-[12px]'>{errors.projCurrency}</p>} {/* Error message */}
                                         </div>
 
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Discord Link</p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Discord Server Link</p>
                                             <div className='bg-white7 rounded-md px-3 py-2 flex items-center gap-2'>
                                                 <img src={DiscordSvg} alt='discord' className='size-[20px]'/>
                                                 <input 
                                                     type='text' 
-                                                    placeholder='discord.gg' 
+                                                    placeholder='https://discord.gg/server_name' 
                                                     className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full' 
                                                     value={discordLink} 
                                                     onChange={(e) => setDiscordLink(e.target.value)} 
                                                 />
                                             </div>
-                                            {errors.discordLink && <p className='text-red-500 font-medium text-[10px]'>{errors.discordLink}</p>} {/* Error message */}
+                                            {errors.discordLink && <p className='text-red-500 font-medium text-[12px]'>{errors.discordLink}</p>} {/* Error message */}
                                         </div>
                                     </div>
                                 </AccordionContent>
@@ -425,7 +441,7 @@ const AddProjectPage = () => {
                                 </AccordionTrigger>
                                 <AccordionContent className="py-2">
                                     <div>
-                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the project about? (240 character)</p>
+                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the project about?</p>
                                         <div className='bg-white7 rounded-md px-3 py-2'>
                                             <textarea value={aboutProject} onChange={(e) => setAboutProject(e.target.value)} type='text' className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
                                         </div>
@@ -461,10 +477,10 @@ const AddProjectPage = () => {
                                                             onChange={(e) => handleMilestoneChange(index, 'title', e.target.value)} 
                                                         />
                                                     </div>
-                                                    {milestone.err?.title && <p className='text-red-500 font-medium text-[10px]'>{milestone.err.title}</p>}
+                                                    {milestone.err?.title && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.title}</p>}
                                                 </div>
                                                 <div className='mt-3'>
-                                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add Milestone goals</p>
+                                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone description</p>
                                                     <div className='bg-white7 rounded-md px-3 py-2'>
                                                         <textarea 
                                                             type='text' 
@@ -474,7 +490,7 @@ const AddProjectPage = () => {
                                                             onChange={(e) => handleMilestoneChange(index, 'description', e.target.value)} 
                                                         />
                                                     </div>
-                                                    {milestone.err?.description && <p className='text-red-500 font-medium text-[10px]'>{milestone.err.description}</p>}
+                                                    {milestone.err?.description && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.description}</p>}
                                                 </div>
                                                 <div className='mt-3'>
                                                     <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Start date</p>
@@ -488,42 +504,8 @@ const AddProjectPage = () => {
                                                             placeholderText='DD/MM/YYYY'
                                                         />
                                                     </div>
-                                                    {milestone.err?.starts_in && <p className='text-red-500 font-medium text-[10px]'>{milestone.err.starts_in}</p>}
+                                                    {milestone.err?.starts_in && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.starts_in}</p>}
                                                 </div>
-
-                                                {/* new currency dropdown */}
-                                                {/* <div className='mt-3'>
-                                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>MB</p>
-                                                    <div className='flex items-center gap-2 w-full mt-2'>
-                                                        <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
-                                                            <img src={milestone?.currency === 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px] rounded-sm'/>
-                                                            <select 
-                                                                className='bg-[#091044] text-white88 outline-none border-none w-full'
-                                                                value={milestone.currency}
-                                                                onChange={(e) => handleMilestoneChange(index, 'currency', e.target.value)}
-                                                            >
-                                                                <option value="USDC">
-                                                                    <p className='text-white88 font-semibold font-inter text-[12px]'>USDC</p>
-                                                                </option>
-                                                                <option value="STRK">
-                                                                    <p className='text-white88 font-semibold font-inter text-[12px]'>STRK</p>
-                                                                </option>
-                                                            </select>
-                                                        </div>
-                                                        <div className='w-full'>
-                                                            <div className='bg-white7 rounded-md px-3 py-2'>
-                                                                <input 
-                                                                    type='number' 
-                                                                    placeholder='1200' 
-                                                                    className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
-                                                                    value={milestone.prize} 
-                                                                    onChange={(e) => handleMilestoneChange(index, 'prize', e.target.value)} 
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    {milestone.err?.prize && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{milestone.err.prize}</p>}
-                                                </div> */}
 
                                                 <div className='mt-3'>
                                                     <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
@@ -606,7 +588,7 @@ const AddProjectPage = () => {
                             </div>
                             <div>
                                 <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
-                                <p className='text-white88 font-semibold text-[13px] font-inter'>@{organisationHandle}</p>
+                                <p className='text-white88 font-semibold text-[13px] font-inter'>@{userOrg?.organisationHandle}</p>
                             </div>
                         </div>
 
