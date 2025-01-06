@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import {
     Accordion,
@@ -19,6 +19,7 @@ import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
 import Spinner from '../components/ui/spinner';
+import { useQuery } from '@tanstack/react-query';
 
 const VerifyOrgForm = () => {
     const fileInputRef = useRef(null);
@@ -39,6 +40,23 @@ const VerifyOrgForm = () => {
     const [imgUploadHover, setImgUploadHover] = useState(false)
 
     const [isloading, setIsLoading] = useState(false);
+    const token = localStorage.getItem('token_app_wpl')
+
+    const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
+        queryKey: ["userDetails", user_id],
+        queryFn: () => getUserDetails(user_id),
+        enabled: !!user_id,
+    })
+
+    const [pfp, setPfp] = useState(userDetails?.pfp)
+
+    useEffect(() => {
+        if(!isLoadingUserDetails) {
+            if(!token) navigate('/onboarding');
+            setLogoPreview(userDetails?.pfp)
+            setPfp(userDetails?.pfp)
+        }
+    },[isLoadingUserDetails])
 
     const scrollToTop = () => {
         window.scrollTo({
@@ -48,13 +66,19 @@ const VerifyOrgForm = () => {
         }); 
     }
 
-    const validateFields = async () => {
+    const validateFields = () => {
         const newErrors = {};
         if (!name) newErrors.name = 'Name is required';
         if (!organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
-        if (!description) newErrors.description = 'Description is required';
-        if (!discordLink && !twitterLink && !telegramLink) newErrors.socialHandleLink = 'Please provide at least one social media handle link';
-        if (!logo) newErrors.logo = 'Logo is required';
+        if (!description) newErrors.description = 'Company description is required';
+        // if (!discordLink && !twitterLink && !telegramLink) newErrors.socialHandleLink = 'Please provide at least one social media handle link';
+        if(!discordLink) {
+            newErrors.discordLink = 'Discord server link is mandatory'
+        } else if(!discordLink.startsWith('https://discord.gg/')) {
+            newErrors.discordLink = 'Discord link must start with https://discord.gg/'
+        }            
+        if(!telegramLink) newErrors.telegramLink = 'Telegram link is mandatory'
+        if (!logoPreview) newErrors.logoPreview = 'Logo is required';
         setErrors(newErrors);
         scrollToTop();
         return Object.keys(newErrors).length === 0; // Return true if no errors
@@ -72,15 +96,26 @@ const VerifyOrgForm = () => {
         }
     };
 
+    // Firebase image upload code
+    const handleFirebaseImgUpload = async () => {
+        let imageUrl = '';
+        if(logo) {
+            const imageRef = ref(storage, `images/${logo.name}`);
+            await uploadBytes(imageRef, logo);
+            imageUrl = await getDownloadURL(imageRef);
+        }
+        return imageUrl;
+    }
+
     const submitForm = async () => {
-        setIsLoading(true);
         const isValid = validateFields();
-
-        const imageRef = ref(storage, `images/${logo.name}`);
-        await uploadBytes(imageRef, logo);
-        const imageUrl = await getDownloadURL(imageRef);
-
+        
         if (isValid) {
+            setIsLoading(true);
+
+            // Firebase image upload code
+            const imageUrl = await handleFirebaseImgUpload();
+
             const data = {
                 userId: user_id,
                 name: name,
@@ -92,8 +127,9 @@ const VerifyOrgForm = () => {
                     discord: discordLink
                 },
                 status: 'pending',
-                img: imageUrl
+                img: imageUrl || pfp
             }
+            
             const res = await createOrganisation(data);
             
             if(res.err == 'Organisation already exists') {
@@ -183,7 +219,7 @@ const VerifyOrgForm = () => {
                                                 {logoPreview ? 
                                                     <div className='relative'>
                                                         <img src={logoPreview} alt='dummy' className='size-[72px] aspect-square rounded-md'/>
-                                                        <div onClick={() => {setLogoPreview(null);setLogo(null)}} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
+                                                        <div onClick={() => {setLogoPreview(null);setLogo(null);setPfp(null)}} className='absolute -top-1 -right-1 bg-white32 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
                                                     </div>
                                                 :   <>
                                                         <div 
@@ -204,13 +240,13 @@ const VerifyOrgForm = () => {
                                                         <div className='text-[14px] font-inter'>
                                                             <p className='text-white88'>Add your logo</p>
                                                             <p className='text-white32'>Recommended 1:1 aspect ratio</p>
-                                                            {errors.logo && <p className='text-red-500 font-medium text-[10px]'>{errors.logo}</p>} {/* Error message for logo */}
+                                                            {errors.logo && <p className='text-red-500 font-medium text-[12px]'>{errors.logo}</p>} {/* Error message for logo */}
                                                         </div>
                                                     </>
                                                 }
                                             </div>
                                             {logoPreview &&
-                                                <div onClick={() => {setLogoPreview(null);setLogo(null)}} className='flex items-center gap-1 cursor-pointer'><Trash stroke='#E38070' size={15}/> <span className='text-[#E38070] text-[14px] font-inter'>Delete</span></div>
+                                                <div onClick={() => {setLogoPreview(null);setLogo(null);setPfp(null)}} className='flex items-center gap-1 cursor-pointer'><Trash stroke='#E38070' size={15}/> <span className='text-[#E38070] text-[14px] font-inter'>Delete</span></div>
                                             }
                                         </div>
 
@@ -224,7 +260,7 @@ const VerifyOrgForm = () => {
                                                     onChange={(e) => setName(e.target.value)} 
                                                 />
                                             </div>
-                                            {errors.name && <p className='text-red-500 font-medium text-[10px]'>{errors.name}</p>} {/* Error message */}
+                                            {errors.name && <p className='text-red-500 font-medium text-[12px]'>{errors.name}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation handle <span className='text-[#F03D3D]'>*</span></p>
@@ -236,10 +272,10 @@ const VerifyOrgForm = () => {
                                                     onChange={(e) => setOrganisationHandle(e.target.value)} 
                                                 />
                                             </div>
-                                            {errors.organisationHandle && <p className='text-red-500 font-medium text-[10px]'>{errors.organisationHandle}</p>} {/* Error message */}
+                                            {errors.organisationHandle && <p className='text-red-500 font-medium text-[12px]'>{errors.organisationHandle}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description <span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>About Company <span className='text-[#F03D3D]'>*</span></p>
                                             <div className={`bg-white7 rounded-md px-3 py-2 ${errors.description && "border border-cardRedText"}`}>
                                                 <textarea 
                                                     type='text' 
@@ -249,7 +285,7 @@ const VerifyOrgForm = () => {
                                                     onChange={(e) => setDescription(e.target.value)} 
                                                 />
                                             </div>
-                                            {errors.description && <p className='text-red-500 font-medium text-[10px]'>{errors.description}</p>} {/* Error message */}
+                                            {errors.description && <p className='text-red-500 font-medium text-[12px]'>{errors.description}</p>} {/* Error message */}
                                         </div>
                                     </div>
                                 </AccordionContent>
@@ -263,15 +299,14 @@ const VerifyOrgForm = () => {
                                 <AccordionTrigger className="text-white48 font-inter hover:no-underline border-b border-primaryYellow">
                                     <div className='flex items-center gap-1'>
                                         <Globe size={14} className='text-primaryYellow'/>
-                                        <div className='text-primaryYellow font-inter text-[14px]'>Social Handles <span className='text-[#F03D3D]'>*</span></div>
+                                        <div className='text-primaryYellow font-inter text-[14px]'>Social Handles</div>
                                     </div>
                                 </AccordionTrigger>
-                                {errors.socialHandleLink && <p className='text-red-500 font-medium text-[10px] mt-1'>{errors.socialHandleLink}</p>} {/* Error message */}
                                 <AccordionContent className="py-2">
                                     <div>
                                         <div>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Discord Link</p>
-                                            <div className='bg-white7 rounded-md px-3 py-2 flex items-center gap-2'>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Discord Server Link <span className='text-[#F03D3D]'> *</span></p>
+                                            <div className={`bg-white7 rounded-md px-3 py-2 flex items-center gap-2 ${errors.discordLink && 'border border-cardRedText'}`}>
                                                 <img src={DiscordSvg} alt='discord' className='size-[20px]'/>
                                                 <input 
                                                     type='text' 
@@ -281,6 +316,21 @@ const VerifyOrgForm = () => {
                                                     onChange={(e) => setDiscordLink(e.target.value)} 
                                                 />
                                             </div>
+                                            {errors.discordLink && <p className='text-red-500 font-medium text-[12px] mt-1'>{errors.discordLink}</p>}
+                                        </div>
+                                        <div className='mt-3'>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Telegram Link <span className='text-[#F03D3D]'>*</span></p>
+                                            <div className={`bg-white7 rounded-md px-3 py-2 flex items-center gap-2 ${errors.telegramLink && 'border border-cardRedText'}`}>
+                                                <Send size={20} className='text-white32'/>
+                                                <input 
+                                                    type='text' 
+                                                    placeholder='john' 
+                                                    className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full' 
+                                                    value={telegramLink} 
+                                                    onChange={(e) => setTelegramLink(e.target.value)} 
+                                                />
+                                            </div>
+                                            {errors.telegramLink && <p className='text-red-500 font-medium text-[12px] mt-1'>{errors.telegramLink}</p>}
                                         </div>
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>X/Twitter Link</p>
@@ -292,19 +342,6 @@ const VerifyOrgForm = () => {
                                                     className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full' 
                                                     value={twitterLink} 
                                                     onChange={(e) => setTwitterLink(e.target.value)} 
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Telegram Link</p>
-                                            <div className='bg-white7 rounded-md px-3 py-2 flex items-center gap-2'>
-                                                <Send size={20} className='text-white32'/>
-                                                <input 
-                                                    type='text' 
-                                                    placeholder='john' 
-                                                    className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full' 
-                                                    value={telegramLink} 
-                                                    onChange={(e) => setTelegramLink(e.target.value)} 
                                                 />
                                             </div>
                                         </div>

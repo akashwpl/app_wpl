@@ -1,14 +1,13 @@
-import { ArrowLeft, CheckCheck, CheckCheckIcon, Info, Pen, Plus, Search, Upload, X } from 'lucide-react'
+import { ArrowLeft, CheckCheck, Info, Pen, Plus, Search, Upload, X } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import CustomModal from '../components/ui/CustomModal'
 import PoWCard from '../components/profile/PoWCard'
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getUserDetails } from '../service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { BASE_URL } from '../lib/constants';
 
-import checkSVG from '../assets/svg/check.svg'
 import Spinner from '../components/ui/spinner';
 import discordSVG from '../assets/svg/discord.svg'
 import telegramSVG from '../assets/svg/telegram.svg'
@@ -23,7 +22,7 @@ import { storage } from '../lib/firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { displaySnackbar } from '../store/thunkMiddleware';
 
-const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
+const urlRegex = /^(?:https?:\/\/)?(?:www\.)?(?:notion\.so|docs\.google\.com|github\.com)\/.+$/;
 
 const EditProfilePage = () => {
 
@@ -156,10 +155,10 @@ const EditProfilePage = () => {
             }
           } else if (key === 'link') {
             if (!projectDetails[key]) {
-              newErrors[key] = 'Link is required';
+              newErrors[key] = 'Reference link is required';
               isValid = false;
             } else if (!urlRegex.test(projectDetails[key])) {
-              newErrors[key] = 'Invalid Link';
+              newErrors[key] = 'Link should be Notion, Google doc or Github';
               isValid = false;
             }
           } else if (key === 'img') {

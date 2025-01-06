@@ -179,12 +179,7 @@ const ProjectDetailsPage = () => {
   const totalPrize = useMemo(() => projectDetails?.milestones?.reduce((acc, milestone) => acc + parseFloat(milestone.prize), 0) || 0, [projectDetails]);
   const totalSubmissions = useMemo(() => projectSubmissions?.length, [projectSubmissions])
 
-  const tmpMilestones = projectDetails?.milestones;
-  const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((acc, curr) => {
-    return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
-  });
-
-  const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone?.deadline))
+  const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(projectDetails?.deadline))
 
   const navigateBack = () => {
     if(showCloseProjectModal) {

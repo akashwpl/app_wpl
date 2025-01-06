@@ -334,7 +334,7 @@ const FormPage = () => {
                               htmlFor='ercAddress' 
                               className='text-[13px] leading-[15.6px] font-medium text-white32'
                             >
-                              Enter your ERC-20 Address {errors.username && <span className='text-errorMsgRedText'>*</span>}
+                              Enter your Starknet wallet address {errors.username && <span className='text-errorMsgRedText'>*</span>}
                             </label>
                             <input 
                               defaultValue={userDetails?.walletAddress}
