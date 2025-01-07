@@ -16,7 +16,19 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
         navigate(`/projectdetails/${data?._id}`)
     }
 
-    const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(data?.deadline))
+    // ------------------------------------TEMP FIX TO BE REMOVED AFTER DB FLUSH-----------------------------------------------------------
+
+    const tmpMilestones = data?.milestones;
+    const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((acc, curr) => {
+    return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
+    });
+    let remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone?.deadline))    
+    
+    if(isNaN(remain?.days) || isNaN(remain?.hours)) remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(data?.deadline))
+
+    // ------------------------------------TEMP FIX TO BE REMOVED AFTER DB FLUSH-----------------------------------------------------------
+    
+    // const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(data?.deadline))
     
     const [hovered, setHovered] = useState(false);
 

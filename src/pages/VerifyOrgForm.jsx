@@ -12,7 +12,7 @@ import { ArrowLeft, Globe, Menu, Send, Trash, Upload, X } from 'lucide-react';
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
 import { useSelector } from 'react-redux';
-import { createNotification, createOrganisation, getAdmins } from '../service/api';
+import { createNotification, createOrganisation, getAdmins, getUserDetails } from '../service/api';
 import FancyButton from '../components/ui/FancyButton';
 import btnImg from '../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
@@ -35,28 +35,24 @@ const VerifyOrgForm = () => {
     const [logo, setLogo] = useState(null);
     const [logoPreview, setLogoPreview] = useState('');
     const [errors, setErrors] = useState({}); // State for validation errors
-
+    
     const [submitted, setSubmitted] = useState(false);
     const [imgUploadHover, setImgUploadHover] = useState(false)
-
+    
     const [isloading, setIsLoading] = useState(false);
+    const [pfp, setPfp] = useState(null)
+    
     const token = localStorage.getItem('token_app_wpl')
-
-    const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
-        queryKey: ["userDetails", user_id],
-        queryFn: () => getUserDetails(user_id),
-        enabled: !!user_id,
-    })
-
-    const [pfp, setPfp] = useState(userDetails?.pfp)
-
+    
     useEffect(() => {
-        if(!isLoadingUserDetails) {
-            if(!token) navigate('/onboarding');
-            setLogoPreview(userDetails?.pfp)
-            setPfp(userDetails?.pfp)
+        if(!token) navigate('/onboarding');
+        const fetchUserDetails = async () => {
+            const userDetails = await getUserDetails(user_id);
+            setPfp(userDetails.pfp)
+            setLogoPreview(userDetails.pfp)
         }
-    },[isLoadingUserDetails])
+        fetchUserDetails()
+    },[])
 
     const scrollToTop = () => {
         window.scrollTo({
@@ -71,7 +67,6 @@ const VerifyOrgForm = () => {
         if (!name) newErrors.name = 'Name is required';
         if (!organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
         if (!description) newErrors.description = 'Company description is required';
-        // if (!discordLink && !twitterLink && !telegramLink) newErrors.socialHandleLink = 'Please provide at least one social media handle link';
         if(!discordLink) {
             newErrors.discordLink = 'Discord server link is mandatory'
         } else if(!discordLink.startsWith('https://discord.gg/')) {
