@@ -19,9 +19,25 @@ import listSVG from '../assets/icons/pixel-icons/search-list-yellow.svg'
 import tickSVG from '../assets/icons/pixel-icons/tick-outline-yellow.svg'
 import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
 
-import menuBorderSVG from '../assets/svg/Button.svg'
+import userMenuBorderSVG from '../assets/svg/Button2.svg'
+import sponsorMenuBorderSVG from '../assets/svg/Button.svg'
 import adminMenuBorderSVG from '../assets/svg/admin_menu_bg.svg'
 import useNavBar from './useNavHook'
+
+const menuBorderImgType = {
+  'user': {
+    height: 'h-[141px]',
+    img: userMenuBorderSVG,
+  },
+  'sponsor': {
+    height: 'h-[180px]',
+    img: sponsorMenuBorderSVG
+  }, 
+  'admin': {
+    height: 'h-[215px]',
+    img: adminMenuBorderSVG
+  } 
+}
 
 const Navbar = () => {
   const navigate = useNavigate()
@@ -161,10 +177,10 @@ const Navbar = () => {
                 <>
                   <div
 
-                    className={`${userDetail?.role === 'admin' ? 'h-[215px]' : 'h-[180px]'} z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
+                    className={`${menuBorderImgType[userDetail?.role].height} z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
                       slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                     }`}
-                    style={{backgroundImage: `url(${userDetail?.role !== 'admin' ? menuBorderSVG : adminMenuBorderSVG})`, zIndex: 100}}
+                    style={{backgroundImage: `url(${menuBorderImgType[userDetail?.role].img})`, zIndex: 100}}
                   >
                     <Link
                       to={`/profile/${userDetail?.socials?.discord}`}
