@@ -12,7 +12,8 @@ import closeProjBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.pn
 import closeProjBtnImg from '../assets/svg/close_proj_btn_subtract.png'
 import menuBtnImgHover from '../assets/svg/menu_btn_hover_subtract.png'
 import menuBtnImg from '../assets/svg/menu_btn_subtract.png'
-import USDCsvg from '../assets/svg/usdc.svg'
+import USDCimg from '../assets/svg/usdc.svg'
+import STRKimg from '../assets/images/strk.png'
 import MilestoneCard from '../components/projectdetails/MilestoneCard'
 import MilestoneStatusCard from '../components/projectdetails/MilestoneStatusCard'
 import {
@@ -178,12 +179,19 @@ const ProjectDetailsPage = () => {
   const totalPrize = useMemo(() => projectDetails?.milestones?.reduce((acc, milestone) => acc + parseFloat(milestone.prize), 0) || 0, [projectDetails]);
   const totalSubmissions = useMemo(() => projectSubmissions?.length, [projectSubmissions])
 
-  const tmpMilestones = projectDetails?.milestones;
-  const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((acc, curr) => {
-    return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
-  });
+    // ------------------------------------TEMP FIX TO BE REMOVED AFTER DB FLUSH-----------------------------------------------------------
 
-  const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone?.deadline))
+    const tmpMilestones = projectDetails?.milestones;
+    const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((acc, curr) => {
+    return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
+    });
+    let remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone?.deadline))    
+    
+    if(isNaN(remain?.days) || isNaN(remain?.hours)) remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(projectDetails?.deadline))
+
+    // ------------------------------------TEMP FIX TO BE REMOVED AFTER DB FLUSH-----------------------------------------------------------
+    
+  // const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(projectDetails?.deadline))
 
   const navigateBack = () => {
     if(showCloseProjectModal) {
@@ -228,7 +236,7 @@ const ProjectDetailsPage = () => {
                   <div className='text-[12px] font-medium text-[#FCBF04] flex items-center gap-1 bg-[#FCBF041A] rounded-[4px] px-2 py-1 font-inter'>
                     <img src={zapSVG} alt='zap' className='size-[16px]'/>
                     {/* <Zap size={14} className='text-[#FCBF04]'/> */}
-                    <p className='capitalize'>{projectDetails?.type}</p>
+                    <p className='capitalize'>{projectDetails?.isOpenBounty ? 'Open' : 'Gated'}</p>
                   </div>
                 </div>
                 <p className='text-[14px] text-white32 leading-5'>@{projectDetails?.organisationHandle || orgHandle}</p>
@@ -355,8 +363,8 @@ const ProjectDetailsPage = () => {
               <div className='flex flex-col justify-center items-center mt-8'>
                 <p className='text-[14px] text-white32 leading-4 font-inter'>Total Prizes</p>
                 <p className='text-[24px] text-white88 leading-[28px] font-gridular flex items-center gap-2'>
-                  <img src={USDCsvg} alt='usdc' className='size-[24px]'/>
-                  {totalPrize} <span className='text-white48'>USDC</span>
+                  <img src={projectDetails?.currency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[24px]'/>
+                  {totalPrize} <span className='text-white48'>{projectDetails?.currency || 'USDC'}</span>
                 </p>
               </div>
 
@@ -367,7 +375,7 @@ const ProjectDetailsPage = () => {
                       <AccordionTrigger className="text-white48 font-inter hover:no-underline">
                         <div className='flex justify-between items-center w-full text-[13px] font-medium text-white88'>
                           <p>Milestone {index + 1}</p>
-                          <p className='flex items-center gap-1'><img src={USDCsvg} alt='usdc' className='size-[14px]'/>{milestone?.prize} <span className='text-white48'>{milestone?.currency}</span></p>
+                          <p className='flex items-center gap-1'><img src={milestone?.currency == 'STRK' ? STRKimg : USDCimg} alt='ms-currency' className='size-[14px]'/>{milestone?.prize} <span className='text-white48'>{milestone?.currency}</span></p>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent className="py-2 border-t border-dashed border-white12">

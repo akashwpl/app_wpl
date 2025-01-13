@@ -7,7 +7,8 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "../components/ui/accordion"
-import USDCsvg from '../assets/svg/usdc.svg'
+import USDCimg from '../assets/svg/usdc.svg'
+import STRKimg from '../assets/images/strk.png'
 import DiscordSVG from '../assets/icons/pixel-icons/discord.svg'
 import { getProjectDetails, getUserOrgs, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -63,11 +64,12 @@ const EditProjectPage = () => {
     })
 
     const [title, setTitle] = useState(projectDetails?.title || '');
-    const [organisationHandle, setOrganisationHandle] = useState(projectDetails?.organisationHandle || '');
+    const [organisationHandle, setOrganisationHandle] = useState(projectDetails?.organisationHandle || projectDetails?.organisation?.organisationHandle || '');
     const [organisationId, setOrganisationId] = useState('');
     const [description, setDescription] = useState(projectDetails?.description || '');
-    const [discordLink, setDiscordLink] = useState(projectDetails?.discordLink || '');
+    const [discordLink, setDiscordLink] = useState(projectDetails?.organisation?.socialHandleLink?.discord || '');
     const [about, setAbout] = useState(projectDetails?.about || '');
+    const [projCurrency, setProjCurrency] = useState(projectDetails?.currency || 'USDC');
 
     const [submitted, setSubmitted] = useState(false);
 
@@ -75,8 +77,6 @@ const EditProjectPage = () => {
    
     const [pfpPreview, setPfpPreview] = useState('')
     const [pfp, setPfp] = useState('')
-
-
 
     const setMilestonesHelper = (index,event) => {
         setMilestones(prevMilestones => {
@@ -92,7 +92,7 @@ const EditProjectPage = () => {
 
     const handleAddMilestone = () => {
         const newMilestoneIndex = milestones.length + 1; // Calculate the new milestone index
-        setMilestones([...milestones, { title: `Milestone ${newMilestoneIndex}`, description: '', prize: '', currency: 'USDC', deliveryTime: '', timeUnit: 'Weeks' }]);
+        setMilestones([...milestones, { title: `Milestone ${newMilestoneIndex}`, description: '', prize: '', currency: projCurrency, deliveryTime: '', timeUnit: 'Weeks' }]);
     };
 
     const handleDeleteMilestone = (index) => {
@@ -104,23 +104,19 @@ const EditProjectPage = () => {
     // State for validation errors
     const [errors, setErrors] = useState({});
 
-
     // Validation function
     const validateFields = () => {
         const newErrors = {};
         if (title.length === 0) newErrors.title = 'Title is required.';
-        if (title.length > 240) newErrors.title = 'Title cannot exceed 240 characters.';
-        
-        if (organisationHandle.length === 0) newErrors.organisationHandle = 'Organisation handle is required.';
-        if (organisationHandle.length > 240) newErrors.organisationHandle = 'Organisation handle cannot exceed 240 characters.';
+        if (title.length > 50) newErrors.title = 'Title cannot exceed 50 characters.';
         
         if (description.length === 0) newErrors.description = 'Description is required.';
-        if (description.length > 240) newErrors.description = 'Description cannot exceed 240 characters.';
+        if (description.length > 1000) newErrors.description = 'Description cannot exceed 1000 characters.';
         
-        if (!discordLink.startsWith('https://discord.gg/')) newErrors.discordLink = 'Discord link must start with https://discord.gg/';
+        if (!discordLink) newErrors.discordLink = 'Discord server link is required';
+        if (!discordLink.startsWith('https://discord.gg/')) newErrors.discordLink = 'Discord server link must start with https://discord.gg/';
         if (!about) newErrors.about = 'About is required.';
         
-      
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -148,6 +144,11 @@ const EditProjectPage = () => {
             deadline: getTimestampFromNow(milestone.deliveryTime, milestone.timeUnit?.toLowerCase() || 'days', milestone.starts_in) // Add timestamp to each milestone
         }));
 
+        const tmpMilestones = [...updatedMilestones];
+        const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((last, curr) => { 
+            return new Date(parseInt(last.deadline)) < new Date(parseInt(curr.deadline)) ? curr : last;
+        });
+
         if (validateFields()) {
 
             // Proceed with saving the data
@@ -160,6 +161,8 @@ const EditProjectPage = () => {
                     discordLink: discordLink,
                     about: about,
                     image: projectDetails?.image,
+                    currency: projCurrency,
+                    deadline: lastMilestone?.deadline
                 },
                 milestones: updatedMilestones
             }
@@ -258,7 +261,6 @@ const EditProjectPage = () => {
                                             <input
                                                 type='text'
                                                 value={organisationHandle}
-                                                onChange={(e) => setOrganisationHandle(e.target.value)}
                                                 className='cursor-not-allowed bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full'
                                                 disabled
                                             />
@@ -313,6 +315,19 @@ const EditProjectPage = () => {
                                         </div>
                                     </div>
 
+                                    {/* Select project milestone currency */}
+                                    <div className='mt-3'>
+                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Select Prize Currency</p>
+                                        <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row gap-2 justify-between items-center">
+                                            <img src={projCurrency === 'STRK' ? STRKimg : USDCimg} className='size-6' />
+                                            <select onChange={(e) => setProjCurrency(e.target.value)} className='bg-cardBlueBg2 h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
+                                                <option value="USDC" className='text-white88 bg- font-gridular text-[14px]'>USDC</option>
+                                                <option value="STRK" className='text-white88 font-gridular text-[14px]'>STRK</option>
+                                            </select>
+                                        </div>
+                                        {errors.projCurrency && <p className='text-red-500 font-medium text-[10px]'>{errors.projCurrency}</p>} {/* Error message */}
+                                    </div>
+
                                     <div className='mt-3'>
                                         <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Discord Link</p>
                                         <div className='bg-white7 rounded-md px-3 py-2 flex items-center gap-2'>
@@ -321,7 +336,7 @@ const EditProjectPage = () => {
                                                 type='text'
                                                 value={discordLink}
                                                 onChange={(e) => setDiscordLink(e.target.value)}
-                                                placeholder='discord.gg'
+                                                placeholder='https://discord.gg/server_name'
                                                 className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
                                             />
                                         </div>
@@ -344,7 +359,7 @@ const EditProjectPage = () => {
                             </AccordionTrigger>
                             <AccordionContent className="py-2">
                                 <div>
-                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the project about? (240 character)</p>
+                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the project about?</p>
                                     <div className='bg-white7 rounded-md px-3 py-2'>
                                         <textarea value={about} onChange={(e) => setAbout(e.target.value)} type='text' className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
                                     </div>
@@ -384,7 +399,7 @@ const EditProjectPage = () => {
                                             </div>
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add Milestone goals</p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone description</p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <textarea type='text' 
                                                         value={milestone.description} 
@@ -410,8 +425,8 @@ const EditProjectPage = () => {
                                                 <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
                                                 <div className='flex items-center gap-2 w-full'>
                                                     <div className='bg-[#091044] rounded-md py-2 w-[110px] flex justify-evenly items-center gap-1'>
-                                                        <img src={USDCsvg} alt='usdc' className='size-[14px] rounded-sm'/>
-                                                        <p className='text-white88 font-semibold font-inter text-[12px]'>USDC</p>
+                                                        <img src={projCurrency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px] rounded-sm'/>
+                                                        <p className='text-white88 font-semibold font-inter text-[12px]'>{projCurrency}</p>
                                                     </div>
                                                     <div className='w-full'>
                                                         <div className='bg-white7 rounded-md px-3 py-2'>
@@ -513,9 +528,9 @@ const EditProjectPage = () => {
             <div className='flex items-center gap-2'>
                 <p className='text-white88 font-semibold font-inter text-[13px]'>Project Total Sum</p>
                 <div className='bg-white4 rounded-md flex items-center gap-1 h-8 px-3'>
-                    <img src={USDCsvg} alt='usdc' className='size-[14px]'/>
+                    <img src={projCurrency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px]'/>
                     <p className='text-white88 text-[12px] font-semibold font-inter'>{projectDetails?.totalPrize}</p>
-                    <p className='text-white32 font-semibold font-inter text-[12px]'>USDC</p>
+                    <p className='text-white32 font-semibold font-inter text-[12px]'>{projCurrency}</p>
                 </div>
             </div>
             <div>

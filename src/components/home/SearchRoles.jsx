@@ -50,7 +50,7 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
         <div className="bg-black/10 w-full border border-white/10 rounded-lg mb-8 p-4">
 
             <div>
-                <h2 className='font-gridular text-[14px] text-primaryYellow'>Search for the roles</h2>
+                <h2 className='font-gridular text-[14px] text-primaryYellow'>Search for roles</h2>
             </div>
 
             {/* {tiles?.length ==  && <p className="font-gridular text-primaryYellow text-[14px] leading-[16.8px] px-5 my-4">Search for the roles</p>} */}
@@ -62,7 +62,7 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                             <X className='text-white48 w-6 cursor-pointer hover:text-white64 scale-105 transition duration-300' onClick={() => handleRemoveTile(tile)} size={14}/>
                         </div>
                     ))}   
-                    <div className='flex items-center gap-2 w-fit px-2 h-[32px]'>
+                    <div className='flex items-center gap-2 w-full px-2 h-[32px]'>
                         {tiles?.length === 0 && <Search className='text-white32' size={16}/>}
                         <input 
                             onKeyDown={handleKeyboardEnter} 

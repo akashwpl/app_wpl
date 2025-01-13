@@ -23,8 +23,8 @@ import DiscordSvg from '../assets/svg/discord.svg'
 import axios from 'axios'
 import { displaySnackbar } from '../store/thunkMiddleware'
 
-const addressRegex = /^(0x)[0-9a-fA-F]{40}$/;
-const discordRegex = /^[a-zA-Z0-9_]+\d{4,}$/
+const addressRegex = /^(0x)[0-9a-fA-F]{40}$/; 
+const discordRegex = /^[a-zA-Z0-9_]{5,32}$/
 
 const OnBoarding = () => {
 
@@ -33,6 +33,7 @@ const OnBoarding = () => {
 
   const [email, setEmail] = useState('') // Changed from firstName to email
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   const [displayName, setDisplayName] = useState('') // Changed from firstName to email
   const [experience, setExperience] = useState('')
@@ -46,6 +47,7 @@ const OnBoarding = () => {
   const [error, setError] = useState('')
 
   const [isPass, setIsPass ] = useState(true);
+  const [isConfirmPass, setIsConfirmPass ] = useState(true);
   const [showForgetPassDialog, setShowForgetPassDialog] = useState(false);
 
   const [img, setImg] = useState(null)
@@ -70,12 +72,17 @@ const OnBoarding = () => {
 
   const signUp = async () => {
     if (!email || !password) {
-      dispatch(displaySnackbar('Please enter email and password'))
+      setError('Please enter email and password')
       return
     }
     const validEmail = email_regex.test(email)
     if (!validEmail) {
       setError('Please enter a valid email')
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError('Password not matching')
       return
     }
     const response = fetch(`${BASE_URL}/users/signup`, {
@@ -101,7 +108,7 @@ const OnBoarding = () => {
 
   const login = async () => {
     if (!email || !password) {
-      dispatch(displaySnackbar('Please enter email and password'))
+      setError('Please enter email and password')
       return
     }
     const validEmail = email_regex.test(email)
@@ -117,7 +124,7 @@ const OnBoarding = () => {
   
       getUserDetails(res?.data?.data?.userId).then((data) => {
         setError('')
-        data?.role == 'sponsor' ? navigate('/sponsordashboard') : navigate('/allprojects')
+        data?.role == 'sponsor' ? navigate('/userprojects') : navigate('/allprojects')
       })
     } catch (error) {
       if(error.status == '409') {
@@ -148,11 +155,11 @@ const OnBoarding = () => {
   const updateProfile = async () => {
     const newErrors = {
       email: isOrgSignUp && !email ? 'Please fill the email field' : !email_regex.test(email) ? 'Please enter a valid email' : '',
-      password: isOrgSignUp && !password ? 'Please fill the password field' : '',
+      password: isOrgSignUp && !password ? 'Please fill the password field' : password !== confirmPassword ? 'Password not matching' : '',
       displayName: !displayName ? 'Please fill the name field' : '',
-      experience: !experience ? 'Please fill the experience field' : '',
-      discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Invalid Discord ID. Please enter your Discord ID in the following format: Username1234.' : '',
-      walletAddress: !walletAddress ? 'Please fill the wallet address field' : !addressRegex.test(walletAddress) ? 'Invalid ERC-20 address' : '',
+      experience: !experience && !isOrgSignUp ? 'Please fill the experience field' : '',
+      discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Discord ID can only contain letters, numbers, and underscores. Must be 5-32 characters.' : '',
+      walletAddress: !walletAddress ? 'Please fill the wallet address field' : !addressRegex.test(walletAddress) ? 'Invalid Starknet wallet address' : '',
       img: !img ? 'Please upload a profile image' : ''
     };
 
@@ -171,13 +178,14 @@ const OnBoarding = () => {
         const res = await axios.post(`${BASE_URL}/users/signup`, {email, password});
         localStorage.setItem('token_app_wpl', res?.data?.data?.token)
         dispatch(setUserId(res?.data?.data?.userId))
+        setExperience('Hey, I recently joined WPL as a Sponsor')
         setError('')
       } catch (error) {
         if(error.status == '409') {
           setErrors({email: error.response.data.message});
           return
         } else {
-          dispatch(displaySnackbar('Something went wrong. Try again after sometime!'))
+          setErrors('Something went wrong. Try again after sometime!')
           return
         }
       }
@@ -193,7 +201,7 @@ const OnBoarding = () => {
         displayName: displayName,
         experienceDescription: experience,
         socials: {
-          discord: discord
+          discord: discord.toLowerCase()
         },
         walletAddress: walletAddress,
         pfp: googleImg || imageUrl,
@@ -209,7 +217,7 @@ const OnBoarding = () => {
         navigate('/')
       }
     } else {
-      dispatch(displaySnackbar('Something went wrong'))
+      setErrors('Something went wrong. Try again after sometime!')
     }
   }
   const removeImgPrveiew = () => {
@@ -220,14 +228,6 @@ const OnBoarding = () => {
   const swtichOnboardingType = () => {
     setError("")
     setIsSignin(!isSignin)
-  }
-
-  const navigateToOrgFormPage = () => {
-    navigate('/verifyorg')
-  }
-
-  const togglePasswordField = () => {
-    setIsPass(!isPass)
   }
 
   useEffect(() => {
@@ -328,6 +328,7 @@ const OnBoarding = () => {
   const handleOrgSignUp = () => {
     setEmail('');
     setPassword('');
+    setConfirmPassword('');
     setIsOrgSignUp(true);
     setIsSignComplete(true);
     return
@@ -383,8 +384,14 @@ const OnBoarding = () => {
               </div>
               <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type={isPass ? 'password' : 'text'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
-                {isPass ? <EyeIcon className='cursor-pointer' onClick={togglePasswordField} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={togglePasswordField} stroke='#FFFFFF52'/> }
+                {isPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
               </div>
+              {!isSignin &&
+              <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                <input type={isConfirmPass ? 'password' : 'text'} placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                {isConfirmPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> }
+              </div>
+              }
 
               {error && <div className='bg-[#F03D3D1A] rounded-md px-2 py-2 mt-4 flex items-center gap-1'>
                 <MailWarningIcon stroke='#F03D3D' size={14} className='mr-1'/>
@@ -503,7 +510,7 @@ const OnBoarding = () => {
                     <div>
                       <div className='text-white32 font-semibold font-inter text-[13px]'>Your Name <span className='text-[#F03D3D]'>*</span></div>
                       <div className={`bg-[#FFFFFF12] rounded-md ${errors.displayName ? 'border border-[#F03D3D]' : ""}`}>
-                        <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} type='text' placeholder='John' className='w-full bg-transparent py-2 px-2 outline-none text-white'/>
+                        <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} type='text' placeholder='John' className='w-full bg-transparent py-2 px-2 outline-none text-white88 placeholder:text-white32'/>
                       </div>
                       {errors.displayName && <span className='text-red-500 text-sm'>{errors.displayName}</span>}
                     </div>
@@ -511,7 +518,7 @@ const OnBoarding = () => {
                   <div className='w-full'>
                     <div className='text-white32 font-semibold font-inter text-[13px]'>Your Email <span className='text-[#F03D3D]'>*</span></div>
                     <div className={`bg-[#FFFFFF12] rounded-md ${errors.email ? 'border border-[#F03D3D]' : ""}`}>
-                      <input value={email} onChange={(e) => setEmail(e.target.value)} type='email' readOnly={!isOrgSignUp} placeholder='John@wpl.com' className={`w-full bg-transparent py-2 px-2 outline-none text-white ${!isOrgSignUp && "cursor-default"}`} />
+                      <input value={email} onChange={(e) => setEmail(e.target.value)} type='email' readOnly={!isOrgSignUp} placeholder='John@wpl.com' className={`w-full bg-transparent py-2 px-2 outline-none text-white88 placeholder:text-white32 ${!isOrgSignUp && "cursor-default"}`} />
                     </div>
                     {errors.email && <span className='text-red-500 text-sm'>{errors.email}</span>}
                   </div>
@@ -519,21 +526,34 @@ const OnBoarding = () => {
 
                 {
                   isOrgSignUp && 
-                  <div className='mt-4'>
-                      <div className='text-white32 font-semibold font-inter text-[13px]'>Enter your password <span className='text-[#F03D3D]'>*</span></div>
-                      <div className={`flex items-center justify-center bg-[#FFFFFF12] rounded-md ${errors.password ? 'border border-[#F03D3D]' : ""}`}>
-                        <input value={password} onChange={(e) => setPassword(e.target.value)} type={isPass ? 'password' : 'text'} placeholder='Password' className='w-full bg-transparent py-2 px-2 outline-none text-white'/>
-                        {isPass ? <EyeIcon className='cursor-pointer mr-3' onClick={togglePasswordField} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer mr-3' onClick={togglePasswordField} stroke='#FFFFFF52'/> }
+                  <>
+                    <div className='mt-4 flex items-start gap-4 w-full'>
+                      <div>
+                        <p className='text-white32 font-semibold font-inter text-[13px]'>Enter your password <span className='text-[#F03D3D]'>*</span></p>
+                        <div className={`flex items-center justify-center bg-[#FFFFFF12] rounded-md ${errors.password ? 'border border-[#F03D3D]' : ""}`}>
+                          <input value={password} onChange={(e) => setPassword(e.target.value)} type={isPass ? 'password' : 'text'} placeholder='Password' className='w-full bg-transparent py-2 px-2 outline-none text-white88 placeholder:text-white32'/>
+                          {isPass ? <EyeIcon className='cursor-pointer mr-3' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer mr-3' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
+                        </div>
                       </div>
-                      {errors.password && <span className='text-red-500 text-sm'>{errors.password}</span>}
+                      <div>
+                          <div className='text-white32 font-semibold font-inter text-[13px]'>Confirm your password <span className='text-[#F03D3D]'>*</span></div>
+                          <div className={`flex items-center justify-center bg-[#FFFFFF12] rounded-md ${errors.password ? 'border border-[#F03D3D]' : ""}`}>
+                            <input value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} type={isConfirmPass ? 'password' : 'text'} placeholder='Confirm Password' className='w-full bg-transparent py-2 px-2 outline-none text-white88 placeholder:text-white32'/>
+                            {isConfirmPass ? <EyeIcon className='cursor-pointer mr-3' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer mr-3' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> }
+                          </div>
+                      </div>
                     </div>
+                    {errors.password && <span className='text-red-500 text-sm'>{errors.password}</span>}
+                  </>
                 }
 
+                {!isOrgSignUp &&  
                 <div className='mt-4'>
                   <div className='text-white32 font-semibold font-inter text-[13px]'>Do you have experience designing application? <span className='text-[#F03D3D]'>*</span></div>
-                  <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder='Yes, I have 5 years of experience in designing applications' className={`w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] text-white outline-none ${errors.experience ? 'border border-[#F03D3D]' : ""}`} rows={4}/>
+                  <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder='Yes, I have 5 years of experience in designing applications' className={`w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] text-white88 placeholder:text-white32 outline-none ${errors.experience ? 'border border-[#F03D3D]' : ""}`} rows={4}/>
                   {errors.experience && <span className='text-red-500 text-sm'>{errors.experience}</span>}
                 </div>
+                }
 
 
                 <div className='mt-4'>
@@ -542,7 +562,7 @@ const OnBoarding = () => {
                     <img src={DiscordSvg} alt='discord' className='size-[20px]'/>
                     <input 
                       type='text' 
-                      placeholder='User1234' 
+                      placeholder='e.g., JohnDoe123, CodingCat' 
                       className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full' 
                       value={discord} 
                       onChange={(e) => setDiscord(e.target.value)} 
@@ -553,8 +573,8 @@ const OnBoarding = () => {
                 </div>
 
                 <div className='mt-4'>
-                  <div className='text-white32 font-semibold font-inter text-[13px]'>Enter ypur ERC-20 Address <span className='text-[#F03D3D]'>*</span></div>
-                  <input value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} placeholder='0x101..' className={`w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] ${errors.walletAddress ? 'border border-[#F03D3D]' : ""} outline-none text-white`}/>
+                  <div className='text-white32 font-semibold font-inter text-[13px]'>Enter your Starknet wallet address <span className='text-[#F03D3D]'>*</span></div>
+                  <input value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} placeholder='0x101..' className={`w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] ${errors.walletAddress ? 'border border-[#F03D3D]' : ""} outline-none text-white88 placeholder:text-white32`}/>
                   {errors.walletAddress && <span className='text-red-500 text-sm'>{errors.walletAddress}</span>}
                 </div>
 
@@ -564,7 +584,7 @@ const OnBoarding = () => {
                     hover_src_img={loginBtnHoverImg} 
                     img_size_classes='w-[350px] md:w-[480px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                    btn_txt='submit'
+                    btn_txt={isOrgSignUp ? 'next steps' : 'submit'}
                     alt_txt='submit sign up btn' 
                     onClick={updateProfile}
                   />

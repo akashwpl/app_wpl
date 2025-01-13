@@ -16,8 +16,8 @@ const BugFixCard = () => {
 
   const { user_id } = useSelector((state) => state)
   const [projectData, setProjectData] = useState(null)
-  const [milestoneindex, setMilestoneIndex] = useState(0)
-  const [remainingDays, setRemainingDays] = useState(0)
+  const [milestoneName, setMilestoneName] = useState('')
+  const [remainingDays, setRemainingDays] = useState({days: '0', hours: '0'})
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
     queryKey: ["userDetails", user_id],
@@ -26,25 +26,26 @@ const BugFixCard = () => {
   })
 
   useEffect(() => {
-    if(!userProjects) return
-    const milestoneToShow = async () => {
-      const project = userProjects?.projects?.taken?.filter(project => project?.status === 'ongoing')
-      setProjectData(project[0])
-      const response = await getProjectDetails(project[0]?._id)
-      const lastMilestone = response?.milestones[response?.milestones?.length - 1]
-      const milestone = response?.milestones?.filter((milestone, index) => {
-        if (milestone.status === 'ongoing') {
-          setMilestoneIndex(index + 1)
-          return milestone
-        }
-      })
-
-      const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone?.deadline))
-      setRemainingDays(remain)
-
+    if(!isLoadingUserProjects) {
+      if(!userProjects) return
+      const milestoneToShow = async () => {
+        const project = userProjects?.projects?.taken?.filter(project => project?.status === 'ongoing')
+        setProjectData(project[0])
+        const response = await getProjectDetails(project[0]?._id)
+        const lastMilestone = response?.milestones[response?.milestones?.length - 1]
+        const milestone = response?.milestones?.filter((milestone, index) => {
+          if (milestone.status === 'ongoing' || milestone.status === 'idle') {
+            setMilestoneName(milestone?.title)
+            return milestone
+          }
+        })
+  
+        const remain = calculateRemainingDaysAndHours(new Date(), lastMilestone?.deadline)
+        setRemainingDays(remain)
+      }
+      milestoneToShow()
     }
-    milestoneToShow()
-  }, [userProjects])
+  }, [isLoadingUserProjects])
 
 
   const navigateToProjectDetails = () => {
@@ -68,7 +69,7 @@ const BugFixCard = () => {
             <img src={clockSVG} alt='clock' className='size-[16px]'/>
             <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Progress</p>
           </div>
-          <p className='text-[13px] text-white font-inter leading-[15.6px] font-medium'>Milestone {milestoneindex} in progress</p>
+          <p className='text-[13px] text-white font-inter leading-[15.6px] font-medium'>Milestone {milestoneName}</p>
         </div>
         <div className=' w-full'></div>
         <div className='flex flex-row justify-between items-center px-4  text-white32 bg-white4 w-full h-[42px] border-t border-white12 border-dashed rounded-b-md'>
