@@ -21,7 +21,7 @@ import {
     AccordionTrigger,
 } from "../components/ui/accordion";
 import FancyButton from '../components/ui/FancyButton';
-import { BASE_URL, getTimestampFromNow } from '../lib/constants';
+import { BASE_URL, getTimestampFromNow, ROLES } from '../lib/constants';
 import { storage } from '../lib/firebase';
 import { createOpenProject, getUserOrgs } from '../service/api';
 
@@ -252,12 +252,10 @@ const AddProjectPage = () => {
         setRole((prev) => prev.filter((t) => t !== tile))
     }
 
-    const handleKeyboardEnter = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault()
-            setRole((prev) => [...prev, e.target.value?.trim()])
-            setSearchInput('')
-        }
+    const handleSelectRoles = (e) => {
+        e.preventDefault()
+        setRole((prev) => [...prev, e.target.value?.trim()])
+        setSearchInput('')
     }
 
   return (
@@ -378,10 +376,18 @@ const AddProjectPage = () => {
                                                         <X className='text-white48 w-6 cursor-pointer hover:text-white64 scale-105 transition duration-300' onClick={() => handleRemoveTile(tile)} size={14}/>
                                                     </div>
                                                 ))}   
-                                                <div className='flex items-center gap-2 w-full border border-white7 rounded-md px-2 h-[32px]'>
+                                                {/* <div className='flex items-center gap-2 w-full border border-white7 rounded-md px-2 h-[32px]'>
                                                     <input onKeyDown={handleKeyboardEnter} value={searchInput} onChange={handleSearch}  className='bg-transparent w-full outline-none border-none text-white88 placeholder:text-[14px] placeholder:text-white32 placeholder:font-gridular' placeholder='Type in roles ex. Frontend'/>
-                                                </div>    
+                                                </div>     */}
                                             </div>
+
+                                            <div>
+                                                <select onChange={(e) => handleSelectRoles(e)} className='bg-red-100'>
+                                                    <option className='bg-red-200'>Select Role</option>
+                                                    {ROLES?.map((el) => <option value={el} >{el}</option>)}
+                                                </select>
+                                            </div>
+                                            
                                             </div>
                                             {errors.role && <p className='text-red-500 font-medium text-[12px]'>{errors.role}</p>} {/* Error message */}
                                         </div>
