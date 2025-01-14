@@ -50,9 +50,9 @@ const RewardsPage = () => {
                         <thead className='bg-[#060E4F] stroke-bottom'>
                             <tr className='h-[48px] text-[13px] text-white32 border-b border-white4 font-normal font-inter'>
                                 <td className='w-[470px] px-4'>Project</td>
-                                {dummyData.length && <td className='w-[140px] text-right pr-12'>Amount</td>}
-                                <td className='w-[144px] text-right pr-10'>Status</td>
-                                <td className='w-[86px] text-right pr-10'>Time</td>
+                                {dummyData.length != 0 && <td className='w-[140px] text-right px-4'>Amount</td>}
+                                <td className='w-[144px] px-4 text-right'>Status</td>
+                                <td className='w-[86px] px-4 text-right'>Time</td>
                             </tr>
                             
                         </thead>
@@ -71,15 +71,15 @@ const RewardsPage = () => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>
+                                            <td className='justify-items-end px-4'>
                                                 <div className='flex items-center gap-1 text-[14px] text-white88 font-inter'>
                                                     <img src={USDCsvg} alt='usdc' className='size-[14px]'/>
                                                     {data?.amount} 
                                                     <span className='text-white48 hidden md:block font-light'>{data.currency}</span>
                                                 </div>
                                             </td>
-                                            <td className=''>{milestoneStatusType(data?.status)}</td>
-                                            <td className='text-[14px] text-white32 font-inter font-light'>{data?.time}</td>
+                                            <td className='justify-items-end px-4'>{milestoneStatusType(data?.status)}</td>
+                                            <td className='text-[14px] text-white32 font-inter font-light text-right px-4'>{data?.time}</td>
                                         </tr>
                                 ))}
                             </tbody>

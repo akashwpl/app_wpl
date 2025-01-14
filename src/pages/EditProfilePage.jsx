@@ -50,6 +50,7 @@ const EditProfilePage = () => {
     const [pfp, setPfp] = useState('')
 
     const [isUpdating, setIsUpdating] = useState(false)
+    const [hovered, setHovered] = useState(false)
     const [imgUploadHover, setImgUploadHover] = useState(false)
 
     const [projectDetails, setProjectDetails] = useState({
@@ -467,13 +468,36 @@ const EditProfilePage = () => {
                 </div>
             </div>
 
-            <div className='flex justify-center items-center w-full'>
+            <div className='flex justify-center items-center w-full overflow-hidden' onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
                 <FancyButton 
                     src_img={updateBtn} 
                     hover_src_img={updateBtnHoverImg} 
                     img_size_classes='w-[482px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                    btn_txt={isUpdating ? <div className='flex justify-center items-center size-full -translate-y-3'> <Spinner /> </div> : "Update Profile"}  
+                    btn_txt={
+                        isUpdating ? 
+                        <div className='flex justify-center items-center size-full -translate-y-3'>
+                            <Spinner /> 
+                        </div> :
+                        <>
+                            <span
+                            className={`absolute left-0 -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ${
+                                hovered ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"
+                            }`}
+                            >
+                            Update profile
+                            </span>
+                            <span
+                            className={`absolute left-full -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ease-out ${
+                                hovered
+                                ? "-translate-x-full opacity-100 scale-110"
+                                : "translate-x-0 opacity-0"
+                            }`}
+                            >
+                            WAGMI
+                            </span>
+                        </>
+                    }  
                     alt_txt='update profile btn'
                     onClick={handleSubmitEditProfile}
                   />
