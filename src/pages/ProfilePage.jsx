@@ -12,7 +12,7 @@ import {
 } from "../components/ui/accordion"
 
 import { useQuery } from '@tanstack/react-query'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import dummyPng from '../assets/dummy/Container.png'
 import CustomModal from '../components/ui/CustomModal'
@@ -21,11 +21,14 @@ import { deleteProject, getAllUers, getUserDetails } from '../service/api'
 import discordSVG from '../assets/icons/pixel-icons/discord.svg'
 import twitterSVG from '../assets/icons/pixel-icons/twitter.svg'
 import mailSVG from '../assets/icons/pixel-icons/mail.svg'
+import shareProfilePNG from '../assets/images/share_pfp.png'
+import { displaySnackbar } from '../store/thunkMiddleware'
 
 const ProfilePage = () => {
 
   const { id } = useParams();
   const { user_id } = useSelector((state) => state)
+  const dispatch = useDispatch()
 
   // const {data: userDetail, isLoading: isLoadingUserDetails, refetch} = useQuery({
   //   queryKey: ["userDetails", id, user_id],
@@ -70,6 +73,10 @@ const ProfilePage = () => {
 
   const sampleProjects = useMemo(() =>  userDetails?.projects?.owned?.filter((proj) => proj.type == 'sample'), [userDetails, allUsers])
 
+  const handleShareProfile = () => {
+    dispatch(displaySnackbar('COMING SOON!!!!'))
+  }
+
   return (
     <div className='overflow-x-hidden'>
       <div>
@@ -78,8 +85,11 @@ const ProfilePage = () => {
 
       <div className='flex flex-col justify-center items-center pb-20'>
         <div className='w-[350px] md:w-[480px]'>
-          <div className='-translate-y-8'>
+          <div className='-translate-y-8 flex justify-between items-center'>
             <img src={userDetails?.pfp || wpllogo} alt="WPL Logo" className='size-[72px] rounded-md'/>
+            <div className='w-[187px] h-[43px] cursor-pointer' onClick={handleShareProfile}>
+              <img src={shareProfilePNG} alt='share profile' />
+            </div>
           </div>
 
           <div>

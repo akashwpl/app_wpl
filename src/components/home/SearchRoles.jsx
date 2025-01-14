@@ -8,13 +8,12 @@ import arrow from '../../assets/images/arrow.png';
 
 const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput, handleSearch, handleFoundationFilterChange }) => {
 
-    const [selectedOrd, setSelectedOrg] = useState("All");
+  const [selectedOrd, setSelectedOrg] = useState("All");
 
-    const {data: organisationsDetails, isLoading: isLoadingOrganisationDetails} = useQuery({
-        queryKey: ["allOrganisations"],
-        queryFn: () => getAllOrganisations(),
-    })
-
+  const {data: organisationsDetails, isLoading: isLoadingOrganisationDetails} = useQuery({
+    queryKey: ["allOrganisations"],
+    queryFn: () => getAllOrganisations(),
+  })
 
   const menuRef = useRef(null);
 
