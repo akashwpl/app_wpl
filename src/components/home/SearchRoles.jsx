@@ -47,15 +47,13 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
   }
 
     return (
-        <div className="bg-black/10 w-full border border-white/10 rounded-lg mb-8 p-4">
+        <div className="bg-black/10 w-full border border-white/10 rounded-lg mb-8 p-4 gap-3 flex">
 
+          <div className='w-full'>
             <div>
-                <h2 className='font-gridular text-[14px] text-primaryYellow'>Search for roles</h2>
+              <h2 className='font-gridular text-[14px] text-primaryYellow mb-1'>Search for roles</h2>
             </div>
-
-            {/* {tiles?.length ==  && <p className="font-gridular text-primaryYellow text-[14px] leading-[16.8px] px-5 my-4">Search for the roles</p>} */}
-            <div className="flex flex-row justify-between gap-4 py-2">
-                <div className="w-full flex bg-cardBlueBg2 border border-white7 p-1 rounded-md flex-wrap gap-1">
+            <div className="w-full flex bg-cardBlueBg2 border border-white7 p-1 rounded-md flex-wrap gap-1">
                     {tiles && tiles?.map((tile, index) => (
                         <div className="flex justify-between items-center px-2 py-2 border-transparent focus:outline-0 rounded-[6px] text-white w-fit min-w-[100px] font-gridular text-[14px] leading-[16.8px] bg-white/5">
                             {tile}
@@ -72,12 +70,15 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                             placeholder={tiles?.length === 0 ? 'Search for your fav org, role...' : ''}
                         />
                     </div>
-                </div>
+            </div>
+          </div>
 
-                <div
-                    ref={menuRef}
-                    onClick={() => {handleMenuToggle()}}
-                    className="relative cursor-pointer flex flex-row items-center z-50 w-[250px] bg-white7 border border-white7 rounded-md p-2 text-primaryYellow font-gridular text-[14px]"
+          <div>
+            <p className='font-gridular text-[14px] text-primaryYellow mb-1'>Organisations</p>
+            <div
+                ref={menuRef}
+                onClick={() => {handleMenuToggle()}}
+                className="relative cursor-pointer flex flex-row items-center z-50 w-[250px] h-[42px] bg-white7 border border-white7 rounded-md p-2 text-primaryYellow font-gridular text-[14px]"
                 >
                   <div className='flex justify-between items-center w-full'>
                     <p>{selectedOrd}</p>
@@ -91,7 +92,7 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                     {showUserMenu && (
                         <>
                             <div
-                                className={`z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] font-gridular uppercase h-[400px] overflow-y-auto ${
+                                className={`z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] font-gridular uppercase h-auto max-h-[400px] overflow-y-auto ${
                                 slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                                 }`}
                             >
@@ -103,9 +104,9 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                             </div>
                         </>
                     )}
-                </div>
-
             </div>
+          </div>
+
         </div>
     )
 }

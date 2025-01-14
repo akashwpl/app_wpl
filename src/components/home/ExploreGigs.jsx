@@ -41,6 +41,8 @@ const ExploreGigs = ({orgProjects, userId}) => {
   const [showfilterModal, setShowFilterModal] = useState(false)
   const [projectsGridView, setProjectsGridView] = useState(false)
   const [weeksFilter, setWeeksFilter] = useState()
+  const [bountyTypeFilter, setBountyTypeFilter] = useState()
+
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
     queryKey: ["userProjects"],
@@ -121,7 +123,12 @@ const ExploreGigs = ({orgProjects, userId}) => {
                 (weeksFilter === 'between2And4' && weeksLeft >= 2 && weeksLeft <= 4) ||
                 (weeksFilter === 'above4' && weeksLeft > 4);
 
-            return matchesWeeks;
+            const matchesBountyIsOpen = 
+              bountyTypeFilter == null || // If no checkbox is selected, show all
+              (bountyTypeFilter === 'open' && project?.isOpenBounty) ||
+              (bountyTypeFilter === 'close' && project?.isOpenBounty == false);      
+
+            return matchesWeeks && matchesBountyIsOpen;
         })
         .sort((a, b) => {
             return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
@@ -133,6 +140,11 @@ const handleWeeksFilterChange = (event) => {
   setWeeksFilter(prevFilter => prevFilter === value ? '' : value);
 };
 
+const handleBountyTypeFilterChange = (event) => {
+  const value = event.target.value;
+  setBountyTypeFilter(prevFilter => prevFilter === value ? null : value);
+}
+
 const navigateToProjectDetails = () => {
   if(user_role == 'sponsor') {
     navigate('/userprojects')
@@ -140,6 +152,7 @@ const navigateToProjectDetails = () => {
     navigate('/allprojects')
   }
 }
+
 
   return (
     <div>
@@ -178,6 +191,18 @@ const navigateToProjectDetails = () => {
                         <p className='text-[12px] font-semibold font-inter mb-3 text-start'>Sort prizes</p>
                         <div onClick={() => {setSortOrder('ascending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'ascending' ? "text-primaryYellow" : 'text-white88'} mb-1 flex items-center gap-1`}><img src={listAscendingSvg} alt='sort' color={sortOrder == 'ascending' ? "#FBF1B8" : "#FFFFFF52"} className={`text-[16px]`} /> Low to High</div>
                         <div onClick={() => {setSortOrder('descending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'descending' ? "text-primaryYellow" : 'text-white88'}  mb-[6px] flex items-center gap-1`}><img src={listDescendingSvg} alt='sort' className={`${sortOrder == 'descending' ? "text-primaryYellow" : "text-white32"}`} /> High to Low</div>
+                    </div>
+                    <div className='border border-dashed border-white7 w-full my-4'/>
+                    <div>
+                        <p className='text-[12px] font-semibold font-inter mb-2 text-start'>Bounty type</p>
+                        <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>
+                            <input type='checkbox' name='open' value='open' onChange={(e) => handleBountyTypeFilterChange(e)} checked={bountyTypeFilter === 'open'} id='open' className='border border-primaryYellow cursor-pointer'/>
+                            <label className='cursor-pointer' htmlFor='open'>Open</label>
+                        </div>
+                        <div className=' flex items-center gap-2 text-white88 text-[14px] font-gridular'>
+                            <input type='checkbox' name='close' value='close' onChange={(e) => handleBountyTypeFilterChange(e)} checked={bountyTypeFilter === 'close'} id='close' className='border border-primaryYellow cursor-pointer'/>
+                            <label className='cursor-pointer' htmlFor='close'>Gated</label>
+                        </div>
                     </div>
                     <div className='border border-dashed border-white7 w-full my-4'/>
                     <div>

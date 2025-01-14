@@ -67,26 +67,26 @@ export function calculateRemainingDaysAndHours(startDate, targetDate) {
       days: timeDifferenceDays,
       hours: remainingHours
     };
-  }
+}
 
-  export function calculateRemainingDaysHoursAndMinutes(startDate, targetDate) {
-    // Create a Date object for the target date
-    const targetDateTime = new Date(targetDate);
-  
-    // Get the current time
-    const currentTime = new Date(startDate);
-  
-    // Calculate the time difference in milliseconds
-    const timeDifferenceMs = targetDateTime - currentTime;
-  
-    // Ensure the target date is in the future
-    if (timeDifferenceMs <= 0) {
-      return {
-        days: 0,
-        hours: 0,
-        minutes: 0,
-      };
-    }
+export function calculateRemainingDaysHoursAndMinutes(startDate, targetDate) {
+  // Create a Date object for the target date
+  const targetDateTime = new Date(targetDate);
+
+  // Get the current time
+  const currentTime = new Date(startDate);
+
+  // Calculate the time difference in milliseconds
+  const timeDifferenceMs = targetDateTime - currentTime;
+
+  // Ensure the target date is in the future
+  if (timeDifferenceMs <= 0) {
+    return {
+      days: 0,
+      hours: 0,
+      minutes: 0,
+    };
+  }
   
     // Convert milliseconds to seconds, minutes, hours, and days
     const timeDifferenceSeconds = Math.floor(timeDifferenceMs / 1000);
@@ -105,10 +105,25 @@ export function calculateRemainingDaysAndHours(startDate, targetDate) {
       hours: remainingHours,
       minutes: remainingMinutes,
     };
-  }
+}
 
-  export function convertTimestampToDate(timestamp) {
-    const date = new Date(timestamp);
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return date.toLocaleDateString(undefined, options);
-  }
+export function convertTimestampToDate(timestamp) {
+  const date = new Date(timestamp);
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  return date.toLocaleDateString(undefined, options);
+}
+
+export const ROLES = [
+  "Frontend Developer",
+  "Backend Developer",
+  "Fullstack Developer",
+  "DevOps Engineer",
+  "Data Scientist",
+  "Machine Learning Engineer",
+  "Software Engineer",
+  "QA Engineer",
+  "UI/UX Designer",
+  "Product Manager",
+  "Project Manager",
+  "Business Analyst",
+]
