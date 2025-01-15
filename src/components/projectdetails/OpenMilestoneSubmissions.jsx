@@ -49,7 +49,7 @@ const OpenMilestoneSubmissions = ({submission,index,submission_count, projectSta
                 <div className='h-[1px] bg-primaryYellow w-full mt-2 mb-5'/>
                 <div className='flex flex-col'>
                     <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Link</label>
-                    <a href={submission?.submissionLink} target='_blank' className='bg-white12 text-white88 py-1 px-2 rounded-md w-full '>{submission?.submissionLink} <ExternalLink className="inline size-4" /></a>
+                    <a href={submission?.submissionLink} rel="noopener noreferrer" target='_blank' className='bg-white12 text-white88 py-1 px-2 rounded-md w-full underline'>{submission?.submissionLink} <ExternalLink className="inline size-4" /></a>
                 </div>
                 <div className='flex flex-col mt-4'>
                     <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Description</label>

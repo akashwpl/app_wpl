@@ -29,6 +29,7 @@ import { getOpenProjectSubmissions, getOrgById, getProjectDetails, getProjectSub
 
 import alertPng from '../assets/images/alert.png'
 import clockSVG from '../assets/icons/pixel-icons/watch.svg'
+import warningSVG from '../assets/icons/pixel-icons/warning.svg'
 import zapSVG from '../assets/icons/pixel-icons/zap-yellow.svg'
 import OpenMilestoneSubmissions from '../components/projectdetails/OpenMilestoneSubmissions'
 
@@ -64,16 +65,6 @@ const ProjectDetailsPage = () => {
     queryKey: ["userProjects"],
     queryFn: getUserProjects
   })
-
-  useEffect(() => {
-    !isLoadingUserProjects && 
-    userProjects.map((project) => {
-      if(project._id == id) {
-        setIsProjApplied(true);
-        return;
-      }
-    })
-  },[])
   
   const {data: projectDetails, isLoading: isLoadingProjectDetails, refetch: refetchProjectDetails} = useQuery({
     queryKey: ['projectDetails', id],
@@ -85,6 +76,16 @@ const ProjectDetailsPage = () => {
     queryKey: ['projectSubmissions', id],
     queryFn: () => getProjectSubmissions(id),
   })
+
+  useEffect(() => {
+    !isLoadingProjectSubmissions && 
+    projectSubmissions?.map((project) => {
+      if(project?.user?.email == userDetails?.email) {
+        setIsProjApplied(true);
+        return;
+      }
+    })
+  },[isLoadingProjectSubmissions])
 
   const {data: openProjectSubmissions, isLoading: isLoadingOpenProjectSubmissions, refetch: refetchOpenProjectSubmissions} = useQuery({
     queryKey: ['openProjectSubmissions', id],
@@ -403,7 +404,12 @@ const ProjectDetailsPage = () => {
                   {projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> : 
                     allMilestonesCompleted ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
                     :
-                    isProjApplied || projectDetails?.status != "idle" || projectDetails?.isOpenBounty ? <span></span> : 
+                    projectDetails?.status != "idle" || projectDetails?.isOpenBounty ? 
+                    <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
+                      <img src={warningSVG} alt='warning' className='size-[20px]'/>
+                      <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit a milestone only ONCE. No backsies.</p>
+                    </div>
+                    : 
                     token ? <div className='mx-4 mt-4'>
                       <FancyButton 
                         src_img={btnImg} 

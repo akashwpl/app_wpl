@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { acceptRejectSubmission, createNotification, getProjectDetails, getProjectSubmissions, getUserDetails } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom';
 import headerPng from '../assets/images/prdetails_header.png'
-import { AlignLeft, ArrowLeft, CheckCheck, ChevronLeft, ChevronRight, TriangleAlert, X } from 'lucide-react';
+import { AlignLeft, ArrowLeft, CheckCheck, ChevronLeft, ChevronRight, ExternalLink, TriangleAlert, X } from 'lucide-react';
 import greenBtnImg from '../assets/svg/green_btn_subtract.png'
 import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png'
 import redBtnImg from '../assets/svg/close_proj_btn_subtract.png'
@@ -179,7 +179,7 @@ const SubmissionsPage = () => {
                                         >
                                             Portfolio link
                                         </label>
-                                        <a href={currentSubmission?._doc?.portfolioLink} target='_blank' className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 hover:underline cursor-pointer`}>{currentSubmission?._doc?.portfolioLink}</a>
+                                        <a href={currentSubmission?._doc?.portfolioLink} rel='noopener noreferrer' target='_blank' className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 underline cursor-pointer`}>{currentSubmission?._doc?.portfolioLink} <ExternalLink className="inline size-4 ml-1" /></a>
                                         </div>
 
                                         <div className='flex flex-col gap-1 w-full mb-20'>
@@ -276,7 +276,7 @@ const submittedDetails = (projectDetails, navigate) => {
                     </div>
                     <div>
                         <p className='text-white88 font-gridular text-[20px] leading-[24px] text-wrap'>{projectDetails?.title}</p>
-                        <p className='text-white32 font-semibold text-[13px] font-inter underline'><a href={projectDetails?.organisation?.websiteLink} target='_blank' rel="noopener noreferrer" >@{projectDetails?.organisationHandle}</a></p>
+                        <p className='text-white32 font-semibold text-[13px] font-inter underline'><a href={projectDetails?.organisation?.websiteLink} target='_blank' rel="noopener noreferrer" >@{projectDetails?.organisation.organisationHandle}</a></p>
                     </div>
                 </div>
                 <div className='flex flex-col justify-center items-center mt-8'>

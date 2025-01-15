@@ -254,7 +254,7 @@ const RequestsPage = () => {
                                 :
                                 <div className='flex justify-center items-center gap-2 bg-cardYellowBg p-3 rounded-md'>
                                     <img src={WarningSvg} alt='warning' className='size-[20px]'/>
-                                    <p className='text-cardYellowText capi'>You have already marked the Org request as <span className={`${orgState?.status == 'approved' ? 'text-cardGreenText' : 'text-cardRedText'} capitalize`}>{orgState?.status}</span></p>
+                                    <p className='text-cardYellowText font-inter text-[12px]'>You have already marked the Org request as <span className={`${orgState?.status == 'approved' ? 'text-cardGreenText' : 'text-cardRedText'} capitalize`}>{orgState?.status}</span></p>
                                 </div>    
                             }
                         </div> 
