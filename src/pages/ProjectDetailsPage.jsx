@@ -179,19 +179,7 @@ const ProjectDetailsPage = () => {
   const totalPrize = useMemo(() => projectDetails?.milestones?.reduce((acc, milestone) => acc + parseFloat(milestone.prize), 0) || 0, [projectDetails]);
   const totalSubmissions = useMemo(() => projectSubmissions?.length, [projectSubmissions])
 
-    // ------------------------------------TEMP FIX TO BE REMOVED AFTER DB FLUSH-----------------------------------------------------------
-
-    const tmpMilestones = projectDetails?.milestones;
-    const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((acc, curr) => {
-    return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
-    });
-    let remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone?.deadline))    
-    
-    if(isNaN(remain?.days) || isNaN(remain?.hours)) remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(projectDetails?.deadline))
-
-    // ------------------------------------TEMP FIX TO BE REMOVED AFTER DB FLUSH-----------------------------------------------------------
-    
-  // const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(projectDetails?.deadline))
+  const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(projectDetails?.deadline))
 
   const navigateBack = () => {
     if(showCloseProjectModal) {
