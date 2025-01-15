@@ -498,7 +498,7 @@ const EditProjectPage = () => {
                          </div>
                         <div>
                             <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
-                            <p className='text-white32 font-semibold text-[13px] font-inter'>@{organisationHandle}</p>
+                            <p className='text-white32 font-semibold text-[13px] font-inter underline'><a href={projectDetails?.organisation?.websiteLink} target='_blank' rel="noopener noreferrer" >@{organisationHandle}</a></p>
                         </div>
                     </div>
 
