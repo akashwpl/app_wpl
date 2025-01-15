@@ -276,7 +276,7 @@ const submittedDetails = (projectDetails, navigate) => {
                     </div>
                     <div>
                         <p className='text-white88 font-gridular text-[20px] leading-[24px] text-wrap'>{projectDetails?.title}</p>
-                        <p className='text-white32 font-semibold text-[13px] font-inter'>@{projectDetails?.organisationHandle}</p>
+                        <p className='text-white32 font-semibold text-[13px] font-inter underline'><a href={projectDetails?.organisation?.websiteLink} target='_blank' rel="noopener noreferrer" >@{projectDetails?.organisationHandle}</a></p>
                     </div>
                 </div>
                 <div className='flex flex-col justify-center items-center mt-8'>

@@ -239,7 +239,7 @@ const ProjectDetailsPage = () => {
                     <p className='capitalize'>{projectDetails?.isOpenBounty ? 'Open' : 'Gated'}</p>
                   </div>
                 </div>
-                <p className='text-[14px] text-white32 leading-5'>@{projectDetails?.organisationHandle || orgHandle}</p>
+                <p className='text-[14px] text-white32 leading-5 underline'><a href={projectDetails?.organisation?.websiteLink} target='_blank' rel="noopener noreferrer" >@{projectDetails?.organisationHandle || orgHandle}</a></p>
                 <div className='flex gap-2 leading-5 font-inter text-[14px] mt-2'>
                   <p className='text-white88'>{projectDetails?.isOpenBounty ? openProjectSubmissions?.length : totalSubmissions} <span className='text-white32'>Submissions</span></p>
                 </div>
@@ -322,7 +322,7 @@ const ProjectDetailsPage = () => {
                         ))}
                       </Accordion>
                      :
-                    totalSubmissions == 0 ? <div className='text-[14px] text-primaryYellow font-gridular'>No submissions yet</div> : <>
+                    totalSubmissions == 0 ? <div className='text-[14px] px-4 text-primaryYellow font-gridular'>No submissions yet</div> : <>
                       <div className='grid grid-cols-12 gap-2 mb-2 px-4'>
                         <div className='text-[14px] col-span-1 text-white48 font-inter'>No.</div>
                         <div className='text-[14px] col-span-3 text-white48 font-inter'>Name</div>
@@ -456,7 +456,7 @@ const ProjectDetailsPage = () => {
                 </div>
                 <div>
                   <h2 className='text-white88 font-gridular text-[20px]'>{projectDetails?.title}</h2>
-                  <p className='text-white32 font-inter text-[14px]'>@{projectDetails?.organisationHandle || orgHandle}</p>
+                  <p className='text-white32 font-inter text-[14px] underline'><a href={projectDetails?.organisation?.websiteLink} target='_blank' rel="noopener noreferrer" >@{projectDetails?.organisationHandle || orgHandle}</a></p>
                 </div>
               </div>
 
@@ -466,7 +466,7 @@ const ProjectDetailsPage = () => {
 
               <div className='flex flex-col justify-center items-center mt-4'>
                 <h2 className='font-inter text-white'>You're closing this project</h2>
-                <p className='text-white32 text-[13px] font-semibold font-inter'>Make sure that you’ve communicated this to all the involved parties.</p>
+                <p className='text-white32 text-[13px] font-semibold font-inter'>Make sure that you've communicated this to all the involved parties.</p>
               </div>
 
               <div className='flex justify-center items-center w-full mt-5 gap-2'>
