@@ -69,7 +69,7 @@ const EditProjectPage = () => {
     const [description, setDescription] = useState(projectDetails?.description || '');
     const [discordLink, setDiscordLink] = useState(projectDetails?.organisation?.socialHandleLink?.discord || '');
     const [about, setAbout] = useState(projectDetails?.about || '');
-    const [projCurrency, setProjCurrency] = useState(projectDetails?.currency || 'USDC');
+    const [projCurrency, setProjCurrency] = useState(projectDetails?.currency || '');
 
     const [submitted, setSubmitted] = useState(false);
 
@@ -77,6 +77,17 @@ const EditProjectPage = () => {
    
     const [pfpPreview, setPfpPreview] = useState('')
     const [pfp, setPfp] = useState('')
+
+    const updateCurrency = (currency) => {
+        setProjCurrency(currency);
+        if(milestones?.length > 0) {
+            const tempMS = [...milestones];
+            tempMS.map((ms,idx) => {
+                tempMS[idx] = { ...ms, currency: currency };
+            })
+            setMilestones(tempMS)
+        }
+    }
 
     const setMilestonesHelper = (index,event) => {
         setMilestones(prevMilestones => {
@@ -320,7 +331,7 @@ const EditProjectPage = () => {
                                         <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Select Prize Currency</p>
                                         <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row gap-2 justify-between items-center">
                                             <img src={projCurrency === 'STRK' ? STRKimg : USDCimg} className='size-6' />
-                                            <select onChange={(e) => setProjCurrency(e.target.value)} className='bg-cardBlueBg2 h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
+                                            <select value={projCurrency} onChange={(e) => updateCurrency(e.target.value)} className='bg-cardBlueBg2 h-full outline-none border-none text-white88 font-gridular w-full text-[14px] cursor-pointer'>
                                                 <option value="USDC" className='text-white88 bg- font-gridular text-[14px]'>USDC</option>
                                                 <option value="STRK" className='text-white88 font-gridular text-[14px]'>STRK</option>
                                             </select>
