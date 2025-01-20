@@ -2,6 +2,8 @@ export const BASE_URL = "https://api.thewpl.xyz"
 
 export const email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+export const website_regex = /^(?:https?:\/\/)?(?:www\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,6}(?:\/\S*)?$/i;
+
 export function getTimestampFromNow(deliveryTime, timeUnit, starts_in) {
     // const [number, unit] = input.split(' '); // Split the input into number and unit
     const duration = parseInt(deliveryTime, 10); // Convert the number to an integer

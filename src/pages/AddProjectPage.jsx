@@ -31,7 +31,7 @@ import Spinner from '../components/ui/spinner';
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png';
 import { displaySnackbar } from '../store/thunkMiddleware';
 
-const AddProjectPage = () => {
+const   AddProjectPage = () => {
 
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
@@ -68,6 +68,17 @@ const AddProjectPage = () => {
         queryKey: ['userOrganisations', user_id],
         queryFn: () => getUserOrgs(user_id),
     })
+
+    const updateCurrency = (currency) => {
+        setProjCurrency(currency);
+        if(milestones?.length > 0) {
+            const tempMS = [...milestones];
+            tempMS.map((ms,idx) => {
+                tempMS[idx] = { ...ms, currency: currency };
+            })
+            setMilestones(tempMS)
+        }
+    }
 
     useEffect(() => {
         if(!isLoadingUserOrgs) {
@@ -408,7 +419,7 @@ const AddProjectPage = () => {
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Select Prize Currency</p>
                                             <div className="min-w-[280px] h-[32px] bg-cardBlueBg2 rounded-md px-2 flex flex-row gap-2 justify-between items-center">
                                                 <img src={projCurrency === 'STRK' ? STRKimg : USDCimg} className='size-6' />
-                                                <select onChange={(e) => setProjCurrency(e.target.value)} className='bg-cardBlueBg2 h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
+                                                <select onChange={(e) => updateCurrency(e.target.value)} className='bg-cardBlueBg2 h-full outline-none border-none text-white88 font-gridular w-full text-[14px]'>
                                                     <option value="USDC" className='text-white88 bg- font-gridular text-[14px]'>USDC</option>
                                                     <option value="STRK" className='text-white88 font-gridular text-[14px]'>STRK</option>
                                                 </select>
@@ -594,7 +605,7 @@ const AddProjectPage = () => {
                             </div>
                             <div>
                                 <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
-                                <p className='text-white88 font-semibold text-[13px] font-inter'>@{userOrg?.organisationHandle}</p>
+                                <p className='text-white88 font-semibold text-[13px] font-inter underline'><a href={userOrg?.websiteLink} target='_blank' rel="noopener noreferrer" >@{userOrg?.organisationHandle}</a></p>
                             </div>
                         </div>
 

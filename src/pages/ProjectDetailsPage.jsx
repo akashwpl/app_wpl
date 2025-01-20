@@ -29,6 +29,7 @@ import { getOpenProjectSubmissions, getOrgById, getProjectDetails, getProjectSub
 
 import alertPng from '../assets/images/alert.png'
 import clockSVG from '../assets/icons/pixel-icons/watch.svg'
+import warningSVG from '../assets/icons/pixel-icons/warning.svg'
 import zapSVG from '../assets/icons/pixel-icons/zap-yellow.svg'
 import OpenMilestoneSubmissions from '../components/projectdetails/OpenMilestoneSubmissions'
 
@@ -64,16 +65,6 @@ const ProjectDetailsPage = () => {
     queryKey: ["userProjects"],
     queryFn: getUserProjects
   })
-
-  useEffect(() => {
-    !isLoadingUserProjects && 
-    userProjects.map((project) => {
-      if(project._id == id) {
-        setIsProjApplied(true);
-        return;
-      }
-    })
-  },[])
   
   const {data: projectDetails, isLoading: isLoadingProjectDetails, refetch: refetchProjectDetails} = useQuery({
     queryKey: ['projectDetails', id],
@@ -85,6 +76,16 @@ const ProjectDetailsPage = () => {
     queryKey: ['projectSubmissions', id],
     queryFn: () => getProjectSubmissions(id),
   })
+
+  useEffect(() => {
+    !isLoadingProjectSubmissions && 
+    projectSubmissions?.map((project) => {
+      if(project?.user?.email == userDetails?.email) {
+        setIsProjApplied(true);
+        return;
+      }
+    })
+  },[isLoadingProjectSubmissions])
 
   const {data: openProjectSubmissions, isLoading: isLoadingOpenProjectSubmissions, refetch: refetchOpenProjectSubmissions} = useQuery({
     queryKey: ['openProjectSubmissions', id],
@@ -179,19 +180,7 @@ const ProjectDetailsPage = () => {
   const totalPrize = useMemo(() => projectDetails?.milestones?.reduce((acc, milestone) => acc + parseFloat(milestone.prize), 0) || 0, [projectDetails]);
   const totalSubmissions = useMemo(() => projectSubmissions?.length, [projectSubmissions])
 
-    // ------------------------------------TEMP FIX TO BE REMOVED AFTER DB FLUSH-----------------------------------------------------------
-
-    const tmpMilestones = projectDetails?.milestones;
-    const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((acc, curr) => {
-    return new Date(curr).getTime() > new Date(acc).getTime() ? curr : acc;
-    });
-    let remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(lastMilestone?.deadline))    
-    
-    if(isNaN(remain?.days) || isNaN(remain?.hours)) remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(projectDetails?.deadline))
-
-    // ------------------------------------TEMP FIX TO BE REMOVED AFTER DB FLUSH-----------------------------------------------------------
-    
-  // const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(projectDetails?.deadline))
+  const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(projectDetails?.deadline))
 
   const navigateBack = () => {
     if(showCloseProjectModal) {
@@ -239,7 +228,7 @@ const ProjectDetailsPage = () => {
                     <p className='capitalize'>{projectDetails?.isOpenBounty ? 'Open' : 'Gated'}</p>
                   </div>
                 </div>
-                <p className='text-[14px] text-white32 leading-5'>@{projectDetails?.organisationHandle || orgHandle}</p>
+                <p className='text-[14px] text-white32 leading-5 underline'><a href={projectDetails?.organisation?.websiteLink} target='_blank' rel="noopener noreferrer" >@{projectDetails?.organisationHandle || orgHandle}</a></p>
                 <div className='flex gap-2 leading-5 font-inter text-[14px] mt-2'>
                   <p className='text-white88'>{projectDetails?.isOpenBounty ? openProjectSubmissions?.length : totalSubmissions} <span className='text-white32'>Submissions</span></p>
                 </div>
@@ -322,7 +311,7 @@ const ProjectDetailsPage = () => {
                         ))}
                       </Accordion>
                      :
-                    totalSubmissions == 0 ? <div className='text-[14px] text-primaryYellow font-gridular'>No submissions yet</div> : <>
+                    totalSubmissions == 0 ? <div className='text-[14px] px-4 text-primaryYellow font-gridular'>No submissions yet</div> : <>
                       <div className='grid grid-cols-12 gap-2 mb-2 px-4'>
                         <div className='text-[14px] col-span-1 text-white48 font-inter'>No.</div>
                         <div className='text-[14px] col-span-3 text-white48 font-inter'>Name</div>
@@ -415,7 +404,12 @@ const ProjectDetailsPage = () => {
                   {projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> : 
                     allMilestonesCompleted ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
                     :
-                    isProjApplied || projectDetails?.status != "idle" || projectDetails?.isOpenBounty ? <span></span> : 
+                    projectDetails?.status != "idle" || projectDetails?.isOpenBounty ? 
+                    <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
+                      <img src={warningSVG} alt='warning' className='size-[20px]'/>
+                      <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit a milestone only ONCE. No backsies.</p>
+                    </div>
+                    : 
                     token ? <div className='mx-4 mt-4'>
                       <FancyButton 
                         src_img={btnImg} 
@@ -456,7 +450,7 @@ const ProjectDetailsPage = () => {
                 </div>
                 <div>
                   <h2 className='text-white88 font-gridular text-[20px]'>{projectDetails?.title}</h2>
-                  <p className='text-white32 font-inter text-[14px]'>@{projectDetails?.organisationHandle || orgHandle}</p>
+                  <p className='text-white32 font-inter text-[14px] underline'><a href={projectDetails?.organisation?.websiteLink} target='_blank' rel="noopener noreferrer" >@{projectDetails?.organisationHandle || orgHandle}</a></p>
                 </div>
               </div>
 
@@ -466,7 +460,7 @@ const ProjectDetailsPage = () => {
 
               <div className='flex flex-col justify-center items-center mt-4'>
                 <h2 className='font-inter text-white'>You're closing this project</h2>
-                <p className='text-white32 text-[13px] font-semibold font-inter'>Make sure that you’ve communicated this to all the involved parties.</p>
+                <p className='text-white32 text-[13px] font-semibold font-inter'>Make sure that you've communicated this to all the involved parties.</p>
               </div>
 
               <div className='flex justify-center items-center w-full mt-5 gap-2'>

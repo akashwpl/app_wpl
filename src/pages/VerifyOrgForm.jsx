@@ -20,6 +20,7 @@ import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
 import Spinner from '../components/ui/spinner';
 import { useQuery } from '@tanstack/react-query';
+import { website_regex } from '../lib/constants';
 
 const VerifyOrgForm = () => {
     const fileInputRef = useRef(null);
@@ -27,6 +28,7 @@ const VerifyOrgForm = () => {
 
     const { user_id } = useSelector((state) => state)
     const [name, setName] = useState('')
+    const [websiteLink, setWebsiteLink] = useState('')
     const [organisationHandle, setOrganisationHandle] = useState('');
     const [description, setDescription] = useState('');
     const [discordLink, setDiscordLink] = useState('');
@@ -64,7 +66,12 @@ const VerifyOrgForm = () => {
 
     const validateFields = () => {
         const newErrors = {};
-        if (!name) newErrors.name = 'Name is required';
+        if (!name) newErrors.name = 'Company Name is required';
+        if (!websiteLink) {
+            newErrors.websiteLink = 'Company website link is required';
+        } else if(!website_regex.test(websiteLink)) {
+            newErrors.websiteLink = 'Please enter a valid website URL';
+        }
         if (!organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
         if (!description) newErrors.description = 'Company description is required';
         if(!discordLink) {
@@ -72,7 +79,11 @@ const VerifyOrgForm = () => {
         } else if(!discordLink.startsWith('https://discord.gg/')) {
             newErrors.discordLink = 'Discord link must start with https://discord.gg/'
         }            
-        if(!telegramLink) newErrors.telegramLink = 'Telegram link is mandatory'
+        if(!telegramLink) {
+            newErrors.telegramLink = 'Telegram link is mandatory'
+        } else if(!telegramLink.startsWith('https://t.me/')) {
+            newErrors.telegramLink = 'Telegram link must start with https://t.me/'
+        }
         if (!logoPreview) newErrors.logoPreview = 'Logo is required';
         setErrors(newErrors);
         scrollToTop();
@@ -114,6 +125,7 @@ const VerifyOrgForm = () => {
             const data = {
                 userId: user_id,
                 name: name,
+                websiteLink: websiteLink,
                 description: description,
                 organisationHandle: organisationHandle,
                 socialHandleLink: {
@@ -171,7 +183,7 @@ const VerifyOrgForm = () => {
                                 </div>
                                 <div>
                                     <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{name}</p>
-                                    <p className='text-white88 font-semibold text-[13px] font-inter'>@{organisationHandle}</p>
+                                    <a href={websiteLink} target='_blank' ref='noopener noreferrer'><p className='text-white88 font-semibold text-[13px] font-inter underline'>@{organisationHandle}</p></a>
                                 </div>
                             </div>
 
@@ -281,6 +293,18 @@ const VerifyOrgForm = () => {
                                                 />
                                             </div>
                                             {errors.description && <p className='text-red-500 font-medium text-[12px]'>{errors.description}</p>} {/* Error message */}
+                                        </div>
+                                        <div className='mt-3'>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Company Website link <span className='text-[#F03D3D]'>*</span></p>
+                                            <div className={`bg-white7 rounded-md px-3 py-2 ${errors.websiteLink && "border border-cardRedText"}`}>
+                                                <input 
+                                                    type='text' 
+                                                    className={`bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full`}
+                                                    value={websiteLink} 
+                                                    onChange={(e) => setWebsiteLink(e.target.value)} 
+                                                />
+                                            </div>
+                                            {errors.websiteLink && <p className='text-red-500 font-medium text-[12px]'>{errors.websiteLink}</p>} {/* Error message */}
                                         </div>
                                     </div>
                                 </AccordionContent>
