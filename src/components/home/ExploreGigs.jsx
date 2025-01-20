@@ -23,8 +23,8 @@ const userTabs = [
 ]
 
 const sponsorTabs = [
-  {id: 'all', name: 'My Bounties', isActive: true},
-  {id: 'live', name: 'Applied', isActive: false},
+  {id: 'live', name: 'Live', isActive: true},
+  {id: 'all', name: 'All', isActive: false},
   {id: 'completed', name: 'Completed', isActive: false}
 ]
 
@@ -45,7 +45,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
 
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
-    queryKey: ["userProjects"],
+    queryKey: ["userProjects", user_id],
     queryFn: getUserProjects,
     enabled: !!userId
   })
@@ -53,12 +53,12 @@ const ExploreGigs = ({orgProjects, userId}) => {
   useEffect(() => {
     if(user_role == 'sponsor') {
       setTabs(sponsorTabs)
-      setSelectedTab('all')
+      setSelectedTab('live')
     } else {
       setTabs(userTabs)
       setSelectedTab('live')
     }
-  }, [])
+  }, [user_role])
 
 
   const handleTabClick = (id) => {
@@ -100,7 +100,6 @@ const ExploreGigs = ({orgProjects, userId}) => {
   //     });
   //   }
   // }, [userProjects, selectedTab, sortOrder]);
-
 
   
   const filteredProjects = useMemo(() => {
