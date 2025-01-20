@@ -124,7 +124,7 @@ const OnBoarding = () => {
   
       getUserDetails(res?.data?.data?.userId).then((data) => {
         setError('')
-        data?.role == 'sponsor' ? navigate('/userprojects') : navigate('/allprojects')
+        data?.role == 'sponsor' ? navigate('/allprojects') : navigate('/allprojects')
       })
     } catch (error) {
       if(error.status == '409') {
