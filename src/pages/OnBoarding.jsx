@@ -436,7 +436,7 @@ const OnBoarding = () => {
                   </div>
                   }
                   <div className='my-5 border border-dashed border-[#FFFFFF12]'/>
-                  <p className='text-[14px] font-gridular text-white64'>Enter One-Time password</p>
+                  <p className='text-[14px] font-gridular text-white64'>Enter verification code!</p>
                   <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                     <input type="text" placeholder="abc12" value={otpInput} onChange={(e) => setOtpInput(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white12'/>
                   </div>
