@@ -382,6 +382,7 @@ const OnBoarding = () => {
   }
 
   useEffect(() => {
+    if(!isOrgSignUp) return
     const handler = setTimeout(() => {
       if(email) sendOTP()
     }, 4000);

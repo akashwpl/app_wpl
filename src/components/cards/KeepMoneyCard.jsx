@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 const KeepMoneyCard = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const totalBars = 20; // Number of bars
+  const totalBars = 13; // Number of bars
   const animationSpeed = 200; // Animation speed in milliseconds
 
   useEffect(() => {
@@ -21,12 +21,12 @@ const KeepMoneyCard = () => {
         <p>your money.</p>
       </div>
 
-      <div className='absolute -right-20'>
-        <div className="flex items-center space-x-1 bg-[#010116B2] rounded-md p-2">
+      <div className='absolute -right-1'>
+        <div className="flex items-center space-x-1 bg-[#010116B2] border border-[#FFFFFF12] rounded-md p-2">
           {Array.from({ length: totalBars }).map((_, index) => (
             <div
               key={index}
-              className={`w-2 h-6 transition-all ${
+              className={`w-2 h-[20px] transition-all ${
                 index <= activeIndex ? "bg-[#E38070]" : "bg-[#16237F]"
               }`}
             />
