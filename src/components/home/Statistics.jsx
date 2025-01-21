@@ -9,6 +9,8 @@ const Statistics = ({ userDetails }) => {
     queryKey: ["allProjects"],
     queryFn: getAllProjects
   })
+
+  console.log('allProjects statis', allProjects)
   
 
   return (

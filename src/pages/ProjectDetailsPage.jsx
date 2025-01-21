@@ -482,6 +482,7 @@ const ProjectDetailsPage = () => {
                   onClick={closeProject}
                 />
               </div>
+              
             </div>
         </div>
       }

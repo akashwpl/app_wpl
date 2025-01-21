@@ -23,19 +23,13 @@ const userTabs = [
   {id: 'closed', name: 'Completed', isActive: false}
 ]
 
-const sponsorTabs = [
-  {id: 'assigned', name: 'Live', isActive: true},
-  {id: 'idle', name: 'All', isActive: false},
-  {id: 'closed', name: 'Completed', isActive: false}
-]
-
 const ExploreGigs = ({orgProjects, userId}) => {
 
   const navigate = useNavigate()
   const { user_id, user_role } = useSelector((state) => state)
 
-  const [tabs, setTabs] = useState([])
-  const [selectedTab, setSelectedTab] = useState()
+  const [tabs, setTabs] = useState(userTabs)
+  const [selectedTab, setSelectedTab] = useState('assigned')
   const [sortOrder, setSortOrder] = useState('ascending')
   const [sortBy, setSortBy] = useState('prize')
 
@@ -68,15 +62,15 @@ const ExploreGigs = ({orgProjects, userId}) => {
     enabled: !!userId
   })
 
-  useEffect(() => {
-    if(user_role == 'sponsor') {
-      setTabs(sponsorTabs)
-      setSelectedTab('live')
-    } else {
-      setTabs(userTabs)
-      setSelectedTab('live')
-    }
-  }, [user_role])
+  // useEffect(() => {
+  //   if(user_role == 'sponsor') {
+  //     setTabs(sponsorTabs)
+  //     setSelectedTab('live')
+  //   } else {
+  //     setTabs(userTabs)
+  //     setSelectedTab('live')
+  //   }
+  // }, [user_role])
 
 
   const handleTabClick = (id) => {
@@ -224,16 +218,14 @@ const ExploreGigs = ({orgProjects, userId}) => {
     navigate('/addproject')
   }
 
-
   return (
     <div>
-        
           <div className="flex justify-between items-center">
             <h1 className="font-gridular text-primaryYellow text-[20px]">Explore all</h1>
             {user_role == 'user' ?
-            <FancyButton 
-              src_img={exploreBtnImg} 
-              hover_src_img={exploreBtnHoverImg} 
+            <FancyButton
+              src_img={exploreBtnImg}
+              hover_src_img={exploreBtnHoverImg}
               img_size_classes='w-[175px] h-[44px]' 
               className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
               btn_txt={<span className='flex items-center justify-center gap-2'><span>{"Go to my gigs"}</span><ArrowUpRight size={18}/></span>} 
@@ -245,15 +237,17 @@ const ExploreGigs = ({orgProjects, userId}) => {
               hover_src_img={exploreBtnHoverImg} 
               img_size_classes='w-[175px] h-[44px]' 
               className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-              btn_txt={<span className='flex items-center justify-center gap-2'><span>{"+ New Listing"}</span><ArrowUpRight size={18}/></span>} 
+              btn_txt={<span className='flex items-center justify-center gap-2'><span>{"+ Add Listing"}</span><ArrowUpRight size={18}/></span>} 
               alt_txt='save project btn' 
               onClick={navigateToCreateProject}
             />}
           </div>
-          
-          <div className='mt-6'>
-              <SearchRoles tiles={tiles} handleRoleChange={handleRoleChange} handleRemoveTile={handleRemoveTile} handleKeyboardEnter={handleKeyboardEnter} searchInput={searchInput} handleSearch={handleSearch} handleFoundationFilterChange={handleFoundationFilterChange}/>
-          </div>
+              
+          {user_role == 'user' && 
+            <div className='mt-6'>
+                <SearchRoles tiles={tiles} handleRoleChange={handleRoleChange} handleRemoveTile={handleRemoveTile} handleKeyboardEnter={handleKeyboardEnter} searchInput={searchInput} handleSearch={handleSearch} handleFoundationFilterChange={handleFoundationFilterChange}/>
+            </div>
+          }
           
         <div className="flex justify-between items-center border border-white7 rounded-[2px] mt-5">
           <Tabs tabs={tabs} handleTabClick={handleTabClick} selectedTab={selectedTab}/>
@@ -317,10 +311,10 @@ const ExploreGigs = ({orgProjects, userId}) => {
           filteredProjects && selectedTab == 'live' && filteredProjects?.length == 0 ? <div className="mt-24">
             <div className="flex flex-col justify-center items-center gap-2">
               <div className="font-gridular text-white88 text-[24px]">No Gigs Available</div>
-              <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
+              {/* <p className="text-white32 font-gridular">Explore gigs and start building now!</p> */}
             </div>
               <div className="flex justify-center items-center mt-6">
-                <FancyButton 
+                {/* <FancyButton 
                   src_img={exploreBtnImg} 
                   hover_src_img={exploreBtnHoverImg} 
                   img_size_classes='w-[175px] h-[44px]' 
@@ -328,15 +322,15 @@ const ExploreGigs = ({orgProjects, userId}) => {
                   btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
                   alt_txt='save project btn' 
                   onClick={navigateToProjectDetails}
-                />
+                /> */}
               </div>
             </div>
             : selectedTab !== 'live' && filteredProjects?.length == 0 ? <div className="mt-24">
               <div className="flex flex-col justify-center items-center gap-2">
                 <div className="font-gridular text-white88 text-[24px]">No Gigs Available</div>
-                <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
+                {/* <p className="text-white32 font-gridular">Explore gigs and start building now!</p> */}
               </div>
-                <div className="flex justify-center items-center mt-6">
+                {/* <div className="flex justify-center items-center mt-6">
                   <FancyButton 
                     src_img={exploreBtnImg} 
                     hover_src_img={exploreBtnHoverImg} 
@@ -346,7 +340,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
                     alt_txt='save project btn' 
                     onClick={navigateToProjectDetails}
                   />
-                </div>
+                </div> */}
             </div>
             : <div className={`${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col"}`}>
                 {filteredProjects?.length == 0 ? <div></div> : filteredProjects?.map((project, idx) => <div key={idx} className={`${projectsGridView ? "" : "hover:bg-white4"}`}> 

@@ -198,12 +198,12 @@ const Navbar = () => {
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
       <div className='hidden md:flex justify-between items-center w-full'>
         <div className='flex items-center gap-[24px] text-[12px] lg:text-[14px] text-primaryYellow font-bienvenue'>
-          <Link to={'/allprojects'}><GlyphEffect text={'EXPLORE'} /></Link>
+          <Link to={'/'}><GlyphEffect text={'EXPLORE'} /></Link>
           <Link to={'/leaderboard'}><GlyphEffect text={'LEADERBOARD'} /></Link>
         </div>
         <div className={``}>
           <div className='z-[100] translate-x-7'>
-            <Link to={'/allprojects'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]' /></Link>
+            <Link to={'/'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]' /></Link>
           </div>
         </div>
 
@@ -249,7 +249,7 @@ const Navbar = () => {
                         >
                           <div className="flex items-center gap-2">
                             <img src={docSVG} alt="projects" className='size-[20px]' />
-                            <p>List Projects</p>
+                            <p>My Listings</p>
                           </div>                          
                         </Link>
                       </>
@@ -384,7 +384,7 @@ const Navbar = () => {
                 </div>
               </Link>
               {userDetail?.role !== 'user' && (
-                <Link to={'/allprojects'} onClick={() => setShowNavbar(false)}> 
+                <Link to={'/'} onClick={() => setShowNavbar(false)}> 
                   <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
                     <img src={docSVG} alt="projects" className='size-[20px]' />
                     <p>Explore</p>
