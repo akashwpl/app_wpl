@@ -30,6 +30,7 @@ import Spinner from '../components/ui/spinner';
 
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png';
 import { displaySnackbar } from '../store/thunkMiddleware';
+import DropdownSearchList from '../components/form/DropdownSearchList';
 
 const   AddProjectPage = () => {
 
@@ -112,7 +113,7 @@ const   AddProjectPage = () => {
                 if (Object.keys(newErrors).length !== 0) {
                     const updatedMilestones = [...milestones];
                     updatedMilestones[index] = { ...updatedMilestones[index], err: newErrors };
-                    console.log(`Milestone ${index}`, updatedMilestones);
+                    // console.log(`Milestone ${index}`, updatedMilestones);
                     setMilestones(updatedMilestones);
                     isErr = true;
                 }
@@ -285,7 +286,7 @@ const   AddProjectPage = () => {
         setTotalPrize(total)
     },[milestones])
 
-    console.log('milestones', milestones)
+    // console.log('milestones', milestones)
 
     const handleSearch = (e) => {
         setSearchInput(e.target.value)
@@ -412,24 +413,32 @@ const   AddProjectPage = () => {
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Role <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
-                                            <div className="w-full rounded-md flex flex-row flex-wrap gap-2">
+                                            {/* <div className="w-full rounded-md flex flex-row flex-wrap gap-2">
                                                 {role && role?.map((tile, index) => (
                                                     <div className="bg-cardBlueBg2 flex justify-between items-center px-2 py-2 border-transparent focus:outline-0 rounded-[6px] text-white88 w-fit font-gridular text-[14px] leading-[16.8px]">
                                                         {tile}
                                                         <X className='text-white48 w-6 cursor-pointer hover:text-white64 scale-105 transition duration-300' onClick={() => handleRemoveTile(tile)} size={14}/>
                                                     </div>
                                                 ))}   
-                                                {/* <div className='flex items-center gap-2 w-full border border-white7 rounded-md px-2 h-[32px]'>
-                                                    <input onKeyDown={handleKeyboardEnter} value={searchInput} onChange={handleSearch}  className='bg-transparent w-full outline-none border-none text-white88 placeholder:text-[14px] placeholder:text-white32 placeholder:font-gridular' placeholder='Type in roles ex. Frontend'/>
-                                                </div>     */}
-                                            </div>
+                                                <div className='flex items-center gap-2 w-full border border-white7 rounded-md px-2 h-[32px]'>
+                                                    <input 
+                                                        // onKeyDown={handleKeyboardEnter} 
+                                                        value={searchInput} 
+                                                        onChange={handleSearch} 
+                                                        className='bg-transparent w-full outline-none border-none text-white88 placeholder:text-[14px] placeholder:text-white32 placeholder:font-gridular' 
+                                                        placeholder='Type in roles ex. Frontend'
+                                                    />
+                                                </div>    
+                                            </div> */}
 
-                                            <div>
+                                            {/* <div>
                                                 <select onChange={(e) => handleSelectRoles(e)} className='bg-red-100'>
                                                     <option className='bg-red-200'>Select Role</option>
                                                     {ROLES?.map((el) => <option value={el} >{el}</option>)}
                                                 </select>
-                                            </div>
+                                            </div> */}
+
+                                            <DropdownSearchList dropdownList={ROLES} setterFunction={setRole}/>
                                             
                                             </div>
                                             {errors.role && <p className='text-red-500 font-medium text-[12px]'>{errors.role}</p>} {/* Error message */}
@@ -456,7 +465,7 @@ const   AddProjectPage = () => {
                                                     <option value="STRK" className='text-white88 font-gridular text-[14px]'>STRK</option>
                                                 </select>
                                             </div>
-                                            {errors.projCurrency && <p className='text-red-500 font-medium text-[12px]'>{errors.projCurrency}</p>} {/* Error message */}
+                                            {errors.projCurrency && <p className='text-red-500 font-medium text-[12px]'>{errors.projCurrency}</p>}
                                         </div>
 
                                         <div className='mt-3'>
@@ -471,7 +480,7 @@ const   AddProjectPage = () => {
                                                     onChange={(e) => setDiscordLink(e.target.value)} 
                                                 />
                                             </div>
-                                            {errors.discordLink && <p className='text-red-500 font-medium text-[12px]'>{errors.discordLink}</p>} {/* Error message */}
+                                            {errors.discordLink && <p className='text-red-500 font-medium text-[12px]'>{errors.discordLink}</p>}
                                         </div>
                                     </div>
                                 </AccordionContent>
@@ -738,7 +747,7 @@ const   AddProjectPage = () => {
                 </div>
         }
 
-            <div className='bg-[#091044] px-20 py-4 fixed bottom-0 left-0 w-full flex justify-between items-center'>
+            <div className='bg-[#091044] px-20 py-4 fixed bottom-0 left-0 w-full flex justify-between items-center z-20'>
                     
                     <div className='flex items-center gap-2'>
                         <p className='text-white88 font-semibold font-inter text-[13px]'>Project Total Sum</p>

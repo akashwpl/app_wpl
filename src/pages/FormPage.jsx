@@ -7,11 +7,6 @@ import { useEffect, useState } from 'react';
 
 import checkTick from '../assets/images/check-tick.png'
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import GithubTeamSearchBox from '../components/form/GithubTeamSearchBox';
-
-import akashProfile from '../assets/dummy/akash_profile.png'
-import sumeetProfile from '../assets/dummy/sumeet_profile.png'
-import rahulProfile from '../assets/dummy/rahul_profile.png'
 import { applyForProject, createNotification, getProjectDetails, getProjectSubmissions, getUserDetails } from '../service/api';
 import { useQuery } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
@@ -23,24 +18,6 @@ import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 const whitespaceRegex = /^\s*$/;
 const emailIdRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const addressRegex = /^(0x)[0-9a-fA-F]{40}$/;
-
-const githubTeammatesList = [
-  {
-    img: rahulProfile,
-    username: 'Rahul Bhadoriya',
-    githubId: 'rahuldesignweb3'
-  },
-  {
-    img: akashProfile,
-    username: 'Akash Behera',
-    githubId: 'razerghostt'
-  },
-  {
-    img: sumeetProfile,
-    username: 'Sumeet Shelar',
-    githubId: 'sumeetshelar99'
-  }
-]
 
 const FormPage = () => {
 
@@ -351,7 +328,6 @@ const FormPage = () => {
                               </div>
                             }
                         </div>
-                        {/* <GithubTeamSearchBox teamList={githubTeammatesList} /> */}
                         
                         <div className="mb-56">
                           <FancyButton 
