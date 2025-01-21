@@ -6,12 +6,18 @@ import Spinner from '../components/ui/spinner'
 import { getUserDetails } from '../service/api'
 
 import { LayoutGrid, ListFilter, TableProperties } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import headerPng from '../assets/images/prdetails_header.png'
 import Tabs from '../components/ui/Tabs'
 
 import listAscendingSvg from '../assets/svg/list-number-ascending.svg'
 import listDescendingSvg from '../assets/svg/list-number-descending.svg'
+
+const sponstTabs = [
+    {id: 'idle', name: 'Live', isActive: true},
+    {id: 'all', name: 'All', isActive: false},
+    {id: 'closed', name: 'Completed', isActive: false}
+]
 
 const allTabs = [
     {id: 'idle', name: 'Live', isActive: true},
@@ -22,7 +28,7 @@ const allTabs = [
 const AllUserOwnedProjectsPage = () => {
     const navigate = useNavigate()
 
-    const { user_id } = useSelector((state) => state)
+    const { user_id, user_role } = useSelector((state) => state)
     const [tabs, setTabs] = useState(allTabs)
     const [selectedTab, setSelectedTab] = useState('idle')
 
@@ -53,8 +59,21 @@ const AllUserOwnedProjectsPage = () => {
         setSelectedTab(id)
     }
 
+    useEffect(() => {
+        if(user_role == "user"){
+            setTabs(allTabs)
+        } else {
+            setTabs(sponstTabs)
+        }
+    }, [user_role])
+
     const filteredProjects = useMemo(() => {
-        return userProjects?.projects?.owned?.filter((el) => el?.status == selectedTab)
+        return userProjects?.projects?.owned?.filter((el) => {
+            if(selectedTab == 'all') {return el}
+        else {
+            return el?.status == selectedTab
+        }
+        })
             ?.filter(project => {
                 const matchesType = project?.type?.toLowerCase() === 'bounty';
                 // Week-based filter

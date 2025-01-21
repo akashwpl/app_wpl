@@ -49,6 +49,8 @@ const AllProjectsPage = () => {
     const handleSearch = (e) => {
         setSearchInput(e.target.value)
     }
+
+    console.log('allProjects', allProjects)
  
     const filteredProjects = useMemo(() => {
         return allProjects?.filter((el) => el?.status == selectedTab)

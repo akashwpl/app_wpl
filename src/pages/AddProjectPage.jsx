@@ -7,13 +7,13 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import STRKimg from '../assets/images/strk.png';
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png';
 import btnImg from '../assets/svg/btn_subtract_semi.png';
 import DiscordSvg from '../assets/svg/discord.svg';
 import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png';
 import saveBtnImg from '../assets/svg/menu_btn_subtract.png';
 import USDCimg from '../assets/svg/usdc.svg';
-import STRKimg from '../assets/images/strk.png';
 import {
     Accordion,
     AccordionContent,
@@ -63,6 +63,11 @@ const   AddProjectPage = () => {
     const [imgUploadHover, setImgUploadHover] = useState(false)
 
     const [userOrg, setUserOrg] = useState({})
+
+    const [openStartDate, setOpenStartDate] = useState(new Date());
+    const [openDeliveryDate, setOpenDeliveryDate] = useState(0);
+    const [openDeliveryDuration, setOpenDeliveryDuration] = useState(0);
+    const [openBudget, setOpenBudget] = useState(0);
 
     const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
         queryKey: ['userOrganisations', user_id],
@@ -152,6 +157,30 @@ const   AddProjectPage = () => {
         updatedMilestones[index] = { ...updatedMilestones[index], [field]: value };
         setMilestones(updatedMilestones);
     };
+    const handleOpenDeliveryDurationInput = (e) => {
+        const updatedMilestones = [...milestones];
+        updatedMilestones[0] = { ...updatedMilestones[0], ['deliveryTime']: e?.target?.value };
+        setMilestones(updatedMilestones);
+        setOpenDeliveryDate(e?.target?.value);
+    }
+    const handleOpenDeliveryDurationChange = (e) => {
+        const updatedMilestones = [...milestones];
+        updatedMilestones[0] = { ...updatedMilestones[0], ['timeUnit']: e };
+        setMilestones(updatedMilestones);
+        setOpenDeliveryDuration(e);
+    }
+    const handleOpenStartDateChange = (date) => {
+        const updatedMilestones = [...milestones];
+        updatedMilestones[0] = { ...updatedMilestones[0], starts_in: date?.getTime() };
+        setMilestones(updatedMilestones);
+        setOpenStartDate(date);
+    }
+    const handleOpenBudgetChange = (e) => {
+        const updatedMilestones = [...milestones];
+        updatedMilestones[0] = { ...updatedMilestones[0], ['prize']: e };
+        setMilestones(updatedMilestones);
+        setOpenBudget(e);
+    }
 
     const handleAddMilestone = () => {
         setMilestones([...milestones, { title: '', description: '', prize: '', currency: projCurrency, deliveryTime: '', timeUnit: 'Weeks' }]);
@@ -243,9 +272,10 @@ const   AddProjectPage = () => {
 
     const handleDateChange = (index,date) => {
         const updatedMilestones = [...milestones];
-        updatedMilestones[index] = { ...updatedMilestones[index], starts_in: date?.getTime()  };
+        updatedMilestones[index] = { ...updatedMilestones[index], starts_in: date?.getTime() };
         setMilestones(updatedMilestones);
     };
+
 
     useEffect(() => {
         const total = milestones.reduce((sum, milestone) => {
@@ -254,6 +284,8 @@ const   AddProjectPage = () => {
         }, 0);
         setTotalPrize(total)
     },[milestones])
+
+    console.log('milestones', milestones)
 
     const handleSearch = (e) => {
         setSearchInput(e.target.value)
@@ -467,134 +499,209 @@ const   AddProjectPage = () => {
                             </AccordionItem>
                         </Accordion>
 
-                        <div className='border border-dashed border-white12 my-4'/>
-
-                        <div>
-                            {milestones.map((milestone, index) => (
-                                <Accordion key={index} type="single" defaultValue={`item-${index}`} collapsible>
-                                    <AccordionItem value={`item-${index}`} key={index} className="border-none">
-                                        <div className="flex w-full border-b border-primaryYellow justify-between items-center">
-                                            <AccordionTrigger className="w-[425px] text-white48 font-inter hover:no-underline">
-                                                <div className='flex items-center gap-1'>
-                                                    <Trophy size={14} className='text-primaryYellow'/>
-                                                    <div className='text-primaryYellow font-inter text-[14px]'>Milestone {index + 1}</div>
-                                                </div>
-                                            </AccordionTrigger>
-                                            <X size={16} className='text-primaryRed w-[30px] cursor-pointer' onClick={() => handleDeleteMilestone(index)}/>
-                                        </div>
-                                        <AccordionContent className="py-2">
-                                            <div>
-                                                <div className='mt-3'>
-                                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title</p>
-                                                    <div className='bg-white7 rounded-md px-3 py-2'>
-                                                        <input
-                                                            type='text'
-                                                            className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full'
-                                                            value={milestone.title}
-                                                            onChange={(e) => handleMilestoneChange(index, 'title', e.target.value)} 
-                                                        />
-                                                    </div>
-                                                    {milestone.err?.title && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.title}</p>}
-                                                </div>
-                                                <div className='mt-3'>
-                                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone description</p>
-                                                    <div className='bg-white7 rounded-md px-3 py-2'>
-                                                        <textarea 
-                                                            type='text' 
-                                                            className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' 
-                                                            rows={4}
-                                                            value={milestone.description} 
-                                                            onChange={(e) => handleMilestoneChange(index, 'description', e.target.value)} 
-                                                        />
-                                                    </div>
-                                                    {milestone.err?.description && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.description}</p>}
-                                                </div>
-                                                <div className='mt-3'>
-                                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Start date</p>
-                                                    <div className='bg-white7 rounded-md'>
-                                                        <DatePicker
-                                                            className='w-[28rem] bg-transparent text-white88 placeholder:text-white64 outline-none border-none cursor-pointer px-3 py-2' 
-                                                            selected={milestone.starts_in || ''}
-                                                            onChange={(date) => handleDateChange(index,date)}
-                                                            minDate={new Date()}
-                                                            dateFormat="dd/MM/yyyy"
-                                                            placeholderText='DD/MM/YYYY'
-                                                        />
-                                                    </div>
-                                                    {milestone.err?.starts_in && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.starts_in}</p>}
-                                                </div>
-
-                                                <div className='mt-3'>
-                                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
-                                                    <div className='flex items-center gap-2 w-full'>
-                                                        <div className='bg-[#091044] rounded-md py-2 w-[110px] flex justify-evenly items-center gap-1'>
-                                                            <img src={milestone?.currency === 'STRK' ? STRKimg : USDCimg} alt='usdc' className='size-[16px] rounded-sm'/>
-                                                            <p className='text-white88 font-semibold font-inter text-[12px]'>{milestone.currency}</p>
-                                                        </div>
-                                                        <div className='w-full'>
-                                                            <div className='bg-white7 rounded-md px-3 py-2'>
-                                                                <input 
-                                                                    type='number' 
-                                                                    placeholder='1200' 
-                                                                    className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
-                                                                    value={milestone.prize} 
-                                                                    onChange={(e) => handleMilestoneChange(index, 'prize', e.target.value)} 
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    {milestone.err?.prize && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{milestone.err.prize}</p>}
-                                                </div>
-                                                <div className='mt-3'>
-                                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Delivery Time</p>
-                                                    <div className='flex items-center gap-2 w-full mt-2'>
-                                                        <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
-                                                            <select 
-                                                                className='bg-[#091044] text-white88 outline-none border-none w-full'
-                                                                value={milestone.timeUnit}
-                                                                onChange={(e) => handleMilestoneChange(index, 'timeUnit', e.target.value)}
-                                                            >
-                                                                <option value="Days">Days</option>
-                                                                <option value="Weeks">Weeks</option>
-                                                                <option value="Months">Months</option>
-                                                            </select>
-                                                        </div>
-                                                        <div className='w-full'>
-                                                            <div className='bg-white7 rounded-md px-3 py-2'>
-                                                                <input 
-                                                                    type='number' 
-                                                                    placeholder='Enter delivery time' 
-                                                                    className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
-                                                                    value={milestone.deliveryTime} 
-                                                                    onChange={(e) => handleMilestoneChange(index, 'deliveryTime', e.target.value)} 
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    {milestone.err?.deliveryTime && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{milestone.err.deliveryTime}</p>}
-                                                </div>
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
-                            ))}
+                     {isOpenBounty && 
+                     <>
+                     
+                        <div className='mt-3'>
+                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Start date</p>
+                            <div className='bg-white7 rounded-md'>
+                                <DatePicker
+                                    className='w-[28rem] bg-transparent text-white88 placeholder:text-white64 outline-none border-none cursor-pointer px-3 py-2' 
+                                    selected={openStartDate}
+                                    onChange={(date) => handleOpenStartDateChange(date)}
+                                    minDate={new Date()}
+                                    dateFormat="dd/MM/yyyy"
+                                    placeholderText='DD/MM/YYYY'
+                                />
+                            </div>
                         </div>
 
-                        <div className='mt-4'>
-                            <FancyButton 
-                                src_img={btnImg} 
-                                hover_src_img={btnHoverImg} 
-                                img_size_classes='w-[470px] h-[44px]' 
-                                className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                                btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={14}/><span>Add milestone</span></span>} 
-                                alt_txt='add milestone btn' 
-                                onClick={handleAddMilestone}
-                            />
-                            {/* <button className='flex justify-center items-center w-full border border-primaryYellow h-[43px]' onClick={handleAddMilestone}>
-                                <Plus size={14} className='text-primaryYellow'/>
-                                <p className='text-primaryYellow font-gridular text-[14px]'>Add milestone</p>
-                            </button> */}
-                        </div>                      
+                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px] mt-4'>Delivery Time</p>
+                        <div className='flex items-center gap-2 w-full mt-2'>
+                            <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
+                                <select 
+                                    className='bg-[#091044] text-white88 outline-none border-none w-full'
+                                    value={openDeliveryDuration}
+                                    onChange={(e) => handleOpenDeliveryDurationChange(e.target.value)}
+                                >
+                                    <option value="Days">Days</option>
+                                    <option value="Weeks">Weeks</option>
+                                    <option value="Months">Months</option>
+                                </select>
+                            </div>
+                            <div className='w-full'>
+                                <div className='bg-white7 rounded-md px-3 py-2'>
+                                    <input 
+                                        type='number' 
+                                        placeholder='Enter delivery time' 
+                                        className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
+                                        value={openDeliveryDate} 
+                                        onChange={(e) => handleOpenDeliveryDurationInput(e)} 
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className='mt-3'>
+                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
+                            <div className='flex items-center gap-2 w-full'>
+                                <div className='bg-[#091044] rounded-md py-3 w-[110px] flex justify-evenly items-center gap-1'>
+                                    <img src={ projCurrency === 'STRK' ? STRKimg : USDCimg} alt='usdc' className='size-[16px] rounded-sm'/>
+                                    <p className='text-white88 font-semibold font-inter text-[12px]'>{projCurrency}</p>
+                                </div>
+                                <div className='w-full'>
+                                    <div className='bg-white7 rounded-md px-3 py-2'>
+                                        <input 
+                                            type='number' 
+                                            placeholder='1200' 
+                                            className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
+                                            value={openBudget} 
+                                            onChange={(e) => handleOpenBudgetChange(e.target.value)} 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </>
+                        }
+
+                        
+                        
+                        {!isOpenBounty && 
+                            <>
+
+                                <div className='border border-dashed border-white12 my-4'/>
+
+                                <div>
+                                    {milestones.map((milestone, index) => (
+                                        <Accordion key={index} type="single" defaultValue={`item-${index}`} collapsible>
+                                            <AccordionItem value={`item-${index}`} key={index} className="border-none">
+                                                <div className="flex w-full border-b border-primaryYellow justify-between items-center">
+                                                    <AccordionTrigger className="w-[425px] text-white48 font-inter hover:no-underline">
+                                                        <div className='flex items-center gap-1'>
+                                                            <Trophy size={14} className='text-primaryYellow'/>
+                                                            <div className='text-primaryYellow font-inter text-[14px]'>Milestone {index + 1}</div>
+                                                        </div>
+                                                    </AccordionTrigger>
+                                                    <X size={16} className='text-primaryRed w-[30px] cursor-pointer' onClick={() => handleDeleteMilestone(index)}/>
+                                                </div>
+                                                <AccordionContent className="py-2">
+                                                    <div>
+                                                        <div className='mt-3'>
+                                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title</p>
+                                                            <div className='bg-white7 rounded-md px-3 py-2'>
+                                                                <input
+                                                                    type='text'
+                                                                    className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full'
+                                                                    value={milestone.title}
+                                                                    onChange={(e) => handleMilestoneChange(index, 'title', e.target.value)} 
+                                                                />
+                                                            </div>
+                                                            {milestone.err?.title && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.title}</p>}
+                                                        </div>
+                                                        <div className='mt-3'>
+                                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone description</p>
+                                                            <div className='bg-white7 rounded-md px-3 py-2'>
+                                                                <textarea 
+                                                                    type='text' 
+                                                                    className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' 
+                                                                    rows={4}
+                                                                    value={milestone.description} 
+                                                                    onChange={(e) => handleMilestoneChange(index, 'description', e.target.value)} 
+                                                                />
+                                                            </div>
+                                                            {milestone.err?.description && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.description}</p>}
+                                                        </div>
+                                                        <div className='mt-3'>
+                                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Start date</p>
+                                                            <div className='bg-white7 rounded-md'>
+                                                                <DatePicker
+                                                                    className='w-[28rem] bg-transparent text-white88 placeholder:text-white64 outline-none border-none cursor-pointer px-3 py-2' 
+                                                                    selected={milestone.starts_in || ''}
+                                                                    onChange={(date) => handleDateChange(index,date)}
+                                                                    minDate={new Date()}
+                                                                    dateFormat="dd/MM/yyyy"
+                                                                    placeholderText='DD/MM/YYYY'
+                                                                />
+                                                            </div>
+                                                            {milestone.err?.starts_in && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.starts_in}</p>}
+                                                        </div>
+
+                                                        <div className='mt-3'>
+                                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
+                                                            <div className='flex items-center gap-2 w-full'>
+                                                                <div className='bg-[#091044] rounded-md py-2 w-[110px] flex justify-evenly items-center gap-1'>
+                                                                    <img src={milestone?.currency === 'STRK' ? STRKimg : USDCimg} alt='usdc' className='size-[16px] rounded-sm'/>
+                                                                    <p className='text-white88 font-semibold font-inter text-[12px]'>{milestone.currency}</p>
+                                                                </div>
+                                                                <div className='w-full'>
+                                                                    <div className='bg-white7 rounded-md px-3 py-2'>
+                                                                        <input 
+                                                                            type='number' 
+                                                                            placeholder='1200' 
+                                                                            className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
+                                                                            value={milestone.prize} 
+                                                                            onChange={(e) => handleMilestoneChange(index, 'prize', e.target.value)} 
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {milestone.err?.prize && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{milestone.err.prize}</p>}
+                                                        </div>
+                                                        <div className='mt-3'>
+                                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Delivery Time</p>
+                                                            <div className='flex items-center gap-2 w-full mt-2'>
+                                                                <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
+                                                                    <select 
+                                                                        className='bg-[#091044] text-white88 outline-none border-none w-full'
+                                                                        value={milestone.timeUnit}
+                                                                        onChange={(e) => handleMilestoneChange(index, 'timeUnit', e.target.value)}
+                                                                    >
+                                                                        <option value="Days">Days</option>
+                                                                        <option value="Weeks">Weeks</option>
+                                                                        <option value="Months">Months</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div className='w-full'>
+                                                                    <div className='bg-white7 rounded-md px-3 py-2'>
+                                                                        <input 
+                                                                            type='number' 
+                                                                            placeholder='Enter delivery time' 
+                                                                            className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
+                                                                            value={milestone.deliveryTime} 
+                                                                            onChange={(e) => handleMilestoneChange(index, 'deliveryTime', e.target.value)} 
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {milestone.err?.deliveryTime && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{milestone.err.deliveryTime}</p>}
+                                                        </div>
+                                                    </div>
+                                                </AccordionContent>
+                                            </AccordionItem>
+                                        </Accordion>
+                                    ))}
+                                </div>
+
+                                <div className='mt-4'>
+                                    <FancyButton 
+                                        src_img={btnImg} 
+                                        hover_src_img={btnHoverImg} 
+                                        img_size_classes='w-[470px] h-[44px]' 
+                                        className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                                        btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={14}/><span>Add milestone</span></span>} 
+                                        alt_txt='add milestone btn' 
+                                        onClick={handleAddMilestone}
+                                    />
+                                    {/* <button className='flex justify-center items-center w-full border border-primaryYellow h-[43px]' onClick={handleAddMilestone}>
+                                        <Plus size={14} className='text-primaryYellow'/>
+                                        <p className='text-primaryYellow font-gridular text-[14px]'>Add milestone</p>
+                                    </button> */}
+                                </div>  
+                            </>
+                        }
+
+                                           
                     </div>
                 </div>
             :   <div className='flex justify-center items-center mt-4'>
