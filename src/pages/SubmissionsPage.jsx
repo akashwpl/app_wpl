@@ -133,7 +133,7 @@ const SubmissionsPage = () => {
                                 </div>
 
                                 <div className='text-[14px] text-white88 font-inter flex items-center gap-2 mt-3'>
-                                    <p>{currentSubmission?.user?.projectsCompleted || '--'} <span className='text-white32'>Projects Completed</span></p>
+                                    <p>{currentSubmission?.user?.projectsCompleted || '0'} <span className='text-white32'>Projects Completed</span></p>
                                     <p>${currentSubmission?.user?.totalEarned} <span className='text-white32'>Earned</span></p>
                                 </div>
                             </div>
