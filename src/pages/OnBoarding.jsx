@@ -78,8 +78,12 @@ const OnBoarding = () => {
   });
 
   const signUp = async () => {
-    if (!email || !password) {
-      setError('Please enter email and password')
+    if (!email) {
+      setError('Please enter email')
+      return
+    }
+    if (!password) {
+      setError('Please enter password')
       return
     }
     const validEmail = email_regex.test(email)
@@ -174,6 +178,7 @@ const OnBoarding = () => {
     setErrors(newErrors);
 
     if (Object.values(newErrors).some(error => error)) {
+      setIsUploadingProfile(false)
       return;
     }
 
@@ -220,14 +225,16 @@ const OnBoarding = () => {
     const data = await response;
     if(data.status === 200){
       if(isOrgSignUp) {
+        setIsUploadingProfile(false)
         navigate('/verifyorg')
       } else {
+        setIsUploadingProfile(false)
         navigate('/allProjects')
       }
     } else {
+      setIsUploadingProfile(false)
       setErrors('Something went wrong. Try again after sometime!')
     }
-    setIsUploadingProfile(false)
   }
   const removeImgPrveiew = () => {
     setImg(null)
@@ -504,13 +511,27 @@ const OnBoarding = () => {
                     img_size_classes='w-[376px] h-[44px]' 
                     className='mt-2 font-gridular text-white64 text-[14px] leading-[8.82px]' 
                     btn_txt={
+                      <>
                         <span
                           className={`absolute left-0 -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ${
                             hovered ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"
                           }`}
                         >
-                         {gettingOTP ? <Spinner /> : isOTPRecieved ? "Sign Up" : "Get OTP"}
+                          {gettingOTP ? <Spinner /> : isOTPRecieved ? "Sign Up" : "Get OTP"}
                         </span>
+          
+                        <span
+                          className={`absolute left-full -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ease-out ${
+                            hovered
+                              ? "-translate-x-full opacity-100 scale-110"
+                              : "translate-x-0 opacity-0"
+                          }`}
+                        >
+                          We&apos;re so back!
+                        </span>
+                        {/* <GlyphEffect text={''} isNav={false} /> */}
+                      </>
+                        
                     } 
                     onClick={isOTPRecieved ? signUp : sendOTP} 
                   />
@@ -666,7 +687,7 @@ const OnBoarding = () => {
                     hover_src_img={loginBtnHoverImg} 
                     img_size_classes='w-[350px] md:w-[480px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                    btn_txt={isuploadingProfile ? <Spinner /> : isOrgSignUp ? 'next steps' : 'submit'}
+                    btn_txt={isuploadingProfile ? <span className='flex justify-center items-center w-full -translate-x-3'><Spinner /></span>  : isOrgSignUp ? 'next steps' : 'submit'}
                     alt_txt='submit sign up btn' 
                     onClick={updateProfile}
                   />
