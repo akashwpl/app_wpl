@@ -14,14 +14,14 @@ import listAscendingSvg from '../assets/svg/list-number-ascending.svg'
 import listDescendingSvg from '../assets/svg/list-number-descending.svg'
 
 const sponstTabs = [
-    {id: 'idle', name: 'Live', isActive: true},
-    {id: 'all', name: 'All', isActive: false},
+    {id: 'ongoing', name: 'Live', isActive: true},
+    {id: 'idle', name: 'All', isActive: false},
     {id: 'closed', name: 'Completed', isActive: false}
 ]
 
 const allTabs = [
     {id: 'idle', name: 'Live', isActive: true},
-    {id: 'in_review', name: 'In Review', isActive: false},
+    {id: 'ongoing', name: 'In Review', isActive: false},
     {id: 'closed', name: 'Completed', isActive: false}
 ]
 
@@ -67,9 +67,12 @@ const AllUserOwnedProjectsPage = () => {
         }
     }, [user_role])
 
+    console.log('userProjects', userProjects?.projects)
+
     const filteredProjects = useMemo(() => {
+        if(user_role == 'sponsor') {
         return userProjects?.projects?.owned?.filter((el) => {
-            if(selectedTab == 'all') {return el}
+            if(selectedTab == 'idle') {return el?.status == "idle"}
         else {
             return el?.status == selectedTab
         }
@@ -96,6 +99,36 @@ const AllUserOwnedProjectsPage = () => {
             .sort((a, b) => {
                 return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
         });
+        } else {
+            return userProjects?.projects?.taken?.filter((el) => {
+                if(selectedTab == 'idle') {return el?.status == "idle"}
+            else {
+                return el?.status == selectedTab
+            }
+            })
+                ?.filter(project => {
+                    const matchesType = project?.type?.toLowerCase() === 'bounty';
+                    // Week-based filter
+                    const lastMilestone = project?.milestones?.[project.milestones.length - 1];
+                    const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;
+                    const weeksLeft = deadlineDate ? (deadlineDate - new Date()) / (1000 * 60 * 60 * 24 * 7) : null;
+                    const matchesWeeks = 
+                        !weeksFilter || // if no weeks filter is set
+                        (weeksFilter === 'lessThan2' && weeksLeft < 2) ||
+                        (weeksFilter === 'between2And4' && weeksLeft >= 2 && weeksLeft <= 4) ||
+                        (weeksFilter === 'above4' && weeksLeft > 4); 
+    
+                    const matchesBountyIsOpen = 
+                    bountyTypeFilter == null || // If no checkbox is selected, show all
+                    (bountyTypeFilter === 'open' && project?.isOpenBounty) ||
+                    (bountyTypeFilter === 'close' && project?.isOpenBounty == false);             
+    
+                    return matchesType && matchesWeeks && matchesBountyIsOpen;
+                })
+                .sort((a, b) => {
+                    return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
+            });
+        }
     }, [userProjects, selectedTab, sortOrder, weeksFilter, foundationFilter, bountyTypeFilter]);
 
    

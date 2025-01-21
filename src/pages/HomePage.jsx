@@ -5,16 +5,14 @@ import ExploreGigs from '../components/home/ExploreGigs'
 import KYC_Card from '../components/home/KYC_Card'
 import ProfileDetailsCard from '../components/home/ProfileDetailsCard'
 // import RecentActivityCard from '../components/home/RecentActivityCard'
+import { useNavigate } from 'react-router-dom'
+import KeepMoneyCard from '../components/cards/KeepMoneyCard'
+import WhyStarkNetCard from '../components/cards/WhyStarkNetCard'
+import RecentActivityCard from '../components/home/RecentActivityCard'
 import Statistics from '../components/home/Statistics'
 import { getUserDetails } from '../service/api'
 import AdminDashboard from './AdminDashboard'
 import SponsorDashboard from './SponsorDashboard'
-import { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import WhyStarkNetCard from '../components/cards/WhyStarkNetCard'
-import fireWhitePng from '../assets/images/fire-white.png'
-import KeepMoneyCard from '../components/cards/KeepMoneyCard'
-import RecentActivityCard from '../components/home/RecentActivityCard'
 
 
 const HomePage = () => {
@@ -38,9 +36,9 @@ const HomePage = () => {
     return <SponsorDashboard />
   }
 
-  useEffect(() => {
-    if(!token) navigate('/allprojects')
-  },[])
+  // useEffect(() => {
+  //   if(!token) navigate('/allprojects')
+  // },[])
 
   return (
     <div className='flex flex-row justify-between mt-4 mx-8'>
