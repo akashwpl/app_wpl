@@ -28,8 +28,6 @@ const SponsorDashboard = () => {
                 <div className='w-[80%] flex flex-col gap-2 h-full'>
                     <SponsorTrendingBountyCard />
 
-                    <div className='border border-white12 border-dashed w-full my-4'></div>
-
                     <div className='bg-[#9CD4EC1A] rounded-md w-full px-4 py-2 flex items-center gap-3'>
                         <div className='w-[20px] h-[20px]'>
                             <img src={fireWhitePng} alt='fire-white' className='' />

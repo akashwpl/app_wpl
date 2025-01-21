@@ -194,7 +194,7 @@ const OnBoarding = () => {
 
     if(isOrgSignUp) {
       try {
-        const res = await axios.post(`${BASE_URL}/users/signup`, {email, password});
+        const res = await axios.post(`${BASE_URL}/users/signup`, {email, password, otp: otpInput});
         localStorage.setItem('token_app_wpl', res?.data?.data?.token)
         dispatch(setUserId(res?.data?.data?.userId))
         setExperience('Hey, I recently joined WPL as a Sponsor')
