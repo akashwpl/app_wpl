@@ -16,12 +16,12 @@ import { setUserId } from '../store/slice/userSlice'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { auth, provider, signInWithPopup, storage } from '../lib/firebase'
 
+import axios from 'axios'
 import videoMp4 from '../assets/dummy/v1.mp4'
 import mailSVG from '../assets/icons/pixel-icons/mail.svg'
-import GlyphEffect from '../components/ui/GlyphEffect'
 import DiscordSvg from '../assets/svg/discord.svg'
-import axios from 'axios'
-import { displaySnackbar } from '../store/thunkMiddleware'
+import GlyphEffect from '../components/ui/GlyphEffect'
+import Spinner from '../components/ui/spinner'
 
 const addressRegex = /^(0x)[0-9a-fA-F]{40}$/; 
 const discordRegex = /^[a-zA-Z0-9_]{5,32}$/
@@ -60,6 +60,13 @@ const OnBoarding = () => {
 
   const fileInputRef = useRef(null);
 
+  const [isOTPRecieved, setIsOTPRecieved] = useState(false)
+  const [gettingOTP, setGettingOTP] = useState(false)
+  const [isOTPVerified, setIsOTPVerified] = useState(false)
+  const [isuploadingProfile, setIsUploadingProfile] = useState(false)
+
+  const [otpInput, setOtpInput] = useState('')
+
   const [errors, setErrors] = useState({
     email: '',
     password: '',
@@ -90,7 +97,7 @@ const OnBoarding = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, otp: otpInput }),
     }).then((res) => res.json())
     .then((data) => {
       if(data?.data?.token) {
@@ -153,6 +160,7 @@ const OnBoarding = () => {
   }
 
   const updateProfile = async () => {
+    setIsUploadingProfile(true)
     const newErrors = {
       email: isOrgSignUp && !email ? 'Please fill the email field' : !email_regex.test(email) ? 'Please enter a valid email' : '',
       password: isOrgSignUp && !password ? 'Please fill the password field' : password !== confirmPassword ? 'Password not matching' : '',
@@ -214,11 +222,12 @@ const OnBoarding = () => {
       if(isOrgSignUp) {
         navigate('/verifyorg')
       } else {
-        navigate('/')
+        navigate('/allProjects')
       }
     } else {
       setErrors('Something went wrong. Try again after sometime!')
     }
+    setIsUploadingProfile(false)
   }
   const removeImgPrveiew = () => {
     setImg(null)
@@ -334,6 +343,29 @@ const OnBoarding = () => {
     return
   }
 
+  const sendOTP = async () => {
+    if(!email) return setError('Please enter email')
+    setGettingOTP(true)
+    const response = await fetch(`${BASE_URL}/account/getOtp`,{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({email})
+    }).then((res) => res.json())
+    .then((data) => {
+      if(data.data?.status === "success") {
+        setIsOTPRecieved(true)
+        setGettingOTP(false)
+        setError('')
+      } else {
+        setGettingOTP(false)
+        setError(data.message)
+      }
+    })
+    
+  }
+
   return (
     <div className='flex justify-center items-center'>
       {!isSignComplete ?
@@ -370,19 +402,48 @@ const OnBoarding = () => {
 
           <div className='bg-white4 rounded-lg p-3 mt-6 min-w-[400px]'>
             <div className='bg-[#091044] rounded-lg p-3'>
-              <div onClick={handleGoogleSignUp} className='flex justify-between items-center group cursor-pointer'>
-                <div className='flex items-center gap-1 text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Log in" : "Sign up with"} Google <img src={googleLogo} width={12} height={12} /></div>
-                <div><ArrowRight size={18} stroke='#FFFFFF52'/></div>
-              </div>
-              <div className='my-4 border border-dashed border-[#FFFFFF12]'/>
-              <div>
-                <p className='text-white32 font-medium font-inter text-[13px] leading-[15.6px]'>{isSignin ? "Log in" : "Sign up"} with Email</p>
-              </div>
-              <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
-                <input type="email" placeholder="User@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
-                <img src={mailSVG} alt='email' className='w-[22px] h-[22px]'/>
-              </div>
-              <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                <div onClick={handleGoogleSignUp} className='flex justify-between items-center group cursor-pointer'>
+                  <div className='flex items-center gap-1 text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Log in" : "Sign up with"} Google <img src={googleLogo} width={12} height={12} /></div>
+                  <div><ArrowRight size={18} stroke='#FFFFFF52'/></div>
+                </div>
+                <div className='my-4 border border-dashed border-[#FFFFFF12]'/>
+                <div>
+                  <p className='text-white32 font-medium font-inter text-[13px] leading-[15.6px]'>{isSignin ? "Log in" : "Sign up"} with Email</p>
+                </div>
+                <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                  <input type="email" placeholder="User@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                  <img src={mailSVG} alt='email' className='w-[22px] h-[22px]'/>
+                </div>
+
+                {isOTPRecieved &&
+                <>
+                  <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                    <input type={isPass ? 'password' : 'text'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                    {isPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
+                  </div>
+                  {!isSignin &&
+                  <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                    <input type={isConfirmPass ? 'password' : 'text'} placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                    {isConfirmPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> }
+                  </div>
+                  }
+                  <div className='my-5 border border-dashed border-[#FFFFFF12]'/>
+                  <p className='text-[14px] font-gridular text-white64'>Enter One-Time password</p>
+                  <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                    <input type="text" placeholder="abc12" value={otpInput} onChange={(e) => setOtpInput(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white12'/>
+                  </div>
+                  </>
+                }
+
+                {isSignin &&
+                 <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                  <input type={isPass ? 'password' : 'text'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                  {isPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
+                </div>
+                }
+              
+              
+              {/* <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type={isPass ? 'password' : 'text'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
                 {isPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
               </div>
@@ -391,7 +452,7 @@ const OnBoarding = () => {
                 <input type={isConfirmPass ? 'password' : 'text'} placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
                 {isConfirmPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> }
               </div>
-              }
+              } */}
 
               {error && <div className='bg-[#F03D3D1A] rounded-md px-2 py-2 mt-4 flex items-center gap-1'>
                 <MailWarningIcon stroke='#F03D3D' size={14} className='mr-1'/>
@@ -403,6 +464,7 @@ const OnBoarding = () => {
               }
 
             </div>
+              {isSignin ?
                 <div className='mt-4 overflow-hidden' onMouseEnter={handleMouseEnter} onMouseLeave={() => setHovered(false)}>
                   <FancyButton 
                     src_img={loginBtnImg} 
@@ -434,6 +496,26 @@ const OnBoarding = () => {
                     onClick={isSignin ? login : signUp} 
                   />
                 </div>
+                :
+                <div className='mt-4 overflow-hidden' onMouseEnter={handleMouseEnter} onMouseLeave={() => setHovered(false)}>
+                  <FancyButton 
+                    src_img={loginBtnImg} 
+                    hover_src_img={loginBtnHoverImg} 
+                    img_size_classes='w-[376px] h-[44px]' 
+                    className='mt-2 font-gridular text-white64 text-[14px] leading-[8.82px]' 
+                    btn_txt={
+                        <span
+                          className={`absolute left-0 -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ${
+                            hovered ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"
+                          }`}
+                        >
+                         {gettingOTP ? <Spinner /> : isOTPRecieved ? "Sign Up" : "Get OTP"}
+                        </span>
+                    } 
+                    onClick={isOTPRecieved ? signUp : sendOTP} 
+                  />
+                </div>
+              }
           </div>
 
           <div className='flex justify-center items-center mt-2 gap-2'>
@@ -584,7 +666,7 @@ const OnBoarding = () => {
                     hover_src_img={loginBtnHoverImg} 
                     img_size_classes='w-[350px] md:w-[480px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                    btn_txt={isOrgSignUp ? 'next steps' : 'submit'}
+                    btn_txt={isuploadingProfile ? <Spinner /> : isOrgSignUp ? 'next steps' : 'submit'}
                     alt_txt='submit sign up btn' 
                     onClick={updateProfile}
                   />
