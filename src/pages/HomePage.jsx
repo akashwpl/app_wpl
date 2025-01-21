@@ -14,6 +14,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import WhyStarkNetCard from '../components/cards/WhyStarkNetCard'
 import fireWhitePng from '../assets/images/fire-white.png'
 import KeepMoneyCard from '../components/cards/KeepMoneyCard'
+import RecentActivityCard from '../components/home/RecentActivityCard'
 
 
 const HomePage = () => {
@@ -58,7 +59,7 @@ const HomePage = () => {
 
           <div className='border border-white12 border-dashed w-full my-4'></div>
 
-          <div className='bg-[#9CD4EC1A] rounded-md w-full px-4 py-2 flex items-center gap-3'>
+          {/* <div className='bg-[#9CD4EC1A] rounded-md w-full px-4 py-2 flex items-center gap-3'>
             <div className='w-[20px] h-[20px]'>
                 <img src={fireWhitePng} alt='fire-white' className='' />
             </div>
@@ -66,16 +67,16 @@ const HomePage = () => {
                 <div className='font-gridular text-[14px] leading-4 text-white'>Hey {userDetails?.displayName}!</div>
                 <div className='font-inter text-[12px] leading-[14px] text-white48'>Your skills match listings live right now! <Link to={'/allprojects'} className='underline'>Apply now!</Link></div>
             </div>
-          </div>
+          </div> */}
 
-          <div className='border border-white12 border-dashed w-full my-4'></div>
+          {/* <div className='border border-white12 border-dashed w-full my-4'></div> */}
 
           {!token ? null : !userDetails?.isKYCVerified ? <KYC_Card userDetails={userDetails}/> : null}
           {!token ? null : <ProfileDetailsCard userDetails={userDetails} />}
           {!token || userDetails?.projectsOngoing == 0 ? null :
             <BugFixCard />
           }
-          {/* <RecentActivityCard /> */}
+          <RecentActivityCard />
         </div>
       }
     </div>
