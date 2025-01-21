@@ -18,7 +18,7 @@ import SearchRoles from "./SearchRoles"
 // TODO ::  Leaderboard page clickable user and rediret to user profile
 
 const userTabs = [
-  {id: 'assigned', name: 'Live', isActive: true},
+  {id: 'ongoing', name: 'Live', isActive: true},
   {id: 'idle', name: 'All', isActive: false},
   {id: 'closed', name: 'Completed', isActive: false}
 ]
@@ -29,7 +29,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
   const { user_id, user_role } = useSelector((state) => state)
 
   const [tabs, setTabs] = useState(userTabs)
-  const [selectedTab, setSelectedTab] = useState('assigned')
+  const [selectedTab, setSelectedTab] = useState('ongoing')
   const [sortOrder, setSortOrder] = useState('ascending')
   const [sortBy, setSortBy] = useState('prize')
 
@@ -61,6 +61,8 @@ const ExploreGigs = ({orgProjects, userId}) => {
     queryFn: getUserProjects,
     enabled: !!userId
   })
+
+  console.log('allProjects explore gig', allProjects)
 
   // useEffect(() => {
   //   if(user_role == 'sponsor') {

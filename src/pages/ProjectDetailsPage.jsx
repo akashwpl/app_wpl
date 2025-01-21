@@ -323,7 +323,6 @@ const ProjectDetailsPage = () => {
 
                       <div className='max-h-[300px] overflow-y-auto'>
                         {projectSubmissions?.map((submission, index) => {
-                          console.log('submission', submission)
                           return <div onClick={() => navigateToSubmissions(index + 1)} key={index} className={`grid grid-cols-12 gap-2 py-2 px-4 rounded-sm hover:bg-white4 cursor-pointer ${index === projectSubmissions.length - 1 ? "" : "border-b border-white7"}`}>
                             <div className='text-[14px] col-span-1 text-white88 font-inter'>{index + 1}</div>
                             <div className='text-[14px] col-span-3 text-start text-white88 font-inter flex gap-1 items-center truncate text-ellipsis'>
