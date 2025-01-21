@@ -227,10 +227,10 @@ const Navbar = () => {
                 <>
                   <div
 
-                    className={`${menuBorderImgType[userDetail?.role].height} z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
+                    className={`${menuBorderImgType[userDetail?.role]?.height} z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
                       slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                     }`}
-                    style={{backgroundImage: `url(${menuBorderImgType[userDetail?.role].img})`, zIndex: 100}}
+                    style={{backgroundImage: `url(${menuBorderImgType[userDetail?.role]?.img})`, zIndex: 100}}
                   >
                     <Link
                       to={`/profile/${userDetail?.socials?.discord}`}

@@ -183,7 +183,7 @@ const VerifyOrgForm = () => {
                                 </div>
                                 <div>
                                     <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{name}</p>
-                                    <a href={websiteLink} target='_blank' ref='noopener noreferrer'><p className='text-white88 font-semibold text-[13px] font-inter underline'>@{organisationHandle}</p></a>
+                                    <a href={websiteLink} target='_blank'><p className='text-white88 font-semibold text-[13px] font-inter underline'>@{organisationHandle}</p></a>
                                 </div>
                             </div>
 
@@ -376,10 +376,10 @@ const VerifyOrgForm = () => {
                                 hover_src_img={btnHoverImg} 
                                 img_size_classes='w-[470px] h-[44px]' 
                                 className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                                btn_txt={isloading ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> : 'Verify Organisation'}
+                                btn_txt={!isloading ? <div className="flex justify-center items-center -mt-1"> <Spinner /> </div> : 'Verify Organisation'}
                                 alt_txt='verify org btn' 
                                 onClick={submitForm}
-                                isArrow='true'
+                                // isArrow='true'
                             />
                         </div> 
                     </>

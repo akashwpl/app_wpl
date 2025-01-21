@@ -1,21 +1,17 @@
 import { ArrowRight } from 'lucide-react'
 import kyc_profile from '../../assets/images/kyc-profile.png'
 
-import zapSVG from '../../assets/icons/pixel-icons/zap.svg'
 import tickOutlineSVG from '../../assets/icons/pixel-icons/tick-outline.svg'
-import { useDispatch } from 'react-redux'
-import { displaySnackbar } from '../../../src/store/thunkMiddleware'
+import zapSVG from '../../assets/icons/pixel-icons/zap.svg'
 
 const KYC_Card = ({userDetails}) => {
-
-  const dispatch = useDispatch()
 
   const handleKyc = () => {
     window.open('https://payout.copperx.io/auth/login', '_blank')
   }
   
   return (
-    <div onClick={handleKyc} className='flex flex-col justify-evenly w-full h-[195px] bg-[#04072D] hover:bg-[#04072de0] rounded-md px-4 cursor-pointer'>
+    <div onClick={handleKyc} className='flex flex-col justify-evenly w-full h-[160px] bg-[#04072D] hover:bg-[#04072de0] rounded-md px-4 cursor-pointer'>
       <div className='flex flex-row justify-between'>
         <img width={32} src={kyc_profile} alt="KYC profile image" />
         <div className='flex flex-row justify-evenly text-cardPurpleText bg-[#131742] w-32 h-[20px] items-center rounded-md'>
