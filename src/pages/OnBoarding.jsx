@@ -315,10 +315,11 @@ const OnBoarding = () => {
   const controlledVariants = ["NGIS PU", "GNIS PU", "NGIS PU", "$Sign Up",  "Sign Up"]; // Predefined variations
 
   const handleMouseEnter = () => {
-    if(isSignin) {
-      setHovered(true);
-      return
-    }
+    // if(isSignin) {
+    //   setHovered(true);
+    //   return
+    // }
+    setHovered(true);
     // if (isHovering) return;
     // setIsHovering(true);
 
@@ -518,7 +519,7 @@ const OnBoarding = () => {
                             hovered ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"
                           }`}
                         >
-                          {gettingOTP ? <Spinner /> : isOTPRecieved ? "Sign Up" : "Get OTP"}
+                          {gettingOTP ? <Spinner /> : isOTPRecieved ? "Sign Up" : "Get code"}
                         </span>
           
                         <span
@@ -528,7 +529,7 @@ const OnBoarding = () => {
                               : "translate-x-0 opacity-0"
                           }`}
                         >
-                          We&apos;re so back!
+                          Verify
                         </span>
                         {/* <GlyphEffect text={''} isNav={false} /> */}
                       </>
