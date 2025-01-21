@@ -52,7 +52,7 @@ const SponsorTrendingBountyCard = () => {
 
   return (
     <>
-      <Link to={`projectdetails/${projectData?._id}`} className='flex flex-col justify-between w-full h-[226px] bg-cardBlueBg hover:bg-cardBlueBg/15 rounded-md cursor-pointer'>
+      <Link to={`projectdetails/${projectData?._id}`} className='flex flex-col justify-between w-full h-[220px] bg-cardBlueBg hover:bg-cardBlueBg/15 rounded-md cursor-pointer'>
         <div className='flex flex-row justify-between px-4 mt-3'>
             <img width={40} src={wpl_pr_details} alt="WPL PR details" />
             <div className='flex flex-row py-1 gap-1 text-cardBlueText bg-[#233579] w-32 h-[25px] items-center rounded-md'>
