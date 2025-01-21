@@ -77,6 +77,13 @@ const ProfilePage = () => {
     dispatch(displaySnackbar('COMING SOON!!!!'))
   }
 
+  console.log('userDetails', userDetails)
+
+  const handleKyc = () => {
+    if(userDetails?.isKYCVerified) return
+    window.open('https://payout.copperx.io/auth/login', '_blank')
+  }
+
   return (
     <div className='overflow-x-hidden'>
       <div>
@@ -95,7 +102,14 @@ const ProfilePage = () => {
           <div>
             <div className='flex justify-between'>
               <div>
-                <p className='text-[24px] leading-[28px] text-primaryYellow font-gridular'>{userDetails?.displayName}</p>
+                <div className='flex items-center gap-2'>
+                  <p className='text-[24px] leading-[28px] text-primaryYellow font-gridular'>{userDetails?.displayName}</p>
+                  <div onClick={() => handleKyc()} className={`${userDetails?.isKYCVerified ? "bg-[#0ED0651A] hover:bg-[#0ED0651A]/90" : "bg-errorMsgRedText/10 hover:bg-errorMsgRedText/15"}  rounded-md px-2 py-1 cursor-pointer`}>
+                    <p className={`text-[12px] ${userDetails?.isKYCVerified ? "text-[#9FE7C7]" : "text-cardRedText/80"}  font-semibold font-inter`}>
+                      {userDetails?.isKYCVerified ? 'KYC Verified' : 'KYC Not Verified'}
+                    </p>
+                  </div>
+                </div>
                 <p className='text-[14px] text-white32 font-inter'>@{userDetails?.username}</p>
               </div>
               <div className='bg-white7 rounded-[6px] flex gap-1 items-center h-[32px] px-2 py-1'>

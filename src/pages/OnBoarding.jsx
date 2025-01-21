@@ -67,6 +67,8 @@ const OnBoarding = () => {
   const [isuploadingProfile, setIsUploadingProfile] = useState(false)
 
   const [otpInput, setOtpInput] = useState('')
+  const [otperror, setOtpError] = useState('')
+
 
   const [errors, setErrors] = useState({
     email: '',
@@ -114,6 +116,9 @@ const OnBoarding = () => {
       } 
       if(data.message === `This email ${email} already exists`) {
         setError(data.message)
+      }
+      if(data.message === 'invalid otp') {
+        setOtpError('Invalid OTP')
       }
     })
   }
@@ -196,9 +201,19 @@ const OnBoarding = () => {
         setError('')
       } catch (error) {
         if(error.status == '409') {
-          setErrors({email: error.response.data.message});
+          if(error.response.data.message === `This email ${email} already exists`) {
+            setErrors({email: error.response.data.message});
+            setGettingOTP(false)
+            setIsUploadingProfile(false)
+            return
+          }
+          setGettingOTP(false)
+          setIsUploadingProfile(false)
+          setOtpError('Invalid OTP')
           return
         } else {
+          setGettingOTP(false)
+          setIsUploadingProfile(false)
           setErrors('Something went wrong. Try again after sometime!')
           return
         }
@@ -228,11 +243,15 @@ const OnBoarding = () => {
       if(isOrgSignUp) {
         setIsUploadingProfile(false)
         navigate('/verifyorg')
+        setGettingOTP(false)
+
       } else {
         setIsUploadingProfile(false)
-        navigate('/allProjects')
+        navigate('/allprojects')
+        setGettingOTP(false)
       }
     } else {
+      setGettingOTP(false)
       setIsUploadingProfile(false)
       setErrors('Something went wrong. Try again after sometime!')
     }
@@ -320,20 +339,6 @@ const OnBoarding = () => {
     //   return
     // }
     setHovered(true);
-    // if (isHovering) return;
-    // setIsHovering(true);
-
-    // let step = 0;
-
-    // const interval = setInterval(() => {
-    //   if (step < controlledVariants.length) {
-    //     setText(controlledVariants[step]);
-    //     step++;
-    //   } else {
-    //     clearInterval(interval);
-    //     setIsHovering(false);
-    //   }
-    // }, 600);
   };
 
   // useEffect(() => {
@@ -366,13 +371,30 @@ const OnBoarding = () => {
       if(data.data?.status === "success") {
         setIsOTPRecieved(true)
         setGettingOTP(false)
+        setIsUploadingProfile(false)
         setError('')
       } else {
         setGettingOTP(false)
+        setIsUploadingProfile(false)
         setError(data.message)
       }
     })
-    
+  }
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if(email) sendOTP()
+    }, 4000);
+
+    return () => {
+      clearTimeout(handler); // Clear timeout if inputValue changes
+    };
+  }, [email]);
+
+
+  const handleGetOTPAfterTypingEmail = (e) => {
+    if(!isOrgSignUp) return
+    setEmail(e.target.value)
   }
 
   return (
@@ -628,7 +650,7 @@ const OnBoarding = () => {
                   <div className='w-full'>
                     <div className='text-white32 font-semibold font-inter text-[13px]'>Your Email <span className='text-[#F03D3D]'>*</span></div>
                     <div className={`bg-[#FFFFFF12] rounded-md ${errors.email ? 'border border-[#F03D3D]' : ""}`}>
-                      <input value={email} onChange={(e) => setEmail(e.target.value)} type='email' readOnly={!isOrgSignUp} placeholder='John@wpl.com' className={`w-full bg-transparent py-2 px-2 outline-none text-white88 placeholder:text-white32 ${!isOrgSignUp && "cursor-default"}`} />
+                      <input value={email} onChange={(e) => handleGetOTPAfterTypingEmail(e)} type='email' readOnly={!isOrgSignUp} placeholder='John@wpl.com' className={`w-full bg-transparent py-2 px-2 outline-none text-white88 placeholder:text-white32 ${!isOrgSignUp && "cursor-default"}`} />
                     </div>
                     {errors.email && <span className='text-red-500 text-sm'>{errors.email}</span>}
                   </div>
@@ -688,20 +710,34 @@ const OnBoarding = () => {
                   {errors.walletAddress && <span className='text-red-500 text-sm'>{errors.walletAddress}</span>}
                 </div>
 
+                {isOrgSignUp &&
+                <div>
+                  <div className='my-5 border border-dashed border-[#FFFFFF12]'/>
+                  <p className='text-[14px] font-gridular text-white64'>Enter verification code!</p>
+                  <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                    <input type="text" placeholder="abc12" value={otpInput} onChange={(e) => setOtpInput(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white12'/>
+                  </div>
+                  {otperror && <div className='text-red-500 text-[12px]'>{otperror}</div>}
+                  {isOTPRecieved &&  <div className='bg-[#0ED0651A] rounded-md px-2 mt-3 h-[42px] flex justify-start items-center gap-1'>
+                    <img src={checkinboxPng} alt='check' className='size-[12px]'/>
+                    <p className='text-primaryYellow text-[12px] font-inter font-semibold'>Check your email for code</p>
+                  </div>
+                  }
+                 </div>
+                }
+
                 <div className='mt-8 py-1'>
                   <FancyButton 
                     src_img={loginBtnImg} 
                     hover_src_img={loginBtnHoverImg} 
                     img_size_classes='w-[350px] md:w-[480px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                    btn_txt={isuploadingProfile ? <span className='flex justify-center items-center w-full -translate-x-3'><Spinner /></span>  : isOrgSignUp ? 'next steps' : 'submit'}
+                    btn_txt={isuploadingProfile ? <span className='flex justify-center items-center w-full -translate-y-2'><Spinner /></span>  : isOrgSignUp ? 'next steps' : 'submit'}
                     alt_txt='submit sign up btn' 
                     onClick={updateProfile}
                   />
                 </div>
-
               </div>
-
             </div>
           </div>
         </div>
