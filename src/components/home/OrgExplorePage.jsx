@@ -39,7 +39,7 @@ const OrgExplore = ({userId}) => {
   const [sortBy, setSortBy] = useState('prize')
 
   const [showfilterModal, setShowFilterModal] = useState(false)
-  const [projectsGridView, setProjectsGridView] = useState(false)
+  const [projectsGridView, setProjectsGridView] = useState(true)
   const [weeksFilter, setWeeksFilter] = useState()
 
 

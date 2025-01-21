@@ -15,6 +15,7 @@ import listDescendingSvg from '../assets/svg/list-number-descending.svg'
 
 const allTabs = [
     {id: 'idle', name: 'Live', isActive: true},
+    {id: 'in_review', name: 'In Review', isActive: false},
     {id: 'closed', name: 'Completed', isActive: false}
 ]
 
@@ -26,7 +27,7 @@ const AllUserOwnedProjectsPage = () => {
     const [selectedTab, setSelectedTab] = useState('idle')
 
     const [showfilterModal, setShowFilterModal] = useState(false)
-    const [projectsGridView, setProjectsGridView] = useState(false)
+    const [projectsGridView, setProjectsGridView] = useState(true)
     const [sortOrder, setSortOrder] = useState('ascending');
     const [weeksFilter, setWeeksFilter] = useState()
     const [foundationFilter, setFoundationFilter] = useState()

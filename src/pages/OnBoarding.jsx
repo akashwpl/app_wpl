@@ -141,7 +141,7 @@ const OnBoarding = () => {
   
       getUserDetails(res?.data?.data?.userId).then((data) => {
         setError('')
-        data?.role == 'sponsor' ? navigate('/allprojects') : navigate('/allprojects')
+        data?.role == 'sponsor' ? navigate('/') : navigate('/')
       })
     } catch (error) {
       if(error.status == '409') {
@@ -247,7 +247,7 @@ const OnBoarding = () => {
 
       } else {
         setIsUploadingProfile(false)
-        navigate('/allprojects')
+        navigate('/')
         setGettingOTP(false)
       }
     } else {
@@ -300,7 +300,7 @@ const OnBoarding = () => {
                 data.experienceDescription ||
                 data.walletAddress
               ) {
-              navigate('/allprojects')
+              navigate('/')
               return              
             } else {
               setIsSignComplete(true)
