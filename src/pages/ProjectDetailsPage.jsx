@@ -196,6 +196,8 @@ const ProjectDetailsPage = () => {
     return projectDetails?.milestones?.every(milestone => milestone.status == 'completed')
   }, [projectDetails])
 
+  console.log('')
+
   return (
     <div className='relative'>
       <div>
@@ -320,14 +322,20 @@ const ProjectDetailsPage = () => {
                       </div>
 
                       <div className='max-h-[300px] overflow-y-auto'>
-                        {projectSubmissions?.map((submission, index) => (
-                          <div onClick={() => navigateToSubmissions(index + 1)} key={index} className={`grid grid-cols-12 gap-2 py-2 px-4 rounded-sm hover:bg-white4 cursor-pointer ${index === projectSubmissions.length - 1 ? "" : "border-b border-white7"}`}>
+                        {projectSubmissions?.map((submission, index) => {
+                          console.log('submission', submission)
+                          return <div onClick={() => navigateToSubmissions(index + 1)} key={index} className={`grid grid-cols-12 gap-2 py-2 px-4 rounded-sm hover:bg-white4 cursor-pointer ${index === projectSubmissions.length - 1 ? "" : "border-b border-white7"}`}>
                             <div className='text-[14px] col-span-1 text-white88 font-inter'>{index + 1}</div>
-                            <div className='text-[14px] col-span-3 text-start text-white88 font-inter'>{submission?.user?.displayName}</div>
+                            <div className='text-[14px] col-span-3 text-start text-white88 font-inter flex gap-1 items-center truncate text-ellipsis'>
+                              {submission?.user?.displayName}
+                              <div className={`${submission?.user?.isKYCVerified ? "bg-[#0ED0651A] text-[#9FE7C7]" : "bg-errorMsgRedText/10 text-cardRedText/80"} text-[10px] w-fit px-2 py-[3px] rounded-md`}>
+                                {submission?.user?.isKYCVerified ? "Verified" : "Not Verified"}
+                              </div>
+                            </div>
                             <div className='text-[14px] col-span-4 text-white88 font-inter truncate'>{submission?._doc?.experienceDescription}</div>
                             <div className='text-[14px] col-span-4 text-white88 font-inter'>{submission?._doc?.portfolioLink}</div>
                           </div>
-                        ))}
+                        })}
                       </div>
                     </>
                     }
