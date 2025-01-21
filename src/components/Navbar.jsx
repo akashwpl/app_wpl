@@ -23,6 +23,7 @@ import userMenuBorderSVG from '../assets/svg/Button2.svg'
 import sponsorMenuBorderSVG from '../assets/svg/Button.svg'
 import adminMenuBorderSVG from '../assets/svg/admin_menu_bg.svg'
 import useNavBar from './useNavHook'
+import { BASE_URL } from '../lib/constants'
 
 const menuBorderImgType = {
   'user': {
@@ -143,6 +144,55 @@ const Navbar = () => {
       setShowUserMenu(!showUserMenu);
     }, 300);
   }
+
+  const checkIfUserVerfied = () => {
+    const res = fetch(`https://income-api.copperx.io/api/kycs/status/${userDetail?.email}`)
+    .then(res => res.json())
+    .then(data => {
+      console.log('data kyc', data)
+      if(data?.statusCode == 404){
+        updateUserDetails(false, 'Not Verified')
+      } else {
+        updateUserDetails(true, 'Verified')
+      }
+      return data
+    })
+  }
+
+  const updateUserDetails = (isKYCVerified, kycStatus) => {
+    const filteredUser = Object.keys(userDetail)
+      .filter(key => !key.startsWith('_') && key !== 'projects' && key !== 'rewards' && key !== 'payments' && key !== 'notifications' && key !== 'projectsParticipated' && key !== 'projectsOngoing' && key !== 'projectsCompleted' && key !== 'projectsInProgress' && key !== 'totalProjectsInWPL' && key !== 'totalAmountSpent' && key !== 'projectsPending')
+      .reduce((acc, key) => {
+        acc[key] = userDetail[key];
+        return acc;
+      }, {});
+
+    const body = {
+      ...filteredUser,
+      isKYCVerified: isKYCVerified,
+      kycStatus: kycStatus
+    }
+    const response = fetch(`${BASE_URL}/users/update/`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        'authorization': 'Bearer ' + localStorage.getItem('token_app_wpl')
+      },
+      body: JSON.stringify({
+        ...body
+      })
+    }).then(res => res.json())
+    .then(data => {
+      console.log('data updating user details', data)
+      return data
+    })
+  }
+
+  const {data} = useQuery({
+    queryKey: ['userVerification', userDetail?.email],
+    queryFn: checkIfUserVerfied,
+    enabled: !!userDetail?.email
+  })
 
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>

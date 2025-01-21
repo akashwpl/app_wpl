@@ -49,7 +49,7 @@ const HomePage = () => {
       {/* right side */}
       {user_role == 'user' && 
         <div className='flex flex-col py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh] min-w-[280px]'>
-          {!token ? null :  <KYC_Card userDetails={userDetails}/> }
+          {!token ? null : !userDetails?.isKYCVerified ? <KYC_Card userDetails={userDetails}/> : null}
           {!token ? null : <ProfileDetailsCard userDetails={userDetails} />}
           {!token || userDetails?.projectsOngoing == 0 ? null :
             <BugFixCard />
