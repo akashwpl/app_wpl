@@ -8,6 +8,7 @@ import headerPng from '../assets/images/prdetails_header.png'
 import loginBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import loginBtnImg from '../assets/svg/btn_subtract_semi.png'
 import googleLogo from '../assets/svg/google_symbol.png'
+import checkinboxPng from '../assets/svg/check-in-box.png'
 
 import FancyButton from '../components/ui/FancyButton'
 import { getUserDetails } from '../service/api'
@@ -535,6 +536,11 @@ const OnBoarding = () => {
                     } 
                     onClick={isOTPRecieved ? signUp : sendOTP} 
                   />
+                </div>
+              }
+              {gettingOTP && <div className='bg-[#0ED0651A] rounded-md px-2 mt-3 h-[42px] flex justify-start items-center gap-1'>
+                  <img src={checkinboxPng} alt='check' className='size-[12px]'/>
+                  <p className='text-primaryYellow text-[12px] font-inter font-semibold'>Check your email for OTP</p>
                 </div>
               }
           </div>
