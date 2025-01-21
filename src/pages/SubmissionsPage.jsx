@@ -122,7 +122,12 @@ const SubmissionsPage = () => {
                             <div>
                                 <div className='flex justify-between'>
                                 <div>
-                                    <p className='text-[24px] leading-[28px] text-primaryYellow font-gridular'>{currentSubmission?.user?.displayName}</p>
+                                    <div className='text-[24px] leading-[28px] text-primaryYellow font-gridular flex gap-2 items-center'>
+                                        {currentSubmission?.user?.displayName}
+                                        <div className={`${currentSubmission?.user?.isKYCVerified ? "bg-[#0ED0651A] text-[#9FE7C7]" : "bg-errorMsgRedText/10 text-cardRedText/80"} text-[12px] w-fit px-2 py-[2px] rounded-md`}>
+                                            {currentSubmission?.user?.isKYCVerified ? "Verified" : "Not Verified"}
+                                        </div>
+                                    </div>
                                     <p className='text-[14px] text-white32 font-inter'>@{currentSubmission?.user?.username}</p>
                                 </div>
                                 </div>
