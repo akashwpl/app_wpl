@@ -128,7 +128,7 @@ const SubmissionsPage = () => {
                                             {currentSubmission?.user?.isKYCVerified ? "Verified" : "Not Verified"}
                                         </div>
                                     </div>
-                                    <p className='text-[14px] text-white32 font-inter'>@{currentSubmission?.user?.username}</p>
+                                    <p className='text-[14px] text-white32 font-inter'>{currentSubmission?.user?.username ? "@" + currentSubmission?.user?.username : ""}</p>
                                 </div>
                                 </div>
 
