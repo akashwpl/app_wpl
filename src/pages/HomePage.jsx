@@ -10,7 +10,11 @@ import { getUserDetails } from '../service/api'
 import AdminDashboard from './AdminDashboard'
 import SponsorDashboard from './SponsorDashboard'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import WhyStarkNetCard from '../components/cards/WhyStarkNetCard'
+import fireWhitePng from '../assets/images/fire-white.png'
+import KeepMoneyCard from '../components/cards/KeepMoneyCard'
+
 
 const HomePage = () => {
 
@@ -48,7 +52,24 @@ const HomePage = () => {
 
       {/* right side */}
       {user_role == 'user' && 
-        <div className='flex flex-col py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh] min-w-[280px]'>
+        <div className='flex flex-col py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh] min-w-[350px]'>
+          <WhyStarkNetCard />
+          <KeepMoneyCard />
+
+          <div className='border border-white12 border-dashed w-full my-4'></div>
+
+          <div className='bg-[#9CD4EC1A] rounded-md w-full px-4 py-2 flex items-center gap-3'>
+            <div className='w-[20px] h-[20px]'>
+                <img src={fireWhitePng} alt='fire-white' className='' />
+            </div>
+            <div className='flex flex-col gap-2'>
+                <div className='font-gridular text-[14px] leading-4 text-white'>Hey {userDetails?.displayName}!</div>
+                <div className='font-inter text-[12px] leading-[14px] text-white48'>Your skills match listings live right now! <Link to={'/allprojects'} className='underline'>Apply now!</Link></div>
+            </div>
+          </div>
+
+          <div className='border border-white12 border-dashed w-full my-4'></div>
+
           {!token ? null : !userDetails?.isKYCVerified ? <KYC_Card userDetails={userDetails}/> : null}
           {!token ? null : <ProfileDetailsCard userDetails={userDetails} />}
           {!token || userDetails?.projectsOngoing == 0 ? null :
