@@ -338,7 +338,7 @@ const EditProfilePage = () => {
     <div className='flex flex-col justify-center items-center'>
         <div onClick={() => navigate(-1)} className='w-full text-left text-white32 text-[13px] font-medium cursor-pointer border-t border-b border-white7 flex items-center gap-1 py-2 px-20 mt-[1px]'><ArrowLeft size={14} className='text-white32'/> Back to your Profile</div>
         
-        <div className='w-[340px] md:w-[480px] mt-2 mb-20'>
+        <div className='w-[340px] md:w-[480px] mt-10 mb-20'>
             <div className='flex items-center gap-4'>
                 {/* <div className='relative'>
                     <img src={userDetails?.pfp} alt='dummy' className='size-[72px] aspect-square'/>

@@ -5,7 +5,7 @@ import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import exploreBtnHoverImg from '../../assets/svg/menu_btn_hover_subtract.png'
 import exploreBtnImg from '../../assets/svg/menu_btn_subtract.png'
-import { getUserProjects } from "../../service/api"
+import { getAllProjects, getUserDetails, getUserProjects } from "../../service/api"
 import FancyButton from "../ui/FancyButton"
 import Spinner from "../ui/spinner"
 import Tabs from "../ui/Tabs"
@@ -13,19 +13,14 @@ import ExploreGigsCard from "./ExploreGigsCard"
 
 import listAscendingSvg from '../../assets/svg/list-number-ascending.svg'
 import listDescendingSvg from '../../assets/svg/list-number-descending.svg'
+import SearchRoles from "./SearchRoles"
 
 // TODO ::  Leaderboard page clickable user and rediret to user profile
 
 const userTabs = [
-  {id: 'live', name: 'Applied', isActive: true},
-  {id: 'all', name: 'My Bounties', isActive: false},
-  {id: 'completed', name: 'Completed', isActive: false}
-]
-
-const sponsorTabs = [
-  {id: 'all', name: 'My Bounties', isActive: true},
-  {id: 'live', name: 'Applied', isActive: false},
-  {id: 'completed', name: 'Completed', isActive: false}
+  {id: 'ongoing', name: 'Live', isActive: true},
+  {id: 'idle', name: 'All', isActive: false},
+  {id: 'closed', name: 'Completed', isActive: false}
 ]
 
 const ExploreGigs = ({orgProjects, userId}) => {
@@ -33,32 +28,51 @@ const ExploreGigs = ({orgProjects, userId}) => {
   const navigate = useNavigate()
   const { user_id, user_role } = useSelector((state) => state)
 
-  const [tabs, setTabs] = useState([])
-  const [selectedTab, setSelectedTab] = useState()
+  const [tabs, setTabs] = useState(userTabs)
+  const [selectedTab, setSelectedTab] = useState('ongoing')
   const [sortOrder, setSortOrder] = useState('ascending')
   const [sortBy, setSortBy] = useState('prize')
 
   const [showfilterModal, setShowFilterModal] = useState(false)
-  const [projectsGridView, setProjectsGridView] = useState(false)
+  const [projectsGridView, setProjectsGridView] = useState(true)
   const [weeksFilter, setWeeksFilter] = useState()
   const [bountyTypeFilter, setBountyTypeFilter] = useState()
+  const [roleName, setRoleName] = useState('none');
+  const [tiles, setTiles] = useState([])
+
+
+  const { data: allProjects, isLoading: isLoadingAllProjects } = useQuery({
+    queryKey: ["allProjects"],
+    queryFn: getAllProjects
+  })
+
+  const { data: userDetails, isLoading: isLoadingUserDetails } = useQuery({
+    queryKey: ["userDetails", user_id],
+    queryFn: () => getUserDetails(user_id),
+    enabled: !!user_id,
+  })
+
+  const [searchInput, setSearchInput] = useState()
+  const [foundationFilter, setFoundationFilter] = useState()
 
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
-    queryKey: ["userProjects"],
+    queryKey: ["userProjects", user_id],
     queryFn: getUserProjects,
     enabled: !!userId
   })
 
-  useEffect(() => {
-    if(user_role == 'sponsor') {
-      setTabs(sponsorTabs)
-      setSelectedTab('all')
-    } else {
-      setTabs(userTabs)
-      setSelectedTab('live')
-    }
-  }, [])
+  console.log('allProjects explore gig', allProjects)
+
+  // useEffect(() => {
+  //   if(user_role == 'sponsor') {
+  //     setTabs(sponsorTabs)
+  //     setSelectedTab('live')
+  //   } else {
+  //     setTabs(userTabs)
+  //     setSelectedTab('live')
+  //   }
+  // }, [user_role])
 
 
   const handleTabClick = (id) => {
@@ -69,6 +83,35 @@ const ExploreGigs = ({orgProjects, userId}) => {
     setTabs(newTabs)
     setSelectedTab(id)
   }
+
+  const filteredProjects = useMemo(() => {
+    return allProjects?.filter((el) => el?.status == selectedTab)
+        ?.filter(project => {
+            const matchesType = project?.type?.toLowerCase() === 'bounty';
+            const matchesSearch = searchInput ? project?.title?.toLowerCase().includes(searchInput.toLowerCase()) : true;
+            const matchesRole = tiles.length > 0 ? tiles.some(tile => project?.roles?.map(role => role.toLowerCase()).includes(tile.toLowerCase())) : true;
+            const matchfoundation = foundationFilter && foundationFilter !== 'All' ? project?.organisation?.organisationHandle?.toLowerCase() === foundationFilter?.toLowerCase() : true;
+            // Week-based filter
+            const lastMilestone = project?.milestones?.[project.milestones.length - 1];
+            const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;
+            const weeksLeft = deadlineDate ? (deadlineDate - new Date()) / (1000 * 60 * 60 * 24 * 7) : null;
+            const matchesWeeks = 
+                !weeksFilter || // if no weeks filter is set
+                (weeksFilter === 'lessThan2' && weeksLeft < 2) ||
+                (weeksFilter === 'between2And4' && weeksLeft >= 2 && weeksLeft <= 4) ||
+                (weeksFilter === 'above4' && weeksLeft > 4); 
+
+            const matchesBountyIsOpen = 
+            bountyTypeFilter == null || // If no checkbox is selected, show all
+            (bountyTypeFilter === 'open' && project?.isOpenBounty) ||
+            (bountyTypeFilter === 'close' && project?.isOpenBounty == false);             
+
+            return matchesSearch && matchesRole && matchesType && matchesWeeks && matchfoundation && matchesBountyIsOpen;
+        })
+        .sort((a, b) => {
+            return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
+    });
+}, [allProjects, selectedTab, searchInput, roleName, sortOrder, weeksFilter, foundationFilter, bountyTypeFilter]);
 
 
   // const filteredProjects = useMemo(() => {
@@ -101,76 +144,113 @@ const ExploreGigs = ({orgProjects, userId}) => {
   //   }
   // }, [userProjects, selectedTab, sortOrder]);
 
-
   
-  const filteredProjects = useMemo(() => {
-    let projectsToSort = [];
-    if (selectedTab === 'all') projectsToSort = userProjects?.filter(project => project.status == 'idle');
-    else if (selectedTab === 'live') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
-    else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
-    // else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
-    else projectsToSort = userProjects;
+//   const filteredProjects = useMemo(() => {
+//     let projectsToSort = [];
+//     if (selectedTab === 'all') projectsToSort = userProjects?.filter(project => project.status == 'idle');
+//     else if (selectedTab === 'live') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
+//     else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
+//     // else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
+//     else projectsToSort = userProjects;
 
-    return projectsToSort
-        ?.filter(project => {
-            // Week-based filter
-            const lastMilestone = project?.milestones?.[project.milestones.length - 1];
-            const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;
-            const weeksLeft = deadlineDate ? (deadlineDate - new Date()) / (1000 * 60 * 60 * 24 * 7) : null;
-            const matchesWeeks = 
-                !weeksFilter || // if no weeks filter is set
-                (weeksFilter === 'lessThan2' && weeksLeft < 2) ||
-                (weeksFilter === 'between2And4' && weeksLeft >= 2 && weeksLeft <= 4) ||
-                (weeksFilter === 'above4' && weeksLeft > 4);
+//     return projectsToSort
+//         ?.filter(project => {
+//             // Week-based filter
+//             const lastMilestone = project?.milestones?.[project.milestones.length - 1];
+//             const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;
+//             const weeksLeft = deadlineDate ? (deadlineDate - new Date()) / (1000 * 60 * 60 * 24 * 7) : null;
+//             const matchesWeeks = 
+//                 !weeksFilter || // if no weeks filter is set
+//                 (weeksFilter === 'lessThan2' && weeksLeft < 2) ||
+//                 (weeksFilter === 'between2And4' && weeksLeft >= 2 && weeksLeft <= 4) ||
+//                 (weeksFilter === 'above4' && weeksLeft > 4);
 
-            const matchesBountyIsOpen = 
-              bountyTypeFilter == null || // If no checkbox is selected, show all
-              (bountyTypeFilter === 'open' && project?.isOpenBounty) ||
-              (bountyTypeFilter === 'close' && project?.isOpenBounty == false);      
+//             const matchesBountyIsOpen = 
+//               bountyTypeFilter == null || // If no checkbox is selected, show all
+//               (bountyTypeFilter === 'open' && project?.isOpenBounty) ||
+//               (bountyTypeFilter === 'close' && project?.isOpenBounty == false);      
 
-            return matchesWeeks && matchesBountyIsOpen;
-        })
-        .sort((a, b) => {
-            return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
-    });
-}, [userProjects, sortOrder, weeksFilter, selectedTab]);
+//             return matchesWeeks && matchesBountyIsOpen;
+//         })
+//         .sort((a, b) => {
+//             return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
+//     });
+// }, [userProjects, sortOrder, weeksFilter, selectedTab]);
 
-const handleWeeksFilterChange = (event) => {
-  const value = event.target.value;
-  setWeeksFilter(prevFilter => prevFilter === value ? '' : value);
-};
+  const handleWeeksFilterChange = (event) => {
+    const value = event.target.value;
+    setWeeksFilter(prevFilter => prevFilter === value ? '' : value);
+  };
 
-const handleBountyTypeFilterChange = (event) => {
-  const value = event.target.value;
-  setBountyTypeFilter(prevFilter => prevFilter === value ? null : value);
-}
-
-const navigateToProjectDetails = () => {
-  if(user_role == 'sponsor') {
-    navigate('/userprojects')
-  } else {
-    navigate('/allprojects')
+  const handleBountyTypeFilterChange = (event) => {
+    const value = event.target.value;
+    setBountyTypeFilter(prevFilter => prevFilter === value ? null : value);
   }
-}
 
+  const navigateToProjectDetails = () => {
+    navigate('/userprojects')
+  }
+
+  const handleRoleChange = (e) => {
+    setRoleName(e.target.value)
+  }
+
+  const handleKeyboardEnter = (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault()
+        setTiles((prev) => [...prev, e.target.value?.trim()])
+        setSearchInput('')
+    }
+  }
+
+  const handleRemoveTile = (tile) => {
+    setTiles((prev) => prev.filter((t) => t !== tile))
+  }
+
+
+  const handleFoundationFilterChange = (value) => {
+    setFoundationFilter(prevFilter => prevFilter === value ? '' : value);
+  }
+
+  const handleSearch = (e) => {
+    setSearchInput(e.target.value)
+  }
+
+  const navigateToCreateProject = () => {
+    navigate('/addproject')
+  }
 
   return (
     <div>
-        {userId == user_id ? 
           <div className="flex justify-between items-center">
-            <h1 className="font-gridular text-primaryYellow text-[20px]">My Gigs</h1>
+            <h1 className="font-gridular text-primaryYellow text-[20px]">Explore all</h1>
+            {user_role == 'user' ?
+            <FancyButton
+              src_img={exploreBtnImg}
+              hover_src_img={exploreBtnHoverImg}
+              img_size_classes='w-[175px] h-[44px]' 
+              className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+              btn_txt={<span className='flex items-center justify-center gap-2'><span>{"Go to my gigs"}</span><ArrowUpRight size={18}/></span>} 
+              alt_txt='save project btn' 
+              onClick={navigateToProjectDetails}
+            /> :
             <FancyButton 
               src_img={exploreBtnImg} 
               hover_src_img={exploreBtnHoverImg} 
               img_size_classes='w-[175px] h-[44px]' 
               className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-              btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
+              btn_txt={<span className='flex items-center justify-center gap-2'><span>{"+ Add Listing"}</span><ArrowUpRight size={18}/></span>} 
               alt_txt='save project btn' 
-              onClick={navigateToProjectDetails}
-            />
+              onClick={navigateToCreateProject}
+            />}
           </div>
-          : null
-        }
+              
+          {user_role == 'user' && 
+            <div className='mt-6'>
+                <SearchRoles tiles={tiles} handleRoleChange={handleRoleChange} handleRemoveTile={handleRemoveTile} handleKeyboardEnter={handleKeyboardEnter} searchInput={searchInput} handleSearch={handleSearch} handleFoundationFilterChange={handleFoundationFilterChange}/>
+            </div>
+          }
+          
         <div className="flex justify-between items-center border border-white7 rounded-[2px] mt-5">
           <Tabs tabs={tabs} handleTabClick={handleTabClick} selectedTab={selectedTab}/>
           <div className="flex flex-row items-center w-[200px] justify-evenly  text-white48">
@@ -232,11 +312,11 @@ const navigateToProjectDetails = () => {
           {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
           filteredProjects && selectedTab == 'live' && filteredProjects?.length == 0 ? <div className="mt-24">
             <div className="flex flex-col justify-center items-center gap-2">
-              <div className="font-gridular text-white88 text-[24px]">You haven't applied to any projects :(</div>
-              <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
+              <div className="font-gridular text-white88 text-[24px]">No Gigs Available</div>
+              {/* <p className="text-white32 font-gridular">Explore gigs and start building now!</p> */}
             </div>
               <div className="flex justify-center items-center mt-6">
-                <FancyButton 
+                {/* <FancyButton 
                   src_img={exploreBtnImg} 
                   hover_src_img={exploreBtnHoverImg} 
                   img_size_classes='w-[175px] h-[44px]' 
@@ -244,15 +324,15 @@ const navigateToProjectDetails = () => {
                   btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
                   alt_txt='save project btn' 
                   onClick={navigateToProjectDetails}
-                />
+                /> */}
               </div>
             </div>
             : selectedTab !== 'live' && filteredProjects?.length == 0 ? <div className="mt-24">
               <div className="flex flex-col justify-center items-center gap-2">
-                <div className="font-gridular text-white88 text-[24px]">Oops! Looks like you haven't submitted a project :(</div>
-                <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
+                <div className="font-gridular text-white88 text-[24px]">No Gigs Available</div>
+                {/* <p className="text-white32 font-gridular">Explore gigs and start building now!</p> */}
               </div>
-                <div className="flex justify-center items-center mt-6">
+                {/* <div className="flex justify-center items-center mt-6">
                   <FancyButton 
                     src_img={exploreBtnImg} 
                     hover_src_img={exploreBtnHoverImg} 
@@ -262,7 +342,7 @@ const navigateToProjectDetails = () => {
                     alt_txt='save project btn' 
                     onClick={navigateToProjectDetails}
                   />
-                </div>
+                </div> */}
             </div>
             : <div className={`${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col"}`}>
                 {filteredProjects?.length == 0 ? <div></div> : filteredProjects?.map((project, idx) => <div key={idx} className={`${projectsGridView ? "" : "hover:bg-white4"}`}> 

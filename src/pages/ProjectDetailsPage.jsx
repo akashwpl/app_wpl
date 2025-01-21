@@ -62,7 +62,7 @@ const ProjectDetailsPage = () => {
   },[isLoadingUserDetails])
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
-    queryKey: ["userProjects"],
+    queryKey: ["userProjects", user_id],
     queryFn: getUserProjects
   })
   
@@ -196,6 +196,8 @@ const ProjectDetailsPage = () => {
     return projectDetails?.milestones?.every(milestone => milestone.status == 'completed')
   }, [projectDetails])
 
+  console.log('')
+
   return (
     <div className='relative'>
       <div>
@@ -259,9 +261,9 @@ const ProjectDetailsPage = () => {
                     </div>
 
                     <div className='pb-32'>
-                      <Accordion type={projectDetails?.milestones?.length <= 1 ? "single" : 'multiple'} defaultValue={projectDetails?.milestones?.length <= 1 ? "item-1" : ''} collapsible>
+                      <Accordion type={projectDetails?.milestones?.length <= 1 ? "single" : 'multiple'} defaultValue={projectDetails?.milestones?.length <= 1 ? "item-0" : 'item-0'} collapsible>
                         {projectDetails?.milestones?.map((milestone, index) => (
-                          <AccordionItem value={`item-${index + 1}`} key={index} className="border-white7">
+                          <AccordionItem value={`item-${index}`} key={index} className="border-white7">
                             <AccordionTrigger className="text-white48 font-inter hover:no-underline">Milestone {index + 1}</AccordionTrigger>
                             <AccordionContent>
                               <MilestoneCard data={milestone}/>
@@ -320,14 +322,19 @@ const ProjectDetailsPage = () => {
                       </div>
 
                       <div className='max-h-[300px] overflow-y-auto'>
-                        {projectSubmissions?.map((submission, index) => (
-                          <div onClick={() => navigateToSubmissions(index + 1)} key={index} className={`grid grid-cols-12 gap-2 py-2 px-4 rounded-sm hover:bg-white4 cursor-pointer ${index === projectSubmissions.length - 1 ? "" : "border-b border-white7"}`}>
+                        {projectSubmissions?.map((submission, index) => {
+                          return <div onClick={() => navigateToSubmissions(index + 1)} key={index} className={`grid grid-cols-12 gap-2 py-2 px-4 rounded-sm hover:bg-white4 cursor-pointer ${index === projectSubmissions.length - 1 ? "" : "border-b border-white7"}`}>
                             <div className='text-[14px] col-span-1 text-white88 font-inter'>{index + 1}</div>
-                            <div className='text-[14px] col-span-3 text-start text-white88 font-inter'>{submission?.user?.displayName}</div>
+                            <div className='text-[14px] col-span-3 text-start text-white88 font-inter flex gap-1 items-center truncate text-ellipsis'>
+                              {submission?.user?.displayName}
+                              <div className={`${submission?.user?.isKYCVerified ? "bg-[#0ED0651A] text-[#9FE7C7]" : "bg-errorMsgRedText/10 text-cardRedText/80"} text-[10px] w-fit px-2 py-[3px] rounded-md`}>
+                                {submission?.user?.isKYCVerified ? "Verified" : "Not Verified"}
+                              </div>
+                            </div>
                             <div className='text-[14px] col-span-4 text-white88 font-inter truncate'>{submission?._doc?.experienceDescription}</div>
                             <div className='text-[14px] col-span-4 text-white88 font-inter'>{submission?._doc?.portfolioLink}</div>
                           </div>
-                        ))}
+                        })}
                       </div>
                     </>
                     }
@@ -474,6 +481,7 @@ const ProjectDetailsPage = () => {
                   onClick={closeProject}
                 />
               </div>
+              
             </div>
         </div>
       }

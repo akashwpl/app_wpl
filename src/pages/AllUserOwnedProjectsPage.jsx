@@ -6,27 +6,34 @@ import Spinner from '../components/ui/spinner'
 import { getUserDetails } from '../service/api'
 
 import { LayoutGrid, ListFilter, TableProperties } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import headerPng from '../assets/images/prdetails_header.png'
 import Tabs from '../components/ui/Tabs'
 
 import listAscendingSvg from '../assets/svg/list-number-ascending.svg'
 import listDescendingSvg from '../assets/svg/list-number-descending.svg'
 
+const sponstTabs = [
+    {id: 'ongoing', name: 'Live', isActive: true},
+    {id: 'idle', name: 'All', isActive: false},
+    {id: 'closed', name: 'Completed', isActive: false}
+]
+
 const allTabs = [
     {id: 'idle', name: 'Live', isActive: true},
+    {id: 'ongoing', name: 'In Review', isActive: false},
     {id: 'closed', name: 'Completed', isActive: false}
 ]
 
 const AllUserOwnedProjectsPage = () => {
     const navigate = useNavigate()
 
-    const { user_id } = useSelector((state) => state)
+    const { user_id, user_role } = useSelector((state) => state)
     const [tabs, setTabs] = useState(allTabs)
     const [selectedTab, setSelectedTab] = useState('idle')
 
     const [showfilterModal, setShowFilterModal] = useState(false)
-    const [projectsGridView, setProjectsGridView] = useState(false)
+    const [projectsGridView, setProjectsGridView] = useState(true)
     const [sortOrder, setSortOrder] = useState('ascending');
     const [weeksFilter, setWeeksFilter] = useState()
     const [foundationFilter, setFoundationFilter] = useState()
@@ -52,8 +59,24 @@ const AllUserOwnedProjectsPage = () => {
         setSelectedTab(id)
     }
 
+    useEffect(() => {
+        if(user_role == "user"){
+            setTabs(allTabs)
+        } else {
+            setTabs(sponstTabs)
+        }
+    }, [user_role])
+
+    console.log('userProjects', userProjects?.projects)
+
     const filteredProjects = useMemo(() => {
-        return userProjects?.projects?.owned?.filter((el) => el?.status == selectedTab)
+        if(user_role == 'sponsor') {
+        return userProjects?.projects?.owned?.filter((el) => {
+            if(selectedTab == 'idle') {return el?.status == "idle"}
+        else {
+            return el?.status == selectedTab
+        }
+        })
             ?.filter(project => {
                 const matchesType = project?.type?.toLowerCase() === 'bounty';
                 // Week-based filter
@@ -76,6 +99,36 @@ const AllUserOwnedProjectsPage = () => {
             .sort((a, b) => {
                 return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
         });
+        } else {
+            return userProjects?.projects?.taken?.filter((el) => {
+                if(selectedTab == 'idle') {return el?.status == "idle"}
+            else {
+                return el?.status == selectedTab
+            }
+            })
+                ?.filter(project => {
+                    const matchesType = project?.type?.toLowerCase() === 'bounty';
+                    // Week-based filter
+                    const lastMilestone = project?.milestones?.[project.milestones.length - 1];
+                    const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;
+                    const weeksLeft = deadlineDate ? (deadlineDate - new Date()) / (1000 * 60 * 60 * 24 * 7) : null;
+                    const matchesWeeks = 
+                        !weeksFilter || // if no weeks filter is set
+                        (weeksFilter === 'lessThan2' && weeksLeft < 2) ||
+                        (weeksFilter === 'between2And4' && weeksLeft >= 2 && weeksLeft <= 4) ||
+                        (weeksFilter === 'above4' && weeksLeft > 4); 
+    
+                    const matchesBountyIsOpen = 
+                    bountyTypeFilter == null || // If no checkbox is selected, show all
+                    (bountyTypeFilter === 'open' && project?.isOpenBounty) ||
+                    (bountyTypeFilter === 'close' && project?.isOpenBounty == false);             
+    
+                    return matchesType && matchesWeeks && matchesBountyIsOpen;
+                })
+                .sort((a, b) => {
+                    return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
+            });
+        }
     }, [userProjects, selectedTab, sortOrder, weeksFilter, foundationFilter, bountyTypeFilter]);
 
    

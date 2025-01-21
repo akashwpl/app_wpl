@@ -122,13 +122,18 @@ const SubmissionsPage = () => {
                             <div>
                                 <div className='flex justify-between'>
                                 <div>
-                                    <p className='text-[24px] leading-[28px] text-primaryYellow font-gridular'>{currentSubmission?.user?.displayName}</p>
-                                    <p className='text-[14px] text-white32 font-inter'>@{currentSubmission?.user?.username}</p>
+                                    <div className='text-[24px] leading-[28px] text-primaryYellow font-gridular flex gap-2 items-center'>
+                                        {currentSubmission?.user?.displayName}
+                                        <div className={`${currentSubmission?.user?.isKYCVerified ? "bg-[#0ED0651A] text-[#9FE7C7]" : "bg-errorMsgRedText/10 text-cardRedText/80"} text-[12px] w-fit px-2 py-[2px] rounded-md`}>
+                                            {currentSubmission?.user?.isKYCVerified ? "Verified" : "Not Verified"}
+                                        </div>
+                                    </div>
+                                    <p className='text-[14px] text-white32 font-inter'>{currentSubmission?.user?.username ? "@" + currentSubmission?.user?.username : ""}</p>
                                 </div>
                                 </div>
 
                                 <div className='text-[14px] text-white88 font-inter flex items-center gap-2 mt-3'>
-                                    <p>{currentSubmission?.user?.projectsCompleted || '--'} <span className='text-white32'>Projects Completed</span></p>
+                                    <p>{currentSubmission?.user?.projectsCompleted || '0'} <span className='text-white32'>Projects Completed</span></p>
                                     <p>${currentSubmission?.user?.totalEarned} <span className='text-white32'>Earned</span></p>
                                 </div>
                             </div>

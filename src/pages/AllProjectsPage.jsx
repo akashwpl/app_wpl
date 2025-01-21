@@ -22,7 +22,7 @@ const AllProjectsPage = () => {
     const [roleName, setRoleName] = useState('none');
     const [sortOrder, setSortOrder] = useState('ascending');
     const [showfilterModal, setShowFilterModal] = useState(false)
-    const [projectsGridView, setProjectsGridView] = useState(false)
+    const [projectsGridView, setProjectsGridView] = useState(true)
 
     const [tiles, setTiles] = useState([])
 
@@ -49,6 +49,8 @@ const AllProjectsPage = () => {
     const handleSearch = (e) => {
         setSearchInput(e.target.value)
     }
+
+    console.log('allProjects', allProjects)
  
     const filteredProjects = useMemo(() => {
         return allProjects?.filter((el) => el?.status == selectedTab)

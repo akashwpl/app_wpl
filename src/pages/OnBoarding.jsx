@@ -8,6 +8,7 @@ import headerPng from '../assets/images/prdetails_header.png'
 import loginBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import loginBtnImg from '../assets/svg/btn_subtract_semi.png'
 import googleLogo from '../assets/svg/google_symbol.png'
+import checkinboxPng from '../assets/svg/check-in-box.png'
 
 import FancyButton from '../components/ui/FancyButton'
 import { getUserDetails } from '../service/api'
@@ -16,12 +17,12 @@ import { setUserId } from '../store/slice/userSlice'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { auth, provider, signInWithPopup, storage } from '../lib/firebase'
 
+import axios from 'axios'
 import videoMp4 from '../assets/dummy/v1.mp4'
 import mailSVG from '../assets/icons/pixel-icons/mail.svg'
-import GlyphEffect from '../components/ui/GlyphEffect'
 import DiscordSvg from '../assets/svg/discord.svg'
-import axios from 'axios'
-import { displaySnackbar } from '../store/thunkMiddleware'
+import GlyphEffect from '../components/ui/GlyphEffect'
+import Spinner from '../components/ui/spinner'
 
 const addressRegex = /^(0x)[0-9a-fA-F]{40}$/; 
 const discordRegex = /^[a-zA-Z0-9_]{5,32}$/
@@ -60,6 +61,15 @@ const OnBoarding = () => {
 
   const fileInputRef = useRef(null);
 
+  const [isOTPRecieved, setIsOTPRecieved] = useState(false)
+  const [gettingOTP, setGettingOTP] = useState(false)
+  const [isOTPVerified, setIsOTPVerified] = useState(false)
+  const [isuploadingProfile, setIsUploadingProfile] = useState(false)
+
+  const [otpInput, setOtpInput] = useState('')
+  const [otperror, setOtpError] = useState('')
+
+
   const [errors, setErrors] = useState({
     email: '',
     password: '',
@@ -71,8 +81,12 @@ const OnBoarding = () => {
   });
 
   const signUp = async () => {
-    if (!email || !password) {
-      setError('Please enter email and password')
+    if (!email) {
+      setError('Please enter email')
+      return
+    }
+    if (!password) {
+      setError('Please enter password')
       return
     }
     const validEmail = email_regex.test(email)
@@ -90,7 +104,7 @@ const OnBoarding = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, otp: otpInput }),
     }).then((res) => res.json())
     .then((data) => {
       if(data?.data?.token) {
@@ -102,6 +116,9 @@ const OnBoarding = () => {
       } 
       if(data.message === `This email ${email} already exists`) {
         setError(data.message)
+      }
+      if(data.message === 'invalid otp') {
+        setOtpError('Invalid OTP')
       }
     })
   }
@@ -124,7 +141,7 @@ const OnBoarding = () => {
   
       getUserDetails(res?.data?.data?.userId).then((data) => {
         setError('')
-        data?.role == 'sponsor' ? navigate('/userprojects') : navigate('/allprojects')
+        data?.role == 'sponsor' ? navigate('/') : navigate('/')
       })
     } catch (error) {
       if(error.status == '409') {
@@ -153,6 +170,7 @@ const OnBoarding = () => {
   }
 
   const updateProfile = async () => {
+    setIsUploadingProfile(true)
     const newErrors = {
       email: isOrgSignUp && !email ? 'Please fill the email field' : !email_regex.test(email) ? 'Please enter a valid email' : '',
       password: isOrgSignUp && !password ? 'Please fill the password field' : password !== confirmPassword ? 'Password not matching' : '',
@@ -166,6 +184,7 @@ const OnBoarding = () => {
     setErrors(newErrors);
 
     if (Object.values(newErrors).some(error => error)) {
+      setIsUploadingProfile(false)
       return;
     }
 
@@ -175,16 +194,26 @@ const OnBoarding = () => {
 
     if(isOrgSignUp) {
       try {
-        const res = await axios.post(`${BASE_URL}/users/signup`, {email, password});
+        const res = await axios.post(`${BASE_URL}/users/signup`, {email, password, otp: otpInput});
         localStorage.setItem('token_app_wpl', res?.data?.data?.token)
         dispatch(setUserId(res?.data?.data?.userId))
         setExperience('Hey, I recently joined WPL as a Sponsor')
         setError('')
       } catch (error) {
         if(error.status == '409') {
-          setErrors({email: error.response.data.message});
+          if(error.response.data.message === `This email ${email} already exists`) {
+            setErrors({email: error.response.data.message});
+            setGettingOTP(false)
+            setIsUploadingProfile(false)
+            return
+          }
+          setGettingOTP(false)
+          setIsUploadingProfile(false)
+          setOtpError('Invalid OTP')
           return
         } else {
+          setGettingOTP(false)
+          setIsUploadingProfile(false)
           setErrors('Something went wrong. Try again after sometime!')
           return
         }
@@ -212,11 +241,18 @@ const OnBoarding = () => {
     const data = await response;
     if(data.status === 200){
       if(isOrgSignUp) {
+        setIsUploadingProfile(false)
         navigate('/verifyorg')
+        setGettingOTP(false)
+
       } else {
+        setIsUploadingProfile(false)
         navigate('/')
+        setGettingOTP(false)
       }
     } else {
+      setGettingOTP(false)
+      setIsUploadingProfile(false)
       setErrors('Something went wrong. Try again after sometime!')
     }
   }
@@ -264,7 +300,7 @@ const OnBoarding = () => {
                 data.experienceDescription ||
                 data.walletAddress
               ) {
-              navigate('/allprojects')
+              navigate('/')
               return              
             } else {
               setIsSignComplete(true)
@@ -298,24 +334,11 @@ const OnBoarding = () => {
   const controlledVariants = ["NGIS PU", "GNIS PU", "NGIS PU", "$Sign Up",  "Sign Up"]; // Predefined variations
 
   const handleMouseEnter = () => {
-    if(isSignin) {
-      setHovered(true);
-      return
-    }
-    // if (isHovering) return;
-    // setIsHovering(true);
-
-    // let step = 0;
-
-    // const interval = setInterval(() => {
-    //   if (step < controlledVariants.length) {
-    //     setText(controlledVariants[step]);
-    //     step++;
-    //   } else {
-    //     clearInterval(interval);
-    //     setIsHovering(false);
-    //   }
-    // }, 600);
+    // if(isSignin) {
+    //   setHovered(true);
+    //   return
+    // }
+    setHovered(true);
   };
 
   // useEffect(() => {
@@ -332,6 +355,47 @@ const OnBoarding = () => {
     setIsOrgSignUp(true);
     setIsSignComplete(true);
     return
+  }
+
+  const sendOTP = async () => {
+    if(!email) return setError('Please enter email')
+    setGettingOTP(true)
+    const response = await fetch(`${BASE_URL}/account/getOtp`,{
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({email})
+    }).then((res) => res.json())
+    .then((data) => {
+      if(data.data?.status === "success") {
+        setIsOTPRecieved(true)
+        setGettingOTP(false)
+        setIsUploadingProfile(false)
+        setError('')
+      } else {
+        setGettingOTP(false)
+        setIsUploadingProfile(false)
+        setError(data.message)
+      }
+    })
+  }
+
+  useEffect(() => {
+    if(!isOrgSignUp) return
+    const handler = setTimeout(() => {
+      if(email) sendOTP()
+    }, 4000);
+
+    return () => {
+      clearTimeout(handler); // Clear timeout if inputValue changes
+    };
+  }, [email]);
+
+
+  const handleGetOTPAfterTypingEmail = (e) => {
+    if(!isOrgSignUp) return
+    setEmail(e.target.value)
   }
 
   return (
@@ -370,19 +434,48 @@ const OnBoarding = () => {
 
           <div className='bg-white4 rounded-lg p-3 mt-6 min-w-[400px]'>
             <div className='bg-[#091044] rounded-lg p-3'>
-              <div onClick={handleGoogleSignUp} className='flex justify-between items-center group cursor-pointer'>
-                <div className='flex items-center gap-1 text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Log in" : "Sign up with"} Google <img src={googleLogo} width={12} height={12} /></div>
-                <div><ArrowRight size={18} stroke='#FFFFFF52'/></div>
-              </div>
-              <div className='my-4 border border-dashed border-[#FFFFFF12]'/>
-              <div>
-                <p className='text-white32 font-medium font-inter text-[13px] leading-[15.6px]'>{isSignin ? "Log in" : "Sign up"} with Email</p>
-              </div>
-              <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
-                <input type="email" placeholder="User@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
-                <img src={mailSVG} alt='email' className='w-[22px] h-[22px]'/>
-              </div>
-              <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                <div onClick={handleGoogleSignUp} className='flex justify-between items-center group cursor-pointer'>
+                  <div className='flex items-center gap-1 text-white88 text-[14px] font-inter group-hover:underline'>{isSignin ? "Log in" : "Sign up with"} Google <img src={googleLogo} width={12} height={12} /></div>
+                  <div><ArrowRight size={18} stroke='#FFFFFF52'/></div>
+                </div>
+                <div className='my-4 border border-dashed border-[#FFFFFF12]'/>
+                <div>
+                  <p className='text-white32 font-medium font-inter text-[13px] leading-[15.6px]'>{isSignin ? "Log in" : "Sign up"} with Email</p>
+                </div>
+                <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                  <input type="email" placeholder="User@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                  <img src={mailSVG} alt='email' className='w-[22px] h-[22px]'/>
+                </div>
+
+                {isOTPRecieved &&
+                <>
+                  <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                    <input type={isPass ? 'password' : 'text'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                    {isPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
+                  </div>
+                  {!isSignin &&
+                  <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                    <input type={isConfirmPass ? 'password' : 'text'} placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                    {isConfirmPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> }
+                  </div>
+                  }
+                  <div className='my-5 border border-dashed border-[#FFFFFF12]'/>
+                  <p className='text-[14px] font-gridular text-white64'>Enter verification code!</p>
+                  <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                    <input type="text" placeholder="abc12" value={otpInput} onChange={(e) => setOtpInput(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white12'/>
+                  </div>
+                  </>
+                }
+
+                {isSignin &&
+                 <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                  <input type={isPass ? 'password' : 'text'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                  {isPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
+                </div>
+                }
+              
+              
+              {/* <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
                 <input type={isPass ? 'password' : 'text'} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
                 {isPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
               </div>
@@ -391,7 +484,7 @@ const OnBoarding = () => {
                 <input type={isConfirmPass ? 'password' : 'text'} placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
                 {isConfirmPass ? <EyeIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer' onClick={() => setIsConfirmPass(!isConfirmPass)} stroke='#FFFFFF52'/> }
               </div>
-              }
+              } */}
 
               {error && <div className='bg-[#F03D3D1A] rounded-md px-2 py-2 mt-4 flex items-center gap-1'>
                 <MailWarningIcon stroke='#F03D3D' size={14} className='mr-1'/>
@@ -403,6 +496,7 @@ const OnBoarding = () => {
               }
 
             </div>
+              {isSignin ?
                 <div className='mt-4 overflow-hidden' onMouseEnter={handleMouseEnter} onMouseLeave={() => setHovered(false)}>
                   <FancyButton 
                     src_img={loginBtnImg} 
@@ -434,6 +528,45 @@ const OnBoarding = () => {
                     onClick={isSignin ? login : signUp} 
                   />
                 </div>
+                :
+                <div className='mt-4 overflow-hidden' onMouseEnter={handleMouseEnter} onMouseLeave={() => setHovered(false)}>
+                  <FancyButton 
+                    src_img={loginBtnImg} 
+                    hover_src_img={loginBtnHoverImg} 
+                    img_size_classes='w-[376px] h-[44px]' 
+                    className='mt-2 font-gridular text-white64 text-[14px] leading-[8.82px]' 
+                    btn_txt={
+                      <>
+                        <span
+                          className={`absolute left-0 -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ${
+                            hovered ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"
+                          }`}
+                        >
+                          {gettingOTP ? <Spinner /> : isOTPRecieved ? "Sign Up" : "Get code"}
+                        </span>
+          
+                        <span
+                          className={`absolute left-full -top-1 w-full h-full flex items-center justify-center transition-transform duration-500 ease-out ${
+                            hovered
+                              ? "-translate-x-full opacity-100 scale-110"
+                              : "translate-x-0 opacity-0"
+                          }`}
+                        >
+                          Verify
+                        </span>
+                        {/* <GlyphEffect text={''} isNav={false} /> */}
+                      </>
+                        
+                    } 
+                    onClick={isOTPRecieved ? signUp : sendOTP} 
+                  />
+                </div>
+              }
+              {gettingOTP && <div className='bg-[#0ED0651A] rounded-md px-2 mt-3 h-[42px] flex justify-start items-center gap-1'>
+                  <img src={checkinboxPng} alt='check' className='size-[12px]'/>
+                  <p className='text-primaryYellow text-[12px] font-inter font-semibold'>Check your email for OTP</p>
+                </div>
+              }
           </div>
 
           <div className='flex justify-center items-center mt-2 gap-2'>
@@ -518,7 +651,7 @@ const OnBoarding = () => {
                   <div className='w-full'>
                     <div className='text-white32 font-semibold font-inter text-[13px]'>Your Email <span className='text-[#F03D3D]'>*</span></div>
                     <div className={`bg-[#FFFFFF12] rounded-md ${errors.email ? 'border border-[#F03D3D]' : ""}`}>
-                      <input value={email} onChange={(e) => setEmail(e.target.value)} type='email' readOnly={!isOrgSignUp} placeholder='John@wpl.com' className={`w-full bg-transparent py-2 px-2 outline-none text-white88 placeholder:text-white32 ${!isOrgSignUp && "cursor-default"}`} />
+                      <input value={email} onChange={(e) => handleGetOTPAfterTypingEmail(e)} type='email' readOnly={!isOrgSignUp} placeholder='John@wpl.com' className={`w-full bg-transparent py-2 px-2 outline-none text-white88 placeholder:text-white32 ${!isOrgSignUp && "cursor-default"}`} />
                     </div>
                     {errors.email && <span className='text-red-500 text-sm'>{errors.email}</span>}
                   </div>
@@ -578,20 +711,34 @@ const OnBoarding = () => {
                   {errors.walletAddress && <span className='text-red-500 text-sm'>{errors.walletAddress}</span>}
                 </div>
 
+                {isOrgSignUp &&
+                <div>
+                  <div className='my-5 border border-dashed border-[#FFFFFF12]'/>
+                  <p className='text-[14px] font-gridular text-white64'>Enter verification code!</p>
+                  <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                    <input type="text" placeholder="abc12" value={otpInput} onChange={(e) => setOtpInput(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white12'/>
+                  </div>
+                  {otperror && <div className='text-red-500 text-[12px]'>{otperror}</div>}
+                  {isOTPRecieved &&  <div className='bg-[#0ED0651A] rounded-md px-2 mt-3 h-[42px] flex justify-start items-center gap-1'>
+                    <img src={checkinboxPng} alt='check' className='size-[12px]'/>
+                    <p className='text-primaryYellow text-[12px] font-inter font-semibold'>Check your email for code</p>
+                  </div>
+                  }
+                 </div>
+                }
+
                 <div className='mt-8 py-1'>
                   <FancyButton 
                     src_img={loginBtnImg} 
                     hover_src_img={loginBtnHoverImg} 
                     img_size_classes='w-[350px] md:w-[480px] h-[44px]' 
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                    btn_txt={isOrgSignUp ? 'next steps' : 'submit'}
+                    btn_txt={isuploadingProfile ? <span className='flex justify-center items-center w-full -translate-y-2'><Spinner /></span>  : isOrgSignUp ? 'next steps' : 'submit'}
                     alt_txt='submit sign up btn' 
                     onClick={updateProfile}
                   />
                 </div>
-
               </div>
-
             </div>
           </div>
         </div>

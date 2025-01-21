@@ -1,7 +1,7 @@
 import { ArrowUpRight, CheckCheck, Info, TriangleAlert, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { calculateRemainingDaysAndHours } from '../../lib/constants';
-import { createNotification, getOpenMilestoneSubmissions, getOpenProjectSubmissions, submitMilestone, submitOpenMilestone, updateMilestone } from '../../service/api';
+import { createNotification, getOpenMilestoneSubmissions, getOpenProjectSubmissions, submitMilestone, submitOpenMilestone, updateMilestone, updateProjectDetails } from '../../service/api';
 
 import { useDispatch, useSelector } from 'react-redux';
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png';
@@ -117,7 +117,8 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
         data.starts_in = new Date(data.starts_in).getTime();
 
         const res = await updateMilestone(milestoneData?._id, data);
-       
+        // const resProject = await updateProjectDetails(projectDetails._id, {status: type == 'accept' ? 'completed' : 'rejected'});
+        // console.log('resProject', resProject)
 
         if(res?._id) {
             const notiObj = {

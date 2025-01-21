@@ -23,6 +23,7 @@ import userMenuBorderSVG from '../assets/svg/Button2.svg'
 import sponsorMenuBorderSVG from '../assets/svg/Button.svg'
 import adminMenuBorderSVG from '../assets/svg/admin_menu_bg.svg'
 import useNavBar from './useNavHook'
+import { BASE_URL } from '../lib/constants'
 
 const menuBorderImgType = {
   'user': {
@@ -144,16 +145,65 @@ const Navbar = () => {
     }, 300);
   }
 
+  const checkIfUserVerfied = () => {
+    const res = fetch(`https://income-api.copperx.io/api/kycs/status/${userDetail?.email}`)
+    .then(res => res.json())
+    .then(data => {
+      console.log('data kyc', data)
+      if(data?.statusCode == 404){
+        updateUserDetails(false, 'Not Verified')
+      } else {
+        updateUserDetails(true, 'Verified')
+      }
+      return data
+    })
+  }
+
+  const updateUserDetails = (isKYCVerified, kycStatus) => {
+    const filteredUser = Object.keys(userDetail)
+      .filter(key => !key.startsWith('_') && key !== 'projects' && key !== 'rewards' && key !== 'payments' && key !== 'notifications' && key !== 'projectsParticipated' && key !== 'projectsOngoing' && key !== 'projectsCompleted' && key !== 'projectsInProgress' && key !== 'totalProjectsInWPL' && key !== 'totalAmountSpent' && key !== 'projectsPending')
+      .reduce((acc, key) => {
+        acc[key] = userDetail[key];
+        return acc;
+      }, {});
+
+    const body = {
+      ...filteredUser,
+      isKYCVerified: isKYCVerified,
+      kycStatus: kycStatus
+    }
+    const response = fetch(`${BASE_URL}/users/update/`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        'authorization': 'Bearer ' + localStorage.getItem('token_app_wpl')
+      },
+      body: JSON.stringify({
+        ...body
+      })
+    }).then(res => res.json())
+    .then(data => {
+      console.log('data updating user details', data)
+      return data
+    })
+  }
+
+  const {data} = useQuery({
+    queryKey: ['userVerification', userDetail?.email],
+    queryFn: checkIfUserVerfied,
+    enabled: !!userDetail?.email
+  })
+
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
       <div className='hidden md:flex justify-between items-center w-full'>
         <div className='flex items-center gap-[24px] text-[12px] lg:text-[14px] text-primaryYellow font-bienvenue'>
-          <Link to={'/allprojects'}><GlyphEffect text={'EXPLORE'} /></Link>
+          <Link to={'/'}><GlyphEffect text={'EXPLORE'} /></Link>
           <Link to={'/leaderboard'}><GlyphEffect text={'LEADERBOARD'} /></Link>
         </div>
         <div className={``}>
           <div className='z-[100] translate-x-7'>
-            <Link to={'/allprojects'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]' /></Link>
+            <Link to={'/'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]' /></Link>
           </div>
         </div>
 
@@ -177,10 +227,10 @@ const Navbar = () => {
                 <>
                   <div
 
-                    className={`${menuBorderImgType[userDetail?.role].height} z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
+                    className={`${menuBorderImgType[userDetail?.role]?.height} z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] leading-[8.82px] font-gridular uppercase ${
                       slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                     }`}
-                    style={{backgroundImage: `url(${menuBorderImgType[userDetail?.role].img})`, zIndex: 100}}
+                    style={{backgroundImage: `url(${menuBorderImgType[userDetail?.role]?.img})`, zIndex: 100}}
                   >
                     <Link
                       to={`/profile/${userDetail?.socials?.discord}`}
@@ -199,7 +249,7 @@ const Navbar = () => {
                         >
                           <div className="flex items-center gap-2">
                             <img src={docSVG} alt="projects" className='size-[20px]' />
-                            <p>List Projects</p>
+                            <p>My Listings</p>
                           </div>                          
                         </Link>
                       </>
@@ -334,7 +384,7 @@ const Navbar = () => {
                 </div>
               </Link>
               {userDetail?.role !== 'user' && (
-                <Link to={'/allprojects'} onClick={() => setShowNavbar(false)}> 
+                <Link to={'/'} onClick={() => setShowNavbar(false)}> 
                   <div className="flex items-center gap-2 border-b border-white/5 w-[90%] mb-2">
                     <img src={docSVG} alt="projects" className='size-[20px]' />
                     <p>Explore</p>
