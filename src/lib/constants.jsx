@@ -33,7 +33,7 @@ export function getTimestampFromNow(deliveryTime, timeUnit, starts_in) {
     // const now = new Date(); // Get the current date
     const now = new Date(starts_in)
 
-    switch (timeUnit.toLowerCase()) {
+    switch (timeUnit?.toLowerCase()) {
         case 'day':
         case 'days':
             now.setDate(now.getDate() + duration);
@@ -141,7 +141,7 @@ export function convertTimestampToDate(timestamp) {
 export const ROLES = [
   "Backend",
   "Smart contract / blockchain",
-  "front end",
+  "Frontend",
   "Design",
   "Content writing",
   "Social",

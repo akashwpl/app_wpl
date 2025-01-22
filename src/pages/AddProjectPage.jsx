@@ -52,7 +52,9 @@ const   AddProjectPage = () => {
 
     const [totalPrize, setTotalPrize] = useState(0);
 
-    const [milestones, setMilestones] = useState([]);
+    const [milestones, setMilestones] = useState([
+        { title: '', description: '', prize: '', currency: projCurrency, deliveryTime: '', timeUnit: 'Weeks', starts_in: new Date().getTime() }
+    ]);
 
     const [submitted, setSubmitted] = useState(false);
     const [createdProjectId, setCreatedProjectId] = useState(null);
@@ -66,9 +68,9 @@ const   AddProjectPage = () => {
     const [userOrg, setUserOrg] = useState({})
 
     const [openStartDate, setOpenStartDate] = useState(new Date());
-    const [openDeliveryDate, setOpenDeliveryDate] = useState(0);
-    const [openDeliveryDuration, setOpenDeliveryDuration] = useState(0);
-    const [openBudget, setOpenBudget] = useState(0);
+    const [openDeliveryDate, setOpenDeliveryDate] = useState(new Date());
+    const [openDeliveryDuration, setOpenDeliveryDuration] = useState("days");
+    const [openBudget, setOpenBudget] = useState(1);
 
     const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
         queryKey: ['userOrganisations', user_id],
@@ -202,7 +204,7 @@ const   AddProjectPage = () => {
         
         const updatedMilestones = milestones.map(milestone => ({
             ...milestone,
-            deadline: getTimestampFromNow(milestone.deliveryTime, milestone.timeUnit?.toLowerCase(), milestone.starts_in) // Add timestamp to each milestone
+            deadline: getTimestampFromNow(milestone?.deliveryTime, milestone?.timeUnit?.toLowerCase(), milestone?.starts_in) // Add timestamp to each milestone
         }));
         
         const tmpMilestones = [...updatedMilestones];
@@ -533,9 +535,9 @@ const   AddProjectPage = () => {
                                     value={openDeliveryDuration}
                                     onChange={(e) => handleOpenDeliveryDurationChange(e.target.value)}
                                 >
-                                    <option value="Days">Days</option>
-                                    <option value="Weeks">Weeks</option>
-                                    <option value="Months">Months</option>
+                                    <option value="days">Days</option>
+                                    <option value="weeks">Weeks</option>
+                                    <option value="months">Months</option>
                                 </select>
                             </div>
                             <div className='w-full'>
@@ -552,7 +554,7 @@ const   AddProjectPage = () => {
                         </div>
 
                         <div className='mt-3'>
-                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
+                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Prize Pool</p>
                             <div className='flex items-center gap-2 w-full'>
                                 <div className='bg-[#091044] rounded-md py-3 w-[110px] flex justify-evenly items-center gap-1'>
                                     <img src={ projCurrency === 'STRK' ? STRKimg : USDCimg} alt='usdc' className='size-[16px] rounded-sm'/>
@@ -663,7 +665,7 @@ const   AddProjectPage = () => {
                                                                 <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
                                                                     <select 
                                                                         className='bg-[#091044] text-white88 outline-none border-none w-full'
-                                                                        value={milestone.timeUnit}
+                                                                        value={milestone?.timeUnit}
                                                                         onChange={(e) => handleMilestoneChange(index, 'timeUnit', e.target.value)}
                                                                     >
                                                                         <option value="Days">Days</option>
