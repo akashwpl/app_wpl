@@ -682,8 +682,8 @@ const OnBoarding = () => {
 
                 {!isOrgSignUp &&  
                 <div className='mt-4'>
-                  <div className='text-white32 font-semibold font-inter text-[13px]'>Do you have experience designing application? <span className='text-[#F03D3D]'>*</span></div>
-                  <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder='Yes, I have 5 years of experience in designing applications' className={`w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] text-white88 placeholder:text-white32 outline-none ${errors.experience ? 'border border-[#F03D3D]' : ""}`} rows={4}/>
+                  <div className='text-white32 font-semibold font-inter text-[13px]'>Share your Proof of work? <span className='text-[#F03D3D]'>*</span></div>
+                  <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder='Yes, I have sufficient amount of experience' className={`w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] text-white88 placeholder:text-white32 outline-none ${errors.experience ? 'border border-[#F03D3D]' : ""}`} rows={4}/>
                   {errors.experience && <span className='text-red-500 text-sm'>{errors.experience}</span>}
                 </div>
                 }
