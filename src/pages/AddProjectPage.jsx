@@ -166,7 +166,7 @@ const   AddProjectPage = () => {
     }
     const handleOpenDeliveryDurationChange = (e) => {
         const updatedMilestones = [...milestones];
-        updatedMilestones[0] = { ...updatedMilestones[0], ['timeUnit']: e };
+        updatedMilestones[0] = { ...updatedMilestones[0], ['timeUnit']: e || 'days'};
         setMilestones(updatedMilestones);
         setOpenDeliveryDuration(e);
     }
@@ -184,7 +184,7 @@ const   AddProjectPage = () => {
     }
 
     const handleAddMilestone = () => {
-        setMilestones([...milestones, { title: '', description: '', prize: '', currency: projCurrency, deliveryTime: '', timeUnit: 'Weeks' }]);
+        setMilestones([...milestones, { title: '', description: '', prize: '', currency: projCurrency, deliveryTime: '', timeUnit: 'days' }]);
     };
 
     // Firebase image upload code
@@ -200,9 +200,10 @@ const   AddProjectPage = () => {
 
     const handleSubmit = async () => {
         
-        const updatedMilestones = milestones.map(milestone => ({
+        const updatedMilestones = milestones?.map(milestone => ({
             ...milestone,
-            deadline: getTimestampFromNow(milestone.deliveryTime, milestone.timeUnit?.toLowerCase(), milestone.starts_in) // Add timestamp to each milestone
+            deadline: getTimestampFromNow(milestone?.deliveryTime, milestone?.timeUnit?.toLowerCase() || 'days', milestone?.starts_in || new Date().getTime()), // Add timestamp to each milestone
+            starts_in: milestone?.starts_in || new Date().getTime()
         }));
         
         const tmpMilestones = [...updatedMilestones];
@@ -516,7 +517,7 @@ const   AddProjectPage = () => {
                             <div className='bg-white7 rounded-md'>
                                 <DatePicker
                                     className='w-[28rem] bg-transparent text-white88 placeholder:text-white64 outline-none border-none cursor-pointer px-3 py-2' 
-                                    selected={openStartDate}
+                                    selected={openStartDate || ''}
                                     onChange={(date) => handleOpenStartDateChange(date)}
                                     minDate={new Date()}
                                     dateFormat="dd/MM/yyyy"

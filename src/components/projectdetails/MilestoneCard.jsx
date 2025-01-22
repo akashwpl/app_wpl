@@ -6,6 +6,7 @@ import { calcDaysUntilDate, convertTimestampToDate } from '../../lib/constants'
 
 import hourglassSVG from '../../assets/icons/pixel-icons/hourglass2.svg'
 import warningSVG from '../../assets/icons/pixel-icons/warning.svg'
+import warningRedSVG from '../../assets/icons/pixel-icons/warning-red.svg'
 import clockSVG from '../../assets/icons/pixel-icons/watch.svg'
 import calenderSVG from '../../assets/icons/pixel-icons/calender.svg'
 
@@ -36,6 +37,11 @@ const MilestoneCard = ({ data }) => {
                   <>
                     <img src={warningSVG} alt='warning' className='size-[14px]'/>
                     <p className='text-cardYellowText text-[12px] leading-[14px]'>Under Review</p>
+                  </>
+                : data?.status == 'rejected' ?
+                  <>
+                    <img src={warningRedSVG} alt='warning-red' className='size-[14px] text-cardRedText'/>
+                    <p className='text-cardRedText text-[12px] leading-[14px]'>Rejected</p>
                   </>
                 :
                   <>
