@@ -5,13 +5,17 @@ import ExploreGigsCard from '../components/home/ExploreGigsCard'
 import Spinner from '../components/ui/spinner'
 import { getUserDetails } from '../service/api'
 
-import { LayoutGrid, ListFilter, TableProperties } from 'lucide-react'
+import { LayoutGrid, ListFilter, Plus, TableProperties } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import headerPng from '../assets/images/prdetails_header.png'
 import Tabs from '../components/ui/Tabs'
 
 import listAscendingSvg from '../assets/svg/list-number-ascending.svg'
 import listDescendingSvg from '../assets/svg/list-number-descending.svg'
+import FancyButton from '../components/ui/FancyButton'
+
+import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png';
+import saveBtnImg from '../assets/svg/menu_btn_subtract.png';
 
 const sponstTabs = [
     {id: 'ongoing', name: 'Live', isActive: true},
@@ -159,15 +163,15 @@ const AllUserOwnedProjectsPage = () => {
                 <div className='md:w-[1100px] max-w-[1400px] mt-6 bg-[#06105D] p-6 rounded-xl'>
                     <div className='flex justify-between items-center'>
                         <div className='font-gridular text-primaryYellow text-[20px]'>My gigs</div>
-                        {/* <FancyButton 
+                        <FancyButton 
                             src_img={saveBtnImg}
                             hover_src_img={saveBtnHoverImg}
                             img_size_classes='w-[175px] h-[44px]'
                             className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                            btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={20} fontWeight={800} className='size-4 stoke-[3]'/><span>Add project</span></span>} 
+                            btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={20} fontWeight={800} className='size-4 stoke-[3]'/><span>Add Listing</span></span>} 
                             alt_txt='Add project btn'
                             onClick={navigateToAddProject}
-                        /> */}
+                        />
                     </div>
 
                     <div className='border border-white7 rounded-md h-[56px] flex justify-between items-center mt-9'>
