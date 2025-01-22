@@ -30,6 +30,8 @@ const ProfilePage = () => {
   const { user_id } = useSelector((state) => state)
   const dispatch = useDispatch()
 
+  console.log('user_id PROFILe', user_id)
+
   // const {data: userDetail, isLoading: isLoadingUserDetails, refetch} = useQuery({
   //   queryKey: ["userDetails", id, user_id],
   //   queryFn: () => getUserDetails(id || user_id),
@@ -70,6 +72,8 @@ const ProfilePage = () => {
       }
     }
   }, [allUsers])
+
+  console.log('allUsers', allUsers)
 
   const sampleProjects = useMemo(() =>  userDetails?.projects?.owned?.filter((proj) => proj.type == 'sample'), [userDetails, allUsers])
 
