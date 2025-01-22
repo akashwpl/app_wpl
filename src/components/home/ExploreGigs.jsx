@@ -54,7 +54,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
   })
 
   const [searchInput, setSearchInput] = useState()
-  const [foundationFilter, setFoundationFilter] = useState()
+  const [foundationFilter, setFoundationFilter] = useState('All')
 
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
@@ -98,7 +98,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
             const matchesSearch = searchInput ? project?.title?.toLowerCase().includes(searchInput.toLowerCase()) : true;
             // const matchesRole = tiles.length > 0 ? tiles.some(tile => project?.roles?.map(role => role.toLowerCase()).includes(tile.toLowerCase())) : true;
             const matchesRole = searchRoleList.length > 0 ? searchRoleList.some(r => project?.roles?.map(role => role.toLowerCase()).includes(r.toLowerCase())) : true;
-            const matchfoundation = foundationFilter && foundationFilter !== 'All' ? project?.organisation?.organisationHandle?.toLowerCase() === foundationFilter?.toLowerCase() : true;
+            const matchfoundation = foundationFilter && foundationFilter !== 'All' ? project?.organisation?.name?.toLowerCase() === foundationFilter?.toLowerCase() : true;
             // Week-based filter
             const lastMilestone = project?.milestones?.[project.milestones.length - 1];
             const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;

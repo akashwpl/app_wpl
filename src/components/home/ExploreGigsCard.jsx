@@ -21,7 +21,7 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
     const [hovered, setHovered] = useState(false);
 
     const renderRoles = () => {
-        const limit = projectsGridView ? data?.roles?.length : 5; 
+        const limit = projectsGridView ? data?.roles?.length : 4; 
         return data?.roles?.slice(0, limit)?.map((role, idx) => (
             <span 
                 key={idx} 
@@ -49,7 +49,7 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
                             <p className='font-inter font-medium text-cardYellowText text-[12px] leading-[14.4px] capitalize'>{data?.isOpenBounty ? 'Open' : 'Gated'}</p>
                             <Dot size={16} />
                         </div>
-                        <div className={`flex items-center gap-1 ${projectsGridView ? "mt-2 flex-wrap" : ""}`}>
+                        <div className={`flex w-full items-center gap-1 ${projectsGridView ? "mt-2 flex-wrap" : ""}`}>
                             <img src={profileSVG} alt='profile' className='size-[16px]'/>
                             <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Role: </p>
                             {renderRoles()}

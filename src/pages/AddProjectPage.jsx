@@ -438,7 +438,7 @@ const   AddProjectPage = () => {
                                                 </select>
                                             </div> */}
 
-                                            <DropdownSearchList dropdownList={ROLES} setterFunction={setRole}/>
+                                            <DropdownSearchList dropdownList={ROLES} setterFunction={setRole} />
                                             
                                             </div>
                                             {errors.role && <p className='text-red-500 font-medium text-[12px]'>{errors.role}</p>} {/* Error message */}

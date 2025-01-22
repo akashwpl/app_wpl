@@ -2,9 +2,9 @@ import { Search, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import arrow from '../../assets/images/arrow.png';
 
-const DropdownSearchList = ({ dropdownList, setterFunction, placeholderText='Search for roles eg. Frontend' }) => {
+const DropdownSearchList = ({ dropdownList, setterFunction = () => {}, placeholderText='Search for roles eg. Frontend', prefilledTiles=[] }) => {
 
-  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [selectedMembers, setSelectedMembers] = useState(prefilledTiles);
   const [inputValue, setInputValue] = useState('');
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const inputRef = useRef(null);
@@ -113,8 +113,6 @@ const DropdownSearchList = ({ dropdownList, setterFunction, placeholderText='Sea
           type="text"
           value={inputValue}
           onChange={handleInputChange}
-          // onClick={() => setIsDropdownVisible(true)}
-          // onFocus={() => setIsDropdownVisible(true)}
           onKeyDown={handleKeyPress}
           placeholder={placeholderText}
           />
@@ -127,12 +125,12 @@ const DropdownSearchList = ({ dropdownList, setterFunction, placeholderText='Sea
         />
         {isDropdownVisible  && (
           <div 
-          className={`bg-cardGithubBlueBg rounded-lg w-full bg-cover absolute top-11 right-1 z-10 h-auto max-h-[400px] overflow-y-auto ${isDropdownVisible ? 'animate-menu-slide-in' : 'animate-menu-slide-out'} ${filteredMembers.length > 4 ? 'overflow-y-scroll h-40' : 'overflow-hidden h-fit'} `}>
+          className={`bg-cardGithubBlueBg w-full bg-cover absolute top-11 right-1 z-10 overflow-y-auto ${slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'} ${filteredMembers.length > 4 ? 'overflow-y-scroll h-40' : 'overflow-hidden h-fit'} `}>
             {filteredMembers?.map((member,i) => (
               <div 
               onClick={() => handleMemberClick(member)}
               key={i}
-              className={`flex gap-2 items-center font-inter p-2 cursor-pointer hover:bg-white12 ${(i != filteredMembers.length-1) && 'border border-dotted border-transparent border-b-white12'}`}
+              className={`flex gap-2 rounded-lg items-center font-inter p-2 cursor-pointer hover:bg-white12 ${(i != filteredMembers.length-1) && 'border border-dotted border-transparent border-b-white12'}`}
               >
                 <p className='text-white88 text-[14px] leading-[20px]'>{member}</p>
               </div>

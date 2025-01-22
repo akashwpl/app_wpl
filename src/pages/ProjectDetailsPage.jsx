@@ -232,8 +232,6 @@ const ProjectDetailsPage = () => {
     return projectDetails?.milestones?.every(milestone => milestone.status == 'completed')
   }, [projectDetails])
 
-  console.log('')
-
   return (
     <div className='relative'>
       <div>

@@ -156,7 +156,7 @@ const AllUserOwnedProjectsPage = () => {
             </div>
         
             <div className='flex justify-center items-center -translate-y-36'>
-                <div className='md:w-[800px] max-w-[1200px] mt-6 bg-[#06105D] p-6 rounded-xl'>
+                <div className='md:w-[1100px] max-w-[1400px] mt-6 bg-[#06105D] p-6 rounded-xl'>
                     <div className='flex justify-between items-center'>
                         <div className='font-gridular text-primaryYellow text-[20px]'>My gigs</div>
                         {/* <FancyButton 

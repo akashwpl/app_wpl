@@ -10,10 +10,10 @@ import {
 import USDCimg from '../assets/svg/usdc.svg'
 import STRKimg from '../assets/images/strk.png'
 import DiscordSVG from '../assets/icons/pixel-icons/discord.svg'
-import { getProjectDetails, getUserOrgs, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
+import { createNotification, getProjectDetails, getUserOrgs, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getTimestampFromNow } from '../lib/constants'
+import { getTimestampFromNow, ROLES } from '../lib/constants'
 import DatePicker from 'react-datepicker'
 import saveBtnImg from '../assets/svg/menu_btn_subtract.png'
 import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
@@ -28,6 +28,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
 import { displaySnackbar } from '../store/thunkMiddleware'
+import DropdownSearchList from '../components/form/DropdownSearchList'
 
 const calcDaysUntilDate = (futureDate) => {
     const today = new Date();
@@ -50,13 +51,24 @@ const EditProjectPage = () => {
     const dispatch = useDispatch();
 
     const { id } = useParams();
-    const user_id = useSelector((state) => state.user_id)
+    const { user_id } = useSelector((state) => state)
+    const [username, setUsername] = useState('Bounty owner');
 
     const {data: projectDetails, isLoading: isLoadingProjectDetails} = useQuery({
         queryKey: ['projectDetails', id],
         queryFn: () => getProjectDetails(id),
         enabled: !!id
     })
+
+    const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
+        queryKey: ["userDetails", user_id],
+        queryFn: () => getUserDetails(user_id),
+        enabled: !!user_id,
+    })
+
+    useEffect(() => {
+        if(!isLoadingUserDetails) setUsername(userDetails?.displayName);
+    },[isLoadingUserDetails])
 
     const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
         queryKey: ['userOrganisations', user_id],
@@ -70,6 +82,8 @@ const EditProjectPage = () => {
     const [discordLink, setDiscordLink] = useState(projectDetails?.organisation?.socialHandleLink?.discord || '');
     const [about, setAbout] = useState(projectDetails?.about || '');
     const [projCurrency, setProjCurrency] = useState(projectDetails?.currency || '');
+
+    const [role, setRole] = useState(projectDetails?.roles || []);
 
     const [submitted, setSubmitted] = useState(false);
 
@@ -127,6 +141,8 @@ const EditProjectPage = () => {
         if (!discordLink) newErrors.discordLink = 'Discord server link is required';
         if (!discordLink.startsWith('https://discord.gg/')) newErrors.discordLink = 'Discord server link must start with https://discord.gg/';
         if (!about) newErrors.about = 'About is required.';
+
+        if (role.length < 1) newErrors.role = 'Role/s is/are required'
         
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -173,7 +189,8 @@ const EditProjectPage = () => {
                     about: about,
                     image: projectDetails?.image,
                     currency: projCurrency,
-                    deadline: lastMilestone?.deadline
+                    deadline: lastMilestone?.deadline,
+                    roles: role
                 },
                 milestones: updatedMilestones
             }
@@ -191,12 +208,18 @@ const EditProjectPage = () => {
             // Edit open project
             if(projectDetails?.isOpenBounty) {
                 const res = await updateOpenProjectDetails(projectDetails._id, updData);
-                setSubmitted(true)
-                return;
+            } else {
+                const res = await updateProjectDetails(projectDetails._id, updData);
             }
-            // Edit normal/ Gated project
-            const res = await updateProjectDetails(projectDetails._id, updData);
-            setSubmitted(true);
+            const notiObj = {
+                msg: `${username} has updated the project...`,
+                type: 'project_req',
+                fromId: user_id,
+                user_id: projectDetails.user_id,
+                project_id: projectDetails._id
+            }
+            const notiRes = await createNotification(notiObj)
+            setSubmitted(true)
         }
     };
 
@@ -324,6 +347,14 @@ const EditProjectPage = () => {
                                                 </>
                                             }
                                         </div>
+                                    </div>
+
+                                    <div className='mt-3'>
+                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Role </p>
+                                        <div className='bg-white7 rounded-md px-3 py-2'>
+                                            <DropdownSearchList dropdownList={ROLES} setterFunction={setRole} placeholderText='' prefilledTiles={role} />
+                                        </div>
+                                        {errors.role && <p className='text-[10px] font-medium text-red-500'>{errors.role}</p>}
                                     </div>
 
                                     {/* Select project milestone currency */}

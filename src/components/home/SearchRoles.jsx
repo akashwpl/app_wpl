@@ -47,6 +47,17 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
     }, 300);
   }
 
+  const handleOrgChange = (org) => {
+    
+    if(org?.name == selectedOrg) {
+      setSelectedOrg('All');
+      handleFoundationFilterChange('All');
+    } else {
+      setSelectedOrg(org?.name)
+      handleFoundationFilterChange(org?.name);
+    }
+  }
+
     return (
         <div className="bg-black/10 w-full border border-white/10 rounded-lg mb-8 p-4 gap-3 flex">
 
@@ -86,7 +97,7 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
             <div
                 ref={menuRef}
                 onClick={() => {handleMenuToggle()}}
-                className="relative cursor-pointer flex flex-row items-center z-50 w-[250px] h-[42px] bg-white7 border border-white7 rounded-md p-2 text-primaryYellow font-gridular text-[14px]"
+                className="relative cursor-pointer flex flex-row items-center z-50 w-[250px] h-[42px] text-white88 bg-white7 border border-white7 rounded-md p-2 font-gridular text-[14px]"
                 >
                   <div className='flex justify-between items-center w-full'>
                     <p>{selectedOrg}</p>
@@ -100,12 +111,12 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                     {showUserMenu && (
                         <>
                             <div
-                                className={`z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-primaryYellow text-[14px] font-gridular uppercase h-auto max-h-[400px] overflow-y-auto ${
+                                className={`z-50 rounded-lg backdrop-blur-2xl bg-black/20  bg-cover w-full absolute top-12 right-0 text-[14px] font-gridular uppercase h-auto max-h-[400px] overflow-y-auto ${
                                 slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                                 }`}
                             >
                                 {isLoadingOrganisationDetails ? <Spinner /> : [{name: "All"}, ...organisationsDetails]?.map((org, idx) => (
-                                    <div key={idx} onClick={() => {handleFoundationFilterChange(org?.name); setSelectedOrg(org.name)}} className='p-2 hover:bg-white12 cursor-pointer rounded-md'>
+                                    <div key={idx} onClick={() => {handleOrgChange(org)}} className='p-2 hover:bg-white12 cursor-pointer rounded-md'>
                                         {org.name}
                                     </div>
                                 ))}  
