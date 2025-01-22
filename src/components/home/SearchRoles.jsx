@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import { getAllOrganisations } from '../../service/api';
 import Spinner from '../ui/spinner';
 import arrow from '../../assets/images/arrow.png';
+import DropdownSearchList from '../form/DropdownSearchList';
+import { ROLES } from '../../../src/lib/constants';
 
 
-const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput, handleSearch, handleFoundationFilterChange }) => {
+const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput, handleSearch, handleFoundationFilterChange, setRoles }) => {
 
-  const [selectedOrd, setSelectedOrg] = useState("All");
+  const [selectedOrg, setSelectedOrg] = useState("All");
 
   const {data: organisationsDetails, isLoading: isLoadingOrganisationDetails} = useQuery({
     queryKey: ["allOrganisations"],
@@ -48,7 +50,7 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
     return (
         <div className="bg-black/10 w-full border border-white/10 rounded-lg mb-8 p-4 gap-3 flex">
 
-          <div className='w-full'>
+          {/* <div className='w-full'>
             <div>
               <h2 className='font-gridular text-[14px] text-primaryYellow mb-1'>Search for roles</h2>
             </div>
@@ -70,17 +72,24 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                         />
                     </div>
             </div>
-          </div>
+          </div> */}
+          <>
+            <div className='w-full flex flex-col justify-between'>
+              <h2 className='font-gridular text-[14px] text-primaryYellow mb-1'>Search for roles</h2>
+              <DropdownSearchList dropdownList={ROLES} setterFunction={setRoles} />
+            </div>
+          </>
 
-          <div>
-            <p className='font-gridular text-[14px] text-primaryYellow mb-1'>Organisations</p>
+
+          <div className='flex flex-col justify-between'>
+            <h2 className='font-gridular text-[14px] text-primaryYellow mb-1'>Organisations</h2>
             <div
                 ref={menuRef}
                 onClick={() => {handleMenuToggle()}}
                 className="relative cursor-pointer flex flex-row items-center z-50 w-[250px] h-[42px] bg-white7 border border-white7 rounded-md p-2 text-primaryYellow font-gridular text-[14px]"
                 >
                   <div className='flex justify-between items-center w-full'>
-                    <p>{selectedOrd}</p>
+                    <p>{selectedOrg}</p>
                       <img
                         src={arrow}
                         width={18}

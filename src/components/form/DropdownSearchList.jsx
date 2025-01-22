@@ -1,7 +1,8 @@
 import { Search, X } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import arrow from '../../assets/images/arrow.png';
 
-const DropdownSearchList = ({ dropdownList, setterFunction }) => {
+const DropdownSearchList = ({ dropdownList, setterFunction, placeholderText='Search for roles eg. Frontend' }) => {
 
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -9,15 +10,11 @@ const DropdownSearchList = ({ dropdownList, setterFunction }) => {
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
 
+  const [slideUserMenu, setSlideUserMenu] = useState(false)
+
   useEffect(() => {
     setterFunction(selectedMembers)
   }, [selectedMembers]);
-
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsDropdownVisible(false);
-    }
-  };
 
   const handleInputChange = (event) => {
 		const inputBoxValue = event.target.value;
@@ -64,17 +61,35 @@ const DropdownSearchList = ({ dropdownList, setterFunction }) => {
     return member.toLowerCase().includes(searchTerm);
   });
 
-	useEffect(() => {
-		document.addEventListener('click', handleClickOutside);
-		return () => {
-			document.removeEventListener('click', handleClickOutside);
-		};
-	}, []);
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        dropdownRef.current && 
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setSlideUserMenu(false);
+        setTimeout(() => {
+          setIsDropdownVisible(false)
+        }, 300);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  },[dropdownRef])
+
+  const handleMenuToggle = () => {
+    setSlideUserMenu(!slideUserMenu);
+    setTimeout(() => {
+      setIsDropdownVisible(!isDropdownVisible)
+    }, 300);
+  }
 
   return (
     <>
       {selectedMembers?.length > 0 &&
-        <div className='flex flex-wrap gap-2 h-full mb-2'>
+        <div className='flex flex-wrap gap-2 h-fit mb-2'>
         {selectedMembers?.map((member,i) => (
           <div 
           key={i}
@@ -88,29 +103,36 @@ const DropdownSearchList = ({ dropdownList, setterFunction }) => {
       }
       <div 
         ref={dropdownRef}
+        onClick={() => {handleMenuToggle()}}
         className='flex flex-col gap-1 w-full relative h-full'
         >
         {/* <label htmlFor='gitTeammates' className='text-[13px] leading-[15.6px] font-medium text-white32'>Search for Roles</label> */}
         <input
           ref={inputRef}
-          className="bg-white7 rounded-[6px] text-white48 placeholder:text-white32 my-1 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7"
+          className="bg-white7 rounded-[6px] text-white48 placeholder:text-white32 my-1 px-3 pl-8 py-2 text-[14px] focus:outline-0 focus:bg-white7"
           type="text"
           value={inputValue}
           onChange={handleInputChange}
-          onClick={() => setIsDropdownVisible(true)}
-          onFocus={() => setIsDropdownVisible(true)}
+          // onClick={() => setIsDropdownVisible(true)}
+          // onFocus={() => setIsDropdownVisible(true)}
           onKeyDown={handleKeyPress}
-          placeholder="Search for roles eg. Frontend"
+          placeholder={placeholderText}
           />
-        <Search size={16} className='text-white32 absolute right-3 top-[20px]' />
+        <Search size={16} className='text-white32 absolute left-2 top-4' />
+        <img
+          src={arrow}
+          width={18}
+          alt="down arrow"
+          className={`${isDropdownVisible ? "animate-step-rotate" : "animate-step-rotate-back"} transition-all absolute top-4 right-3`}
+        />
         {isDropdownVisible  && (
           <div 
-          className={`bg-cardGithubBlueBg rounded-[6px] px-3 w-full absolute top-[54px] left-0 z-10 ${filteredMembers.length > 4 ? 'overflow-y-scroll h-40' : 'overflow-hidden h-fit'} `}>
+          className={`bg-cardGithubBlueBg rounded-lg w-full bg-cover absolute top-11 right-1 z-10 h-auto max-h-[400px] overflow-y-auto ${isDropdownVisible ? 'animate-menu-slide-in' : 'animate-menu-slide-out'} ${filteredMembers.length > 4 ? 'overflow-y-scroll h-40' : 'overflow-hidden h-fit'} `}>
             {filteredMembers?.map((member,i) => (
               <div 
               onClick={() => handleMemberClick(member)}
               key={i}
-              className={`flex gap-2 items-center font-inter py-2 cursor-pointer ${(i != filteredMembers.length-1) && 'border border-dotted border-transparent border-b-white12'}`}
+              className={`flex gap-2 items-center font-inter p-2 cursor-pointer hover:bg-white12 ${(i != filteredMembers.length-1) && 'border border-dotted border-transparent border-b-white12'}`}
               >
                 <p className='text-white88 text-[14px] leading-[20px]'>{member}</p>
               </div>

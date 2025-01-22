@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { getUserDetails } from '../service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
-import { BASE_URL } from '../lib/constants';
+import { BASE_URL, SKILLS } from '../lib/constants';
 
 import Spinner from '../components/ui/spinner';
 import discordSVG from '../assets/svg/discord.svg'
@@ -21,6 +21,7 @@ import closeProjBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.pn
 import { storage } from '../lib/firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { displaySnackbar } from '../store/thunkMiddleware';
+import DropdownSearchList from '../components/form/DropdownSearchList';
 
 const urlRegex = /^(?:https?:\/\/)?(?:www\.)?(?:notion\.so|docs\.google\.com|github\.com)\/.+$/;
 
@@ -53,6 +54,8 @@ const EditProfilePage = () => {
     const [hovered, setHovered] = useState(false)
     const [imgUploadHover, setImgUploadHover] = useState(false)
 
+    const [skills, setSkills] = useState([])
+    
     const [projectDetails, setProjectDetails] = useState({
         title: '',
         desc: '',
@@ -67,13 +70,14 @@ const EditProfilePage = () => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         
-        if (name === 'skills') {
-            const skillsArray = value.split(',').map(skill => skill.trim()).filter(Boolean);
-            setProjectDetails(prevState => ({
-                ...prevState,
-                [name]: skillsArray,
-            }));
-        } else if (name == 'img') {
+        // if (name === 'skills') {
+            // const skillsArray = value.split(',').map(skill => skill.trim()).filter(Boolean);
+            // setProjectDetails(prevState => ({
+            //     ...prevState,
+            //     [name]: skillsArray,
+            // }));
+        // } else 
+        if (name == 'img') {
         const file = e.target.files[0];
         setProjectDetails(prevState => ({
             ...prevState,
@@ -176,10 +180,7 @@ const EditProfilePage = () => {
           } else if (!email) {
             newErrors['email'] = 'Email is required';
             isValid = false;
-          } else if (!bio) {
-            newErrors['bio'] = 'Bio is required';
-            isValid = false;
-          }
+          } 
 
         });
       
@@ -333,6 +334,16 @@ const EditProfilePage = () => {
             dispatch(displaySnackbar('Profile updated successfully'))
         })
     }
+
+    useEffect(() => {
+        setProjectDetails(prevState => ({
+            ...prevState,
+            skills: skills,
+        }));
+    },[skills])
+
+    console.log('skills',skills);
+    
 
   return (
     <div className='flex flex-col justify-center items-center'>
@@ -507,7 +518,7 @@ const EditProfilePage = () => {
 
         {showAddProjectModal &&  
             <CustomModal isOpen={showAddProjectModal} closeModal={handleCloseAddProjectModal}>
-                <div className='w-[320px] md:w-[420px] bg-primaryDarkUI rounded-[6px] pb-4'>
+                <div className='w-[320px] md:w-[420px] bg-primaryDarkUI rounded-[6px] pb-4 overflow-hidden'>
                     <div className='border-b border-white7 px-4 py-2 flex justify-between items-center'>
                         <p className='text-[14px] text-white/65 font-medium'>Add Project</p>
                         <X onClick={handleCloseAddProjectModal} size={14} className='text-white/65 cursor-pointer'/>
@@ -568,14 +579,15 @@ const EditProfilePage = () => {
                             {errors.desc && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">Description is required</div>}
                             <div className='flex flex-col gap-1 w-full mt-3'>
                                 <label className='text-[13px] font-medium text-white32'>Add skills</label>
-                                <div className={`bg-white7 flex items-center rounded-md px-4 ${errors.skills && 'border-[1px] border-[#FF7373]'}`}>
+                                <DropdownSearchList dropdownList={SKILLS} setterFunction={setSkills} placeholderText='Add your Skills Eg. Frontend, UI/UX' />
+                                {/* <div className={`bg-white7 flex items-center rounded-md px-4 ${errors.skills && 'border-[1px] border-[#FF7373]'}`}>
                                     <Search size={16} className='text-white32'/>
                                     <input className={`bg-transparent outline-none rounded-[6px] placeholder:text-white32 px-3 py-2 text-[14px] w-full text-white88`} 
                                         placeholder='Frontend, Backend, Fullstack'
                                         name='skills'
                                         onChange={handleChange}
                                     />
-                                </div>
+                                </div> */}
                             </div>
                             {errors.skills && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.skills}</div>}
 
