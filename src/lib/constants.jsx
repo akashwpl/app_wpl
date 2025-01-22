@@ -4,6 +4,29 @@ export const email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const website_regex = /^(?:https?:\/\/)?(?:www\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,6}(?:\/\S*)?$/i;
 
+function isValidStarkNetAddress(address) {
+  // Check if the address starts with '0x'
+  if (!address.startsWith('0x')) {
+    return false;
+  }
+
+  // Remove the '0x' prefix
+  const addressWithoutPrefix = address.slice(2);
+
+  // Check if the rest of the address is a valid hexadecimal string
+  const hexRegex = /^[0-9a-fA-F]+$/;
+  if (!hexRegex.test(addressWithoutPrefix)) {
+    return false;
+  }
+
+  // Check if the address length is valid
+  if (addressWithoutPrefix.length > 64 || addressWithoutPrefix.length === 0) {
+    return false;
+  }
+
+  return true;
+}
+
 export function getTimestampFromNow(deliveryTime, timeUnit, starts_in) {
     // const [number, unit] = input.split(' '); // Split the input into number and unit
     const duration = parseInt(deliveryTime, 10); // Convert the number to an integer
