@@ -48,6 +48,7 @@ const Navbar = () => {
   const { notificationCount } = useNavBar()
 
   const { user_id } = useSelector((state) => state)
+  console.log('user_id', user_id)
 
   const { data: userDetail } = useQuery({
     queryKey: ['userDetails', user_id],
@@ -193,6 +194,8 @@ const Navbar = () => {
     queryFn: checkIfUserVerfied,
     enabled: !!userDetail?.email
   })
+
+  console.log('userDetail NAVBARRR', userDetail)
 
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
