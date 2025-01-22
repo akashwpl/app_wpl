@@ -1,7 +1,7 @@
 import { ArrowRight, EyeIcon, EyeOffIcon, Info, MailWarningIcon, Menu, Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BASE_URL, email_regex } from '../lib/constants'
+import { BASE_URL, email_regex, isValidStarkNetAddress } from '../lib/constants'
 
 import { useDispatch } from 'react-redux'
 import headerPng from '../assets/images/prdetails_header.png'

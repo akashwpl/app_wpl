@@ -413,8 +413,8 @@ const   AddProjectPage = () => {
                                         </div>
 
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Role <span className='text-[#F03D3D]'>*</span></p>
-                                            <div className='bg-white7 rounded-md px-3 py-2'>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Roles <span className='text-[#F03D3D]'>*</span></p>
+                                            <div className='bg-white7 rounded-md px-3 py-2 cursor-pointer'>
                                             {/* <div className="w-full rounded-md flex flex-row flex-wrap gap-2">
                                                 {role && role?.map((tile, index) => (
                                                     <div className="bg-cardBlueBg2 flex justify-between items-center px-2 py-2 border-transparent focus:outline-0 rounded-[6px] text-white88 w-fit font-gridular text-[14px] leading-[16.8px]">
