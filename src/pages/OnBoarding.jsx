@@ -177,7 +177,7 @@ const OnBoarding = () => {
       displayName: !displayName ? 'Please fill the name field' : '',
       experience: !experience && !isOrgSignUp ? 'Please fill the experience field' : '',
       discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Discord ID can only contain letters, numbers, and underscores. Must be 5-32 characters.' : '',
-      walletAddress: !walletAddress ? 'Please fill the wallet address field' : !addressRegex.test(walletAddress) ? 'Invalid Starknet wallet address' : '',
+      walletAddress: !walletAddress ? 'Please fill the wallet address field' : !isValidStarkNetAddress(walletAddress) ? 'Invalid Starknet wallet address' : '',
       img: !img ? 'Please upload a profile image' : ''
     };
 
