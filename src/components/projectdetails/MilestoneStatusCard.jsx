@@ -1,6 +1,6 @@
 import { ArrowUpRight, CheckCheck, Info, TriangleAlert, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { calculateRemainingDaysAndHours } from '../../lib/constants';
+import { calculateRemainingDaysAndHours, isValidLink } from '../../lib/constants';
 import { createNotification, getOpenMilestoneSubmissions, getOpenProjectSubmissions, submitMilestone, submitOpenMilestone, updateMilestone, updateProjectDetails } from '../../service/api';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -53,6 +53,14 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
     
         if (!linkInput) {
             setLinkError('Link is required');
+            hasError = true;
+            return
+        } else {
+            setLinkError(null);
+        }
+
+        if(!isValidLink(linkInput)) {
+            setLinkError('Invalid Link');
             hasError = true;
             return
         } else {
@@ -141,7 +149,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
                     <img src={questionSVG} alt='question-mark' className='size-[16px]'/>
-                    <p className='text-[12px] text-white32 leading-[16px]'>Milestone Status</p>
+                    <p className='text-[12px] text-white32 leading-[16px]'>{projectDetails?.isOpenBounty ? "Project" : "Milestone"} Status</p>
                 </div>
                 <div className='flex items-center gap-1 font-inter'>
                     {milestoneData?.status == 'idle' ? 
@@ -201,18 +209,40 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                             <div className='mb-1'>
                                 <p className='text-white64 text-[12px]'>User has submitted the milestone: <span onClick={() => setShowMilestoneSubmissionModal(true)} className='text-primaryYellow underline cursor-pointer hover:text-primaryYellow/90'>view</span></p>
                             </div>
-                        : milestoneData?.status == 'completed' ? <div className='text-primaryGreen bg-primaryDarkUI px-3 py-1 rounded-md flex items-center gap-1 font-gridular w-fit'><Info size={16}/> Milestone is completed</div> : ""
+                        : milestoneData?.status == 'completed' ? 
+                            <FancyButton 
+                                src_img={btnImg} 
+                                // hover_src_img={btnHoverImg}
+                                img_size_classes='w-[342px] h-[44px]' 
+                                className='font-gridular text-[14px] leading-[8.82px] text-primaryGreen mt-1.5'
+                                btn_txt={"Completed"}  
+                                alt_txt='milestone submit btn' 
+                                onClick={() => {}}
+                                disabled={milestoneData?.status == 'completed'}
+                            />
+                        : ""
                         }
                 {user_id != projectDetails?.user_id && user_role == 'sponsor' ?
                     <div>
                     </div>
                 : 
                     projectDetails?.status == 'closed' ? "" :
-                    milestoneData?.status == "completed" ? <div></div> 
+                    milestoneData?.status == "completed" ? <div>
+                       
+                    </div> 
                     : ((projectDetails?.isOpenBounty && !isUserSubmittedOpenMS) || user_id == projectDetails?.user_id) ? 
                         milestoneData?.status != 'idle' && milestoneData?.status != 'ongoing'
                         ? 
-                        <p className='text-white88 bg-primaryDarkUI px-3 py-1 rounded-md flex items-center gap-1 font-gridular w-fit'><Info size={16}/> Milestone Already Submitted</p> 
+                            <FancyButton 
+                                src_img={btnImg} 
+                                // hover_src_img={btnHoverImg}
+                                img_size_classes='w-[342px] h-[44px]' 
+                                className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                                btn_txt={"Already Submitted"}  
+                                alt_txt='milestone submit btn' 
+                                onClick={() => {}}
+                                disabled={milestoneData?.status != 'idle' && milestoneData?.status != 'ongoing'}
+                            />
                         :
                         <FancyButton 
                             src_img={btnImg} 
@@ -220,14 +250,25 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                             img_size_classes='w-[342px] h-[44px]' 
                             className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                             // btn_txt={milestoneData?.status == 'under_review' || milestoneData?.status == 'rejected' ? 're-submit milestone' : 'submit milestone'}  
-                            btn_txt={milestoneData?.status == 'idle' || milestoneData?.status == 'ongoing' ? 'submit milestone' : 'Milestone submitted'}  
+                            btn_txt={
+                                milestoneData?.status == 'idle' || milestoneData?.status == 'ongoing' 
+                                ? `${!projectDetails?.isOpenBounty ? "submit milestone" : "submit project"}` 
+                                : `${!projectDetails?.isOpenBounty ?  "milestone submitted" : "project submitted"}`}  
                             alt_txt='milestone submit btn' 
                             onClick={() => setShowSubmitModal(true)}
                             disabled={milestoneData?.status != 'idle' && milestoneData?.status != 'ongoing'}
                         />
                     :
-                    isUserSubmittedOpenMS && <p className='text-white88 bg-primaryDarkUI px-3 py-1 rounded-md flex items-center gap-1 font-gridular w-fit'><Info size={16}/> Milestone Already Submitted</p>
-                
+                        isUserSubmittedOpenMS && <FancyButton 
+                        src_img={btnImg} 
+                        // hover_src_img={btnHoverImg}
+                        img_size_classes='w-[342px] h-[44px]' 
+                        className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                        btn_txt={"Already Submitted"}  
+                        alt_txt='milestone submit btn' 
+                        onClick={() => {}}
+                        disabled={milestoneData?.status != 'idle' && milestoneData?.status != 'ongoing'}
+                    />
                 }
             </div>
 
@@ -240,6 +281,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                         <div className='flex flex-col'>
                             <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Link <span className='text-primaryRed'>*</span></label>
                             <input className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' placeholder='project link..'/>
+                            <p className='text-[11px] text-white32 font-inter mt-[2px]'>Prefered links: Google, Notion, Github or Figma</p>
                             {linkError && <p className='text-primaryRed text-[12px] mt-1'>{linkError}</p>}
                         </div>
                         <div className='flex flex-col mt-4'>

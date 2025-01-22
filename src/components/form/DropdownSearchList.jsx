@@ -104,7 +104,7 @@ const DropdownSearchList = ({ dropdownList, setterFunction = () => {}, placehold
       <div 
         ref={dropdownRef}
         onClick={() => {handleMenuToggle()}}
-        className='flex flex-col gap-1 w-full relative h-full'
+        className='flex flex-col gap-1 w-full relative h-full cursor-pointer'
         >
         {/* <label htmlFor='gitTeammates' className='text-[13px] leading-[15.6px] font-medium text-white32'>Search for Roles</label> */}
         <input

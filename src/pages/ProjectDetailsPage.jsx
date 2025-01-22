@@ -294,18 +294,20 @@ const ProjectDetailsPage = () => {
                       </Accordion>
                     </div>
 
-                    <div className='pb-32'>
-                      <Accordion type={projectDetails?.milestones?.length <= 1 ? "single" : 'multiple'} defaultValue={projectDetails?.milestones?.length <= 1 ? "item-0" : ''} collapsible>
-                        {projectDetails?.milestones?.map((milestone, index) => (
-                          <AccordionItem value={`item-${index}`} key={index} className="border-white7">
-                            <AccordionTrigger className="text-white48 font-inter hover:no-underline">Milestone {index + 1}</AccordionTrigger>
-                            <AccordionContent>
-                              <MilestoneCard data={milestone}/>
-                            </AccordionContent>
-                          </AccordionItem>
-                        ))}
-                      </Accordion>
-                    </div>
+                    {!projectDetails?.isOpenBounty &&
+                      <div className='pb-32'>
+                        <Accordion type={projectDetails?.milestones?.length <= 1 ? "single" : 'multiple'} defaultValue={projectDetails?.milestones?.length <= 1 ? "item-0" : ''} collapsible>
+                          {projectDetails?.milestones?.map((milestone, index) => (
+                            <AccordionItem value={`item-${index}`} key={index} className="border-white7">
+                              <AccordionTrigger className="text-white48 font-inter hover:no-underline">Milestone {index + 1}</AccordionTrigger>
+                              <AccordionContent>
+                                <MilestoneCard data={milestone}/>
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
+                      </div>
+                    }
                   </div>
                 }
 
@@ -398,23 +400,31 @@ const ProjectDetailsPage = () => {
                 </p>
               </div>
 
-              <div className='bg-white7 border border-white4 rounded-[8px] px-3 mx-4 mt-4'>
-                <Accordion type="single" defaultValue="item-0" collapsible>
-                  {projectDetails?.milestones?.map((milestone, index) => (
-                    <AccordionItem value={`item-${index}`} key={index} className="border-white7">
-                      <AccordionTrigger className="text-white48 font-inter hover:no-underline">
-                        <div className='flex justify-between items-center w-full text-[13px] font-medium text-white88'>
-                          <p>Milestone {index + 1}</p>
-                          <p className='flex items-center gap-1'><img src={milestone?.currency == 'STRK' ? STRKimg : USDCimg} alt='ms-currency' className='size-[14px]'/>{milestone?.prize} <span className='text-white48'>{milestone?.currency}</span></p>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent className="py-2 border-t border-dashed border-white12">
-                        <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails} username={username} />
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </div>
+              {!projectDetails?.isOpenBounty ?
+                <div className='bg-white7 border border-white4 rounded-[8px] px-3 mx-4 mt-4'>
+                  <Accordion type="single" defaultValue="item-0" collapsible>
+                    {projectDetails?.milestones?.map((milestone, index) => (
+                      <AccordionItem value={`item-${index}`} key={index} className="border-white7">
+                        <AccordionTrigger className="text-white48 font-inter hover:no-underline">
+                          <div className='flex justify-between items-center w-full text-[13px] font-medium text-white88'>
+                            <p>Milestone {index + 1}</p>
+                            <p className='flex items-center gap-1'><img src={milestone?.currency == 'STRK' ? STRKimg : USDCimg} alt='ms-currency' className='size-[14px]'/>{milestone?.prize} <span className='text-white48'>{milestone?.currency}</span></p>
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="py-2 border-t border-dashed border-white12">
+                          <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails} username={username} />
+                        </AccordionContent>
+                      </AccordionItem>
+                    ))}
+                  </Accordion>
+                </div>
+              :
+                <div className='bg-white7 border border-white4 rounded-[8px] p-3 mx-4 mt-4'>
+                    {projectDetails?.milestones?.map((milestone, index) => (
+                      <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails} username={username} />
+                    ))}
+                </div>
+              }
                 
               {isOwner ?
                 projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div>
@@ -445,10 +455,11 @@ const ProjectDetailsPage = () => {
                   {projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> : 
                     projectDetails?.status == 'completed' ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
                     :
-                    projectDetails?.status != "idle" || projectDetails?.isOpenBounty ? 
+                    projectDetails?.status != "idle" || projectDetails?.isOpenBounty 
+                      ? projectDetails?.status != 'closed' || projectDetails?.status != 'completed' ? null :
                     <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
                       <img src={warningSVG} alt='warning' className='size-[20px]'/>
-                      <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit a milestone only ONCE. No backsies.</p>
+                      <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit a {projectDetails?.isOpenBounty ? "bounty" : "milestone"} only ONCE. No backsies.</p>
                     </div>
                     : 
                     token ? <div className='mx-4 mt-4'>

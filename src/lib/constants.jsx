@@ -4,7 +4,7 @@ export const email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const website_regex = /^(?:https?:\/\/)?(?:www\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,6}(?:\/\S*)?$/i;
 
-function isValidStarkNetAddress(address) {
+export function isValidStarkNetAddress(address) {
   // Check if the address starts with '0x'
   if (!address.startsWith('0x')) {
     return false;
@@ -25,6 +25,11 @@ function isValidStarkNetAddress(address) {
   }
 
   return true;
+}
+
+export const isValidLink = (link) => {
+ const regex = /^(https?:\/\/)?([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(\/.*)?$/;
+  return regex.test(link);
 }
 
 export function getTimestampFromNow(deliveryTime, timeUnit, starts_in) {
