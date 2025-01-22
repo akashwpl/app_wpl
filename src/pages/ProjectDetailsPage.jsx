@@ -80,12 +80,16 @@ const ProjectDetailsPage = () => {
   useEffect(() => {
     !isLoadingProjectSubmissions && 
     projectSubmissions?.map((project) => {
-      if(project?.user?.email == userDetails?.email) {
+      if(project?.user?.email?.toLowerCase() == userDetails?.email?.toLowerCase()) {
         setIsProjApplied(true);
         return;
       }
     })
   },[isLoadingProjectSubmissions])
+
+  console.log('projectSubmissions', projectSubmissions)
+  console.log('userDetails', userDetails)
+  
 
   const {data: openProjectSubmissions, isLoading: isLoadingOpenProjectSubmissions, refetch: refetchOpenProjectSubmissions} = useQuery({
     queryKey: ['openProjectSubmissions', id],
@@ -433,11 +437,11 @@ const ProjectDetailsPage = () => {
                 <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
                   <FancyButton 
                     src_img={closeProjBtnImg} 
-                    hover_src_img={closeProjBtnHoverImg} 
-                    img_size_classes='w-[162px] h-[44px]' 
+                    hover_src_img={closeProjBtnHoverImg}
+                    img_size_classes='w-[162px] h-[44px]'
                     className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5'
-                    btn_txt='Close project' 
-                    alt_txt='project close btn' 
+                    btn_txt='Close project'
+                    alt_txt='project close btn'
                     onClick={() => setShowCloseProjectModal(true)}
                   />
                   <FancyButton 
