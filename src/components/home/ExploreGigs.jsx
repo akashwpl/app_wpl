@@ -63,7 +63,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
     enabled: !!userId
   })
 
-  console.log('allProjects explore gig', allProjects)
+  // console.log('allProjects explore gig', allProjects)
 
   // useEffect(() => {
   //   if(user_role == 'sponsor') {
