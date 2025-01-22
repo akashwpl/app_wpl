@@ -156,6 +156,23 @@ const   AddProjectPage = () => {
     };
 
     const handleMilestoneChange = (index, field, value) => {
+        if(field == 'prize' && parseInt(value) < 1) {
+            setErrors({...errors, msErrors: {
+                ...errors.msErrors,
+                [index]: {
+                    prize: 'Prize value should be greater than 0'
+                }
+            }})
+            return
+        } else if(field == 'prize') {
+            setErrors({...errors, msErrors: {
+                ...errors.msErrors,
+                [index]: {
+                    prize: ''
+                }
+            }})
+        }
+        console.log('ms error',errors);
         const updatedMilestones = [...milestones];
         updatedMilestones[index] = { ...updatedMilestones[index], [field]: value };
         setMilestones(updatedMilestones);
@@ -179,6 +196,23 @@ const   AddProjectPage = () => {
         setOpenStartDate(date);
     }
     const handleOpenBudgetChange = (e) => {
+        if(parseInt(e) < 1) {
+            setErrors({...errors, msErrors: {
+                ...errors.msErrors,
+                [index]: {
+                    prize: 'Prize value should be greater than 0'
+                }
+            }})
+            return
+        } else {
+            setErrors({...errors, msErrors: {
+                ...errors.msErrors,
+                [index]: {
+                    prize: ''
+                }
+            }})
+        }
+        console.log('ms error',errors);
         const updatedMilestones = [...milestones];
         updatedMilestones[0] = { ...updatedMilestones[0], ['prize']: e };
         setMilestones(updatedMilestones);
@@ -186,7 +220,7 @@ const   AddProjectPage = () => {
     }
 
     const handleAddMilestone = () => {
-        setMilestones([...milestones, { title: '', description: '', prize: '', currency: projCurrency, deliveryTime: '', timeUnit: 'days' }]);
+        setMilestones([...milestones, { title: '', description: '', prize: '1', currency: projCurrency, deliveryTime: '', timeUnit: 'days' }]);
     };
 
     // Firebase image upload code
@@ -658,7 +692,7 @@ const   AddProjectPage = () => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            {milestone.err?.prize && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{milestone.err.prize}</p>}
+                                                            {errors.msErrors[index]?.prize && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{errors.msErrors[index]?.prize}</p>}
                                                         </div>
                                                         <div className='mt-3'>
                                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Delivery Time</p>
