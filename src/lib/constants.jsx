@@ -129,3 +129,17 @@ export const ROLES = [
   "Project Manager",
   "Business Analyst",
 ]
+
+export const SKILLS = [
+  "Frontend",
+  "Backend",
+  "Fullstack",
+  "DevOps",
+  "Data Science",
+  "Machine Learning",
+  "Software Development",
+  "QA",
+  "UI/UX",
+  "Project Management",
+  "Business Analysis",
+]

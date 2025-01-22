@@ -72,8 +72,12 @@ const AllUserOwnedProjectsPage = () => {
     const filteredProjects = useMemo(() => {
         if(user_role == 'sponsor') {
         return userProjects?.projects?.owned?.filter((el) => {
-            if(selectedTab == 'idle') {return el?.status == "idle"}
-        else {
+            if(selectedTab == 'idle') {
+                return el?.status == "idle"
+            }
+            else if(selectedTab == 'closed') {
+                return (el?.status == 'closed' || el?.status == 'completed')
+            } else {
             return el?.status == selectedTab
         }
         })
@@ -101,8 +105,12 @@ const AllUserOwnedProjectsPage = () => {
         });
         } else {
             return userProjects?.projects?.taken?.filter((el) => {
-                if(selectedTab == 'idle') {return el?.status == "idle"}
-            else {
+                if(selectedTab == 'idle') {
+                    return el?.status == "idle"
+                }
+                else if(selectedTab == 'closed') {
+                    return (el?.status == 'closed' || el?.status == 'completed')
+                } else {
                 return el?.status == selectedTab
             }
             })
@@ -148,7 +156,7 @@ const AllUserOwnedProjectsPage = () => {
             </div>
         
             <div className='flex justify-center items-center -translate-y-36'>
-                <div className='md:w-[800px] max-w-[1200px] mt-6 bg-[#06105D] p-6 rounded-xl'>
+                <div className='md:w-[1100px] max-w-[1400px] mt-6 bg-[#06105D] p-6 rounded-xl'>
                     <div className='flex justify-between items-center'>
                         <div className='font-gridular text-primaryYellow text-[20px]'>My gigs</div>
                         {/* <FancyButton 

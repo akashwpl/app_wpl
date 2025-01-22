@@ -39,6 +39,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
   const [bountyTypeFilter, setBountyTypeFilter] = useState()
   const [roleName, setRoleName] = useState('none');
   const [tiles, setTiles] = useState([])
+  const [searchRoleList, setSearchRoleList] = useState([])
 
 
   const { data: allProjects, isLoading: isLoadingAllProjects } = useQuery({
@@ -53,7 +54,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
   })
 
   const [searchInput, setSearchInput] = useState()
-  const [foundationFilter, setFoundationFilter] = useState()
+  const [foundationFilter, setFoundationFilter] = useState('All')
 
 
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
@@ -85,12 +86,19 @@ const ExploreGigs = ({orgProjects, userId}) => {
   }
 
   const filteredProjects = useMemo(() => {
-    return allProjects?.filter((el) => el?.status == selectedTab)
+    return allProjects?.filter((el) => {
+      if(selectedTab == 'closed') {
+        return (el?.status == 'closed' || el?.status == 'completed')
+      } else {
+        return el?.status == selectedTab
+      }
+    })
         ?.filter(project => {
             const matchesType = project?.type?.toLowerCase() === 'bounty';
             const matchesSearch = searchInput ? project?.title?.toLowerCase().includes(searchInput.toLowerCase()) : true;
-            const matchesRole = tiles.length > 0 ? tiles.some(tile => project?.roles?.map(role => role.toLowerCase()).includes(tile.toLowerCase())) : true;
-            const matchfoundation = foundationFilter && foundationFilter !== 'All' ? project?.organisation?.organisationHandle?.toLowerCase() === foundationFilter?.toLowerCase() : true;
+            // const matchesRole = tiles.length > 0 ? tiles.some(tile => project?.roles?.map(role => role.toLowerCase()).includes(tile.toLowerCase())) : true;
+            const matchesRole = searchRoleList.length > 0 ? searchRoleList.some(r => project?.roles?.map(role => role.toLowerCase()).includes(r.toLowerCase())) : true;
+            const matchfoundation = foundationFilter && foundationFilter !== 'All' ? project?.organisation?.name?.toLowerCase() === foundationFilter?.toLowerCase() : true;
             // Week-based filter
             const lastMilestone = project?.milestones?.[project.milestones.length - 1];
             const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;
@@ -111,7 +119,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
         .sort((a, b) => {
             return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
     });
-}, [allProjects, selectedTab, searchInput, roleName, sortOrder, weeksFilter, foundationFilter, bountyTypeFilter]);
+}, [allProjects, selectedTab, searchInput, roleName, sortOrder, weeksFilter, foundationFilter, bountyTypeFilter, searchRoleList]);
 
 
   // const filteredProjects = useMemo(() => {
@@ -247,7 +255,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
               
           {user_role == 'user' && 
             <div className='mt-6'>
-                <SearchRoles tiles={tiles} handleRoleChange={handleRoleChange} handleRemoveTile={handleRemoveTile} handleKeyboardEnter={handleKeyboardEnter} searchInput={searchInput} handleSearch={handleSearch} handleFoundationFilterChange={handleFoundationFilterChange}/>
+                <SearchRoles tiles={tiles} handleRoleChange={handleRoleChange} handleRemoveTile={handleRemoveTile} handleKeyboardEnter={handleKeyboardEnter} searchInput={searchInput} handleSearch={handleSearch} handleFoundationFilterChange={handleFoundationFilterChange} setRoles={setSearchRoleList} />
             </div>
           }
           
