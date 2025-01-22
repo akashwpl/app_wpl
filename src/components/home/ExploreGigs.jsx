@@ -85,7 +85,13 @@ const ExploreGigs = ({orgProjects, userId}) => {
   }
 
   const filteredProjects = useMemo(() => {
-    return allProjects?.filter((el) => el?.status == selectedTab)
+    return allProjects?.filter((el) => {
+      if(selectedTab == 'closed') {
+        return (el?.status == 'closed' || el?.status == 'completed')
+      } else {
+        return el?.status == selectedTab
+      }
+    })
         ?.filter(project => {
             const matchesType = project?.type?.toLowerCase() === 'bounty';
             const matchesSearch = searchInput ? project?.title?.toLowerCase().includes(searchInput.toLowerCase()) : true;

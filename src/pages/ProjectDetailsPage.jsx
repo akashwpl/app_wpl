@@ -25,7 +25,7 @@ import {
 import FancyButton from '../components/ui/FancyButton'
 import Tabs from '../components/ui/Tabs'
 import { calculateRemainingDaysAndHours, convertTimestampToDate } from '../lib/constants'
-import { getOpenProjectSubmissions, getOrgById, getProjectDetails, getProjectSubmissions, getUserDetails, getUserProjects, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
+import { createNotification, getOpenProjectSubmissions, getOrgById, getProjectDetails, getProjectSubmissions, getUserDetails, getUserProjects, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
 
 import alertPng from '../assets/images/alert.png'
 import clockSVG from '../assets/icons/pixel-icons/watch.svg'
@@ -123,7 +123,33 @@ const ProjectDetailsPage = () => {
         setOrgHandle(org[0].organisationHandle);
       }
     }
+
+    const updateProjectStatus = async () => {
+      const submittedMs = projectDetails?.milestones?.filter((ms) => {
+        return ms.status == 'rejected' || ms.status == 'completed'
+      })
+
+      if(submittedMs.length == projectDetails?.milestones?.length && !projectDetails?.isOpenBounty && (projectDetails?.status != 'completed' && projectDetails?.status != 'closed')) {
+        // Mark project as completed
+        const data = {
+          project: { status: "completed" },
+          milestones: projectDetails?.milestones        // milestones is a required field
+        }
+        const res = await updateProjectDetails(projectDetails._id, data);
+        const notiObj = {
+          msg: `The Bounty has been marked as Complete. Check this out...`,
+          type: 'project_req',
+          fromId: user_id,
+          user_id: projectDetails.user_id,
+          project_id: projectDetails._id
+        }
+        const notiRes = await createNotification(notiObj)
+      }
+      refetchProjectDetails()
+    }
+
     fetchOrgHandle();
+    updateProjectStatus();
   },[isLoadingProjectDetails])
 
   const [tabs, setTabs] = useState([])
@@ -152,13 +178,23 @@ const ProjectDetailsPage = () => {
     const data = {
       project: { status: "closed" },
       milestones: projectDetails?.milestones        // milestones is a required field
-  }
+    }
 
     if(projectDetails?.isOpenBounty) {
-      const res = await updateOpenProjectDetails(projectDetails._id, data)
+      const res = await updateOpenProjectDetails(projectDetails._id, data);
     } else {
       const res = await updateProjectDetails(projectDetails._id, data);
     }
+
+    const notiObj = {
+      msg: `${username} has marked the project as Closed...`,
+      type: 'project_req',
+      fromId: user_id,
+      user_id: projectDetails.user_id,
+      project_id: projectDetails._id
+    }
+    const notiRes = await createNotification(notiObj)
+
     refetchProjectDetails()
     setShowCloseProjectModal(false);
   }
@@ -244,7 +280,7 @@ const ProjectDetailsPage = () => {
                   <div className='w-[700px]'>
                     <div className='mt-5 flex flex-col justify-between'>
                       <p className='font-inter text-white88 leading-[21px] text-wrap'>{projectDetails?.description}</p>
-                      <div className='text-white48 text-[14px] mt-4'>Role: <span>{projectDetails?.roles?.map((role, index) => <span className='mr-1 capitalize bg-white12 rounded-md px-2 py-1 text-[12px] font-inter'> {role}</span>)}</span></div>
+                      <div className='text-white48 text-[14px] mt-4'>Role: <span className='flex flex-wrap gap-1'>{projectDetails?.roles?.map((role, index) => <span className='mr-1 capitalize bg-white12 rounded-md px-2 py-1 text-[12px] font-inter'> {role}</span>)}</span></div>
                     </div>
                     <div className='h-[1px] w-full bg-white7 mt-4 mb-3'/>
                     <div>
@@ -261,7 +297,7 @@ const ProjectDetailsPage = () => {
                     </div>
 
                     <div className='pb-32'>
-                      <Accordion type={projectDetails?.milestones?.length <= 1 ? "single" : 'multiple'} defaultValue={projectDetails?.milestones?.length <= 1 ? "item-0" : 'item-0'} collapsible>
+                      <Accordion type={projectDetails?.milestones?.length <= 1 ? "single" : 'multiple'} defaultValue={projectDetails?.milestones?.length <= 1 ? "item-0" : ''} collapsible>
                         {projectDetails?.milestones?.map((milestone, index) => (
                           <AccordionItem value={`item-${index}`} key={index} className="border-white7">
                             <AccordionTrigger className="text-white48 font-inter hover:no-underline">Milestone {index + 1}</AccordionTrigger>
@@ -384,7 +420,7 @@ const ProjectDetailsPage = () => {
                 
               {isOwner ?
                 projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div>
-                : allMilestonesCompleted ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
+                : projectDetails?.status == 'completed' ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
                 :
                 <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
                   <FancyButton 
@@ -409,7 +445,7 @@ const ProjectDetailsPage = () => {
               :
                 <>
                   {projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> : 
-                    allMilestonesCompleted ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
+                    projectDetails?.status == 'completed' ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
                     :
                     projectDetails?.status != "idle" || projectDetails?.isOpenBounty ? 
                     <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>

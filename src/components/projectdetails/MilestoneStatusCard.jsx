@@ -196,7 +196,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             </div>
 
             <div className="my-1">
-                    {milestoneData?.status == 'under_review' 
+                    {milestoneData?.status == 'under_review' && projectDetails?.owner_id == user_id 
                         ?
                             <div className='mb-1'>
                                 <p className='text-white64 text-[12px]'>User has submitted the milestone: <span onClick={() => setShowMilestoneSubmissionModal(true)} className='text-primaryYellow underline cursor-pointer hover:text-primaryYellow/90'>view</span></p>
@@ -210,15 +210,21 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                     projectDetails?.status == 'closed' ? "" :
                     milestoneData?.status == "completed" ? <div></div> 
                     : ((projectDetails?.isOpenBounty && !isUserSubmittedOpenMS) || user_id == projectDetails?.user_id) ? 
-                    <FancyButton 
-                        src_img={btnImg} 
-                        hover_src_img={btnHoverImg}
-                        img_size_classes='w-[342px] h-[44px]' 
-                        className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                        btn_txt={milestoneData?.status == 'under_review' || milestoneData?.status == 'rejected' ? 're-submit milestone' : 'submit milestone'}  
-                        alt_txt='milestone submit btn' 
-                        onClick={() => setShowSubmitModal(true)}
-                    />
+                        milestoneData?.status != 'idle' && milestoneData?.status != 'ongoing'
+                        ? 
+                        <p className='text-white88 bg-primaryDarkUI px-3 py-1 rounded-md flex items-center gap-1 font-gridular w-fit'><Info size={16}/> Milestone Already Submitted</p> 
+                        :
+                        <FancyButton 
+                            src_img={btnImg} 
+                            hover_src_img={btnHoverImg}
+                            img_size_classes='w-[342px] h-[44px]' 
+                            className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                            // btn_txt={milestoneData?.status == 'under_review' || milestoneData?.status == 'rejected' ? 're-submit milestone' : 'submit milestone'}  
+                            btn_txt={milestoneData?.status == 'idle' || milestoneData?.status == 'ongoing' ? 'submit milestone' : 'Milestone submitted'}  
+                            alt_txt='milestone submit btn' 
+                            onClick={() => setShowSubmitModal(true)}
+                            disabled={milestoneData?.status != 'idle' && milestoneData?.status != 'ongoing'}
+                        />
                     :
                     isUserSubmittedOpenMS && <p className='text-white88 bg-primaryDarkUI px-3 py-1 rounded-md flex items-center gap-1 font-gridular w-fit'><Info size={16}/> Milestone Already Submitted</p>
                 
@@ -265,7 +271,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                         <div className='h-[1px] bg-primaryYellow w-full mt-2 mb-5'/>
                         <div className='flex flex-col'>
                             <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Link</label>
-                            <a href={milestoneData?.submissionLink} target='_blank' className='bg-white12 text-white88 py-1 px-2 rounded-md w-ful'>{milestoneData?.submissionLink}</a>
+                            <a href={milestoneData?.submissionLink} target='_blank' className='bg-white12 text-white88 py-1 px-2 rounded-md w-full underline'>{milestoneData?.submissionLink}</a>
                         </div>
                         <div className='flex flex-col mt-4'>
                             <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Description</label>
