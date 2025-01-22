@@ -116,18 +116,14 @@ export function convertTimestampToDate(timestamp) {
 }
 
 export const ROLES = [
-  "Frontend Developer",
-  "Backend Developer",
-  "Fullstack Developer",
-  "DevOps Engineer",
-  "Data Scientist",
-  "Machine Learning Engineer",
-  "Software Engineer",
-  "QA Engineer",
-  "UI/UX Designer",
-  "Product Manager",
-  "Project Manager",
-  "Business Analyst",
+  "Backend",
+  "Smart contract / blockchain",
+  "front end",
+  "Design",
+  "Content writing",
+  "Social",
+  "Video",
+  "Research",
 ]
 
 export const SKILLS = [
