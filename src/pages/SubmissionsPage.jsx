@@ -172,7 +172,7 @@ const SubmissionsPage = () => {
                                                 htmlFor='appExp' 
                                                 className='text-[13px] leading-[15.6px] font-medium text-white32'
                                             >
-                                                Experience designing application
+                                                Why are you best suited for this bounty?
                                             </label>
                                             <textarea value={currentSubmission?._doc?.experienceDescription} readOnly rows={4} className={`bg-white7 w-full text-wrap rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`} /> 
                                         </div>
