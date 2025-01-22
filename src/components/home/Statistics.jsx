@@ -10,7 +10,7 @@ const Statistics = ({ userDetails }) => {
     queryFn: getAllProjects
   })
 
-  console.log('allProjects statis', allProjects)
+  // console.log('allProjects statis', allProjects)
   
 
   return (

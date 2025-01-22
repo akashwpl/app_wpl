@@ -63,7 +63,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
     enabled: !!userId
   })
 
-  console.log('allProjects explore gig', allProjects)
+  // console.log('allProjects explore gig', allProjects)
 
   // useEffect(() => {
   //   if(user_role == 'sponsor') {
@@ -354,7 +354,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
             </div>
             : <div className={`${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col"}`}>
                 {filteredProjects?.length == 0 ? <div></div> : filteredProjects?.map((project, idx) => <div key={idx} className={`${projectsGridView ? "" : "hover:bg-white4"}`}> 
-                    <div className='col-span-1'>
+                    <div className='col-span-1 h-full'>
                       <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
                       {/* {projectsGridView && <div className='border border-x-0 border-t-0 border-b-white7'></div>} */}
                     </div>

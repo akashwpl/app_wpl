@@ -144,9 +144,9 @@ export function convertTimestampToDate(timestamp) {
 }
 
 export const ROLES = [
-  "Backend",
+  "Backend Developer",
   "Smart contract / blockchain",
-  "Frontend",
+  "Frontend Developer",
   "Design",
   "Content writing",
   "Social",
