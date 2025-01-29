@@ -18,7 +18,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { auth, provider, signInWithPopup, storage } from '../lib/firebase'
 
 import axios from 'axios'
-import videoMp4 from '../assets/dummy/v1.mp4'
+import videoMp4 from '../assets/dummy/wpl_spon.mp4'
 import mailSVG from '../assets/icons/pixel-icons/mail.svg'
 import DiscordSvg from '../assets/svg/discord.svg'
 import GlyphEffect from '../components/ui/GlyphEffect'
@@ -402,7 +402,7 @@ const OnBoarding = () => {
     <div className='flex justify-center items-center'>
       {!isSignComplete ?
         <div className='mt-32'>
-          {!isSignin &&
+          
           <div 
             // onClick={navigateToOrgFormPage} 
             onClick={handleOrgSignUp} 
@@ -418,7 +418,7 @@ const OnBoarding = () => {
               <source src={videoMp4} type="video/mp4"/>
             </video>
           </div>
-          }
+          
           
           <div className='mt-4'>
             <div className='text-primaryYellow font-gridular text-[24px] leading-[28.8px]'>Start contributing Onchain</div>
