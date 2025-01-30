@@ -64,9 +64,10 @@ export const calcDaysUntilDate = (startDate, futureDate) => {
     const differenceInMilliseconds = new Date(futureDate) - startDateObj;
     const differenceInDays = Math.ceil(differenceInMilliseconds / (1000 * 60 * 60 * 24));
 
-    if (differenceInDays%30 == 0) {
-        return { timeUnit: 'Months', deliveryTime: Math.floor(differenceInDays / 30) };
-    } else if (differenceInDays%7 == 0) {
+    // if (differenceInDays%30 == 0) {
+    //     return { timeUnit: 'Months', deliveryTime: Math.floor(differenceInDays / 30) };
+    // } else 
+    if (differenceInDays%7 == 0) {
         return { timeUnit: 'Weeks', deliveryTime: Math.floor(differenceInDays / 7) };
     } else {
         return { timeUnit: 'Days', deliveryTime: differenceInDays };

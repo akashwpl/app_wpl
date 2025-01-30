@@ -53,8 +53,10 @@ const   AddProjectPage = () => {
     const [totalPrize, setTotalPrize] = useState(0);
 
     const [milestones, setMilestones] = useState([
-        { title: '', description: '', prize: '', currency: projCurrency, deliveryTime: '', timeUnit: 'Weeks', starts_in: new Date().getTime() }
+        { title: '', description: '', prize: '1', currency: projCurrency, deliveryTime: '1', timeUnit: 'days', starts_in: new Date().getTime() }
     ]);
+
+    const [msErrors, setMsErrors] = useState([])
 
     const [submitted, setSubmitted] = useState(false);
     const [createdProjectId, setCreatedProjectId] = useState(null);
@@ -75,6 +77,7 @@ const   AddProjectPage = () => {
     const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
         queryKey: ['userOrganisations', user_id],
         queryFn: () => getUserOrgs(user_id),
+        enabled: !!user_id
     })
 
     const updateCurrency = (currency) => {
@@ -105,21 +108,28 @@ const   AddProjectPage = () => {
     const validateMilestones = () => {
         let isErr = false;
         if(milestones?.length > 0) {
+            let tempMsErr = msErrors;
             milestones.map((milestone,index) => {
                 const newErrors = {};
                 if (!milestone.title) newErrors.title = 'Title is required';
                 if (!milestone.description) newErrors.description = 'Description is required';
                 if (!milestone.starts_in) newErrors.starts_in = 'Start date is required';
-                if (!milestone.prize) newErrors.prize = 'Prize is required';
-                if (!milestone.deliveryTime) newErrors.deliveryTime = 'Delivery time is required';
+                if (!milestone.prize) {
+                    newErrors.prize = 'Prize is required';
+                } else if(parseInt(milestone.prize) < 1) {
+                    newErrors.prize = 'Prize should be greater than 0'
+                }
+                if (!milestone.deliveryTime) {
+                    newErrors.deliveryTime = 'Delivery time is required';
+                } else if(parseInt(milestone.deliveryTime) < 1) {
+                    newErrors.deliveryTime = 'Delivery time should be greater than 0';
+                }
+                tempMsErr[index] = newErrors;
                 if (Object.keys(newErrors).length !== 0) {
-                    const updatedMilestones = [...milestones];
-                    updatedMilestones[index] = { ...updatedMilestones[index], err: newErrors };
-                    // console.log(`Milestone ${index}`, updatedMilestones);
-                    setMilestones(updatedMilestones);
                     isErr = true;
                 }
             })
+            setMsErrors(tempMsErr);
         }
         return isErr;
     }
@@ -127,8 +137,12 @@ const   AddProjectPage = () => {
     const validateFields = () => {
         const newErrors = {};
         if (!title) newErrors.title = 'Title is required';
+        if (title.length > 50) newErrors.title = 'Title cannot exceed 50 characters.';
+
         if (!userOrg?.organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
         if (!description) newErrors.description = 'Description is required';
+        if (description.length > 1000) newErrors.description = 'Description cannot exceed 1000 characters.';
+
         if (!discordLink) {
             newErrors.discordLink = 'Discord server link is required';
         } else if(!discordLink.startsWith('https://discord.gg/')) {
@@ -137,7 +151,11 @@ const   AddProjectPage = () => {
         if (!logoPreview) newErrors.logo = 'Logo is required';
         if (!role.length > 0) newErrors.role = 'Role/s is/are required';
         if (!projCurrency) newErrors.projCurrency = 'Prize currency is required';
-        if (milestones.length === 0) newErrors.milestones = 'At least one milestone is required';
+        if (milestones.length === 0) {
+            newErrors.milestones = 'At least one milestone is required';
+        } else if(validateMilestones()) {
+            newErrors.milestones = 'Please fill all the fields for milestones'
+        }
         if (!aboutProject) newErrors.aboutProject = 'About project is required';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0; // Return true if no errors
@@ -156,23 +174,6 @@ const   AddProjectPage = () => {
     };
 
     const handleMilestoneChange = (index, field, value) => {
-        if(field == 'prize' && parseInt(value) < 1) {
-            setErrors({...errors, msErrors: {
-                ...errors.msErrors,
-                [index]: {
-                    prize: 'Prize value should be greater than 0'
-                }
-            }})
-            return
-        } else if(field == 'prize') {
-            setErrors({...errors, msErrors: {
-                ...errors.msErrors,
-                [index]: {
-                    prize: ''
-                }
-            }})
-        }
-        console.log('ms error',errors);
         const updatedMilestones = [...milestones];
         updatedMilestones[index] = { ...updatedMilestones[index], [field]: value };
         setMilestones(updatedMilestones);
@@ -220,7 +221,7 @@ const   AddProjectPage = () => {
     }
 
     const handleAddMilestone = () => {
-        setMilestones([...milestones, { title: '', description: '', prize: '1', currency: projCurrency, deliveryTime: '', timeUnit: 'days' }]);
+        setMilestones([...milestones, { title: '', description: '', prize: '1', currency: projCurrency, deliveryTime: '1', timeUnit: 'days' }]);
     };
 
     // Firebase image upload code
@@ -306,6 +307,8 @@ const   AddProjectPage = () => {
         setMilestones((prevMilestones) => 
             prevMilestones.filter((_, i) => i !== index)
         );
+        const newMsError = [...msErrors.slice(0, index), ...msErrors.slice(index + 1)]
+        setMsErrors(newMsError)
     }
 
     const handleDateChange = (index,date) => {
@@ -322,8 +325,6 @@ const   AddProjectPage = () => {
         }, 0);
         setTotalPrize(total)
     },[milestones])
-
-    // console.log('milestones', milestones)
 
     const handleSearch = (e) => {
         setSearchInput(e.target.value)
@@ -540,11 +541,12 @@ const   AddProjectPage = () => {
                                         <div className='bg-white7 rounded-md px-3 py-2'>
                                             <textarea value={aboutProject} onChange={(e) => setAboutProject(e.target.value)} type='text' className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
                                         </div>
+                                        {errors?.aboutProject && <p className='text-red-500 font-medium text-[12px]'>{errors?.aboutProject}</p>}
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
-
+                     
                      {isOpenBounty && 
                      <>
                      
@@ -617,6 +619,7 @@ const   AddProjectPage = () => {
                             <>
 
                                 <div className='border border-dashed border-white12 my-4'/>
+                                {errors?.milestones && <p className='text-red-500 font-medium text-[12px]'>{errors?.milestones}</p>}
 
                                 <div>
                                     {milestones.map((milestone, index) => (
@@ -643,7 +646,7 @@ const   AddProjectPage = () => {
                                                                     onChange={(e) => handleMilestoneChange(index, 'title', e.target.value)} 
                                                                 />
                                                             </div>
-                                                            {milestone.err?.title && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.title}</p>}
+                                                            {msErrors.length != 0 && msErrors[index]?.title && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.title}</p>}
                                                         </div>
                                                         <div className='mt-3'>
                                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone description</p>
@@ -656,7 +659,7 @@ const   AddProjectPage = () => {
                                                                     onChange={(e) => handleMilestoneChange(index, 'description', e.target.value)} 
                                                                 />
                                                             </div>
-                                                            {milestone.err?.description && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.description}</p>}
+                                                            {msErrors.length != 0 && msErrors[index]?.description && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.description}</p>}
                                                         </div>
                                                         <div className='mt-3'>
                                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Start date</p>
@@ -670,7 +673,7 @@ const   AddProjectPage = () => {
                                                                     placeholderText='DD/MM/YYYY'
                                                                 />
                                                             </div>
-                                                            {milestone.err?.starts_in && <p className='text-red-500 font-medium text-[12px]'>{milestone.err.starts_in}</p>}
+                                                            {msErrors.length != 0 && msErrors[index]?.starts_in && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.starts_in}</p>}
                                                         </div>
 
                                                         <div className='mt-3'>
@@ -692,20 +695,20 @@ const   AddProjectPage = () => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            {errors.msErrors[index]?.prize && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{errors.msErrors[index]?.prize}</p>}
+                                                            {msErrors.length != 0 && msErrors[index]?.prize && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{msErrors[index]?.prize}</p>}
                                                         </div>
                                                         <div className='mt-3'>
                                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Delivery Time</p>
                                                             <div className='flex items-center gap-2 w-full mt-2'>
                                                                 <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
                                                                     <select 
-                                                                        className='bg-[#091044] text-white88 outline-none border-none w-full'
+                                                                        className='bg-[#091044] text-white88 outline-none border-none w-full cursor-pointer'
                                                                         value={milestone?.timeUnit}
                                                                         onChange={(e) => handleMilestoneChange(index, 'timeUnit', e.target.value)}
                                                                     >
                                                                         <option value="Days">Days</option>
                                                                         <option value="Weeks">Weeks</option>
-                                                                        <option value="Months">Months</option>
+                                                                        {/* <option value="Months">Months</option> */}
                                                                     </select>
                                                                 </div>
                                                                 <div className='w-full'>
@@ -720,7 +723,7 @@ const   AddProjectPage = () => {
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            {milestone.err?.deliveryTime && <p className='text-red-500 ml-[110px] font-medium text-[10px]'>{milestone.err.deliveryTime}</p>}
+                                                            {msErrors.length != 0 && msErrors[index]?.deliveryTime && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{msErrors[index]?.deliveryTime}</p>}
                                                         </div>
                                                     </div>
                                                 </AccordionContent>
@@ -728,7 +731,7 @@ const   AddProjectPage = () => {
                                         </Accordion>
                                     ))}
                                 </div>
-
+                                
                                 <div className='mt-4'>
                                     <FancyButton 
                                         src_img={btnImg} 

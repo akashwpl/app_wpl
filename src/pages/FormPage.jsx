@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import FancyButton from '../components/ui/FancyButton'
 import btnImg from '../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
+import { isValidStarkNetAddress } from '../lib/constants';
 
 const whitespaceRegex = /^\s*$/;
 const emailIdRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -150,8 +151,8 @@ const FormPage = () => {
         if (!value) {
           newErrors[key] = 'Address is required';
           isValid = false;
-        } else if (!addressRegex.test(value)) {
-          newErrors[key] = 'Invalid Address';
+        } else if (!isValidStarkNetAddress(value)) {
+          newErrors[key] = 'Invalid Starknet wallet address';
           isValid = false;
         }
       } else if (key === 'appExp') {
