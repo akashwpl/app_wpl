@@ -73,6 +73,7 @@ const EditProjectPage = () => {
     const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
         queryKey: ['userOrganisations', user_id],
         queryFn: () => getUserOrgs(user_id),
+        enabled: !!user_id,
     })
 
     const [title, setTitle] = useState(projectDetails?.title || '');
@@ -91,6 +92,12 @@ const EditProjectPage = () => {
    
     const [pfpPreview, setPfpPreview] = useState('')
     const [pfp, setPfp] = useState('')
+
+    // State for validation errors
+    const [errors, setErrors] = useState({});
+
+    // For milestone validation errors
+    const [msErrors, setMsErrors] = useState([])
 
     const updateCurrency = (currency) => {
         setProjCurrency(currency);
@@ -116,18 +123,47 @@ const EditProjectPage = () => {
     }
 
     const handleAddMilestone = () => {
-        const newMilestoneIndex = milestones.length + 1; // Calculate the new milestone index
-        setMilestones([...milestones, { title: `Milestone ${newMilestoneIndex}`, description: '', prize: '', currency: projCurrency, deliveryTime: '', timeUnit: 'Weeks' }]);
+        // const newMilestoneIndex = milestones.length + 1; // Calculate the new milestone index
+        setMilestones([...milestones, { title: '', description: '', prize: '1', currency: projCurrency, deliveryTime: '1', timeUnit: 'Days' }]);
     };
 
     const handleDeleteMilestone = (index) => {
         setMilestones((prevMilestones) => 
             prevMilestones.filter((_, i) => i !== index)
         );
+        const newMsError = [...msErrors.slice(0, index), ...msErrors.slice(index + 1)]
+        setMsErrors(newMsError)
     }
 
-    // State for validation errors
-    const [errors, setErrors] = useState({});
+    // Milestone validation
+    const validateMilestones = () => {
+        let isErr = false;
+        if(milestones?.length > 0) {
+            let tempMsErr = msErrors;
+            milestones.map((milestone,index) => {
+                const newErrors = {};
+                if (!milestone.title) newErrors.title = 'Title is required';
+                if (!milestone.description) newErrors.description = 'Description is required';
+                if (!milestone.starts_in) newErrors.starts_in = 'Start date is required';
+                if (!milestone.prize) {
+                    newErrors.prize = 'Prize is required';
+                } else if(parseInt(milestone.prize) < 1) {
+                    newErrors.prize = 'Prize should be greater than 0'
+                }
+                if (!milestone.deliveryTime) {
+                    newErrors.deliveryTime = 'Delivery time is required';
+                } else if(parseInt(milestone.deliveryTime) < 1) {
+                    newErrors.deliveryTime = 'Delivery time should be greater than 0';
+                }
+                tempMsErr[index] = newErrors;
+                if (Object.keys(newErrors).length !== 0) {
+                    isErr = true;
+                }
+            })
+            setMsErrors(tempMsErr);
+        }
+        return isErr;
+    }
 
     // Validation function
     const validateFields = () => {
@@ -141,6 +177,11 @@ const EditProjectPage = () => {
         if (!discordLink) newErrors.discordLink = 'Discord server link is required';
         if (!discordLink.startsWith('https://discord.gg/')) newErrors.discordLink = 'Discord server link must start with https://discord.gg/';
         if (!about) newErrors.about = 'About is required.';
+        if (milestones.length === 0) {
+            newErrors.milestones = 'At least one milestone is required';
+        } else if(validateMilestones()) {
+            newErrors.milestones = 'Please fill all the fields for milestones'
+        }
 
         if (role.length < 1) newErrors.role = 'Role/s is/are required'
         
@@ -168,13 +209,19 @@ const EditProjectPage = () => {
     const handleSave = async () => {
         const updatedMilestones = milestones.map(milestone => ({
             ...milestone,
-            deadline: getTimestampFromNow(milestone.deliveryTime, milestone.timeUnit?.toLowerCase() || 'days', milestone.starts_in) // Add timestamp to each milestone
+            deadline: getTimestampFromNow(milestone.deliveryTime, milestone.timeUnit?.toLowerCase(), milestone.starts_in), // Add timestamp to each milestone
+            starts_in: milestone?.starts_in
         }));
 
         const tmpMilestones = [...updatedMilestones];
         const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((last, curr) => { 
             return new Date(parseInt(last.deadline)) < new Date(parseInt(curr.deadline)) ? curr : last;
         });
+
+        console.log('updMs',updatedMilestones);
+        
+        console.log('lm',lastMilestone);
+        
 
         if (validateFields()) {
 
@@ -287,7 +334,7 @@ const EditProjectPage = () => {
                                                 className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full'
                                             />
                                         </div>
-                                        {errors.title && <p className='text-[10px] font-medium text-red-500'>{errors.title}</p>}
+                                        {errors.title && <p className='text-[12px] font-medium text-red-500'>{errors.title}</p>}
                                     </div>
                                     <div className='mt-3'>
                                         <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Organisation handle</p>
@@ -299,7 +346,7 @@ const EditProjectPage = () => {
                                                 disabled
                                             />
                                         </div>
-                                        {errors.organisationHandle && <p className='text-[10px] font-medium text-red-500'>{errors.organisationHandle}</p>}
+                                        {errors.organisationHandle && <p className='text-[12px] font-medium text-red-500'>{errors.organisationHandle}</p>}
                                     </div>
                                     <div className='mt-3'>
                                         <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description</p>
@@ -311,7 +358,7 @@ const EditProjectPage = () => {
                                                 rows={4}
                                             />
                                         </div>
-                                        {errors.description && <p className='text-[10px] font-medium text-red-500'>{errors.description}</p>}
+                                        {errors.description && <p className='text-[12px] font-medium text-red-500'>{errors.description}</p>}
                                     </div>
 
                                     <div className='flex justify-between items-center mt-4'>
@@ -352,9 +399,9 @@ const EditProjectPage = () => {
                                     <div className='mt-3'>
                                         <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Role </p>
                                         <div className='bg-white7 rounded-md px-3 py-2'>
-                                            <DropdownSearchList dropdownList={ROLES} setterFunction={setRole} placeholderText='' prefilledTiles={role} />
+                                            <DropdownSearchList dropdownList={ROLES} setterFunction={setRole} prefilledTiles={role} />
                                         </div>
-                                        {errors.role && <p className='text-[10px] font-medium text-red-500'>{errors.role}</p>}
+                                        {errors.role && <p className='text-[12px] font-medium text-red-500'>{errors.role}</p>}
                                     </div>
 
                                     {/* Select project milestone currency */}
@@ -382,7 +429,7 @@ const EditProjectPage = () => {
                                                 className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
                                             />
                                         </div>
-                                        {errors.discordLink && <p className='text-[10px] font-medium text-red-500'>{errors.discordLink}</p>}
+                                        {errors.discordLink && <p className='text-[12px] font-medium text-red-500'>{errors.discordLink}</p>}
                                     </div>
                                 </div>
                             </AccordionContent>
@@ -405,13 +452,14 @@ const EditProjectPage = () => {
                                     <div className='bg-white7 rounded-md px-3 py-2'>
                                         <textarea value={about} onChange={(e) => setAbout(e.target.value)} type='text' className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
                                     </div>
-                                    {errors.title && <p className='text-[10px] font-medium text-red-500'>{errors.title}</p>}
+                                    {errors.about && <p className='text-[12px] font-medium text-red-500'>{errors.about}</p>}
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
 
                     <div className='border border-dashed border-white12 my-4'/>
+                    {errors?.milestones && <p className='text-red-500 font-medium text-[12px]'>{errors?.milestones}</p>}
 
                     <div>
                         {milestones?.map((milestone, index) => (
@@ -439,16 +487,19 @@ const EditProjectPage = () => {
                                                     className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full'
                                                 />
                                             </div>
+                                            {msErrors.length != 0 && msErrors[index]?.title && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.title}</p>}
                                         </div>
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone description</p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <textarea type='text' 
-                                                        value={milestone.description} 
-                                                        name='description'
-                                                        onChange={(e) => setMilestonesHelper(index,e)} 
-                                                        className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
+                                                    value={milestone.description} 
+                                                    name='description'
+                                                    onChange={(e) => setMilestonesHelper(index,e)} 
+                                                    className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}
+                                                />
                                             </div>
+                                            {msErrors.length != 0 && msErrors[index]?.description && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.description}</p>}
                                         </div>
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Start date</p>
@@ -462,55 +513,58 @@ const EditProjectPage = () => {
                                                     placeholderText='DD/MM/YYYY'
                                                 />
                                             </div>
+                                            {msErrors.length != 0 && msErrors[index]?.starts_in && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.starts_in}</p>}
                                         </div>
                                         <div className='mt-3'>
-                                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
-                                                <div className='flex items-center gap-2 w-full'>
-                                                    <div className='bg-[#091044] rounded-md py-2 w-[110px] flex justify-evenly items-center gap-1'>
-                                                        <img src={projCurrency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px] rounded-sm'/>
-                                                        <p className='text-white88 font-semibold font-inter text-[12px]'>{projCurrency}</p>
-                                                    </div>
-                                                    <div className='w-full'>
-                                                        <div className='bg-white7 rounded-md px-3 py-2'>
-                                                            <input 
-                                                                type='number' 
-                                                                value={milestone.prize} 
-                                                                name='prize'
-                                                                onChange={(e) => setMilestonesHelper(index,e)} 
-                                                                placeholder='1200' 
-                                                                className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'/>
-                                                        </div>
-                                                    </div>
-                                                </div> 
-                                        </div>
-                                        <div className='mt-3'>
-                                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Set Time</p>
-                                                <div className='flex items-center gap-2 w-full mt-2'>
-                                                    <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
-                                                        <select 
-                                                            className='bg-[#091044] text-white88 outline-none border-none w-full'
-                                                            value={milestone.timeUnit || 'Days'}
-                                                            name='timeUnit'
-                                                            onChange={(e) => setMilestonesHelper(index,e)}
-                                                        >
-                                                            <option value="Days">Days</option>
-                                                            <option value="Weeks">Weeks</option>
-                                                            <option value="Months">Months</option>
-                                                        </select>
-                                                    </div>
-                                                    <div className='w-full'>
-                                                        <div className='bg-white7 rounded-md px-3 py-2'>
-                                                            <input 
-                                                                type='number' 
-                                                                placeholder='1200' 
-                                                                className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
-                                                                value={milestone.deliveryTime}
-                                                                name='deliveryTime'
-                                                                onChange={(e) => setMilestonesHelper(index,e)}
-                                                            />
-                                                        </div>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
+                                            <div className='flex items-center gap-2 w-full'>
+                                                <div className='bg-[#091044] rounded-md py-2 w-[110px] flex justify-evenly items-center gap-1'>
+                                                    <img src={projCurrency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px] rounded-sm'/>
+                                                    <p className='text-white88 font-semibold font-inter text-[12px]'>{projCurrency}</p>
+                                                </div>
+                                                <div className='w-full'>
+                                                    <div className='bg-white7 rounded-md px-3 py-2'>
+                                                        <input 
+                                                            type='number' 
+                                                            value={milestone.prize} 
+                                                            name='prize'
+                                                            onChange={(e) => setMilestonesHelper(index,e)} 
+                                                            placeholder='1200' 
+                                                            className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'/>
                                                     </div>
                                                 </div>
+                                            </div> 
+                                            {msErrors.length != 0 && msErrors[index]?.prize && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{msErrors[index]?.prize}</p>}
+                                        </div>
+                                        <div className='mt-3'>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Set Time</p>
+                                            <div className='flex items-center gap-2 w-full mt-2'>
+                                                <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
+                                                    <select 
+                                                        className='bg-[#091044] text-white88 outline-none border-none w-full cursor-pointer'
+                                                        value={milestone.timeUnit || 'Days'}
+                                                        name='timeUnit'
+                                                        onChange={(e) => setMilestonesHelper(index,e)}
+                                                    >
+                                                        <option value="Days">Days</option>
+                                                        <option value="Weeks">Weeks</option>
+                                                        {/* <option value="Months">Months</option> */}
+                                                    </select>
+                                                </div>
+                                                <div className='w-full'>
+                                                    <div className='bg-white7 rounded-md px-3 py-2'>
+                                                        <input 
+                                                            type='number' 
+                                                            placeholder='1200' 
+                                                            className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
+                                                            value={milestone.deliveryTime}
+                                                            name='deliveryTime'
+                                                            onChange={(e) => setMilestonesHelper(index,e)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {msErrors.length != 0 && msErrors[index]?.deliveryTime && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{msErrors[index]?.deliveryTime}</p>}
                                         </div>
                                     </div>
                                 </AccordionContent>
