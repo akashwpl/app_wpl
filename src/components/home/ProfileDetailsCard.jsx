@@ -40,7 +40,7 @@ const ProfileDetailsCard = ({userDetails}) => {
   },[userDetails])
 
   return (
-    <div onClick={navigateToEditProfile} className='flex flex-col w-full h-[200px] bg-white4 rounded-md my-6 cursor-pointer hover:bg-white7'>
+    <div onClick={navigateToEditProfile} className='flex flex-col w-full h-[200px] bg-white4 rounded-md cursor-pointer hover:bg-white7'>
       <div className='flex flex-row justify-between items-center px-4 bg-white7 rounded-t-md h-[65px]'>
         <div className='flex flex-col'>
           <p className='font-inter font-medium text-[13px] leading-[15.6px] text-white48 mb-1'>Your Profile is </p>

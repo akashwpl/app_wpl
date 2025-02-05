@@ -232,14 +232,14 @@ const ExploreGigs = ({orgProjects, userId}) => {
     <div>
           <div className="flex justify-between items-center">
             <h1 className="font-gridular text-primaryYellow text-[20px]">Explore all</h1>
-            {user_role == 'user' ?
+            {/* {user_role == 'user' ?
             <FancyButton
               src_img={exploreBtnImg}
               hover_src_img={exploreBtnHoverImg}
               img_size_classes='w-[175px] h-[44px]' 
               className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
               btn_txt={<span className='flex items-center justify-center gap-2'><span>{"Go to my gigs"}</span><ArrowUpRight size={18}/></span>} 
-              alt_txt='save project btn' 
+              alt_txt='save project btn'
               onClick={navigateToProjectDetails}
             /> :
             <FancyButton 
@@ -250,7 +250,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
               btn_txt={<span className='flex items-center justify-center gap-2'><span>{"+ Add Listing"}</span><ArrowUpRight size={18}/></span>} 
               alt_txt='save project btn' 
               onClick={navigateToCreateProject}
-            />}
+            />} */}
           </div>
               
           {user_role == 'user' && 
