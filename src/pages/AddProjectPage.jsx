@@ -92,12 +92,13 @@ const   AddProjectPage = () => {
     }
 
     useEffect(() => {
+        if(!user_id) return
         if(!isLoadingUserOrgs) {
             if(userOrganisations?.length >= 0 && user_role == 'user') {
                 dispatch(displaySnackbar('Your Organisation is not yet approved by Admin. Please try again later.'))
                 navigate('/')
             } else {
-                const approvedOrg = userOrganisations.filter(org => org.status === 'approved');
+                const approvedOrg = userOrganisations?.filter(org => org.status === 'approved');
                 setUserOrg(approvedOrg[0]);
                 setDiscordLink(approvedOrg[0]?.socialHandleLink?.discord)
                 setLogoPreview(approvedOrg[0]?.img)

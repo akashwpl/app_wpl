@@ -6,7 +6,7 @@ const handleForbiddenError = async (error) => {
         return
     }
     if (error?.request?.status === 401) {
-        window.location.href = '/onboarding'
+        // window.location.href = '/onboarding'
         return
     }
     if (error?.request?.status === 402) {

@@ -199,18 +199,27 @@ const Navbar = () => {
 
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
-      <div className='hidden md:flex justify-between items-center w-full'>
-        <div className='flex items-center gap-[24px] text-[12px] lg:text-[14px] text-primaryYellow font-bienvenue'>
-          <Link to={'/'}><GlyphEffect text={'EXPLORE'} /></Link>
-          <Link to={'/leaderboard'}><GlyphEffect text={'LEADERBOARD'} /></Link>
+      <div className='hidden md:flex justify-between items-center w-full relative'>
+        {/* DESKTOP */}
+        <div className='flex items-center gap-[24px] text-[12px] lg:text-[14px] text-primaryYellow font-gridular'>
+          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/'}><GlyphEffect text={'BOUNTIES'} /></Link>}
+          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/leaderboard'}><GlyphEffect text={'PROJECTS'} /></Link>}
+          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/wplprogram'}>
+            <div className='flex items-center gap-[6px] rounded-md bg-[#091044] px-2 py-1'>
+              <img src={wpllogo} alt='wolf logo' className='w-[12px] h-[14px]' />
+              <p className='text-white88'>WPL Program</p>
+            </div>
+          </Link>
+          }
+          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/leaderboard'}><GlyphEffect text={'LEADERBOARD'} /></Link>}
         </div>
-        <div className={``}>
+        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`}>
           <div className='z-[100] translate-x-7'>
             <Link to={'/'}><img src={wpllogo} alt='wolf logo' className='w-[22px] h-[25px]' /></Link>
           </div>
         </div>
 
-        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword')  &&
+        {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') &&
           <div className='flex items-center gap-4'>
             {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && token &&
             <div className='hidden md:block'>
@@ -345,9 +354,9 @@ const Navbar = () => {
             </div>
           </div>
         }
-
       </div>
 
+      {/* MOBILE */}
       <div className='flex relative md:hidden justify-between items-center w-full'>
         <div className='z-[100]'>
           <Link to={'/'}><img src={wpllogo} alt='wolf logo' className='translate-x-14 w-6 h-7' /></Link>

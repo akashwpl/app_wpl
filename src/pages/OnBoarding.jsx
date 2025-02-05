@@ -1,6 +1,6 @@
 import { ArrowRight, EyeIcon, EyeOffIcon, Info, MailWarningIcon, Menu, Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { BASE_URL, email_regex, isValidStarkNetAddress } from '../lib/constants'
 
 import { useDispatch } from 'react-redux'
@@ -31,6 +31,7 @@ const OnBoarding = () => {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const {pathname} = useLocation()
 
   const [email, setEmail] = useState('') // Changed from firstName to email
   const [password, setPassword] = useState('')
@@ -404,7 +405,6 @@ const OnBoarding = () => {
         <div className='mt-32'>
           
           <div 
-            // onClick={navigateToOrgFormPage} 
             onClick={handleOrgSignUp} 
             className='w-[300px] cursor-pointer'
           >
@@ -569,14 +569,14 @@ const OnBoarding = () => {
               }
           </div>
 
-          <div className='flex justify-center items-center mt-2 gap-2'>
+          {pathname?.includes("/onboarding") && <div className='flex justify-center items-center mt-2 gap-2'>
             <div onClick={swtichOnboardingType} className='text-[12px] text-white32 font-semibold text-inter mr-1'>
               {isSignin
                 ? <p>Do not have an account?<span className='text-[12px] text-primaryYellow font-semibold font-inter cursor-pointer ml-[2px] hover:underline'>Sign up now!</span></p>
                 : <p>Already have an account? <span className='text-[12px] text-primaryYellow font-semibold font-inter cursor-pointer ml-[2px] hover:underline'>Login</span></p>
               }
             </div>
-          </div>
+          </div>}
         </div>
       :
         <div className='w-full'>
