@@ -182,7 +182,7 @@ body{
   position: absolute;
   display: inline-block;
   inset: 0;
-  color: #FAF1B1;
+  /* color: #FAF1B1; */
   font-family: 'Bienvenue';
   text-align: center;
   display: flex;
