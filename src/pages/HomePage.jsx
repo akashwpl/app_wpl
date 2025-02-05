@@ -52,6 +52,9 @@ const HomePage = () => {
   const navigateToFAQs = () => {
     window.open('https://www.thewpl.xyz/learnmore', { target: '_blank' });
   }
+  const handleNavigateToSponsorSignUp = () => {
+    navigate('/onboarding', {state: {fromHome: true}})
+  }
 
   return (
     <div className='flex flex-row justify-between mt-4'>
@@ -87,7 +90,7 @@ const HomePage = () => {
 
       {/* right side */}
       <div className='flex flex-col gap-6 py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh] min-w-[350px] max-w-[350px]'>
-        <div className='w-full'>
+        <div onClick={handleNavigateToSponsorSignUp} className='w-full cursor-pointer'>
           <img src={sponsorCardPng} alt='sponsor login'/>
         </div>
         {/* <WhyStarkNetCard />

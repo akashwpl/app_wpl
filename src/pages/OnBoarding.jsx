@@ -31,7 +31,7 @@ const OnBoarding = () => {
 
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const {pathname} = useLocation()
+  const {pathname, state} = useLocation()
 
   const [email, setEmail] = useState('') // Changed from firstName to email
   const [password, setPassword] = useState('')
@@ -341,6 +341,13 @@ const OnBoarding = () => {
     // }
     setHovered(true);
   };
+
+  useEffect(() => {
+    if(state?.fromHome) {
+      setIsOrgSignUp(true);
+      setIsSignComplete(true);
+    }
+  }, [])
 
   // useEffect(() => {
   //   if(isOrgSignUp) {
