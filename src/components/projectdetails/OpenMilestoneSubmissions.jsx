@@ -32,6 +32,7 @@ const OpenMilestoneSubmissions = ({submission,index,submission_count, projectSta
     refetchProjectDetails()
   }
 
+
   return (
     <>
       <div onClick={() => setShowOpenMilestoneSubmissionModal(true)} key={index} className={`grid grid-cols-12 gap-2 py-2 rounded-sm hover:bg-white4 cursor-pointer ${index === submission_count ? "" : "border-b border-white7"}`}>

@@ -22,6 +22,10 @@ import exploreBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
 import exploreBtnImg from '../assets/svg/menu_btn_subtract.png'
 import sponsorCardPng from '../assets/images/loginSponsorCard.png'
 import HowItWorksCard from '../components/home/HowItWorksCard'
+import QuestionSVG from '../assets/icons/question.svg'
+import { useState } from 'react'
+import SignInModal from '../components/SignInModal'
+import CustomModal from '../components/ui/CustomModal'
 
 
 const HomePage = () => {
@@ -114,8 +118,14 @@ const HomePage = () => {
         <RecentActivityCard />
         <div className='border border-white12 border-dashed w-full'></div>
         <HowItWorksCard />
+        {/* <div className='border border-white12 border-dashed w-full'></div> */}
+        <div onClick={navigateToFAQs} className='bg-[#9CD4EC1A] hover:bg-[#9cd4ec2c] rounded-md w-full px-4 py-2 flex justify-between items-center h-[44px] cursor-pointer'>
+          <div className='font-gridular text-[14px] leading-[16px] text-white'>Read FAQs</div>
+          <div className='font-gridular text-white text-[18px]'>?</div>
+          {/* <img src={QuestionSVG} alt='question' className='w-[20px] h-[20px] fill-white text-white stroke-white' /> */}
+        </div>
       </div>
-      
+     
     </div>
   )
 }
