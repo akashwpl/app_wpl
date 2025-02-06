@@ -98,7 +98,7 @@ const Navbar = () => {
     localStorage.removeItem('token_app_wpl')
     dispatch(setUserId(''))
     dispatch(setUserRole(''))
-    navigate('/onboarding')
+    navigate('/')
   }
 
   const rewardRef = useRef(null);
