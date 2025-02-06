@@ -195,15 +195,14 @@ const Navbar = () => {
     enabled: !!userDetail?.email
   })
 
-  console.log('userDetail NAVBARRR', userDetail)
 
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
       <div className='hidden md:flex justify-between items-center w-full relative'>
         {/* DESKTOP */}
-        <div className='flex items-center gap-[24px] text-[12px] lg:text-[14px] text-primaryYellow font-gridular'>
-          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/'}><GlyphEffect text={'BOUNTIES'} /></Link>}
-          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/leaderboard'}><GlyphEffect text={'PROJECTS'} /></Link>}
+        <div className='flex items-center gap-[24px] text-[12px] lg:text-[14px] font-gridular'>
+          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/'}><GlyphEffect text={'BOUNTIES'}/></Link>}
+          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/grants'}><GlyphEffect text={'GRANTS'}/></Link>}
           {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/wplprogram'}>
             <div className='flex items-center gap-[6px] rounded-md bg-[#091044] px-2 py-1'>
               <img src={wpllogo} alt='wolf logo' className='w-[12px] h-[14px]' />

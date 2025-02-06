@@ -1,6 +1,11 @@
-import React from 'react'
+import React, { useMemo } from 'react'
+import { useLocation } from 'react-router-dom';
 
 const GlyphEffect = ({text, isNav=true}) => {
+  const {pathname} = useLocation();
+
+  const isActive = useMemo(() => pathname.includes(`/${text?.toLowerCase()}`), [pathname, text])
+
     const GLYPHS =
     'ラドクリフマラソンわたしワタシんょンョたばこタバコとうきょうトウキョウ0123456789±!@#$%^&*()_+ABCDEFGHIJKLMNOPQRSTUVWXYZ'
   
@@ -10,7 +15,7 @@ const GlyphEffect = ({text, isNav=true}) => {
           {text?.split('').map((char, index) => {
             return (
               <span
-                className={`${isNav ? "nav_btn__span" : "nav_btn__span2"}`}
+                className={`${isNav ? 'nav_btn__span' : "nav_btn__span2"} ${isActive ? "after:text-[#97A0F1]" : "after:text-primaryYellow"}`}
                 data-char={char}
                 key={index}
                 style={{
