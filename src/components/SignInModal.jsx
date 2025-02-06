@@ -4,7 +4,7 @@ import OnBoarding from '../pages/OnBoarding'
 const SignInModal = () => {
 
   return (
-    <div onClick={(e) => {e.stopPropagation(); e.preventDefault()}}>
+    <div onClick={(e) => {e.stopPropagation(); e.preventDefault()}} className='z-50'>
       <OnBoarding />
     </div>
   )

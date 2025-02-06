@@ -97,7 +97,7 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
             <div
                 ref={menuRef}
                 onClick={() => {handleMenuToggle()}}
-                className="relative cursor-pointer flex flex-row items-center z-50 w-[250px] h-[42px] text-white88 bg-white7 border border-white7 rounded-md p-2 font-gridular text-[14px]"
+                className="relative cursor-pointer flex flex-row items-center w-[250px] h-[42px] text-white88 bg-white7 border border-white7 rounded-md p-2 font-gridular text-[14px]"
                 >
                   <div className='flex justify-between items-center w-full'>
                     <p>{selectedOrg}</p>
