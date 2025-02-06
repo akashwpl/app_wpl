@@ -32,6 +32,7 @@ const HomePage = () => {
 
   const { user_id, user_role } = useSelector((state) => state)
   const navigate = useNavigate();
+  const [showSignInModal, setShowSignInModal] = useState(false)
 
   const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
     queryKey: ["userDetails", user_id],
@@ -56,6 +57,7 @@ const HomePage = () => {
     navigate('/onboarding', {state: {fromHome: true}})
   }
 
+
   return (
     <div className='flex flex-row justify-between mt-4'>
       {/* Left side */}
@@ -74,7 +76,7 @@ const HomePage = () => {
                 img_size_classes='w-[175px] h-[44px]' 
                 className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
                 alt_txt='save project btn'
-                onClick={() => {}}
+                onClick={() => {setShowSignInModal(true)}}
               />
             </div>
           </div>
@@ -128,6 +130,12 @@ const HomePage = () => {
           {/* <img src={QuestionSVG} alt='question' className='w-[20px] h-[20px] fill-white text-white stroke-white' /> */}
         </div>
       </div>
+
+      <CustomModal isOpen={showSignInModal} closeModal={() => setShowSignInModal(false)}>
+        <div onClick={() => setShowSignInModal(false)} className='bg-primaryDarkUI/90 h-screen w-screen overflow-hidden flex justify-center items-center z-50'>
+          <SignInModal />
+        </div>
+      </CustomModal>
      
     </div>
   )
