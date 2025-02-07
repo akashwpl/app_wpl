@@ -68,17 +68,19 @@ const HomePage = () => {
             <div className='text-primaryYellow text-[20px] font-gridular leading-[24px] mb-4'>
               Contribute to your favourite projects <br /> and earn $$$ in rewards
             </div>
-            <div>
-              <FancyButton 
-                src_img={exploreBtnImg}
-                btn_txt={"JOIN 480+ FOLKS"}
-                hover_src_img={exploreBtnHoverImg}
-                img_size_classes='w-[175px] h-[44px]' 
-                className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                alt_txt='save project btn'
-                onClick={() => {setShowSignInModal(true)}}
-              />
-            </div>
+            {!token &&            
+              <div>
+                <FancyButton 
+                  src_img={exploreBtnImg}
+                  btn_txt={"JOIN 480+ FOLKS"}
+                  hover_src_img={exploreBtnHoverImg}
+                  img_size_classes='w-[175px] h-[44px]' 
+                  className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                  alt_txt='save project btn'
+                  onClick={() => {setShowSignInModal(true)}}
+                />
+              </div>
+            }
           </div>
           <div className='w-[318px] h-full'>
             <img src={bannerPng} alt='banner' className='h-full rounded-br-md'/>
@@ -133,7 +135,7 @@ const HomePage = () => {
 
       <CustomModal isOpen={showSignInModal} closeModal={() => setShowSignInModal(false)}>
         <div onClick={() => setShowSignInModal(false)} className='bg-primaryDarkUI/90 h-screen w-screen overflow-hidden flex justify-center items-center z-50'>
-          <SignInModal />
+          <SignInModal setShowSignInModal={setShowSignInModal} />
         </div>
       </CustomModal>
      
