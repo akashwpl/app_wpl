@@ -43,7 +43,7 @@ const ExploreGigsCard = ({data, type, projectsGridView}) => {
                     <div className={`flex flex-row ${projectsGridView ? 'flex-col' : "flex-row"} gap-2 text-white32 w-full mt-1`}>
                         <div className={`flex items-center gap-1 ${projectsGridView ? "mt-2" : ""}`}>
                             <img src={clockSVG} alt='clock' className='size-[16px]'/>
-                            <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Due: <span className='text-white64 ml-1'>{remain.days < 0 ? <span className='text-cardRedText'>Overdue</span> : `${remain.days} D ${remain.hours} H`}</span></p>
+                            <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Due: <span className='text-white64 ml-1'>{remain.days < 0 ? <span className=''>--</span> : `${remain.days} D ${remain.hours} H`}</span></p>
                             <Dot size={16} />
                             <img src={zapSVG} alt='zap' className='size-[16px]'/>
                             <p className='font-inter font-medium text-cardYellowText text-[12px] leading-[14.4px] capitalize'>{data?.isOpenBounty ? 'Open' : 'Gated'}</p>

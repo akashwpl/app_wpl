@@ -5,7 +5,7 @@ import { useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import exploreBtnHoverImg from '../../assets/svg/menu_btn_hover_subtract.png'
 import exploreBtnImg from '../../assets/svg/menu_btn_subtract.png'
-import { getAllProjects, getUserDetails, getUserProjects } from "../../service/api"
+import { createNotification, getAllProjects, getUserDetails, getUserProjects, updateOpenProjectDetails, updateProjectDetails } from "../../service/api"
 import FancyButton from "../ui/FancyButton"
 import Spinner from "../ui/spinner"
 import Tabs from "../ui/Tabs"
@@ -42,7 +42,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
   const [searchRoleList, setSearchRoleList] = useState([])
 
 
-  const { data: allProjects, isLoading: isLoadingAllProjects } = useQuery({
+  const { data: allProjects, isLoading: isLoadingAllProjects, refetch: refetchAllProjectDetails } = useQuery({
     queryKey: ["allProjects"],
     queryFn: getAllProjects
   })
@@ -75,6 +75,45 @@ const ExploreGigs = ({orgProjects, userId}) => {
   //   }
   // }, [user_role])
 
+  useEffect(() => {
+    const closeProject = async (projectDetails) => {
+      const data = {
+        project: { status: "closed" },
+        milestones: projectDetails.milestones        // milestones is a required field
+      }
+  
+      if(projectDetails?.isOpenBounty) {
+        const res = await updateOpenProjectDetails(projectDetails._id, data);
+      } else {
+        const res = await updateProjectDetails(projectDetails._id, data);
+      }
+  
+      const notiObj = {
+        msg: `The project has been automatically closed as the deadline to complete it has passed.`,
+        type: 'project_req',
+        fromId: user_id,
+        user_id: projectDetails.user_id,
+        project_id: projectDetails._id
+      }
+      const notiRes = await createNotification(notiObj)
+    }
+    
+    const checkAndCloseProjects = async () => {
+      const pastDeadlineProjects = allProjects?.filter(project => new Date(project.deadline) < new Date());
+      if (pastDeadlineProjects?.length > 0) {
+        for (const project of pastDeadlineProjects) {
+          if(project?.owner_id == userId) await closeProject(project);
+        }
+      }
+    };
+    
+    if(!isLoadingAllProjects) {
+      checkAndCloseProjects();
+    }
+    
+    checkAndCloseProjects();
+    refetchAllProjectDetails()
+  },[isLoadingAllProjects, allProjects])
 
   const handleTabClick = (id) => {
     const newTabs = tabs.map((tab) => ({

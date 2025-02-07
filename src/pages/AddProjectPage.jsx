@@ -70,9 +70,11 @@ const   AddProjectPage = () => {
     const [userOrg, setUserOrg] = useState({})
 
     const [openStartDate, setOpenStartDate] = useState(new Date());
-    const [openDeliveryDate, setOpenDeliveryDate] = useState(new Date());
+    const [openDeliveryInput, setOpenDeliveryInput] = useState(1);
     const [openDeliveryDuration, setOpenDeliveryDuration] = useState("days");
     const [openBudget, setOpenBudget] = useState(1);
+
+    const [openMsError,setOpenMsError] = useState({deliveryTime:'',prize:''}) 
 
     const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
         queryKey: ['userOrganisations', user_id],
@@ -152,7 +154,9 @@ const   AddProjectPage = () => {
         if (!logoPreview) newErrors.logo = 'Logo is required';
         if (!role.length > 0) newErrors.role = 'Role/s is/are required';
         if (!projCurrency) newErrors.projCurrency = 'Prize currency is required';
-        if (milestones.length === 0) {
+        if (isOpenBounty) {
+            if(openMsError.deliveryTime || openMsError.prize) newErrors.openError = 'Please fix open bounty fields'
+        } else if (milestones.length === 0) {
             newErrors.milestones = 'At least one milestone is required';
         } else if(validateMilestones()) {
             newErrors.milestones = 'Please fill all the fields for milestones'
@@ -180,10 +184,18 @@ const   AddProjectPage = () => {
         setMilestones(updatedMilestones);
     };
     const handleOpenDeliveryDurationInput = (e) => {
+        if (!e) {
+            setOpenMsError({...openMsError, deliveryTime:'Delivery time is required'})
+        } else if(parseInt(e) < 1) {
+            setOpenMsError({...openMsError, deliveryTime:'Delivery time should be greater than 0'})
+        } else {
+            setOpenMsError({...openMsError, deliveryTime:''})
+        }
+
         const updatedMilestones = [...milestones];
-        updatedMilestones[0] = { ...updatedMilestones[0], ['deliveryTime']: e?.target?.value };
+        updatedMilestones[0] = { ...updatedMilestones[0], ['deliveryTime']: e };
         setMilestones(updatedMilestones);
-        setOpenDeliveryDate(e?.target?.value);
+        setOpenDeliveryInput(e);
     }
     const handleOpenDeliveryDurationChange = (e) => {
         const updatedMilestones = [...milestones];
@@ -197,24 +209,15 @@ const   AddProjectPage = () => {
         setMilestones(updatedMilestones);
         setOpenStartDate(date);
     }
+
     const handleOpenBudgetChange = (e) => {
-        if(parseInt(e) < 1) {
-            setErrors({...errors, msErrors: {
-                ...errors.msErrors,
-                [index]: {
-                    prize: 'Prize value should be greater than 0'
-                }
-            }})
-            return
+        if (!e) {
+            setOpenMsError({...openMsError, prize:'Prize pool value is required'})
+        } else if(parseInt(e) < 1) {
+            setOpenMsError({...openMsError, prize:'Prize amount should be greater than 0'})
         } else {
-            setErrors({...errors, msErrors: {
-                ...errors.msErrors,
-                [index]: {
-                    prize: ''
-                }
-            }})
+            setOpenMsError({...openMsError, prize: ''})
         }
-        console.log('ms error',errors);
         const updatedMilestones = [...milestones];
         updatedMilestones[0] = { ...updatedMilestones[0], ['prize']: e };
         setMilestones(updatedMilestones);
@@ -584,12 +587,13 @@ const   AddProjectPage = () => {
                                         type='number' 
                                         placeholder='Enter delivery time' 
                                         className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
-                                        value={openDeliveryDate} 
-                                        onChange={(e) => handleOpenDeliveryDurationInput(e)} 
+                                        value={openDeliveryInput} 
+                                        onChange={(e) => handleOpenDeliveryDurationInput(e.target.value)} 
                                     />
                                 </div>
                             </div>
                         </div>
+                        {openMsError && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{openMsError.deliveryTime}</p>}
 
                         <div className='mt-3'>
                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Prize Pool</p>
@@ -610,6 +614,7 @@ const   AddProjectPage = () => {
                                     </div>
                                 </div>
                             </div>
+                            {openMsError && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{openMsError.prize}</p>}
                         </div>
                         </>
                         }

@@ -144,6 +144,17 @@ export function convertTimestampToDate(timestamp) {
   return date.toLocaleDateString(undefined, options);
 }
 
+export const generateUsername = (name) => {
+  let username;
+  if (!name) {
+    username = `wpl_user_${Math.floor(Math.random() * 1000)}`; 
+  } else {
+    username = name.replace(/\s+/g, '').toLowerCase(); 
+    username = username.replace(/[^a-zA-Z0-9_]/g, ''); 
+  }
+  return username;
+} 
+
 export const ROLES = [
   "Backend Developer",
   "Smart contract / blockchain",

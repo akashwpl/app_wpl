@@ -1,11 +1,11 @@
 import React from 'react'
 import OnBoarding from '../pages/OnBoarding'
 
-const SignInModal = () => {
+const SignInModal = ({setShowSignInModal}) => {
 
   return (
     <div onClick={(e) => {e.stopPropagation(); e.preventDefault()}} className='z-50'>
-      <OnBoarding />
+      <OnBoarding setShowSignInModal={setShowSignInModal}  isModal={true} />
     </div>
   )
 }

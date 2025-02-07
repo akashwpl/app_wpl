@@ -201,7 +201,7 @@ const VerifyOrgForm = () => {
                                     className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
                                     btn_txt='Welcome Aboard' 
                                     alt_txt='redirect to all projects' 
-                                    onClick={() => {navigate('/allprojects')}}
+                                    onClick={() => {navigate('/');window.location.reload()}}
                                 />
                             </div>
                         </div>
@@ -376,7 +376,7 @@ const VerifyOrgForm = () => {
                                 hover_src_img={btnHoverImg} 
                                 img_size_classes='w-[470px] h-[44px]' 
                                 className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                                btn_txt={!isloading ? <div className="flex justify-center items-center -mt-1"> <Spinner /> </div> : 'Verify Organisation'}
+                                btn_txt={isloading ? <div className="flex justify-center items-center -mt-1"> <Spinner /> </div> : 'Verify Organisation'}
                                 alt_txt='verify org btn' 
                                 onClick={submitForm}
                                 // isArrow='true'
