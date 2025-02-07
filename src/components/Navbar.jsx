@@ -279,7 +279,7 @@ const Navbar = () => {
                       </>
                     )}
                     <Link
-                      to="/"
+                      to="/userprojects"
                       className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
                     >
                       <div className="flex items-center gap-2">
