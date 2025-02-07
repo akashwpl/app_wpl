@@ -40,7 +40,13 @@ const Leaderboard = () => {
 
    useEffect(() => {
        if(isLoadingLeaderboard) return
-       const data = filteredData?.slice(indexOfFirstItem, indexOfLastItem)
+       const updatedData = filteredData?.map((item, index) => {
+        return {
+          rank: index + 1,
+          ...item,
+        }
+        })
+       const data = updatedData?.slice(indexOfFirstItem, indexOfLastItem)
        setCurrentData(data)
    }, [leaderboardData, currentPage, searchInput, sortBy, sortOrder])
 
@@ -109,7 +115,7 @@ const Leaderboard = () => {
                            {isLoadingLeaderboard ? <p>loading..</p> : currentData && currentData?.length > 0 ? (
                                currentData?.map((data, index) => (
                                    <tr key={index} className="hover:bg-[#051149] transition-colors duration-200">
-                                       <td className="py-4 text-[14px] px-6">#{index + 1}</td>
+                                       <td className="py-4 text-[14px] px-6">#{data?.rank}</td>
                                        <td className="py-4 w-[200px] truncate text-ellipsis cursor-pointer">
                                            <Link to={`/profile/${data.discordIdentifier}`} className='flex items-center gap-2 px-0'>
                                                <img src={wpl_logo} alt="USDC" className="size-4" />
