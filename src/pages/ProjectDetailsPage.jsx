@@ -390,7 +390,7 @@ const ProjectDetailsPage = () => {
             <div className='w-[372px] h-fit pb-4 bg-white4 rounded-[10px]'>
               <div className='flex items-center gap-2 mx-4 py-4'>
                 <img src={clockSVG} alt='clock' className='size-[16px]'/>
-                <p className='text-[14px] text-white32 leading-[20px] font-inter'>Project Deadline in <span className='text-white88 ml-1'>{remain.days < 0 ? <span className='text-cardRedText'>Overdue</span> : `${remain.days} D ${remain.hours} H`}</span></p>
+                <p className='text-[14px] text-white32 leading-[20px] font-inter'>Project Deadline in <span className='text-white88 ml-1'>{remain.days < 0 ? <span className=''>--</span> : `${remain.days} D ${remain.hours} H`}</span></p>
               </div>
               <div className='h-[1px] w-full'>
                 <div className='h-[1px] w-full bg-primaryYellow'/>
