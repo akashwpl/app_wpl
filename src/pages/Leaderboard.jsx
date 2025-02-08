@@ -99,10 +99,10 @@ const Leaderboard = () => {
                        <thead className='bg-[#060E4F]'>
                            <tr className='h-[48px] text-[13px] text-white32 font-normal font-inter border-b border-white7'>
                                <td className='px-4'>Rank</td>
-                               <td className='w-[200px]'>Name</td>
-                               <td className='text-right pr-6'>Rewards</td>
-                               <td className='text-right pr-6'>Tier</td>
-                               <td className='text-right pr-6'>Total Points</td>
+                               <td className='w-[250px]'>Name</td>
+                               <td className='w-[180px] text-left pl-6'>Rewards</td>
+                               <td className='w-[180px] text-left pl-6'>Tier</td>
+                               <td className='w-[100px] text-right pr-6'>Total Points</td>
                            </tr>
                        </thead>
                        <tbody className='bg-[#060F54] font-normal font-inter text-white'>
@@ -116,14 +116,14 @@ const Leaderboard = () => {
                                                <span className="text-white88 text-[14px]">{data.discordIdentifier}</span>
                                            </Link>
                                        </td>
-                                       <td className="py-4 text-[14px] text-right pr-6">
-                                           <div className='flex justify-end items-center gap-1'>
+                                       <td className="py-4 text-[14px] pl-6">
+                                           <div className='flex justify-start items-center gap-1'>
                                                <img src={USDCsvg} alt="USDC" className="size-4" />
                                                <span>{data.rewards ? data.rewards : "1290"}</span> 
                                                <span className="font-thin" >USDC</span>
                                            </div>
                                        </td>
-                                       <td className="py-4 text-[14px] font-normal text-right pr-6">{data.newTier == "" ? data?.tier : data?.newTier}</td>
+                                       <td className="py-4 text-[14px] font-normal text-left pl-6">{data.newTier == "" ? data?.tier : data?.newTier}</td>
                                        <td className="py-4 text-[14px] font-normal text-right pr-6">{data.cumulativeLeaderboard}</td>
                                    </tr>
                                ))
