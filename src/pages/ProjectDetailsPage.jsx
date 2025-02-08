@@ -4,7 +4,7 @@ import wpl_prdetails from '../assets/images/wpl_prdetails.png'
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, Clock, Download, TriangleAlert, Zap } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import btnImg from '../assets/svg/btn_subtract_semi.png'
@@ -25,13 +25,14 @@ import {
 import FancyButton from '../components/ui/FancyButton'
 import Tabs from '../components/ui/Tabs'
 import { calculateRemainingDaysAndHours, convertTimestampToDate } from '../lib/constants'
-import { createNotification, getOpenProjectSubmissions, getOrgById, getProjectDetails, getProjectSubmissions, getUserDetails, getUserProjects, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
+import { adminOpenProjectApproveOrReject, adminProjectApproveOrReject, createNotification, getOpenProjectSubmissions, getOrgById, getPendingProjects, getProjectDetails, getProjectSubmissions, getUserDetails, getUserProjects, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
 
 import alertPng from '../assets/images/alert.png'
 import clockSVG from '../assets/icons/pixel-icons/watch.svg'
 import warningSVG from '../assets/icons/pixel-icons/warning.svg'
 import zapSVG from '../assets/icons/pixel-icons/zap-yellow.svg'
 import OpenMilestoneSubmissions from '../components/projectdetails/OpenMilestoneSubmissions'
+import { displaySnackbar } from '../store/thunkMiddleware'
 
 const initialTabs = [
   {id: 'overview', name: 'Overview', isActive: true},
@@ -44,8 +45,9 @@ const isOwnerTabs = [
 const ProjectDetailsPage = () => {
 
   const { id } = useParams();
+  const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { user_id } = useSelector((state) => state)
+  const { user_id, user_role } = useSelector((state) => state)
   const [orgHandle, setOrgHandle] = useState('');
   const [isProjApplied, setIsProjApplied] = useState(false);
   const [username, setUsername] = useState('A user');
@@ -235,6 +237,29 @@ const ProjectDetailsPage = () => {
   const allMilestonesCompleted = useMemo(() => {
     return projectDetails?.milestones?.every(milestone => milestone.status == 'completed')
   }, [projectDetails])
+
+  const handleAcceptRejectRequest = async (id, userId, title, bountyType, status) => {
+    const dataObj = { isApproved: status }
+    let res;
+    if(!bountyType) {
+        res = await adminProjectApproveOrReject(id, dataObj);
+    } else {
+        res = await adminOpenProjectApproveOrReject(id, dataObj);
+    }
+    
+    if(res._id) {
+      const notiObj = {
+        msg: `Admin has ${status ? "approved" : "rejected"} your bounty: ${title}.`,
+        type: 'project_req',
+        fromId: user_id,
+        user_id: userId,
+        project_id: id
+      }
+      const res = await createNotification(notiObj)
+      dispatch(displaySnackbar(`You have successfully ${status ? 'Approved' : 'Rejected'} the bounty: ${title}.`))
+    } 
+    refetchProjectDetails();
+  }
 
   return (
     <div className='relative'>
@@ -433,7 +458,7 @@ const ProjectDetailsPage = () => {
               {isOwner ?
                 projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div>
                 : projectDetails?.status == 'completed' ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
-                :
+                : 
                 <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
                   <FancyButton 
                     src_img={closeProjBtnImg} 
@@ -459,6 +484,42 @@ const ProjectDetailsPage = () => {
                   {projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> : 
                     projectDetails?.status == 'completed' ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
                     :
+                    token && projectDetails?.isOpenBounty && user_role == 'admin' && projectDetails?.status == 'idle' && projectDetails?.approvalStatus == 'pending' ?
+                    <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
+                      <FancyButton 
+                        src_img={menuBtnImg} 
+                        hover_src_img={menuBtnImgHover} 
+                        img_size_classes='w-[162px] h-[44px]' 
+                        className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                        btn_txt='Accept' 
+                        alt_txt='project accept btn' 
+                        onClick={() => handleAcceptRejectRequest(projectDetails._id,projectDetails.owner_id,projectDetails.title,projectDetails.isOpenBounty,true)}
+                      />
+                      <FancyButton 
+                        src_img={closeProjBtnImg} 
+                        hover_src_img={closeProjBtnHoverImg}
+                        img_size_classes='w-[162px] h-[44px]'
+                        className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5'
+                        btn_txt='Reject'
+                        alt_txt='project reject btn'
+                        onClick={() => handleAcceptRejectRequest(projectDetails._id,projectDetails.owner_id,projectDetails.title,projectDetails.isOpenBounty,false)}
+                      />
+                    </div>
+                    :
+                    projectDetails?.approvalStatus != 'pending' ? 
+                    <div className='mx-4 mt-4'>
+                      <FancyButton 
+                        src_img={btnImg} 
+                        // hover_src_img={isProjApplied ? btnImg : btnHoverImg} 
+                        img_size_classes='w-[342px] h-[44px]' 
+                        className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5 cursor-not-allowed`}
+                        btn_txt={projectDetails?.approvalStatus} 
+                        alt_txt='project admin btn' 
+                        // onClick={applyForProject}
+                        disabled={true}
+                      />
+                    </div>
+                    :
                     projectDetails?.status != "idle" || projectDetails?.isOpenBounty 
                       ? projectDetails?.status != 'closed' || projectDetails?.status != 'completed' ? null :
                     <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
@@ -476,7 +537,7 @@ const ProjectDetailsPage = () => {
                         alt_txt='project apply btn' 
                         onClick={applyForProject}
                         disabled={isProjApplied}
-                    />
+                      />
                     </div>
                     :
                     <div className='mx-4 mt-4'>

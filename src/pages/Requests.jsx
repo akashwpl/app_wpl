@@ -42,9 +42,10 @@ const Requests = () => {
         if(res._id) {
             const notiObj = {
                 msg: `Admin has ${status ? "approved" : "rejected"} your bounty: ${title}.`,
-                type: 'response_msg',
+                type: 'project_req',
                 fromId: user_id,
                 user_id: userId,
+                project_id: id
             }
             const res = await createNotification(notiObj)
             dispatch(displaySnackbar(`You have successfully ${status ? 'Approved' : 'Rejected'} the bounty: ${title}.`))

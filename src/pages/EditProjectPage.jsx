@@ -83,6 +83,7 @@ const EditProjectPage = () => {
     const [discordLink, setDiscordLink] = useState(projectDetails?.organisation?.socialHandleLink?.discord || '');
     const [about, setAbout] = useState(projectDetails?.about || '');
     const [projCurrency, setProjCurrency] = useState(projectDetails?.currency || '');
+    const [isOpenBounty, setIsOpenBounty] = useState(projectDetails?.isOpenBounty || '');
 
     const [role, setRole] = useState(projectDetails?.roles || []);
 
@@ -218,10 +219,6 @@ const EditProjectPage = () => {
             return new Date(parseInt(last.deadline)) < new Date(parseInt(curr.deadline)) ? curr : last;
         });
 
-        console.log('updMs',updatedMilestones);
-        
-        console.log('lm',lastMilestone);
-        
 
         if (validateFields()) {
 
@@ -573,17 +570,19 @@ const EditProjectPage = () => {
                         ))}
                     </div>
 
-                    <div className='mt-4'>
-                        <FancyButton 
-                            src_img={btnImg} 
-                            hover_src_img={btnHoverImg} 
-                            img_size_classes='w-[470px] h-[44px]' 
-                            className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                            btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={14}/><span>Add milestone</span></span>} 
-                            alt_txt='add milestone btn' 
-                            onClick={handleAddMilestone}
-                        />
-                    </div>                      
+                    {!isOpenBounty &&
+                        <div className='mt-4'>
+                            <FancyButton 
+                                src_img={btnImg} 
+                                hover_src_img={btnHoverImg} 
+                                img_size_classes='w-[470px] h-[44px]' 
+                                className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                                btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={14}/><span>Add milestone</span></span>} 
+                                alt_txt='add milestone btn' 
+                                onClick={handleAddMilestone}
+                            />
+                        </div>          
+                    }            
                 </div>
             </div>
         : 
