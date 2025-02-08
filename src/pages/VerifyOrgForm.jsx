@@ -133,7 +133,7 @@ const VerifyOrgForm = () => {
                     telegram: telegramLink,
                     discord: discordLink
                 },
-                status: 'pending',
+                status: 'approved',       // new flow
                 img: imageUrl || pfp
             }
             
@@ -143,12 +143,13 @@ const VerifyOrgForm = () => {
                 const errorObj = {organisationHandle: 'Oops! The Handle is already taken. Please try a different one.'};
                 setErrors(errorObj);
                 scrollToTop();
+                setIsLoading(false);
                 return;
             }
 
             // notification to be created for Admin as someone raised a req to become an org
             const notification = {
-                msg: `Company ${name} has requested to become a sponsor.`,
+                msg: `Company ${name} has joined as a WPL sponsor.`,
                 type: 'org_request',
                 fromId: `${user_id}`,
                 project_id: res._id

@@ -18,7 +18,7 @@ import {
     AccordionTrigger,
 } from "../components/ui/accordion";
 import FancyButton from '../components/ui/FancyButton';
-import { approveOrgByAdmin, createNotification, getOrgById } from '../service/api';
+import { createNotification, getOrgById } from '../service/api';
 import { displaySnackbar } from '../store/thunkMiddleware';
 
 const RequestsPage = () => {

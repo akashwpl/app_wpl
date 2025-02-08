@@ -23,7 +23,7 @@ import {
 import FancyButton from '../components/ui/FancyButton';
 import { BASE_URL, getTimestampFromNow, ROLES } from '../lib/constants';
 import { storage } from '../lib/firebase';
-import { createOpenProject, getUserOrgs } from '../service/api';
+import { createNotification, createOpenProject, createProject, getAdmins, getUserOrgs } from '../service/api';
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import Spinner from '../components/ui/spinner';
@@ -277,29 +277,32 @@ const   AddProjectPage = () => {
                 "milestones": updatedMilestones
             }
 
-            // create open project
+            let resp;
             if(isOpenBounty) {
-                const resp = await createOpenProject(data);
+                // create open project
+                resp = await createOpenProject(data);
+            } else {
+                resp = await createProject(data);
+                console.log('Gated resp',resp);
+            }
+
+            if(resp?.data?.project._id) {
+                const notification = {
+                    msg: `${title} bounty is awaiting your approval...`,
+                    type: 'project_req',
+                    fromId: `${user_id}`,
+                    project_id: resp?.data?.project._id
+                }
+    
+                const adminList = await getAdmins();
+                adminList.data.map(async(admin) => {
+                    const notiRes = await createNotification({...notification, user_id: admin._id});
+                });
+
                 setCreatedProjectId(resp?.data?.project?._id);
                 setIsCreatingProject(false);
                 setSubmitted(true);
-                return; 
             }
-            
-            const response = await fetch(`${BASE_URL}/projects/create/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token_app_wpl')}`
-                },
-                body: JSON.stringify(data)
-            }).then(res => res.json())
-            .then(data => {
-                setCreatedProjectId(data?.data?.project?._id);
-                setIsCreatingProject(false);
-            })
-
-            setSubmitted(true);
         }
     };
 
