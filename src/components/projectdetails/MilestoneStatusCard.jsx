@@ -36,7 +36,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
         queryKey: ["openMilestoneSubmissions", milestoneData?._id],
         queryFn: () => getOpenMilestoneSubmissions(milestoneData?._id),
         enabled: !!projectDetails?.isOpenBounty,
-    })
+    }) 
 
     useEffect(() => {
         if(!isLoadingOpenMilestoneSubmissions && projectDetails?.isOpenBounty) {
@@ -244,6 +244,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                                 disabled={milestoneData?.status != 'idle' && milestoneData?.status != 'ongoing'}
                             />
                         :
+                        user_role != 'admin' &&
                         <FancyButton 
                             src_img={btnImg} 
                             hover_src_img={btnHoverImg}

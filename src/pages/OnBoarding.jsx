@@ -647,7 +647,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
               hover_src_img={loginBtnHoverImg} 
               img_size_classes='w-[500px] h-[44px]' 
               className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-              btn_txt='Continue as a contributor'  
+              btn_txt='Continue as a Sponsor'  
               alt_txt='project apply btn' 
               onClick={() => {setApplyChoice('sponsor')}}
             />

@@ -2,10 +2,10 @@ import { ArrowLeft, ArrowRight, CircleCheck, CircleX, Download } from 'lucide-re
 import React, { useEffect, useState } from 'react'
 import btnPng from '../assets/images/leaderboard_btn.png'
 import { useNavigate } from 'react-router-dom'
-import { approveOrgByAdmin, createNotification, getAllOrgs } from '../service/api'
 import { useQuery } from '@tanstack/react-query'
 import { useDispatch, useSelector } from 'react-redux'
 import { displaySnackbar } from '../store/thunkMiddleware'
+import { adminOpenProjectApproveOrReject, adminProjectApproveOrReject, createNotification, getPendingProjects } from '../service/api'
 
 
 const Requests = () => {
@@ -17,34 +17,40 @@ const Requests = () => {
     const [filteredReq, setFilteredReq] = useState([])
     const itemsPerPage = 8
 
-    const {data: allOrganisations, isLoading: isLoadingAllOrganisations, refetch} = useQuery({
-        queryKey: ['allOrganisations'],
-        queryFn: () => getAllOrgs(),
+    const {data: allPendingProjects, isLoading: isLoadingallPendingProjects, refetch: refetchPendingProjects} = useQuery({
+        queryKey: ['allPendingProjects'],
+        queryFn: () => getPendingProjects(),
     })
 
     useEffect(() => {
-        if(!isLoadingAllOrganisations) {
-            const pendingReqs = allOrganisations.filter(org => {
-                return org.status === 'pending'
-            })
-            setFilteredReq(pendingReqs);
+        if(!isLoadingallPendingProjects) {
+            console.log('pendingProj',allPendingProjects);
+            
+            setFilteredReq(allPendingProjects);
         }
-    },[isLoadingAllOrganisations, allOrganisations])
+    },[isLoadingallPendingProjects, allPendingProjects])
 
-    const handleAcceptRejectRequest = async (id, userId, orgHandle, status) => {
+    const handleAcceptRejectRequest = async (id, userId, title, bountyType, status) => {
         const dataObj = { isApproved: status }
-        const res = await approveOrgByAdmin(id, dataObj);
+        let res;
+        if(!bountyType) {
+            res = await adminProjectApproveOrReject(id, dataObj);
+        } else {
+            res = await adminOpenProjectApproveOrReject(id, dataObj);
+        }
+        
         if(res._id) {
             const notiObj = {
-                msg: `Admin has ${status ? "approved" : "rejected"} your request to become a sponsor.`,
-                type: 'response_msg',
+                msg: `Admin has ${status ? "approved" : "rejected"} your bounty: ${title}.`,
+                type: 'project_req',
                 fromId: user_id,
                 user_id: userId,
+                project_id: id
             }
             const res = await createNotification(notiObj)
-            dispatch(displaySnackbar(`You have ${status ? 'Approved' : 'Rejected'} ${orgHandle} organisation successfully.`))
+            dispatch(displaySnackbar(`You have successfully ${status ? 'Approved' : 'Rejected'} the bounty: ${title}.`))
         } 
-        refetch();
+        refetchPendingProjects();
     }
 
     const indexOfLastItem = currentPage * itemsPerPage
@@ -58,14 +64,14 @@ const Requests = () => {
       pageNumbers?.push(i);
     }
 
-    const navigateToRequests = (id) => {
-        navigate(`/requests/${id}`)
+    const navigateToProjects = (id) => {
+        navigate(`/projectdetails/${id}`)
     }   
 
     return (
         <div className='size-full'>
             <div className='mx-20 mt-28'>
-                <h2 className='font-gridular text-xl text-primaryYellow'>Requests to Join WPL as Sponsor</h2>
+                <h2 className='font-gridular text-xl text-primaryYellow'>Bounty requests from WPL Sponsors</h2>
 
                 {/* TABLE */}
                 <div className='mt-8'>
@@ -88,20 +94,28 @@ const Requests = () => {
                                     </div>
                                     <div className="border border-dashed border-white88 w-full"></div>
                                     <div className='max-h-[515px] overflow-y-hidden'>
-                                        {currentData?.map((org, index) => (
+                                        {currentData?.map((proj, index) => (
                                             <div 
                                                 key={index} className={`grid grid-cols-10 gap-2 py-3 items-center cursor-pointer px-5 ${index == 4 ? "" : "border-b border-white7 hover:bg-white12"}`}>
                                                 <div className='text-[14px] col-span-1 text-white88 font-inter'>{index + 1}</div>
                                                 <div className='text-[14px] col-span-2 text-start text-white88 font-inter'>
-                                                    <div onClick={() =>navigateToRequests(org._id)} className='flex flex-col'>
-                                                        {/* <p className='text-white88 text-[14px]'>{org?.user?.displayName}</p> */}
-                                                        <p className='text-white88 text-[14px]'>@{org?.organisationHandle}</p>
+                                                    <div 
+                                                        onClick={() =>navigateToProjects(proj._id)} 
+                                                        className='flex flex-col'
+                                                    >
+                                                        {/* <p className='text-white88 text-[14px]'>{proj?.user?.displayName}</p> */}
+                                                        <p className='text-white88 text-[14px]'>{proj?.title}</p>
                                                     </div>
                                                 </div>
-                                                <div onClick={() =>navigateToRequests(org._id)} className='text-[14px] col-span-5 text-white88 font-inter truncate'>{org?.description}</div>
+                                                <div 
+                                                    onClick={() =>navigateToProjects(proj._id)} 
+                                                    className='text-[14px] col-span-5 text-white88 font-inter truncate'
+                                                >
+                                                    {proj?.description}
+                                                </div>
                                                 <div className='col-span-2 flex justify-between w-[90px]'>
-                                                    <CircleCheck onClick={() => handleAcceptRejectRequest(org._id,org.userId,org.organisationHandle,true)} className='text-cardGreenText/70' size={30} />
-                                                    <CircleX onClick={() => handleAcceptRejectRequest(org._id,org.userId,org.organisationHandle,false)} className='text-cardRedText/70' size={30} />
+                                                    <CircleCheck onClick={() => handleAcceptRejectRequest(proj._id,proj.owner_id,proj.title,proj.isOpenBounty,true)} className='text-cardGreenText/70' size={30} />
+                                                    <CircleX onClick={() => handleAcceptRejectRequest(proj._id,proj.owner_id,proj.title,proj.isOpenBounty,false)} className='text-cardRedText/70' size={30} />
                                                 </div>
                                             </div>
                                         ))}

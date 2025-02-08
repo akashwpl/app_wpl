@@ -113,9 +113,9 @@ const Notifications = () => {
                               {/* <img src={notification.icon} alt='wpl' className='size-[24px]' /> */}
                               <p className='text-[14px] font-inter text-white88 leading-[20px]'>
                                 {notification?.msg}
-                                {notification?.type === 'org_request' &&
+                                {/* {notification?.type === 'proj_request' &&
                                   <span onClick={() => {navigate(`/requests/${notification.project_id}`);updateNotification(notification._id, 'read')}} className='ml-1 bg-white12 text-primaryYellow cursor-pointer rounded-md px-2 py-1 text-[12px]'>View request <ExternalLink size={12} className='inline-block'/></span>
-                                }
+                                } */}
                                 {notification?.type === 'project_req' &&
                                   <span onClick={() => {navigate(`/projectdetails/${notification.project_id}`);updateNotification(notification._id, 'read')}} className='ml-1 bg-white12 text-primaryYellow cursor-pointer rounded-md px-2 py-1 text-[12px]'>Project details <ExternalLink size={12} className='inline-block'/></span>
                                 }

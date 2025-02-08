@@ -186,14 +186,15 @@ export const getAllOrgs = async () => {
     }
 }
 
-export const approveOrgByAdmin = async (id, data) => {
-    try {
-        const response = await axiosInstance.post(`organisation/updateStatus/${id}`, data)
-        return response.data.data
-    } catch (error) {
-        handleForbiddenError(error)
-    }
-}
+// Not needed as per new flow
+// export const approveOrgByAdmin = async (id, data) => {
+//     try {
+//         const response = await axiosInstance.post(`organisation/updateStatus/${id}`, data)
+//         return response.data.data
+//     } catch (error) {
+//         handleForbiddenError(error)
+//     }
+// }
 
 export const getLeaderboardData = async () => {
     try {
@@ -249,6 +250,15 @@ export const createOpenProject = async (data) => {
     }
 }
 
+export const createProject = async (data) => {
+    try {
+        const response = await axiosInstance.post('/projects/create/', data)
+        return response.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
 export const updateOpenProjectDetails = async (id, updData) => {
     try {
         const response = await axiosInstance.put(`/openProjects/updateWithMilestone/${id}`, updData)
@@ -288,6 +298,33 @@ export const getOpenMilestoneSubmissions = async (milestone_id) => {
 export const updOpenMilestoneSubmissions = async (submission_id, data) => {
     try {
         const response = await axiosInstance.post(`/openSubmissions/update/${submission_id}`, data)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const getPendingProjects = async () => {
+    try {
+        const response = await axiosInstance.get(`/projects/pending`);
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const adminProjectApproveOrReject = async (id,data) => {
+    try {
+        const response = await axiosInstance.put(`/projects/approveOrReject/${id}`, data);
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const adminOpenProjectApproveOrReject = async (id,data) => {
+    try {
+        const response = await axiosInstance.put(`/openProjects/approveOrReject/${id}`, data);
         return response.data.data
     } catch (error) {
         handleForbiddenError(error)
