@@ -26,6 +26,7 @@ import Snackbar from "./components/ui/Snackbar"
 import { useSelector } from "react-redux"
 import LandingPageIFrame from "./pages/LandingPageIFrame"
 import GrantsPage from "./pages/GrantsPage"
+import GrantsDetailPage from "./pages/GrantsDetailsPage"
 
 function App() {
 
@@ -62,6 +63,7 @@ function App() {
           <Route path="/forgetpassword" element={<ForgetPasswordPage />} />
           <Route path="/wplprogram" element={<LandingPageIFrame />} />
           <Route path="/grants" element={<GrantsPage />} />
+          <Route path="/grantsdetail" element={<GrantsDetailPage />} />
         </Routes>
       </div>
       {snackBar?.show && (
