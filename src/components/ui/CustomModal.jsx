@@ -22,7 +22,7 @@ const CustomModal = ({ isOpen, closeModal, children }) => {
                     border: 'none',
                     borderRadius: '6px',
                     background: 'transparent',
-                    zIndex: '999'
+                    zIndex: 999
                 }
             }}
         >

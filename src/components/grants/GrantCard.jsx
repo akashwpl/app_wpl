@@ -5,9 +5,16 @@ import UserPng from '../../assets/images/user-default.png'
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png';
 import btnImg from '../../assets/svg/btn_subtract_semi.png';
 import FancyButton from '../ui/FancyButton';
+import { useNavigate } from 'react-router-dom';
 
 
 const GrantCard = () => {
+  const navigate = useNavigate()
+
+  const navigateToGrantDetails = () => {
+    navigate('/grantsdetail')
+  }
+
   return (
     <div className='bg-[#050E52] p-6 rounded-[8px] flex flex-col gap-4 w-[390px] mt-1'>
       <img src={grantPlaceholderPng} alt='grant image' className='w-[346px] h-[170px]'/>
@@ -35,7 +42,7 @@ const GrantCard = () => {
         className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
         btn_txt='Apply'  
         alt_txt='project apply btn' 
-        onClick={() => {}}
+        onClick={() => {navigateToGrantDetails()}}
       />
     </div>
   )
