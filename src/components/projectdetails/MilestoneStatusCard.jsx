@@ -68,7 +68,6 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
             hasError = true;
             return
         } else {
-            setLink(linkInput);
             setLinkError(null);
         }
     
@@ -77,7 +76,6 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
             hasError = true;
             return
         } else {
-            setDesc(descriptionTextarea)
             setDescriptionError(null);
         }
 
@@ -158,7 +156,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                     <p className='text-[12px] text-white32 leading-[16px]'>{projectDetails?.isOpenBounty ? "Project" : "Milestone"} Status</p>
                 </div>
                 <div className='flex items-center gap-1 font-inter'>
-                    {(projectDetails?.isOpenBounty && projectDetails?.status == 'idle') || milestoneData?.status == 'idle' ? 
+                    {milestoneData?.status == 'idle' ? 
                         <>
                             <img src={hourglassSVG} alt='hourglass' className='size-[14px]'/>
                             <p className='text-white48 text-[12px] leading-[14px]'>Idle</p>
@@ -264,15 +262,14 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                 (milestoneData?.status == 'idle' || milestoneData?.status == 'ongoing') && user_role == 'user' ?
                     <FancyButton 
                         src_img={btnImg} 
-                        hover_src_img={btnHoverImg}
+                        hover_src_img={isUserSubmittedOpenMS ? btnImg : btnHoverImg}
                         img_size_classes='w-[342px] h-[44px]' 
                         className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                         btn_txt={`${isUserSubmittedOpenMS ? 'submitted' : 'submit'}`}  
                         alt_txt='milestone submit btn' 
                         onClick={() => setShowSubmitModal(true)}
+                        disabled={isUserSubmittedOpenMS}
                     />
-                
-
                     : <></>
                 }
                         {/* 
@@ -348,28 +345,30 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                         <div className='h-[1px] bg-primaryYellow w-full mt-2 mb-5'/>
                         <div className='flex flex-col'>
                             <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Link <span className='text-primaryRed'>*</span></label>
-                            <input className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' placeholder='project link..'/>
+                            <input className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' value={link} placeholder='project link..'/>
                             <p className='text-[11px] text-white32 font-inter mt-[2px]'>Prefered links: Google, Notion, Github or Figma</p>
                             {linkError && <p className='text-primaryRed text-[12px] mt-1'>{linkError}</p>}
                         </div>
                         <div className='flex flex-col mt-4'>
                             <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Description <span className='text-primaryRed'>*</span></label>
-                            <textarea rows={4} className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' placeholder='Fixed UI Bug'/>
+                            <textarea rows={4} className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' value={desc} placeholder='Fixed UI Bug'/>
                             {descriptionError && <p className='text-primaryRed text-[12px] mt-1'>{descriptionError}</p>}
                         </div>
                     </div>
 
-                    <div className='mt-6'>
-                        <FancyButton 
-                            src_img={btnImg} 
-                            hover_src_img={btnHoverImg} 
-                            img_size_classes='w-[500px] h-[44px]' 
-                            className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-                            btn_txt='submit'  
-                            alt_txt='project apply btn' 
-                            onClick={handleSubmitMilestone}
-                        />
-                    </div>
+                    {!isUserSubmittedOpenMS &&
+                        <div className='mt-6'>
+                            <FancyButton 
+                                src_img={btnImg} 
+                                hover_src_img={btnHoverImg} 
+                                img_size_classes='w-[500px] h-[44px]' 
+                                className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                                btn_txt='submit'  
+                                alt_txt='project apply btn' 
+                                onClick={handleSubmitMilestone}
+                            />
+                        </div>
+                    }
                 </div>
             </CustomModal>
 

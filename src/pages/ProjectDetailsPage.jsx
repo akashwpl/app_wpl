@@ -499,7 +499,7 @@ const ProjectDetailsPage = () => {
               :
 
               // bounty completed view for all user types
-              projectDetails?.status == 'completed' ?
+              projectDetails?.status == 'completed' || (projectDetails?.isOpenBounty && projectDetails?.milestones[0].status == 'completed') ?
                 <div className='text-primaryGreen flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been Completed</div>
               :
 
@@ -555,9 +555,10 @@ const ProjectDetailsPage = () => {
                       hover_src_img={menuBtnImgHover} 
                       img_size_classes='w-[162px] h-[44px]' 
                       className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                      btn_txt='Edit project' 
-                      alt_txt='project edit btn' 
-                      onClick={editProject}
+                      btn_txt='submissions' 
+                      alt_txt='view submissions btn' 
+                      onClick={() => setSelectedTab('submissions')}
+                      // onClick={editProject}
                     />
                   </div>
               :
