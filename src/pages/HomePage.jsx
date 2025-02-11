@@ -37,6 +37,7 @@ const HomePage = () => {
   const navigate = useNavigate();
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [trendingBounty, setTrendingBounty] = useState({})
+  const token = localStorage.getItem('token_app_wpl')
 
   const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
     queryKey: ["userDetails", user_id],
@@ -51,7 +52,7 @@ const HomePage = () => {
   })
 
   useEffect(() => {
-    if(!isLoadingAllProjects) {
+    if(!isLoadingAllProjects && token && user_role == 'user') {
       const filterProjects = allProjects?.filter((proj) => {
         return proj?.isOpenBounty && proj?.approvalStatus == 'approved'
       })
@@ -60,13 +61,11 @@ const HomePage = () => {
         return curr?.totalPrize > high?.totalPrize ? curr : high
       })
 
-      topProject.remain = calculateRemainingDaysAndHours(new Date(), topProject?.deadline)
+      topProject.remain = calculateRemainingDaysAndHours(new Date(), topProject?.deadline);
       setTrendingBounty(topProject)
     }
   },[isLoadingAllProjects])
   
-  const token = localStorage.getItem('token_app_wpl')
-
   if(user_role == 'admin') {
     return <AdminDashboard />
   }
