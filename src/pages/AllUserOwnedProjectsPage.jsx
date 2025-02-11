@@ -20,7 +20,9 @@ import saveBtnImg from '../assets/svg/menu_btn_subtract.png';
 const sponstTabs = [
     {id: 'ongoing', name: 'Live', isActive: true},
     {id: 'idle', name: 'All', isActive: false},
-    {id: 'closed', name: 'Completed', isActive: false}
+    {id: 'closed', name: 'Completed', isActive: false},
+    {id: 'pending', name: 'Pending', isActive: false},
+    {id: 'approved', name: 'Approved', isActive: false}
 ]
 
 const allTabs = [
@@ -78,12 +80,16 @@ const AllUserOwnedProjectsPage = () => {
         return userProjects?.projects?.owned?.filter((el) => {
             if(selectedTab == 'idle') {
                 return el?.status == "idle"
+            } else if(selectedTab == 'pending') {
+                return el?.approvalStatus == 'pending' && el?.status == "idle"
+            } else if(selectedTab == "approved") {
+                return el?.approvalStatus != 'pending' && el?.approvalStatus != 'rejected'
             }
             else if(selectedTab == 'closed') {
                 return (el?.status == 'closed' || el?.status == 'completed')
             } else {
-            return el?.status == selectedTab
-        }
+                return el?.status == selectedTab
+            }
         })
             ?.filter(project => {
                 const matchesType = project?.type?.toLowerCase() === 'bounty';

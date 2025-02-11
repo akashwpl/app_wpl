@@ -234,7 +234,8 @@ const EditProjectPage = () => {
                     image: projectDetails?.image,
                     currency: projCurrency,
                     deadline: lastMilestone?.deadline,
-                    roles: role
+                    roles: role,
+                    status: projectDetails?.status || 'idle'
                 },
                 milestones: updatedMilestones
             }
