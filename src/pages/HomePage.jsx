@@ -10,7 +10,7 @@ import KeepMoneyCard from '../components/cards/KeepMoneyCard'
 import WhyStarkNetCard from '../components/cards/WhyStarkNetCard'
 import RecentActivityCard from '../components/home/RecentActivityCard'
 import Statistics from '../components/home/Statistics'
-import { getUserDetails } from '../service/api'
+import { getAllProjects, getUserDetails } from '../service/api'
 import AdminDashboard from './AdminDashboard'
 import SponsorDashboard from './SponsorDashboard'
 
@@ -23,16 +23,20 @@ import exploreBtnImg from '../assets/svg/menu_btn_subtract.png'
 import sponsorCardPng from '../assets/images/loginSponsorCard.png'
 import HowItWorksCard from '../components/home/HowItWorksCard'
 import QuestionSVG from '../assets/icons/question.svg'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import SignInModal from '../components/SignInModal'
 import CustomModal from '../components/ui/CustomModal'
 
+import zapBlueSVG from '../assets/icons/pixel-icons/zap-blue.svg'
+import hourglassSVG from '../assets/icons/pixel-icons/hourglass.svg'
+import { calculateRemainingDaysAndHours } from '../lib/constants'
 
 const HomePage = () => {
 
   const { user_id, user_role } = useSelector((state) => state)
   const navigate = useNavigate();
-  const [showSignInModal, setShowSignInModal] = useState(false)
+  const [showSignInModal, setShowSignInModal] = useState(false);
+  const [trendingBounty, setTrendingBounty] = useState({})
 
   const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
     queryKey: ["userDetails", user_id],
@@ -40,6 +44,27 @@ const HomePage = () => {
     enabled: !!user_id,
   }) 
 
+  const { data: allProjects, isLoading: isLoadingAllProjects} = useQuery({
+    queryKey: ["allProjects"],
+    queryFn: getAllProjects,
+    enabled: !!user_id
+  })
+
+  useEffect(() => {
+    if(!isLoadingAllProjects) {
+      const filterProjects = allProjects?.filter((proj) => {
+        return proj?.isOpenBounty && proj?.approvalStatus == 'approved'
+      })
+
+      const topProject = filterProjects?.reduce((high, curr) => {
+        return curr?.totalPrize > high?.totalPrize ? curr : high
+      })
+
+      topProject.remain = calculateRemainingDaysAndHours(new Date(), topProject?.deadline)
+      setTrendingBounty(topProject)
+    }
+  },[isLoadingAllProjects])
+  
   const token = localStorage.getItem('token_app_wpl')
 
   if(user_role == 'admin') {
@@ -56,7 +81,6 @@ const HomePage = () => {
   const handleNavigateToSponsorSignUp = () => {
     navigate('/onboarding', {state: {fromHome: true}})
   }
-
 
   return (
     <div className='flex flex-row justify-between mt-4'>
@@ -94,13 +118,48 @@ const HomePage = () => {
 
       {/* right side */}
       <div className='flex flex-col gap-6 py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh] min-w-[350px] max-w-[350px]'>
-        <div onClick={handleNavigateToSponsorSignUp} className='w-full cursor-pointer'>
-          <img src={sponsorCardPng} alt='sponsor login'/>
-        </div>
-        {/* <WhyStarkNetCard />
-        <KeepMoneyCard /> */}
 
-        {/* <div className='border border-white12 border-dashed w-full my-4'></div> */}
+        {!token ?
+        <>
+          <div onClick={handleNavigateToSponsorSignUp} className='w-full cursor-pointer'>
+            <img src={sponsorCardPng} alt='sponsor login'/>
+          </div>
+          <div className='border border-white12 border-dashed w-full my-2'></div>
+        </>
+        :
+        <Link to={`projectdetails/${trendingBounty?._id}`} className='flex flex-col justify-between w-full h-[220px] bg-cardBlueBg hover:bg-cardBlueBg/15 rounded-md cursor-pointer'>
+          <div className='flex flex-row justify-between px-4 mt-3'>
+              <img width={40} src={trendingBounty?.image} alt="WPL PR details" />
+              <div className='flex flex-row py-1 gap-1 text-cardBlueText bg-[#233579] w-32 h-[25px] items-center rounded-md'>
+                  <img src={zapBlueSVG} alt='zap-blue' className='size-[14px] ml-2'/>
+                  <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Trending Bounty</p>
+              </div>
+          </div>
+          <p className='text-[16px] text-cardBlueText font-gridular leading-[19.2px] px-4'>{trendingBounty?.title}</p>
+          <p className='text-[13px] text-white48 font-inter leading-[15.6px] font-medium px-4 truncate text-ellipsis'>{trendingBounty?.description}</p>
+          {/* <div className='border border-white12 border-dashed w-full'></div> */}
+          {/* <div className='flex flex-row justify-between text-white32 px-4'>
+            <div className='flex flex-row items-center'>
+              <img src={clockSVG} alt='clock' className='size-[16px]'/>
+              <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Progress</p>
+            </div>
+            <p className='text-[13px] text-white font-inter leading-[15.6px] font-medium'>Milestone {milestoneName}</p>
+          </div> */}
+          <div className=' w-full'></div>
+          <div className='flex flex-row justify-between items-center px-4  text-white32 bg-white4 w-full h-[42px] border-t border-white12 border-dashed rounded-b-md'>
+            <div className='flex flex-row items-center'>
+              <img src={hourglassSVG} alt='hourglass' className='size-[16px]'/>
+              <p className='font-inter font-medium text-[13px] leading-[15.6px] ml-2'>Deadline</p>
+            </div>
+            <p className='text-[13px] text-white font-inter leading-[15.6px] font-medium'>
+              {trendingBounty?.remain?.days}D {trendingBounty?.remain?.hours}H
+            </p>
+          </div>
+        </Link>
+        }
+
+        {/* <WhyStarkNetCard /> */}
+        {/* <KeepMoneyCard /> */}        
 
         {/* <div onClick={navigateToFAQs} className='bg-[#9CD4EC1A] hover:bg-[#9cd4ec2c] rounded-md w-full px-4 py-2 flex items-center gap-3 cursor-pointer'>
           <div className='w-[20px] h-[20px]'>
@@ -112,7 +171,7 @@ const HomePage = () => {
           </div>
         </div> */}
 
-        <div className='border border-white12 border-dashed w-full'></div>
+        {/* <div className='border border-white12 border-dashed w-full'></div> */}
 
         {/* <div className='border border-white12 border-dashed w-full my-4'></div> */}
 
@@ -138,7 +197,7 @@ const HomePage = () => {
           <SignInModal setShowSignInModal={setShowSignInModal} />
         </div>
       </CustomModal>
-     
+
     </div>
   )
 }
