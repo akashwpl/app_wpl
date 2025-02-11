@@ -1,18 +1,21 @@
 import { ArrowRight } from 'lucide-react'
-import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import CustomModal from '../ui/CustomModal'
+import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { setIsSignInModalOpen } from '../../store/slice/userSlice'
 import SignInModal from '../SignInModal'
+import CustomModal from '../ui/CustomModal'
 
 const HowItWorksCard = () => {
   const token = localStorage.getItem('token_app_wpl')
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const [showsignInModal, setShowSignInModal] = useState(false)
 
   const handleNavigateToProfile = () => {
     if(!token){
-      setShowSignInModal(true)
+      handleOpenSignInModal()
     } else {
       navigate('/profile')
     }
@@ -20,11 +23,21 @@ const HowItWorksCard = () => {
 
   const handleParticipateInBounties = () => {
     if(!token){
-      setShowSignInModal(true)
+      handleOpenSignInModal()
     } else {
       navigate('/bounties')
     }
   }
+
+  const handleOpenSignInModal = () => {
+    dispatch(setIsSignInModalOpen(true))
+    setShowSignInModal(true)
+  }
+  const handleCloseSignInModal = () => {
+    dispatch(setIsSignInModalOpen(false))
+    setShowSignInModal(false)
+  }
+
 
   return (
     <div className='bg-white7 rounded-md p-4'>
@@ -54,8 +67,8 @@ const HowItWorksCard = () => {
       </div>
 
 
-      <CustomModal isOpen={showsignInModal} closeModal={() => setShowSignInModal(false)}>
-        <div onClick={() => setShowSignInModal(false)} className='bg-primaryDarkUI/90 h-screen w-screen overflow-hidden flex justify-center items-center'>
+      <CustomModal isOpen={showsignInModal} closeModal={() => handleCloseSignInModal()}>
+        <div onClick={() => handleCloseSignInModal()} className='bg-primaryDarkUI/90 h-screen w-screen overflow-hidden flex justify-center items-center z-50'>
           <SignInModal />
         </div>
       </CustomModal>

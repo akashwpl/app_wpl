@@ -30,13 +30,15 @@ import GrantsDetailPage from "./pages/GrantsDetailsPage"
 
 function App() {
 
-  const { snackBar } = useSelector(state => state)
+  const { snackBar, isSignInModalOpen } = useSelector(state => state)
 
   return (
     <div className="relative">
-      <div className="fixed top-0 left-0 w-full z-[100]">
-        <Navbar />
-      </div>
+      {!isSignInModalOpen && 
+        <div className="fixed top-0 left-0 w-full z-10">
+          <Navbar />
+        </div>
+      }
       <div className="mt-[64px]">
         <Routes>
           <Route path="/" element={<HomePage />} />

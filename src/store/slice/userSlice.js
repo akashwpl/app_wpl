@@ -10,7 +10,7 @@ const initialState = {
         message: "",
         show: false,
     },
-
+    isSignInModalOpen: false,
 }
 
 const userSlice = createSlice({
@@ -31,16 +31,19 @@ const userSlice = createSlice({
                 text: action.payload,
                 show: true,
             };
-          },
-          hideSnackbar: (state) => {
+        },
+        hideSnackbar: (state) => {
             state.snackBar = {
                 text: '',
                 show: false,
             };
-          },
+        },
+        setIsSignInModalOpen: (state, action) => {
+            state.isSignInModalOpen = action.payload;
+        }
     },
 })
 
-export const { setUserDetails, setUserId, setUserRole, showSnackbar, hideSnackbar } = userSlice.actions;
+export const { setUserDetails, setUserId, setUserRole, showSnackbar, hideSnackbar, setIsSignInModalOpen } = userSlice.actions;
 
 export default userSlice.reducer
