@@ -53,6 +53,8 @@ const ProjectDetailsPage = () => {
   const [username, setUsername] = useState('A user');
   const [openMilestoneSubmissions, setOpenMilestoneSubmissions] = useState([]);
 
+  const token = localStorage.getItem('token_app_wpl')
+
   const {data: userDetails, isLoading: isLoadingUserDetails} = useQuery({
     queryKey: ["userDetails", user_id],
     queryFn: () => getUserDetails(user_id),
@@ -79,6 +81,7 @@ const ProjectDetailsPage = () => {
     queryFn: () => getProjectSubmissions(id),
   })
 
+  // To check if the user has applied to bounty or not
   useEffect(() => {
     !isLoadingProjectSubmissions && 
     projectSubmissions?.map((project) => {
@@ -232,8 +235,6 @@ const ProjectDetailsPage = () => {
     }
   }
 
-  const token = localStorage.getItem('token_app_wpl')
-
   const allMilestonesCompleted = useMemo(() => {
     return projectDetails?.milestones?.every(milestone => milestone.status == 'completed')
   }, [projectDetails])
@@ -261,6 +262,16 @@ const ProjectDetailsPage = () => {
     refetchProjectDetails();
   }
 
+  // Not allowing users to view pending or rejected bounties, those are only accessible to admin and sponsor
+  useEffect(() => {
+    if(!isLoadingProjectDetails) {
+      if(projectDetails?.approvalStatus != 'approved' && (user_role == 'user' || !token)) {
+        dispatch(displaySnackbar(`You are not allowed to check this page`));
+        navigate('/')
+      }
+    }
+  },[isLoadingProjectDetails])
+  
   return (
     <div className='relative'>
       <div>
@@ -277,6 +288,7 @@ const ProjectDetailsPage = () => {
       {!showCloseProjectModal ?
       <>
         <div className='flex justify-center gap-20 mx-44'>
+          {/* Left side */}
           <div>
           
             <div className='md:min-w-[600px]'>
@@ -411,16 +423,22 @@ const ProjectDetailsPage = () => {
             </div>
           </div>
 
+          {/* Right side */}
           <div className='mt-[35px]'>
             <div className='w-[372px] h-fit pb-4 bg-white4 rounded-[10px]'>
+              {/* project dealine  */}
               <div className='flex items-center gap-2 mx-4 py-4'>
                 <img src={clockSVG} alt='clock' className='size-[16px]'/>
                 <p className='text-[14px] text-white32 leading-[20px] font-inter'>Project Deadline in <span className='text-white88 ml-1'>{remain.days < 0 ? <span className=''>--</span> : `${remain.days} D ${remain.hours} H`}</span></p>
               </div>
+
+              {/* loader line */}
               <div className='h-[1px] w-full'>
                 <div className='h-[1px] w-full bg-primaryYellow'/>
                 <div className='h-[1px] translate-y-[-1px] w-full bg-white7'/>
               </div>
+
+              {/* Total Prize section */}
               <div className='flex flex-col justify-center items-center mt-8'>
                 <p className='text-[14px] text-white32 leading-4 font-inter'>Total Prizes</p>
                 <p className='text-[24px] text-white88 leading-[28px] font-gridular flex items-center gap-2'>
@@ -429,7 +447,9 @@ const ProjectDetailsPage = () => {
                 </p>
               </div>
 
+              {/* Milestone status card for Open / Gated bounties */}
               {!projectDetails?.isOpenBounty ?
+                // for gated bounties
                 <div className='bg-white7 border border-white4 rounded-[8px] px-3 mx-4 mt-4'>
                   <Accordion type="single" defaultValue="item-0" collapsible>
                     {projectDetails?.milestones?.map((milestone, index) => (
@@ -448,118 +468,192 @@ const ProjectDetailsPage = () => {
                   </Accordion>
                 </div>
               :
+                // for open bounties
                 <div className='bg-white7 border border-white4 rounded-[8px] p-3 mx-4 mt-4'>
                     {projectDetails?.milestones?.map((milestone, index) => (
                       <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails} username={username} />
                     ))}
                 </div>
               }
-                
-              {isOwner ?
-                projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div>
-                : projectDetails?.status == 'completed' ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
-                : 
-                <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
+
+              {/* below milestone card section   */}
+              {
+              // user not logged in view
+              !token ?
+                <div className='mx-4 mt-4'>
                   <FancyButton 
-                    src_img={closeProjBtnImg} 
-                    hover_src_img={closeProjBtnHoverImg}
-                    img_size_classes='w-[162px] h-[44px]'
-                    className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5'
-                    btn_txt='Close project'
-                    alt_txt='project close btn'
-                    onClick={() => setShowCloseProjectModal(true)}
-                  />
-                  <FancyButton 
-                    src_img={menuBtnImg} 
-                    hover_src_img={menuBtnImgHover} 
-                    img_size_classes='w-[162px] h-[44px]' 
-                    className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                    btn_txt='Edit project' 
-                    alt_txt='project edit btn' 
-                    onClick={editProject}
+                    src_img={btnImg} 
+                    hover_src_img={btnHoverImg} 
+                    img_size_classes='w-[342px] h-[44px]' 
+                    className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5`}
+                    btn_txt={'login'} 
+                    alt_txt='login btn' 
+                    onClick={() => {navigate('/onboarding')}}
                   />
                 </div>
+              : 
+
+              // bounty closed view for all user types
+              projectDetails?.status == 'closed' ? 
+                <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div>
               :
-                <>
-                  {projectDetails?.status == 'closed' ? <div className='text-primaryRed flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been closed</div> : 
-                    projectDetails?.status == 'completed' ? <div className='text-primaryYellow flex justify-center items-center gap-1 mt-4 font-gridular'><TriangleAlert size={20}/> Project has been Completed</div>
-                    :
-                    token && projectDetails?.isOpenBounty && user_role == 'admin' && projectDetails?.status == 'idle' && projectDetails?.approvalStatus == 'pending' ?
-                    <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
-                      <FancyButton 
-                        src_img={menuBtnImg} 
-                        hover_src_img={menuBtnImgHover} 
-                        img_size_classes='w-[162px] h-[44px]' 
-                        className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                        btn_txt='Accept' 
-                        alt_txt='project accept btn' 
-                        onClick={() => handleAcceptRejectRequest(projectDetails._id,projectDetails.owner_id,projectDetails.title,projectDetails.isOpenBounty,true)}
-                      />
-                      <FancyButton 
-                        src_img={closeProjBtnImg} 
-                        hover_src_img={closeProjBtnHoverImg}
-                        img_size_classes='w-[162px] h-[44px]'
-                        className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5'
-                        btn_txt='Reject'
-                        alt_txt='project reject btn'
-                        onClick={() => handleAcceptRejectRequest(projectDetails._id,projectDetails.owner_id,projectDetails.title,projectDetails.isOpenBounty,false)}
-                      />
-                    </div>
-                    :
-                    projectDetails?.approvalStatus != 'pending' ? 
-                    <div className='mx-4 mt-4'>
-                      <FancyButton 
-                        src_img={btnImg} 
-                        // hover_src_img={isProjApplied ? btnImg : btnHoverImg} 
-                        img_size_classes='w-[342px] h-[44px]' 
-                        className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5 cursor-not-allowed`}
-                        btn_txt={projectDetails?.approvalStatus} 
-                        alt_txt='project admin btn' 
-                        // onClick={applyForProject}
-                        disabled={true}
-                      />
-                    </div>
-                    :
-                    projectDetails?.status != "idle" || projectDetails?.isOpenBounty 
-                      ? projectDetails?.status != 'closed' || projectDetails?.status != 'completed' ? null :
-                    <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
-                      <img src={warningSVG} alt='warning' className='size-[20px]'/>
-                      <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit a {projectDetails?.isOpenBounty ? "bounty" : "milestone"} only ONCE. No backsies.</p>
-                    </div>
-                    : 
-                    token ? <div className='mx-4 mt-4'>
-                      <FancyButton 
-                        src_img={btnImg} 
-                        hover_src_img={isProjApplied ? btnImg : btnHoverImg} 
-                        img_size_classes='w-[342px] h-[44px]' 
-                        className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5 ${isProjApplied && 'cursor-not-allowed'}`}
-                        btn_txt={isProjApplied ? 'Applied' : 'Apply'} 
-                        alt_txt='project apply btn' 
-                        onClick={applyForProject}
-                        disabled={isProjApplied}
-                      />
-                    </div>
-                    :
-                    <div className='mx-4 mt-4'>
-                      <FancyButton 
-                        src_img={btnImg} 
-                        hover_src_img={isProjApplied ? btnImg : btnHoverImg} 
-                        img_size_classes='w-[342px] h-[44px]' 
-                        className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5 ${isProjApplied && 'cursor-not-allowed'}`}
-                        btn_txt={'Login'} 
-                        alt_txt='project apply btn' 
-                        onClick={() => navigate('/onboarding')}
-                        disabled={isProjApplied}
-                      />
-                    </div>
-                  }
-                  </>
+
+              // bounty completed view for all user types
+              projectDetails?.status == 'completed' ?
+                <div className='text-primaryGreen flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been Completed</div>
+              :
+
+              // for sponsor view
+              isOwner && user_role == 'sponsor' ?
+
+                // sponsor project approval dependent UI updates
+                projectDetails?.approvalStatus == 'pending' ?
+
+                  // project waiting for admin approval
+                  <div className='mx-4 mt-4'>
+                    <FancyButton 
+                      src_img={btnImg} 
+                      img_size_classes='w-[342px] h-[44px]' 
+                      className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5`}
+                      btn_txt={'waiting for admin approval'} 
+                      alt_txt='admin pending approval btn' 
+                      disabled={true}
+                    />
+                  </div>
+                :
+                  projectDetails?.approvalStatus == 'rejected' ?
+
+                  // project rejected by admin
+                  <div className='mx-4 mt-4'>
+                    <FancyButton 
+                      src_img={btnImg} 
+                      img_size_classes='w-[342px] h-[44px]' 
+                      className={`font-gridular text-[14px] leading-[8.82px] text-primaryRed mt-1.5`}
+                      btn_txt={'Rejected by admin'} 
+                      alt_txt='admin rejected approval btn' 
+                      disabled={true}
+                    />
+                  </div>
+                :
+                  // project approved by admin
+                  <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
+
+                    {/* Bounty close btn */}
+                    <FancyButton 
+                      src_img={closeProjBtnImg} 
+                      hover_src_img={closeProjBtnHoverImg}
+                      img_size_classes='w-[162px] h-[44px]'
+                      className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5'
+                      btn_txt='Close project'
+                      alt_txt='project close btn'
+                      onClick={() => setShowCloseProjectModal(true)}
+                    />
+
+                    {/* bounty edit btn */}
+                    <FancyButton 
+                      src_img={menuBtnImg} 
+                      hover_src_img={menuBtnImgHover} 
+                      img_size_classes='w-[162px] h-[44px]' 
+                      className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                      btn_txt='Edit project' 
+                      alt_txt='project edit btn' 
+                      onClick={editProject}
+                    />
+                  </div>
+              :
+                // for Admin project flow
+                user_role == 'admin' ?
+                
+                // project is in pending status and requires admin approval
+                projectDetails?.approvalStatus == 'pending' ?
+                  <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
+                    <FancyButton 
+                      src_img={menuBtnImg} 
+                      hover_src_img={menuBtnImgHover} 
+                      img_size_classes='w-[162px] h-[44px]' 
+                      className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                      btn_txt='Accept' 
+                      alt_txt='admin project accept btn' 
+                      onClick={() => handleAcceptRejectRequest(projectDetails._id,projectDetails.owner_id,projectDetails.title,projectDetails.isOpenBounty,true)}
+                    />
+                    <FancyButton 
+                      src_img={closeProjBtnImg} 
+                      hover_src_img={closeProjBtnHoverImg}
+                      img_size_classes='w-[162px] h-[44px]'
+                      className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5'
+                      btn_txt='Reject'
+                      alt_txt='admin project reject btn'
+                      onClick={() => handleAcceptRejectRequest(projectDetails._id,projectDetails.owner_id,projectDetails.title,projectDetails.isOpenBounty,false)}
+                    />
+                  </div>
+                :
+                  // project is not in pending status
+                  <div className='mx-4 mt-4'>
+                    <FancyButton 
+                      src_img={btnImg} 
+                      img_size_classes='w-[342px] h-[44px]' 
+                      className={`font-gridular text-[14px] leading-[8.82px] ${projectDetails?.approvalStatus == 'approved' ? 'text-primaryGreen' : 'text-primaryRed'} mt-1.5`}
+                      btn_txt={`bounty ${projectDetails?.approvalStatus}`} 
+                      alt_txt='project admin approval status btn' 
+                      disabled={true}
+                    />
+                  </div>
+                : 
+                //user view
+                // user_role == 'user' ?
+
+                // for Gated bounties
+                !projectDetails?.isOpenBounty ?
+
+                // user apply button condition
+                projectDetails?.status == 'idle' ?
+
+                  // user apply btn for bounty
+                  <div className='mx-4 mt-4'>
+                    <FancyButton 
+                      src_img={btnImg} 
+                      hover_src_img={isProjApplied ? btnImg : btnHoverImg} 
+                      img_size_classes='w-[342px] h-[44px]' 
+                      className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5}`}
+                      btn_txt={isProjApplied ? 'Applied' : 'Apply'} 
+                      alt_txt='project apply btn' 
+                      onClick={applyForProject}
+                      disabled={isProjApplied}
+                    />
+                  </div>
+                :
+                
+                // situation for ongoing projects
+                projectDetails?.status == 'ongoing' ?
+
+                // if user was selected to work on project
+                projectDetails?.user_id?._id === user_id ?
+                  <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
+                    <img src={warningSVG} alt='warning' className='size-[20px]'/>
+                    <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit a milestone only ONCE. No backsies.</p>
+                  </div>
+                :
+
+                  // if another user got selected to work on project
+                  <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
+                    <img src={warningSVG} alt='warning' className='size-[20px]'/>
+                    <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>Oops! Bounty already assigned. Meanwhile, check other bounties on the platform.</p>
+                  </div>
+                :
+                null
+                :
+                <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
+                  <img src={warningSVG} alt='warning' className='size-[20px]'/>
+                  <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit a milestone only ONCE. No backsies.</p>
+                </div>
               }
             </div>
           </div>
         </div>
       </>
-      : <div className='flex justify-center items-center mt-10'>
+      : 
+        // Close project Modal
+        <div className='flex justify-center items-center mt-10'>
           <div className='w-[480px] px-4 flex flex-col justify-center items-center'>
               <div className='border border-dashed border-primaryRed/15 bg-primaryRed/10 w-full flex gap-2 p-2 rounded-md'>
                 <div className=''>

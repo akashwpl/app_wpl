@@ -15,11 +15,12 @@ import { displaySnackbar } from '../../store/thunkMiddleware';
 import heartSVG from '../../assets/icons/pixel-icons/heart-handshake.svg';
 import hourglassSVG from '../../assets/icons/pixel-icons/hourglass2.svg';
 import questionSVG from '../../assets/icons/pixel-icons/question-mark.svg';
+import warningRedSVG from '../../assets/icons/pixel-icons/warning-red.svg';
 import warningSVG from '../../assets/icons/pixel-icons/warning.svg';
 import clockSVG from '../../assets/icons/pixel-icons/watch.svg';
 import { useQuery } from '@tanstack/react-query';
 
-const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProjectDetails, username }) => {
+const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProjectDetails, username }) => {
 
     const {user_id, user_role} = useSelector(state => state)
     const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -28,6 +29,9 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
 
     const [linkError, setLinkError] = useState(null);
     const [descriptionError, setDescriptionError] = useState(null);
+
+    const [link, setLink] = useState('');
+    const [desc, setDesc] = useState('');
 
     const [showMilestoneSubmissionModal, setShowMilestoneSubmissionModal] = useState(false);
     const [isUserSubmittedOpenMS, setIsUserSubmittedOpenMS] = useState(false);
@@ -64,6 +68,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             hasError = true;
             return
         } else {
+            setLink(linkInput);
             setLinkError(null);
         }
     
@@ -72,6 +77,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             hasError = true;
             return
         } else {
+            setDesc(descriptionTextarea)
             setDescriptionError(null);
         }
 
@@ -152,7 +158,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                     <p className='text-[12px] text-white32 leading-[16px]'>{projectDetails?.isOpenBounty ? "Project" : "Milestone"} Status</p>
                 </div>
                 <div className='flex items-center gap-1 font-inter'>
-                    {milestoneData?.status == 'idle' ? 
+                    {(projectDetails?.isOpenBounty && projectDetails?.status == 'idle') || milestoneData?.status == 'idle' ? 
                         <>
                             <img src={hourglassSVG} alt='hourglass' className='size-[14px]'/>
                             <p className='text-white48 text-[12px] leading-[14px]'>Idle</p>
@@ -204,11 +210,72 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
             </div>
 
             <div className="my-1">
-                    {milestoneData?.status == 'under_review' && projectDetails?.owner_id == user_id 
-                        ?
-                            <div className='mb-1'>
-                                <p className='text-white64 text-[12px]'>User has submitted the milestone: <span onClick={() => setShowMilestoneSubmissionModal(true)} className='text-primaryYellow underline cursor-pointer hover:text-primaryYellow/90'>view</span></p>
-                            </div>
+                {!projectDetails?.isOpenBounty ?
+                    milestoneData?.status == 'under_review' && projectDetails?.owner_id == user_id ?
+                        <FancyButton 
+                            src_img={btnImg} 
+                            hover_src_img={btnHoverImg}
+                            img_size_classes='w-[342px] h-[44px]' 
+                            className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                            btn_txt={"user submission"}  
+                            onClick={() => setShowMilestoneSubmissionModal(true)}
+                            alt_txt='user submitted milestone btn' 
+                        />
+                    :
+                    milestoneData?.status == 'completed' ?
+                        <FancyButton 
+                            src_img={btnImg} 
+                            img_size_classes='w-[342px] h-[44px]' 
+                            className='font-gridular text-[14px] leading-[8.82px] text-primaryGreen mt-1.5'
+                            btn_txt={"Completed"}  
+                            alt_txt='milestone completed btn' 
+                            disabled={true}
+                        />
+                    : 
+                    (milestoneData?.status == 'idle' || milestoneData?.status == 'ongoing') && projectDetails?.user_id?._id == user_id && milestoneData?.user_status == 'idle' ?
+                        <FancyButton 
+                            src_img={btnImg} 
+                            hover_src_img={btnHoverImg}
+                            img_size_classes='w-[342px] h-[44px]' 
+                            className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                            btn_txt={'submit milestone'}  
+                            alt_txt='milestone submit btn' 
+                            onClick={() => setShowSubmitModal(true)}
+                        />
+                    :
+                    milestoneData?.status == 'under_review' && milestoneData?.user_status == 'submitted' && projectDetails?.user_id?._id == user_id ?
+                        <FancyButton 
+                            src_img={btnImg} 
+                            hover_src_img={btnHoverImg}
+                            img_size_classes='w-[342px] h-[44px]' 
+                            className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                            btn_txt={'submitted'}  
+                            alt_txt='milestone submitted btn'
+                            onClick={() => setShowMilestoneSubmissionModal(true)}
+                        />
+                    :
+                    milestoneData?.status == 'rejected' && milestoneData?.user_status == 'submitted' && projectDetails?.user_id?._id == user_id ?
+                        <div className='flex justify-center items-center gap-2 bg-cardRedBg px-4 py-2 rounded-md mt-2'>
+                            <img src={warningRedSVG} alt='warning-red' className='size-[20px]'/>
+                            <p className='text-cardRedText font-inter text-[12px] leading-[14.4px] font-medium'>Your milestone was rejected due to an issue</p>
+                        </div>
+                    :<></>
+                : 
+                (milestoneData?.status == 'idle' || milestoneData?.status == 'ongoing') && user_role == 'user' ?
+                    <FancyButton 
+                        src_img={btnImg} 
+                        hover_src_img={btnHoverImg}
+                        img_size_classes='w-[342px] h-[44px]' 
+                        className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                        btn_txt={`${isUserSubmittedOpenMS ? 'submitted' : 'submit'}`}  
+                        alt_txt='milestone submit btn' 
+                        onClick={() => setShowSubmitModal(true)}
+                    />
+                
+
+                    : <></>
+                }
+                        {/* 
                         : milestoneData?.status == 'completed' ? 
                             <FancyButton 
                                 src_img={btnImg} 
@@ -244,7 +311,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                                 disabled={milestoneData?.status != 'idle' && milestoneData?.status != 'ongoing'}
                             />
                         :
-                        user_role != 'admin' &&
+                        user_role == 'user' &&
                         <FancyButton 
                             src_img={btnImg} 
                             hover_src_img={btnHoverImg}
@@ -270,7 +337,7 @@ const MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProje
                         onClick={() => {}}
                         disabled={milestoneData?.status != 'idle' && milestoneData?.status != 'ongoing'}
                     />
-                }
+                } */}
             </div>
 
             <CustomModal isOpen={showSubmitModal} closeModal={() => setShowSubmitModal(false)}>

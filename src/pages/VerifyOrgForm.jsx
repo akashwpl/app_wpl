@@ -8,23 +8,32 @@ import {
 } from "../components/ui/accordion"
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from '../lib/firebase';
-import { ArrowLeft, Globe, Menu, Send, Trash, Upload, X } from 'lucide-react';
+import { ArrowLeft, CheckCheck, Globe, Menu, Send, Trash, Upload, X } from 'lucide-react';
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { createNotification, createOrganisation, getAdmins, getUserDetails } from '../service/api';
 import FancyButton from '../components/ui/FancyButton';
 import btnImg from '../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 
-import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png'
 import Spinner from '../components/ui/spinner';
-import { useQuery } from '@tanstack/react-query';
 import { website_regex } from '../lib/constants';
+
+import talent_signup_img from '../assets/images/talent_signup.png'
+import contributor_signup_img from '../assets/images/contributor_signup.png'
+
+import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png';
+import greenBtnImg from '../assets/svg/green_btn_subtract.png';
+
+import loginBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
+import loginBtnImg from '../assets/svg/btn_subtract_semi.png'
+import { setUserRole } from '../store/slice/userSlice';
 
 const VerifyOrgForm = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
+    const dispatch = useDispatch()
 
     const { user_id } = useSelector((state) => state)
     const [name, setName] = useState('')
@@ -160,6 +169,7 @@ const VerifyOrgForm = () => {
                 const notiRes = await createNotification({...notification, user_id: admin._id});
             });
 
+            dispatch(setUserRole("sponsor"));
             setSubmitted(true);
         }
         setIsLoading(false);
@@ -174,40 +184,108 @@ const VerifyOrgForm = () => {
             </div>
         </div>
         <div className='flex justify-center items-center mt-4'>
-            <div className='max-w-[469px] w-full'>
+            {/* <div className='max-w-[469px] w-full'> */}
                 {submitted 
-                ?   <div className='flex justify-center items-center mt-4'>
-                        <div className='max-w-[469px] w-full'>
-                            <div className='flex items-center gap-4 border border-dashed border-[#FFFFFF1F] bg-white12 rounded-md px-4 py-3'>
-                                <div>
-                                    <img src={logoPreview} alt='dummy' className='size-[72px] aspect-square rounded-md'/>
-                                </div>
-                                <div>
-                                    <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{name}</p>
-                                    <a href={websiteLink} target='_blank'><p className='text-white88 font-semibold text-[13px] font-inter underline'>@{organisationHandle}</p></a>
-                                </div>
-                            </div>
+                ?   
+                    // <div className='flex justify-center items-center mt-4'>
+                    //     <div className='max-w-[469px] w-full'>
+                    //         <div className='flex items-center gap-4 border border-dashed border-[#FFFFFF1F] bg-white12 rounded-md px-4 py-3'>
+                    //             <div>
+                    //                 <img src={logoPreview} alt='dummy' className='size-[72px] aspect-square rounded-md'/>
+                    //             </div>
+                    //             <div>
+                    //                 <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{name}</p>
+                    //                 <a href={websiteLink} target='_blank'><p className='text-white88 font-semibold text-[13px] font-inter underline'>@{organisationHandle}</p></a>
+                    //             </div>
+                    //         </div>
 
-                            <div className='flex flex-col justify-center items-center mt-8'>
-                                <img src={tickFilledImg} alt='tick-filled' className='size-[54px] mb-4'/>
-                                <div className='text-white font-inter'>Submitted your details</div>
-                                <p className='text-white32 text-[13px] font-semibold font-inter'>You will be notified once the verification is compeleted</p>
-                            </div>
+                    //         <div className='flex flex-col justify-center items-center mt-8'>
+                    //             <img src={tickFilledImg} alt='tick-filled' className='size-[54px] mb-4'/>
+                    //             <div className='text-white font-inter'>Submitted your details</div>
+                    //             <p className='text-white32 text-[13px] font-semibold font-inter'>You will be notified once the verification is compeleted</p>
+                    //         </div>
 
-                            <div className='mt-4'>
+                    //         <div className='mt-4'>
+                    //             <FancyButton 
+                    //                 src_img={btnImg} 
+                    //                 hover_src_img={btnHoverImg} 
+                    //                 img_size_classes='w-[490px] h-[44px]' 
+                    //                 className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                    //                 btn_txt='Welcome Aboard' 
+                    //                 alt_txt='redirect to all projects' 
+                    //                 onClick={() => {navigate('/');window.location.reload()}}
+                    //             />
+                    //         </div>
+                    //     </div>
+                    // </div>
+                    <div className='flex justify-center items-center gap-14 h-[80vh]'>
+                        {/* Apply as Talent */}
+                        <div className='flex flex-col w-[320px]'>
+                            <p className='font-gridular text-[24px] text-primaryGreen'>Create a Bounty</p>
+                            <p className='font-inter text-[12px] text-white48 font-medium leading-4 mb-5'>Bounties are listings where everyone completes a given scope of work, and competes for the prize pool </p>
+
+                            <div className='flex flex-col py-3 px-4 bg-cardBlueBg2 rounded-md gap-4'>
+                                <img className='w-[290px] h-[250px]' src={talent_signup_img} alt="talent_img" />
+                                <div className='flex flex-col h-[110px]'>
+                                    <div className="flex flex-row text-white32 w-full items-center">
+                                        <CheckCheck className='mr-1'/>
+                                        <p className='font-medium font-inter text-xs w-full'>Great for awareness campaigns where you want to reach the most people possible</p>
+                                    </div>
+                                    <div className="flex flex-row text-white32 w-full items-center">
+                                        <CheckCheck className='mr-1'/>
+                                        <p className='font-medium font-inter text-xs w-full'>Get multiple options to choose from</p>
+                                    </div>
+                                    <div className="flex flex-row text-white32 w-full items-center">
+                                        <CheckCheck className='mr-1'/>
+                                        <p className='font-medium font-inter text-xs w-full'>Examples: Twitter threads, Deep-Dives, Memes, Product Feedback, and more</p>
+                                    </div>
+                                </div>
                                 <FancyButton 
-                                    src_img={btnImg} 
-                                    hover_src_img={btnHoverImg} 
-                                    img_size_classes='w-[490px] h-[44px]' 
-                                    className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                                    btn_txt='Welcome Aboard' 
-                                    alt_txt='redirect to all projects' 
-                                    onClick={() => {navigate('/');window.location.reload()}}
+                                    src_img={greenBtnImg} 
+                                    hover_src_img={greenBtnHoverImg} 
+                                    img_size_classes='w-[500px] h-[44px]' 
+                                    className='font-gridular text-[14px] leading-[8.82px] text-primaryGreen mt-1.5'
+                                    btn_txt='Create a bounty'  
+                                    alt_txt='Add project btn' 
+                                    onClick={() => {navigate('/addproject')}}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Apply as a Contributor */}
+                        <div className='flex flex-col w-[320px]'>
+                            <p className='font-gridular text-[24px] text-primaryYellow'>Create a Grant</p>
+                            <p className='font-inter text-[12px] text-white48 font-medium leading-4 mb-5'>Projects are freelance gigs - people apply with their proposals but don't begin work until you pick them</p>
+
+                            <div className='flex flex-col py-3 px-4 bg-cardBlueBg2 rounded-md gap-4'>
+                                <img className='w-[290px] h-[250px]' src={contributor_signup_img} alt="talent_img" />
+                                <div className='flex flex-col h-[110px]'>
+                                    <div className="flex flex-row text-white32 w-full items-center">
+                                        <CheckCheck className='mr-1'/>
+                                        <p className='font-medium font-inter text-xs w-full'>Perfect for work that requires collaboration and iteration</p>
+                                    </div>
+                                    <div className="flex flex-row text-white32 w-full items-center">
+                                        <CheckCheck className='mr-1'/>
+                                        <p className='font-medium font-inter text-xs w-full'>Single output that is specific to your exact needs</p>
+                                    </div>
+                                    <div className="flex flex-row text-white32 w-full items-center">
+                                        <CheckCheck className='mr-1'/>
+                                        <p className='font-medium font-inter text-xs w-full'>Examples: Full Stack Development, Hype Video Production, Hiring a Community Manager, and more</p>
+                                    </div>
+                                </div>
+                                <FancyButton 
+                                    src_img={loginBtnImg} 
+                                    hover_src_img={loginBtnHoverImg} 
+                                    img_size_classes='w-[500px] h-[44px]' 
+                                    className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                                    btn_txt='Create a grant'  
+                                    alt_txt='project apply btn' 
+                                    onClick={() => {navigate('/addproject')}}
                                 />
                             </div>
                         </div>
                     </div>
-                :   <>
+                :   <div className='max-w-[469px] w-full'>
                         <div className='bg-primaryYellow/10 p-2 py-3 rounded-md border border-dashed border-primaryYellow/10'>
                             <p className='text-primaryYellow/70 text-[14px] font-gridular leading-[16.8px]'>We need to manually verify your organisation before you could post your projects.</p>
                         </div>
@@ -377,15 +455,15 @@ const VerifyOrgForm = () => {
                                 hover_src_img={btnHoverImg} 
                                 img_size_classes='w-[470px] h-[44px]' 
                                 className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                                btn_txt={isloading ? <div className="flex justify-center items-center -mt-1"> <Spinner /> </div> : 'Verify Organisation'}
+                                btn_txt={isloading ? <div className="flex justify-center items-center -mt-1"> <Spinner /> </div> : "Let's Get started"}
                                 alt_txt='verify org btn' 
                                 onClick={submitForm}
                                 // isArrow='true'
                             />
                         </div> 
-                    </>
+                    </div>
                 }
-            </div>
+            {/* </div> */}
         </div>
     </div>
   )
