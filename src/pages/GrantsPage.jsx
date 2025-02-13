@@ -1,8 +1,21 @@
 import React from 'react'
 import GrantCard from '../components/grants/GrantCard'
+import { useQuery } from '@tanstack/react-query'
+import axiosInstance from '../lib/axiosInstance'
 
 
 const GrantsPage = () => {
+
+  const getGrants = async () => {
+    const res = axiosInstance.get('/grants')
+    return res
+  }
+
+  const {data} = useQuery({
+    queryKey: ['grants'],
+    queryFn: getGrants
+  })
+  
   return (
     <div className='size-full flex flex-col justify-center items-center gap-3 px-4 md:px-0'>
       <div className='w-full max-w-[1220px] mt-[100px]'>
@@ -12,12 +25,13 @@ const GrantsPage = () => {
         </div>
 
         <div className='flex flex-wrap gap-4 justify-center items-center mt-3'>
-          <GrantCard />
-          <GrantCard />
-          <GrantCard />
-          <GrantCard />
-          <GrantCard />
-          <GrantCard />
+          {data?.data?.data?.length == 0 
+            ? <div className="font-gridular text-white88 text-[24px] mt-20">No Grants Available</div>
+            : data?.data?.data.map((grant, idx) => (
+                <div key={idx}>
+                  <GrantCard data={grant}/>
+                </div>
+            ))}
         </div>
       </div>
     </div>  

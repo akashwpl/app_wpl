@@ -13,7 +13,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 const queryClient = new QueryClient()
 // to show/unshow console logs
-console.log = function(){};  
+console.log = function(){};
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
