@@ -30,22 +30,22 @@ const SponsorDashboard = () => {
             <div className='flex flex-col py-6 items-center border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh] min-w-[350px]'>
                 <div className='w-[80%] flex flex-col gap-2 h-full'>
                     {/* <SponsorTrendingBountyCard /> */}
-                    <div 
+                    {/* <div 
                         onClick={() => navigate('/addproject')} 
                         className='min-w-[300px] max-w-[300px] cursor-pointer'
                     >
                         <img src={sponsorCardPng} alt='sponsor login'/>
-                    </div>
+                    </div> */}
 
-                    {/* <div className='bg-[#9CD4EC1A] rounded-md w-full px-4 py-2 flex items-center gap-3'>
+                    <div className='bg-[#9CD4EC1A] rounded-md w-full px-4 py-2 flex items-center gap-3'>
                         <div className='w-[20px] h-[20px]'>
                             <img src={fireWhitePng} alt='fire-white' className='' />
                         </div>
                         <div className='flex flex-col gap-2'>
                             <div className='font-gridular text-[14px] leading-4 text-white'>Hey {userDetails?.displayName}!</div>
-                            <div className='font-inter text-[12px] leading-[14px] text-white48'>Devs are going crazy for you. Add more bounties <Link to={'/addProject'} className='underline'>here.</Link></div>
+                            <div className='font-inter text-[12px] leading-[14px] text-white48'>Devs are going crazy for you. Add more bounties <Link to={'/selectprojecttype'} className='underline'>here.</Link></div>
                         </div>
-                    </div> */}
+                    </div>
 
                     <div className='border border-white12 border-dashed w-full my-4'></div>
 

@@ -198,6 +198,7 @@ const Navbar = () => {
 
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
+      {!pathname.includes('verifyorg') &&
       <div className='hidden md:flex justify-between items-center w-full relative'>
         {/* DESKTOP */}
         <div className='flex items-center gap-[24px] text-[12px] lg:text-[14px] font-gridular'>
@@ -354,6 +355,7 @@ const Navbar = () => {
           </div>
         }
       </div>
+      }
 
       {/* MOBILE */}
       <div className='flex relative md:hidden justify-between items-center w-full'>

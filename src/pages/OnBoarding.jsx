@@ -1,7 +1,7 @@
-import { ArrowRight, CheckCheck, EyeIcon, EyeOffIcon, Info, MailWarningIcon, Menu, Upload, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, CheckCheck, EyeIcon, EyeOffIcon, Info, MailWarningIcon, Menu, Upload, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { BASE_URL, email_regex, generateUsername, isValidStarkNetAddress } from '../lib/constants'
+import { APPLY_AS_CHOICE, BASE_URL, email_regex, generateUsername, isValidStarkNetAddress, PROFILE_DETAILS_CHOICE, SIGNUP_CHOICE } from '../lib/constants'
 
 import { useDispatch } from 'react-redux'
 import headerPng from '../assets/images/prdetails_header.png'
@@ -11,7 +11,7 @@ import googleLogo from '../assets/svg/google_symbol.png'
 import checkinboxPng from '../assets/svg/check-in-box.png'
 
 import FancyButton from '../components/ui/FancyButton'
-import { getUserDetails } from '../service/api'
+import { createUser, getUserDetails, verifyOtp } from '../service/api'
 import { setUserId } from '../store/slice/userSlice'
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
@@ -70,6 +70,10 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
 
   const [isOTPRecieved, setIsOTPRecieved] = useState(false)
   const [gettingOTP, setGettingOTP] = useState(false)
+  const [OTPdata, setOTPdata] = useState('')
+  
+  const [currentScreen, setCurrentScreen] = useState('')
+
   const [isOTPVerified, setIsOTPVerified] = useState(false)
   const [isuploadingProfile, setIsUploadingProfile] = useState(false)
 
@@ -107,29 +111,45 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       setError('Password not matching')
       return
     }
-    const response = fetch(`${BASE_URL}/users/signup`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password, otp: otpInput }),
-    }).then((res) => res.json())
-    .then((data) => {
-      if(data?.data?.token) {
-        localStorage.setItem('token_app_wpl', data?.data?.token)
-        dispatch(setUserId(data?.data?.userId))
-        setIsSignComplete(true)
-        setError('')
-        return
-      } 
-      if(data.message === `This email ${email} already exists`) {
-        setError(data.message)
-      }
-      if(data.message === 'invalid otp') {
-        setError('Invalid OTP')
-        // setOtpError('Invalid OTP')
-      }
-    })
+
+    const data = {
+      email: email,
+      otp: otpInput
+    }
+    const otpRes = await verifyOtp(data)
+
+    if(!otpRes || otpRes?.err) {
+      setError(otpRes?.err || 'Something went wrong..')
+    }
+
+    if(otpRes?.success) {
+      setIsSignComplete(true)
+      setError('')
+    }
+
+    // const response = fetch(`${BASE_URL}/users/signup`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ email, password, otp: otpInput }),
+    // }).then((res) => res.json())
+    // .then((data) => {
+    //   if(data?.data?.token) {
+    //     localStorage.setItem('token_app_wpl', data?.data?.token)
+    //     dispatch(setUserId(data?.data?.userId))
+    //     setIsSignComplete(true)
+    //     setError('')
+    //     return
+    //   } 
+    //   if(data.message === `This email ${email} already exists`) {
+    //     setError(data.message)
+    //   }
+    //   if(data.message === 'invalid otp') {
+    //     setError('Invalid OTP')
+    //     // setOtpError('Invalid OTP')
+    //   }
+    // })
   }
 
   const login = async () => {
@@ -231,32 +251,31 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
     //   }
     // }
 
-    const data = await fetch(`${BASE_URL}/users/update/`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        'authorization': 'Bearer ' + localStorage.getItem('token_app_wpl')
+    const userBody = { 
+      email: email,
+      password: password,
+      displayName: displayName,
+      username: generateUsername(displayName),
+      experienceDescription: experience,
+      socials: {
+        discord: discord.toLowerCase()
       },
-      body: JSON.stringify({ 
-        displayName: displayName,
-        username: generateUsername(displayName),
-        experienceDescription: experience,
-        socials: {
-          discord: discord.toLowerCase()
-        },
-        walletAddress: walletAddress,
-        pfp: googleImg || imageUrl,
-        isKYCVerified: false,
-        kycStatus: "idle"
-       }),
-    })
+      walletAddress: walletAddress,
+      pfp: googleImg || imageUrl,
+      isKYCVerified: false,
+      kycStatus: "idle"
+    }
 
-    if(data.status === 200){
+    const data = await createUser(userBody);
+    console.log(data);
+
+    if(data?.token && data?.userId) {
+      localStorage.setItem('token_app_wpl', data?.data?.token)
+      dispatch(setUserId(data?.data?.userId))
       if(applyChoice === 'sponsor') {
         setIsUploadingProfile(false)
         navigate('/verifyorg')
         setGettingOTP(false)
-
       } else {
         setIsUploadingProfile(false)
         navigate('/')
@@ -270,6 +289,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       setErrors('Something went wrong. Try again after sometime!')
     }
   }
+
   const removeImgPrveiew = () => {
     setImg(null)
     setImgPreview(null)
@@ -422,6 +442,30 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
     setEmail(e.target.value)
   }
 
+  const handleSwitchScreens = (screenName) => {
+    switch (screenName) {
+      case SIGNUP_CHOICE: {
+        setCurrentScreen(SIGNUP_CHOICE)
+        setOtpInput('')
+        setConfirmPassword('')
+        setIsSignComplete(false)
+        sendOTP()
+        break;
+      }
+      case APPLY_AS_CHOICE: {
+        setCurrentScreen(APPLY_AS_CHOICE);
+        setApplyChoice('')
+        break;
+      }
+      case PROFILE_DETAILS_CHOICE: {
+        setCurrentScreen(PROFILE_DETAILS_CHOICE)
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
   return (
     <div className='flex justify-center items-center'>
       {!isSignComplete ?
@@ -483,9 +527,12 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
                   </div>
                   }
                   <div className='my-5 border border-dashed border-[#FFFFFF12]'/>
-                  <p className='text-[14px] font-gridular text-white64'>Enter verification code!</p>
+                  <div className='flex justify-between'>
+                    <p className='text-white32 font-medium font-inter text-[13px] leading-[15.6px]'>Enter verification code!</p>
+                    <p onClick={sendOTP} className='text-white48 font-medium font-inter text-[13px] leading-[15.6px] mr-3 underline cursor-pointer hover:text-white88'>Resend code</p>
+                  </div>
                   <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
-                    <input type="text" placeholder="abc12" value={otpInput} onChange={(e) => setOtpInput(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white12'/>
+                    <input type="text" placeholder="abc12" value={otpInput} onChange={(e) => setOtpInput(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
                   </div>
                   </>
                 }
@@ -511,7 +558,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
 
               {error && <div className='bg-[#F03D3D1A] rounded-md px-2 py-2 mt-4 flex items-center gap-1'>
                 <MailWarningIcon stroke='#F03D3D' size={14} className='mr-1'/>
-                <p className='text-[#F03D3D] font-semibold text-[12px] font-inter leading-[14.4px]'>{error}</p>
+                <p className='text-[#F03D3D] font-semibold text-[12px] font-inter leading-[14.4px] capitalize'>{error}</p>
               </div>}
 
               {isSignin && 
@@ -605,61 +652,80 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
         </div>
       :
       !applyChoice ?
-      <div className='flex justify-center items-center gap-14 h-[80vh]'>
-        {/* Apply as Talent */}
-        <div className='flex flex-col w-[320px]'>
-          <p className='font-gridular text-[24px] text-primaryGreen'>Continue as Talent</p>
-          <p className='font-inter text-[12px] text-white48 font-medium leading-4 mb-5'>Create a profile to start submitting, and get notified on new work opportunities</p>
-
-          <div className='flex flex-col py-3 px-4 bg-cardBlueBg2 rounded-md gap-4'>
-            <img className='w-[290px] h-[250px]' src={talent_signup_img} alt="talent_img" />
-            <div>
-              <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> Contribute to top projects</p>
-              <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> Build your top resume</p>
-              <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> Get paid in crypto</p>
+      <>
+        <div className='absolute top-10 left-20'>
+            <div 
+              onClick={() => handleSwitchScreens(SIGNUP_CHOICE)} 
+              className='cursor-pointer text-white88 hover:text-white64 flex items-center gap-1 w-fit'
+            >
+                <ArrowLeft size={14} className=''/>
+                <p className='font-inter text-[14px]'>Go back</p>
             </div>
-            <FancyButton 
-              src_img={greenBtnImg} 
-              hover_src_img={greenBtnHoverImg} 
-              img_size_classes='w-[500px] h-[44px]' 
-              className='font-gridular text-[14px] leading-[8.82px] text-primaryGreen mt-1.5'
-              btn_txt='Continue as a talent'  
-              alt_txt='project apply btn' 
-              onClick={() => {setApplyChoice('user')}}
-            />
+        </div>
+        <div className='flex justify-center items-center gap-14 h-[80vh] relative'>
+
+          {/* Apply as Talent */}
+          <div className='flex flex-col w-[320px]'>
+            <p className='font-gridular text-[24px] text-primaryGreen'>Continue as Talent</p>
+            <p className='font-inter text-[12px] text-white48 font-medium leading-4 mb-5'>Create a profile to start submitting, and get notified on new work opportunities</p>
+
+            <div className='flex flex-col py-3 px-4 bg-cardBlueBg2 rounded-md gap-4'>
+              <img className='w-[290px] h-[250px]' src={talent_signup_img} alt="talent_img" />
+              <div>
+                <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> Contribute to top projects</p>
+                <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> Build your top resume</p>
+                <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> Get paid in crypto</p>
+              </div>
+              <FancyButton 
+                src_img={greenBtnImg} 
+                hover_src_img={greenBtnHoverImg} 
+                img_size_classes='w-[500px] h-[44px]' 
+                className='font-gridular text-[14px] leading-[8.82px] text-primaryGreen mt-1.5'
+                btn_txt='Continue as a talent'  
+                alt_txt='project apply btn' 
+                onClick={() => {setApplyChoice('user')}}
+              />
+            </div>
+          </div>
+
+          {/* Apply as a Contributor */}
+          <div className='flex flex-col w-[320px]'>
+            <p className='font-gridular text-[24px] text-primaryYellow'>Continue as Sponsor</p>
+            <p className='font-inter text-[12px] text-white48 font-medium leading-4 mb-5'>List a bounty or a freelance gig for your project and find your next contributor.</p>
+
+            <div className='flex flex-col py-3 px-4 bg-cardBlueBg2 rounded-md gap-4'>
+              <img className='w-[290px] h-[250px]' src={contributor_signup_img} alt="talent_img" />
+              <div>
+                <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> Get in front of 10,000 weekly visitors</p>
+                <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> 20+ templates to choose from</p>
+                <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> 100% free</p>
+              </div>
+              <FancyButton 
+                src_img={loginBtnImg} 
+                hover_src_img={loginBtnHoverImg} 
+                img_size_classes='w-[500px] h-[44px]' 
+                className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                btn_txt='Continue as a Sponsor'  
+                alt_txt='project apply btn' 
+                onClick={() => {setApplyChoice('sponsor')}}
+              />
+            </div>
           </div>
         </div>
-
-        {/* Apply as a Contributor */}
-        <div className='flex flex-col w-[320px]'>
-          <p className='font-gridular text-[24px] text-primaryYellow'>Continue as Sponsor</p>
-          <p className='font-inter text-[12px] text-white48 font-medium leading-4 mb-5'>List a bounty or a freelance gig for your project and find your next contributor.</p>
-
-          <div className='flex flex-col py-3 px-4 bg-cardBlueBg2 rounded-md gap-4'>
-            <img className='w-[290px] h-[250px]' src={contributor_signup_img} alt="talent_img" />
-            <div>
-              <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> Get in front of 10,000 weekly visitors</p>
-              <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> 20+ templates to choose from</p>
-              <p className='font-medium text-white32 font-inter text-xs'><CheckCheck size={18} className='inline-block mr-1'/> 100% free</p>
-            </div>
-            <FancyButton 
-              src_img={loginBtnImg} 
-              hover_src_img={loginBtnHoverImg} 
-              img_size_classes='w-[500px] h-[44px]' 
-              className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-              btn_txt='Continue as a Sponsor'  
-              alt_txt='project apply btn' 
-              onClick={() => {setApplyChoice('sponsor')}}
-            />
-          </div>
-        </div>
-      </div>
+      </>
       :
         <div className='w-full'>
           <div className='w-full'>
             <img src={headerPng} alt='header' className='h-[200px] w-full'/>
           </div>
 
+            <div className='flex items-center gap-1 pl-20 py-2'>
+              <ArrowLeft size={14} stroke='#ffffff65'/>
+              <p 
+                className='text-white32 font-inter text-[14px] cursor-pointer' 
+                onClick={() => {handleSwitchScreens(APPLY_AS_CHOICE)}}
+              >Go back</p>
+            </div>
           <div className='flex flex-col justify-center items-center'>
             <div className='w-[350px] md:w-[480px] mb-10'>
               <div className='-translate-y-8'>

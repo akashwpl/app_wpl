@@ -536,29 +536,17 @@ const ProjectDetailsPage = () => {
                   </div>
                 :
                   // project approved by admin
-                  <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
-
-                    {/* Bounty close btn */}
+                    <div className='mx-4 mt-4'>
                     <FancyButton 
-                      src_img={closeProjBtnImg} 
-                      hover_src_img={closeProjBtnHoverImg}
-                      img_size_classes='w-[162px] h-[44px]'
-                      className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5'
-                      btn_txt='Close project'
-                      alt_txt='project close btn'
-                      onClick={() => setShowCloseProjectModal(true)}
-                    />
-
-                    {/* bounty edit btn */}
-                    <FancyButton 
-                      src_img={menuBtnImg} 
-                      hover_src_img={menuBtnImgHover} 
-                      img_size_classes='w-[162px] h-[44px]' 
-                      className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                      btn_txt='submissions' 
-                      alt_txt='view submissions btn' 
+                      src_img={btnImg} 
+                      img_size_classes='w-[342px] h-[44px]' 
+                      className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5`}
+                      // className={`font-gridular text-[14px] leading-[8.82px] ${projectDetails?.approvalStatus == 'approved' ? 'text-primaryGreen' : 'text-primaryRed'} mt-1.5`}
+                      // btn_txt={`bounty ${projectDetails?.approvalStatus}`} 
+                      btn_txt={`submissions`} 
+                      alt_txt='submissions btn' 
                       onClick={() => setSelectedTab('submissions')}
-                      // onClick={editProject}
+                      // disabled={true}
                     />
                   </div>
               :
@@ -589,14 +577,29 @@ const ProjectDetailsPage = () => {
                   </div>
                 :
                   // project is not in pending status
-                  <div className='mx-4 mt-4'>
+                  <div className='mx-4 mt-4 flex justify-center items-center gap-3'>
+
+                    {/* Bounty close btn */}
                     <FancyButton 
-                      src_img={btnImg} 
-                      img_size_classes='w-[342px] h-[44px]' 
-                      className={`font-gridular text-[14px] leading-[8.82px] ${projectDetails?.approvalStatus == 'approved' ? 'text-primaryGreen' : 'text-primaryRed'} mt-1.5`}
-                      btn_txt={`bounty ${projectDetails?.approvalStatus}`} 
-                      alt_txt='project admin approval status btn' 
-                      disabled={true}
+                      src_img={closeProjBtnImg} 
+                      hover_src_img={closeProjBtnHoverImg}
+                      img_size_classes='w-[162px] h-[44px]'
+                      className='font-gridular text-[14px] leading-[16.8px] text-primaryRed mt-0.5'
+                      btn_txt='Close project'
+                      alt_txt='project close btn'
+                      onClick={() => setShowCloseProjectModal(true)}
+                    />
+
+                    {/* bounty edit btn */}
+                    <FancyButton 
+                      src_img={menuBtnImg} 
+                      hover_src_img={menuBtnImgHover} 
+                      img_size_classes='w-[162px] h-[44px]' 
+                      className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                      btn_txt='Edit Project' 
+                      alt_txt='view submissions btn' 
+                      // onClick={() => setSelectedTab('submissions')}
+                      onClick={editProject}
                     />
                   </div>
                 : 

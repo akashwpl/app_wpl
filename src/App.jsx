@@ -27,6 +27,7 @@ import { useSelector } from "react-redux"
 import LandingPageIFrame from "./pages/LandingPageIFrame"
 import GrantsPage from "./pages/GrantsPage"
 import GrantsDetailPage from "./pages/GrantsDetailsPage"
+import SelectProjectType from "./components/projectdetails/SelectProjectType"
 
 function App() {
 
@@ -66,6 +67,8 @@ function App() {
           <Route path="/wplprogram" element={<LandingPageIFrame />} />
           <Route path="/grants" element={<GrantsPage />} />
           <Route path="/grantsdetail" element={<GrantsDetailPage />} />
+          <Route path="/selectprojecttype" element={<SelectProjectType />} />
+
         </Routes>
       </div>
       {snackBar?.show && (

@@ -179,3 +179,7 @@ export const SKILLS = [
   "Project Management",
   "Business Analysis",
 ]
+
+export const SIGNUP_CHOICE = 'SIGNUP_CHOICE'
+export const APPLY_AS_CHOICE = 'APPLY_AS_CHOICE'
+export const PROFILE_DETAILS_CHOICE = 'PROFILE_DETAILS_CHOICE'

@@ -280,7 +280,11 @@ const   AddProjectPage = () => {
             let resp;
             if(isOpenBounty) {
                 // create open project
-                resp = await createOpenProject(data);
+                const newData = {...data};
+                newData.milestones = [
+                    {...newData.milestones[0], title: 'Open Bounty title', description: 'Open Bounty Description'}
+                ]
+                resp = await createOpenProject(newData);
             } else {
                 resp = await createProject(data);
                 console.log('Gated resp',resp);
@@ -777,7 +781,7 @@ const   AddProjectPage = () => {
                         <div className='flex flex-col justify-center items-center mt-8'>
                             <img src={tickFilledImg} alt='tick-filled' className='size-[54px] mb-4'/>
                             <div className='text-white font-inter'>Added Project</div>
-                            <p className='text-white32 text-[13px] font-semibold font-inter'>You can now view updated details of the project overview</p>
+                            <p className='text-white32 text-[13px] font-semibold font-inter'>You can now view updated details of the project</p>
                         </div>
 
                         <div className='mt-6'>

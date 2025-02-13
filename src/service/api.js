@@ -330,3 +330,22 @@ export const adminOpenProjectApproveOrReject = async (id,data) => {
         handleForbiddenError(error)
     }
 }
+
+export const verifyOtp = async (data) => {
+    try {
+        const response = await axiosInstance.post(`/account/verifyOtp`, data);
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+
+export const createUser = async (data) => {
+    try {
+        const response = await axiosInstance.post(`/users/signup`, data);
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+
