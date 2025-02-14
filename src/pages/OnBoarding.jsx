@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { APPLY_AS_CHOICE, BASE_URL, email_regex, generateUsername, isValidStarkNetAddress, PROFILE_DETAILS_CHOICE, SIGNUP_CHOICE } from '../lib/constants'
 
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import headerPng from '../assets/images/prdetails_header.png'
 import loginBtnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import loginBtnImg from '../assets/svg/btn_subtract_semi.png'
@@ -12,7 +12,7 @@ import checkinboxPng from '../assets/svg/check-in-box.png'
 
 import FancyButton from '../components/ui/FancyButton'
 import { createUser, getUserDetails, verifyOtp } from '../service/api'
-import { setUserId } from '../store/slice/userSlice'
+import { setUserDetails, setUserId, setUserRole } from '../store/slice/userSlice'
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { auth, provider, signInWithPopup, storage } from '../lib/firebase'
@@ -38,6 +38,9 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const {pathname, state} = useLocation()
+
+  const {isVerifyOrgBack} = useSelector((state) => state);
+  const {user} = useSelector((state) => state);
 
   const [email, setEmail] = useState('') // Changed from firstName to email
   const [password, setPassword] = useState('')
@@ -266,28 +269,50 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       kycStatus: "idle"
     }
 
-    const data = await createUser(userBody);
-    console.log(data);
+    if(applyChoice === 'sponsor') {
+      setIsUploadingProfile(false)
+      dispatch(setUserDetails(userBody))
+      navigate('/verifyorg')
+      setGettingOTP(false)
+    } else {
+      const data = await createUser(userBody);
+      console.log(data);
 
-    if(data?.token && data?.userId) {
-      localStorage.setItem('token_app_wpl', data?.data?.token)
-      dispatch(setUserId(data?.data?.userId))
-      if(applyChoice === 'sponsor') {
-        setIsUploadingProfile(false)
-        navigate('/verifyorg')
-        setGettingOTP(false)
-      } else {
+      if(data?.token && data?.userId) {
+        localStorage.setItem('token_app_wpl', data?.token)
+        dispatch(setUserId(data?.userId))
         setIsUploadingProfile(false)
         navigate('/')
         setGettingOTP(false)
         setShowSignInModal(false);
         window.location.reload();
+      } else {
+        setGettingOTP(false)
+        setIsUploadingProfile(false)
+        setErrors('Something went wrong. Try again after sometime!')
       }
-    } else {
-      setGettingOTP(false)
-      setIsUploadingProfile(false)
-      setErrors('Something went wrong. Try again after sometime!')
     }
+
+
+    // if(data?.token && data?.userId) {
+    //   localStorage.setItem('token_app_wpl', data?.token)
+    //   dispatch(setUserId(data?.userId))
+    //   if(applyChoice === 'sponsor') {
+    //     setIsUploadingProfile(false)
+    //     navigate('/verifyorg')
+    //     setGettingOTP(false)
+    //   } else {
+    //     setIsUploadingProfile(false)
+    //     navigate('/')
+    //     setGettingOTP(false)
+    //     setShowSignInModal(false);
+    //     window.location.reload();
+    //   }
+    // } else {
+    //   setGettingOTP(false)
+    //   setIsUploadingProfile(false)
+    //   setErrors('Something went wrong. Try again after sometime!')
+    // }
   }
 
   const removeImgPrveiew = () => {
@@ -465,6 +490,25 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
         break;
     }
   }
+
+  useEffect(() => {
+    localStorage.removeItem('token_app_wpl')
+    dispatch(setUserId(''))
+    dispatch(setUserRole(''))
+    if(isVerifyOrgBack) {
+      setIsSignComplete(true)
+      setApplyChoice('sponsor')
+      setEmail(user.email);
+      setPassword(user.password);
+      setDisplayName(user.displayName);
+      setExperience(user.experience);
+      setWalletAddress(user.walletAddress);
+      setImg(user.pfp);
+      console.log('ran');
+    }
+    console.log('wwpp',isVerifyOrgBack);
+    
+  },[isVerifyOrgBack])
 
   return (
     <div className='flex justify-center items-center'>

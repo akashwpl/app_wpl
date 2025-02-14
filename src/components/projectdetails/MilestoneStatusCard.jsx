@@ -30,8 +30,8 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
     const [linkError, setLinkError] = useState(null);
     const [descriptionError, setDescriptionError] = useState(null);
 
-    const [link, setLink] = useState('');
-    const [desc, setDesc] = useState('');
+    // const [link, setLink] = useState('');
+    // const [desc, setDesc] = useState('');
 
     const [showMilestoneSubmissionModal, setShowMilestoneSubmissionModal] = useState(false);
     const [isUserSubmittedOpenMS, setIsUserSubmittedOpenMS] = useState(false);
@@ -345,13 +345,13 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                         <div className='h-[1px] bg-primaryYellow w-full mt-2 mb-5'/>
                         <div className='flex flex-col'>
                             <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Link <span className='text-primaryRed'>*</span></label>
-                            <input className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' value={link} placeholder='project link..'/>
+                            <input className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' placeholder='project link..'/>
                             <p className='text-[11px] text-white32 font-inter mt-[2px]'>Prefered links: Google, Notion, Github or Figma</p>
                             {linkError && <p className='text-primaryRed text-[12px] mt-1'>{linkError}</p>}
                         </div>
                         <div className='flex flex-col mt-4'>
                             <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1'>Description <span className='text-primaryRed'>*</span></label>
-                            <textarea rows={4} className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' value={desc} placeholder='Fixed UI Bug'/>
+                            <textarea rows={4} className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' placeholder='Fixed UI Bug'/>
                             {descriptionError && <p className='text-primaryRed text-[12px] mt-1'>{descriptionError}</p>}
                         </div>
                     </div>

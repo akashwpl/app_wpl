@@ -18,7 +18,7 @@ const SelectProjectType = () => {
     <>
       <div className='absolute top-10 left-20'>
         <div 
-          onClick={() => navigate(-1)} 
+          onClick={() => navigate('/')} 
           className='cursor-pointer text-white88 hover:text-white64 flex items-center gap-1 w-fit'
         >
             <ArrowLeft size={14} className=''/>

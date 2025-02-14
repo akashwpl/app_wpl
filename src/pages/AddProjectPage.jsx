@@ -354,7 +354,7 @@ const   AddProjectPage = () => {
   return (
     <div className='pb-40'>
         <div className='flex items-center gap-1 pl-20 py-2'>
-            <div onClick={() => navigate(-1)} className='cursor-pointer text-white88 hover:text-white64 flex items-center gap-1 w-fit'>
+            <div onClick={() => navigate('/selectprojecttype')} className='cursor-pointer text-white88 hover:text-white64 flex items-center gap-1 w-fit'>
                 <ArrowLeft size={14} className=''/>
                 <p className='font-inter text-[14px]'>Go back</p>
             </div>

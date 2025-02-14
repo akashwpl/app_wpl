@@ -12,7 +12,7 @@ import { ArrowLeft, CheckCheck, Globe, Menu, Send, Trash, Upload, X } from 'luci
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
 import { useDispatch, useSelector } from 'react-redux';
-import { createNotification, createOrganisation, getAdmins, getUserDetails } from '../service/api';
+import { createNotification, createOrganisation, createUser, getAdmins, getUserDetails } from '../service/api';
 import FancyButton from '../components/ui/FancyButton';
 import btnImg from '../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
@@ -20,7 +20,7 @@ import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
 import Spinner from '../components/ui/spinner';
 import { website_regex } from '../lib/constants';
 
-import { setUserRole } from '../store/slice/userSlice';
+import { setIsVerifyOrgBack, setUserDetails, setUserId, setUserRole } from '../store/slice/userSlice';
 import SelectProjectType from '../components/projectdetails/SelectProjectType';
 
 const VerifyOrgForm = () => {
@@ -29,6 +29,13 @@ const VerifyOrgForm = () => {
     const dispatch = useDispatch()
 
     const { user_id } = useSelector((state) => state)
+    const { user } = useSelector((state) => state);
+    const token = localStorage.getItem('token_app_wpl')
+    
+    const [tokenState, setTokenState] = useState(token)
+    const [userIdState, setUserIdState] = useState(user_id)
+    const [isBackBtn, setIsBackBtn] = useState(true)
+    
     const [name, setName] = useState('')
     const [websiteLink, setWebsiteLink] = useState('')
     const [organisationHandle, setOrganisationHandle] = useState('');
@@ -46,16 +53,10 @@ const VerifyOrgForm = () => {
     const [isloading, setIsLoading] = useState(false);
     const [pfp, setPfp] = useState(null)
     
-    const token = localStorage.getItem('token_app_wpl')
-    
     useEffect(() => {
-        if(!token) navigate('/onboarding');
-        const fetchUserDetails = async () => {
-            const userDetails = await getUserDetails(user_id);
-            setPfp(userDetails.pfp)
-            setLogoPreview(userDetails.pfp)
-        }
-        fetchUserDetails()
+        setPfp(user.pfp);
+        setLogoPreview(user.pfp)
+
     },[])
 
     const scrollToTop = () => {
@@ -124,8 +125,22 @@ const VerifyOrgForm = () => {
             // Firebase image upload code
             const imageUrl = await handleFirebaseImgUpload();
 
+            // Create sponsor account
+            const createUserResp = await createUser(user);
+
+            if(createUserResp?.err != `This email ${user.email} already exists`) {
+                if(createUserResp?.token && createUserResp?.userId) {
+                    localStorage.setItem('token_app_wpl', createUserResp?.token)
+                    dispatch(setUserId(createUserResp?.userId))
+                } else {
+                    setErrors({submit: 'Something went wrong. Please try again later'});
+                    setIsLoading(false);
+                    return
+                }
+            }
+
             const data = {
-                userId: user_id,
+                userId: user_id || createUserResp?.userId,
                 name: name,
                 websiteLink: websiteLink,
                 description: description,
@@ -138,10 +153,10 @@ const VerifyOrgForm = () => {
                 status: 'approved',       // new flow
                 img: imageUrl || pfp
             }
-            
+        
             const res = await createOrganisation(data);
             
-            if(res.err == 'Organisation already exists') {
+            if(res?.err == 'Organisation already exists') {
                 const errorObj = {organisationHandle: 'Oops! The Handle is already taken. Please try a different one.'};
                 setErrors(errorObj);
                 scrollToTop();
@@ -153,8 +168,8 @@ const VerifyOrgForm = () => {
             const notification = {
                 msg: `Company ${name} has joined as a WPL sponsor.`,
                 type: 'org_request',
-                fromId: `${user_id}`,
-                project_id: res._id
+                fromId: `${createUserResp?.userId}`,
+                project_id: res?._id
             }
 
             const adminList = await getAdmins();
@@ -162,7 +177,9 @@ const VerifyOrgForm = () => {
                 const notiRes = await createNotification({...notification, user_id: admin._id});
             });
 
+            dispatch(setUserDetails({}));
             dispatch(setUserRole("sponsor"));
+            setIsBackBtn(false);
             setSubmitted(true);
         }
         setIsLoading(false);
@@ -170,12 +187,16 @@ const VerifyOrgForm = () => {
 
   return (
     <div className='pb-40'>
-        <div className='flex items-center gap-1 pl-20 border-b border-white12 py-2'>
-            <div onClick={() => navigate(-1)} className='flex items-center gap-1 text-white32 hover:text-white48 cursor-pointer'>
-                <ArrowLeft size={14}/>
-                <p className='font-inter text-[14px]'>Go back</p>
+        {isBackBtn &&
+            <div className='flex items-center gap-1 pl-20 border-b border-white12 py-2'>
+                <div 
+                    onClick={() => {dispatch(setIsVerifyOrgBack(true));navigate('/onboarding')}} 
+                    className='flex items-center gap-1 text-white32 hover:text-white48 cursor-pointer'>
+                    <ArrowLeft size={14}/>
+                    <p className='font-inter text-[14px]'>Go back</p>
+                </div>
             </div>
-        </div>
+        }
         <div className='flex justify-center items-center mt-4'>
             {/* <div className='max-w-[469px] w-full'> */}
                 {submitted 
@@ -388,6 +409,7 @@ const VerifyOrgForm = () => {
                                 // isArrow='true'
                             />
                         </div> 
+                        {errors.submit && <p className='text-red-500 font-medium text-center text-[12px] mt-1'>{errors.submit}</p>}
                     </div>
                 }
             {/* </div> */}
