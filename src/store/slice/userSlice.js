@@ -11,6 +11,7 @@ const initialState = {
         show: false,
     },
     isSignInModalOpen: false,
+    isVerifyOrgBack: false
 }
 
 const userSlice = createSlice({
@@ -24,6 +25,9 @@ const userSlice = createSlice({
             state.user_id = action.payload
         },
         setUserRole: (state, action) => {
+            state.user_role = action.payload
+        },
+        setIsVerifyOrgBack: (state, action) => {
             state.user_role = action.payload
         },
         showSnackbar: (state, action) => {
@@ -44,6 +48,6 @@ const userSlice = createSlice({
     },
 })
 
-export const { setUserDetails, setUserId, setUserRole, showSnackbar, hideSnackbar, setIsSignInModalOpen } = userSlice.actions;
+export const { setUserDetails, setUserId, setUserRole, showSnackbar, hideSnackbar, setIsSignInModalOpen, setIsVerifyOrgBack } = userSlice.actions;
 
 export default userSlice.reducer
