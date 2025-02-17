@@ -87,7 +87,7 @@ const SelectProjectType = () => {
                   className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                   btn_txt='Create a grant'  
                   alt_txt='project apply btn' 
-                  onClick={() => {navigate('/addproject')}}
+                  onClick={() => {navigate('/addGrant')}}
               />
           </div>
       </div>

@@ -349,3 +349,30 @@ export const createUser = async (data) => {
     }
 }
 
+export const createGrant = async (data) => {
+    try {
+        const response = await axiosInstance.post(`/grants/create`, data);
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+
+export const getAllGrants = async () => {
+    try {
+        const response = await axiosInstance.get(`/grants`);
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+
+export const getGrantById = async (id) => {
+    try {
+        const response = await axiosInstance.get(`/grants/${id}`);
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+

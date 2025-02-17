@@ -119,6 +119,9 @@ const Notifications = () => {
                                 {notification?.type === 'project_req' &&
                                   <span onClick={() => {navigate(`/projectdetails/${notification.project_id}`);updateNotification(notification._id, 'read')}} className='ml-1 bg-white12 text-primaryYellow cursor-pointer rounded-md px-2 py-1 text-[12px]'>Project details <ExternalLink size={12} className='inline-block'/></span>
                                 }
+                                {notification?.type === 'grant_req' &&
+                                  <span onClick={() => {navigate(`/grantdetails/${notification.project_id}`);updateNotification(notification._id, 'read')}} className='ml-1 bg-white12 text-primaryYellow cursor-pointer rounded-md px-2 py-1 text-[12px]'>Project details <ExternalLink size={12} className='inline-block'/></span>
+                                }
                               </p>
                             </div>
                           </td>
