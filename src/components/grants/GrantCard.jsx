@@ -1,7 +1,7 @@
 import React from 'react'
 import grantPlaceholderPng from '../../assets/images/grant_placeholder.png'
 import USDCPng from '../../assets/images/usdc.png'
-import StarkPng from '../../assets/images/strk.png'
+import STRKPng from '../../assets/images/strk.png'
 import UserPng from '../../assets/images/user-default.png'
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png';
 import btnImg from '../../assets/svg/btn_subtract_semi.png';
@@ -12,7 +12,7 @@ const GrantCard = ({data}) => {
   const navigate = useNavigate()
 
   const navigateToGrantDetails = () => {
-    navigate('/grantsdetail')
+    navigate(`/grantdetails/${data?._id}`)
   }
 
   return (
@@ -22,7 +22,7 @@ const GrantCard = ({data}) => {
         <div className='bg-[#091044] flex items-center gap-[6px] rounded-md p-2'>
           <p className='text-white48 text-[14px] font-semibold font-inter'>Upto</p>
           <img src={currencyImage(data?.currency) || USDCPng} alt='usdc' className='w-[16px] h-[16px]'/>
-          <p className='text-white88 text-[14px] font-semibold font-inter'>{formatCurrency(data?.totalPrize)} {currencyName(data?.currency)}</p>
+          <p className='text-white88 text-[14px] font-semibold font-inter'>{formatCurrency(data?.prizeApproved)} {currencyName(data?.currency)}</p>
         </div>
         <div className='bg-[#091044] flex items-center gap-[6px] rounded-md p-2'>
           <img src={UserPng} alt='user' className='w-[16px] h-[16px]'/>
@@ -31,8 +31,8 @@ const GrantCard = ({data}) => {
       </div>
 
       <div>
-        <p className='text-white48 text-[12px] leading-[14px] font-semibold font-inter'>{data?.organisationHandle || "Stark"}</p>
-        <p className='text-white88 text-[16px] font-gridular'>{data?.title || "Stark"}</p>
+        <p className='text-white48 text-[12px] leading-[14px] font-semibold font-inter'>{data?.organisation.organisationHandle}</p>
+        <p className='text-white88 text-[16px] font-gridular'>{data?.title}</p>
       </div>
 
       <FancyButton 
@@ -54,8 +54,8 @@ const currencyImage = (curr) => {
   switch (curr) {
     case 'USDC':
       return USDCPng
-    case 'STARK':
-      return StarkPng
+    case 'STRK':
+      return STRKPng
     default:
       return USDCPng
   }
@@ -65,8 +65,8 @@ const currencyName = (curr) => {
   switch (curr) {
     case 'USDC':
       return 'USDC'
-    case 'STARK':
-      return 'STARK'
+    case 'STRK':
+      return 'STRK'
     default:
       return 'USDC'
   }
