@@ -354,7 +354,7 @@ const   AddProjectPage = () => {
   return (
     <div className='pb-40'>
         <div className='flex items-center gap-1 pl-20 py-2'>
-            <div onClick={() => navigate('/selectprojecttype')} className='cursor-pointer text-white88 hover:text-white64 flex items-center gap-1 w-fit'>
+            <div onClick={() => navigate('/selectprojecttype')} className='cursor-pointer text-white32 hover:text-white64 flex items-center gap-1 w-fit'>
                 <ArrowLeft size={14} className=''/>
                 <p className='font-inter text-[14px]'>Go back</p>
             </div>
@@ -362,7 +362,7 @@ const   AddProjectPage = () => {
 
         {!submitted
             ?  <div className='flex justify-center items-center mt-4'>
-                    <div className='max-w-[469px] w-full'>
+                    <div className='max-w-[530px] w-full bg-white7 px-6 py-2 rounded-md'>
                         
                         <Accordion type="single" defaultValue="item-1" collapsible>
                             <AccordionItem value={`item-${1}`} key={1} className="border-none">

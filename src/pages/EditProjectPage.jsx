@@ -304,14 +304,14 @@ const EditProjectPage = () => {
     
   return (
     <div className='mb-20'>
-        <div className='flex items-center gap-1 pl-20 border-b border-white12 py-2'>
-            <ArrowLeft size={14} stroke='#ffffff65'/>
-            <p className='text-white32 font-inter text-[14px] cursor-pointer' onClick={handleNavigateToProjectDetails}>Go back</p>
+        <div className='flex items-center gap-1 pl-20 border-b border-white12 text-white32 hover:text-white64 py-2'>
+            <ArrowLeft size={14}/>
+            <p className='font-inter text-[14px] cursor-pointer' onClick={handleNavigateToProjectDetails}>Go back</p>
         </div>
 
         {!submitted ?
             <div className='flex justify-center items-center mt-4'>
-                <div className='max-w-[469px] w-full mb-12'>
+                <div className='max-w-[530px] w-full mb-12 bg-white7 px-6 py-2 rounded-md'>
                     <Accordion type="single" defaultValue="item-1" collapsible>
                         <AccordionItem value={`item-${1}`} key={1} className="border-none">
                             <AccordionTrigger className="text-white48 font-inter hover:no-underline border-b border-primaryYellow">
