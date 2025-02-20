@@ -49,12 +49,12 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
 
   const handleOrgChange = (org) => {
     
-    if(org?.name == selectedOrg) {
+    if(org?.organisationHandle == selectedOrg) {
       setSelectedOrg('All');
       handleFoundationFilterChange('All');
     } else {
-      setSelectedOrg(org?.name)
-      handleFoundationFilterChange(org?.name);
+      setSelectedOrg(org?.organisationHandle)
+      handleFoundationFilterChange(org?.organisationHandle);
     }
   }
 
@@ -115,9 +115,9 @@ const SearchRoles = ({ tiles, handleRemoveTile, handleKeyboardEnter, searchInput
                                 slideUserMenu ? 'animate-menu-slide-in' : 'animate-menu-slide-out'
                                 }`}
                             >
-                                {isLoadingOrganisationDetails ? <Spinner /> : [{name: "All"}, ...organisationsDetails]?.map((org, idx) => (
+                                {isLoadingOrganisationDetails ? <Spinner /> : [{organisationHandle: "All"}, ...organisationsDetails]?.map((org, idx) => (
                                     <div key={idx} onClick={() => {handleOrgChange(org)}} className='p-2 hover:bg-white12 cursor-pointer rounded-md'>
-                                        {org.name}
+                                        {org.organisationHandle}
                                     </div>
                                 ))}  
                             </div>

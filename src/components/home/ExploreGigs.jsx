@@ -30,7 +30,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
 
   const [tabs, setTabs] = useState(userTabs)
   const [selectedTab, setSelectedTab] = useState('ongoing')
-  const [sortOrder, setSortOrder] = useState('ascending')
+  const [sortOrder, setSortOrder] = useState('')
   const [sortBy, setSortBy] = useState('prize')
 
   const [showfilterModal, setShowFilterModal] = useState(false)
@@ -56,24 +56,11 @@ const ExploreGigs = ({orgProjects, userId}) => {
   const [searchInput, setSearchInput] = useState()
   const [foundationFilter, setFoundationFilter] = useState('All')
 
-
   const {data: userProjects, isLoading: isLoadingUserProjects} = useQuery({
     queryKey: ["userProjects", user_id],
     queryFn: getUserProjects,
     enabled: !!userId
   })
-
-  // console.log('allProjects explore gig', allProjects)
-
-  // useEffect(() => {
-  //   if(user_role == 'sponsor') {
-  //     setTabs(sponsorTabs)
-  //     setSelectedTab('live')
-  //   } else {
-  //     setTabs(userTabs)
-  //     setSelectedTab('live')
-  //   }
-  // }, [user_role])
 
   useEffect(() => {
     const closeProject = async (projectDetails) => {
@@ -124,10 +111,18 @@ const ExploreGigs = ({orgProjects, userId}) => {
     setSelectedTab(id)
   }
 
+  const togglePriceFilter = (order) => {
+    if(sortOrder === '') setSortOrder(order)
+    else if(sortOrder !== order) setSortOrder(order)
+    else setSortOrder('')
+  }
+
   const filteredProjects = useMemo(() => {
     return allProjects?.filter((el) => {
       if(selectedTab == 'closed') {
         return (el?.status == 'closed' || el?.status == 'completed')
+      } else if(selectedTab == 'idle') {
+        return el;
       } else {
         return el?.status == selectedTab
       }
@@ -156,73 +151,9 @@ const ExploreGigs = ({orgProjects, userId}) => {
             return matchesSearch && matchesRole && matchesType && matchesWeeks && matchfoundation && matchesBountyIsOpen;
         })
         .sort((a, b) => {
-            return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
+            return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : sortOrder === 'descending' ? b?.totalPrize - a?.totalPrize : null;
     });
 }, [allProjects, selectedTab, searchInput, roleName, sortOrder, weeksFilter, foundationFilter, bountyTypeFilter, searchRoleList]);
-
-
-  // const filteredProjects = useMemo(() => {
-  //   // Filter projects based on the selected tab
-  //   let projectsToSort = [];
-  //   if (selectedTab === 'building') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
-  //   else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
-  //   else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
-  //   else projectsToSort = userProjects;
-
-  //   // Sort by the last milestone's deadline
-
-  //   if(sortBy == 'prize') {
-  //     return projectsToSort
-  //       ?.sort((a, b) => {
-  //         return sortOrder === 'ascending' ? a.totalPrize - b.totalPrize : b.totalPrize - a.totalPrize;
-  //       });
-  //   } else {
-  //   return projectsToSort
-  //     ?.sort((a, b) => {
-  //       const dateA = a.milestones && a.milestones.length > 0
-  //         ? new Date(a.milestones[a.milestones.length - 1].deadline)
-  //         : new Date(0); // fallback date if no milestones
-  //       const dateB = b.milestones && b.milestones.length > 0
-  //         ? new Date(b.milestones[b.milestones.length - 1].deadline)
-  //         : new Date(0); // fallback date if no milestones
-        
-  //         return sortOrder === 'ascending' ? dateA - dateB : dateB - dateA;
-  //     });
-  //   }
-  // }, [userProjects, selectedTab, sortOrder]);
-
-  
-//   const filteredProjects = useMemo(() => {
-//     let projectsToSort = [];
-//     if (selectedTab === 'all') projectsToSort = userProjects?.filter(project => project.status == 'idle');
-//     else if (selectedTab === 'live') projectsToSort = userProjects?.filter(project => project.status === 'ongoing');
-//     else if (selectedTab === 'completed') projectsToSort = userProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
-//     // else if (selectedTab === 'in_review') projectsToSort = userProjects?.filter(project => project.status === 'submitted');
-//     else projectsToSort = userProjects;
-
-//     return projectsToSort
-//         ?.filter(project => {
-//             // Week-based filter
-//             const lastMilestone = project?.milestones?.[project.milestones.length - 1];
-//             const deadlineDate = lastMilestone ? new Date(lastMilestone.deadline) : null;
-//             const weeksLeft = deadlineDate ? (deadlineDate - new Date()) / (1000 * 60 * 60 * 24 * 7) : null;
-//             const matchesWeeks = 
-//                 !weeksFilter || // if no weeks filter is set
-//                 (weeksFilter === 'lessThan2' && weeksLeft < 2) ||
-//                 (weeksFilter === 'between2And4' && weeksLeft >= 2 && weeksLeft <= 4) ||
-//                 (weeksFilter === 'above4' && weeksLeft > 4);
-
-//             const matchesBountyIsOpen = 
-//               bountyTypeFilter == null || // If no checkbox is selected, show all
-//               (bountyTypeFilter === 'open' && project?.isOpenBounty) ||
-//               (bountyTypeFilter === 'close' && project?.isOpenBounty == false);      
-
-//             return matchesWeeks && matchesBountyIsOpen;
-//         })
-//         .sort((a, b) => {
-//             return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
-//     });
-// }, [userProjects, sortOrder, weeksFilter, selectedTab]);
 
   const handleWeeksFilterChange = (event) => {
     const value = event.target.value;
@@ -271,25 +202,6 @@ const ExploreGigs = ({orgProjects, userId}) => {
     <div>
           <div className="flex justify-between items-center">
             <h1 className="font-gridular text-primaryYellow text-[20px]">Explore all</h1>
-            {/* {user_role == 'user' ?
-            <FancyButton
-              src_img={exploreBtnImg}
-              hover_src_img={exploreBtnHoverImg}
-              img_size_classes='w-[175px] h-[44px]' 
-              className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-              btn_txt={<span className='flex items-center justify-center gap-2'><span>{"Go to my gigs"}</span><ArrowUpRight size={18}/></span>} 
-              alt_txt='save project btn'
-              onClick={navigateToProjectDetails}
-            /> :
-            <FancyButton 
-              src_img={exploreBtnImg} 
-              hover_src_img={exploreBtnHoverImg} 
-              img_size_classes='w-[175px] h-[44px]' 
-              className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-              btn_txt={<span className='flex items-center justify-center gap-2'><span>{"+ Add Listing"}</span><ArrowUpRight size={18}/></span>} 
-              alt_txt='save project btn' 
-              onClick={navigateToCreateProject}
-            />} */}
           </div>
               
           {user_role == 'user' && 
@@ -316,8 +228,8 @@ const ExploreGigs = ({orgProjects, userId}) => {
                   <div className="absolute w-[162px] top-10 -left-[74px] rounded-md bg-white4 backdrop-blur-[52px] py-3 flex flex-col px-4 z-50">
                     <div>
                         <p className='text-[12px] font-semibold font-inter mb-3 text-start'>Sort prizes</p>
-                        <div onClick={() => {setSortOrder('ascending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'ascending' ? "text-primaryYellow" : 'text-white88'} mb-1 flex items-center gap-1`}><img src={listAscendingSvg} alt='sort' color={sortOrder == 'ascending' ? "#FBF1B8" : "#FFFFFF52"} className={`text-[16px]`} /> Low to High</div>
-                        <div onClick={() => {setSortOrder('descending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] ${sortOrder == 'descending' ? "text-primaryYellow" : 'text-white88'}  mb-[6px] flex items-center gap-1`}><img src={listDescendingSvg} alt='sort' className={`${sortOrder == 'descending' ? "text-primaryYellow" : "text-white32"}`} /> High to Low</div>
+                        <div onClick={() => {setShowFilterModal(false); togglePriceFilter('ascending')}} className={`font-gridular text-[14px] ${sortOrder == 'ascending' ? "text-primaryYellow" : 'text-white88'} mb-1 flex items-center gap-1`}><img src={listAscendingSvg} alt='sort' color={sortOrder == 'ascending' ? "#FBF1B8" : "#FFFFFF52"} className={`text-[16px]`} /> Low to High</div>
+                        <div onClick={() => {setShowFilterModal(false); togglePriceFilter('descending')}} className={`font-gridular text-[14px] ${sortOrder == 'descending' ? "text-primaryYellow" : 'text-white88'}  mb-[6px] flex items-center gap-1`}><img src={listDescendingSvg} alt='sort' className={`${sortOrder == 'descending' ? "text-primaryYellow" : "text-white32"}`} /> High to Low</div>
                     </div>
                     <div className='border border-dashed border-white7 w-full my-4'/>
                     <div>

@@ -40,7 +40,7 @@ const AllUserOwnedProjectsPage = () => {
 
     const [showfilterModal, setShowFilterModal] = useState(false)
     const [projectsGridView, setProjectsGridView] = useState(true)
-    const [sortOrder, setSortOrder] = useState('ascending');
+    const [sortOrder, setSortOrder] = useState('');
     const [weeksFilter, setWeeksFilter] = useState()
     const [foundationFilter, setFoundationFilter] = useState()
     const [bountyTypeFilter, setBountyTypeFilter] = useState()
@@ -76,6 +76,12 @@ const AllUserOwnedProjectsPage = () => {
 
     console.log('userProjects', userProjects?.projects)
 
+    const togglePriceFilter = (order) => {
+        if(sortOrder === '') setSortOrder(order)
+        else if(sortOrder !== order) setSortOrder(order)
+        else setSortOrder('')
+      }
+
     const filteredProjects = useMemo(() => {
         if(user_role == 'sponsor') {
         return userProjects?.projects?.owned?.filter((el) => {
@@ -85,8 +91,7 @@ const AllUserOwnedProjectsPage = () => {
                 return el?.approvalStatus == 'pending' && el?.status == "idle"
             } else if(selectedTab == "approved") {
                 return el?.approvalStatus != 'pending' && el?.approvalStatus != 'rejected'
-            }
-            else if(selectedTab == 'closed') {
+            } else if(selectedTab == 'closed') {
                 return (el?.status == 'closed' || el?.status == 'completed')
             } else {
                 return el?.status == selectedTab
@@ -112,7 +117,7 @@ const AllUserOwnedProjectsPage = () => {
                 return matchesType && matchesWeeks && matchesBountyIsOpen;
             })
             .sort((a, b) => {
-                return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : b?.totalPrize - a?.totalPrize;
+                return sortOrder === 'ascending' ? a?.totalPrize - b?.totalPrize : sortOrder === 'descending' ? b?.totalPrize - a?.totalPrize : null;
         });
         } else {
             return userProjects?.projects?.taken?.filter((el) => {
@@ -200,8 +205,8 @@ const AllUserOwnedProjectsPage = () => {
                                         <div className="absolute w-[156px] top-10 -left-[70px] rounded-md bg-white4 backdrop-blur-[52px] py-3 flex flex-col px-4 z-50">
                                             <div>
                                                 <p className='text-[12px] font-semibold font-inter mb-2 text-start'>Sort prizes</p>
-                                                <div onClick={() => {setSortOrder('ascending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] cursor-pointer ${sortOrder == 'ascending' ? "text-primaryYellow" : 'text-white88'} mb-1 flex items-center gap-1`}><img src={listAscendingSvg} alt='sort' color={sortOrder == 'ascending' ? "#FBF1B8" : "#FFFFFF52"} className={`text-[16px]`} /> Low to High</div>
-                                                <div onClick={() => {setSortOrder('descending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] cursor-pointer ${sortOrder == 'descending' ? "text-primaryYellow" : 'text-white88'}  mb-[6px] flex items-center gap-1`}><img src={listDescendingSvg} alt='sort' className={`${sortOrder == 'descending' ? "text-primaryYellow" : "text-white32"}`} /> High to Low</div>
+                                                <div onClick={() => {togglePriceFilter('ascending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] cursor-pointer ${sortOrder == 'ascending' ? "text-primaryYellow" : 'text-white88'} mb-1 flex items-center gap-1`}><img src={listAscendingSvg} alt='sort' color={sortOrder == 'ascending' ? "#FBF1B8" : "#FFFFFF52"} className={`text-[16px]`} /> Low to High</div>
+                                                <div onClick={() => {togglePriceFilter('descending'); setShowFilterModal(false)}} className={`font-gridular text-[14px] cursor-pointer ${sortOrder == 'descending' ? "text-primaryYellow" : 'text-white88'}  mb-[6px] flex items-center gap-1`}><img src={listDescendingSvg} alt='sort' className={`${sortOrder == 'descending' ? "text-primaryYellow" : "text-white32"}`} /> High to Low</div>
                                             </div>
                                             <div className='border border-dashed border-white7 w-full my-4'/>
                                             <div>
