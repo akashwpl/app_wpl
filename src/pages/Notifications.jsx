@@ -126,7 +126,7 @@ const Notifications = () => {
                             </div>
                           </td>
                           
-                          <td className='flex justify-center items-center gap-2 pt-2.5 w-[90px]'>
+                          <td className='w-[90px] px-8'>
                             <Trash2 onClick={() => {updateNotification(notification._id, 'delete')}} className='text-primaryYellow/70 cursor-pointer' size={20} />
                           </td>
 
