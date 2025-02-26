@@ -180,8 +180,8 @@ const navigateToProjectDetails = () => {
           {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
           filteredProjects && selectedTab == 'live' && filteredProjects?.length == 0 ? <div className="mt-24">
             <div className="flex flex-col justify-center items-center gap-2">
-              <div className="font-gridular text-white88 text-[24px]">You haven't applied to any projects :(</div>
-              <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
+              <div className="font-gridular text-white88 text-[24px]">{user_role === 'user' ? "You haven't applied to any projects :(" : "No submissions yet"}</div>
+              <p className="text-white32 font-gridular">{user_role === 'user' ? "Explore" : "List"} gigs and start building now!</p>
             </div>
               <div className="flex justify-center items-center mt-6">
                 <FancyButton 
@@ -197,8 +197,8 @@ const navigateToProjectDetails = () => {
             </div>
             : selectedTab !== 'live' && filteredProjects?.length == 0 ? <div className="mt-24">
               <div className="flex flex-col justify-center items-center gap-2">
-                <div className="font-gridular text-white88 text-[24px]">Oops! Looks like you haven't submitted a project :(</div>
-                <p className="text-white32 font-gridular">Explore gigs and start building now!</p>
+                <div className="font-gridular text-white88 text-[24px]">Oops! Looks like you haven't {user_role === 'user' ? "submitted" : "listed"} a project :(</div>
+                <p className="text-white32 font-gridular">{user_role === 'user' ? "Explore" : "List"} gigs and start building now!</p>
               </div>
                 <div className="flex justify-center items-center mt-6">
                   <FancyButton 
