@@ -16,10 +16,10 @@ const GrantCard = ({data}) => {
   }
 
   return (
-    <div className='bg-[#050E52] p-6 rounded-[8px] flex flex-col gap-4 w-[390px] mt-1'>
+    <div className='bg-[#050E52] p-6 flex flex-col gap-4 w-[390px] mt-1 rounded-md border border-white12'>
       <img src={data?.image || grantPlaceholderPng} alt='grant image' className='w-[346px] h-[170px]'/>
       <div className='flex gap-3'>
-        <div className='bg-[#091044] flex items-center gap-[6px] rounded-md p-2'>
+        <div className='bg-[#091044] flex items-center gap-[6px] p-2'>
           <p className='text-white48 text-[14px] font-semibold font-inter'>Upto</p>
           <img src={currencyImage(data?.currency) || USDCPng} alt='usdc' className='w-[16px] h-[16px]'/>
           <p className='text-white88 text-[14px] font-semibold font-inter'>{formatCurrency(data?.prizeApproved)} {currencyName(data?.currency)}</p>
@@ -40,7 +40,7 @@ const GrantCard = ({data}) => {
         hover_src_img={btnHoverImg} 
         img_size_classes='w-[500px] h-[44px]' 
         className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-        btn_txt='Apply'  
+        btn_txt='View'  
         alt_txt='project apply btn' 
         onClick={() => {navigateToGrantDetails()}}
       />

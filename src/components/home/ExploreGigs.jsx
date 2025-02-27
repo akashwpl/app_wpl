@@ -14,6 +14,7 @@ import ExploreGigsCard from "./ExploreGigsCard"
 import listAscendingSvg from '../../assets/svg/list-number-ascending.svg'
 import listDescendingSvg from '../../assets/svg/list-number-descending.svg'
 import SearchRoles from "./SearchRoles"
+import ExploreGigsListViewCard from "../cards/ExploreGigsListViewCard"
 
 // TODO ::  Leaderboard page clickable user and rediret to user profile
 
@@ -194,10 +195,6 @@ const ExploreGigs = ({orgProjects, userId}) => {
     setSearchInput(e.target.value)
   }
 
-  const navigateToCreateProject = () => {
-    navigate('/addproject')
-  }
-
   return (
     <div>
           <div className="flex justify-between items-center">
@@ -303,10 +300,15 @@ const ExploreGigs = ({orgProjects, userId}) => {
                   />
                 </div> */}
             </div>
-            : <div className={`${projectsGridView ? "grid grid-cols-2 gap-4" : "flex flex-col"}`}>
+            : <div className={`${projectsGridView ? "grid grid-cols-2 gap-4 mt-3" : "flex flex-col"}`}>
                 {filteredProjects?.length == 0 ? <div></div> : filteredProjects?.map((project, idx) => <div key={idx} className={`${projectsGridView ? "" : "hover:bg-white4"}`}> 
                     <div className='col-span-1 h-full'>
-                      <ExploreGigsCard data={project} type={"project"} projectsGridView={projectsGridView}/>
+                      {
+                        projectsGridView ?
+                          <ExploreGigsCard data={project}/>
+                        :
+                          <ExploreGigsListViewCard data={project}/>
+                      }
                       {/* {projectsGridView && <div className='border border-x-0 border-t-0 border-b-white7'></div>} */}
                     </div>
                 </div>

@@ -51,7 +51,7 @@ function App() {
           <Route path="/signup/form" element={<FormPage />} />
           <Route path="/projectdetails/form/:id" element={<FormPage />} />
           <Route path="/onboarding" element={<OnBoarding />} />
-          <Route path="/addproject" element={<AddProjectPage />} />
+          <Route path="/addproject/:gigtype" element={<AddProjectPage />} />
           <Route path="/editproject/:id" element={<EditProjectPage />} />
           <Route path="/allprojects" element={<AllProjectsPage />} />
           <Route path="/userprojects" element={<AllUserOwnedProjectsPage />} />
