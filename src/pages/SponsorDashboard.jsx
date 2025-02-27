@@ -31,7 +31,7 @@ const SponsorDashboard = () => {
                 <div className='w-[80%] flex flex-col gap-2 h-full'>
                     {/* <SponsorTrendingBountyCard /> */}
                     {/* <div 
-                        onClick={() => navigate('/addproject')} 
+                        onClick={() => navigate('/selectprojecttype')} 
                         className='min-w-[300px] max-w-[300px] cursor-pointer'
                     >
                         <img src={sponsorCardPng} alt='sponsor login'/>

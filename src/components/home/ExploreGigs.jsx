@@ -195,10 +195,6 @@ const ExploreGigs = ({orgProjects, userId}) => {
     setSearchInput(e.target.value)
   }
 
-  const navigateToCreateProject = () => {
-    navigate('/addproject')
-  }
-
   return (
     <div>
           <div className="flex justify-between items-center">

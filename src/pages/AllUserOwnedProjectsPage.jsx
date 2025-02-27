@@ -53,7 +53,6 @@ const AllUserOwnedProjectsPage = () => {
     })
 
     const navigateToAddProject = () => {
-        // navigate('/addproject')
         navigate('/selectprojecttype')
     }
 

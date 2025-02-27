@@ -6,7 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import STRKimg from '../assets/images/strk.png';
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png';
 import btnImg from '../assets/svg/btn_subtract_semi.png';
@@ -39,6 +39,8 @@ const   AddProjectPage = () => {
     const dispatch = useDispatch()
     const {user_id, user_role} = useSelector((state) => state)
 
+    const { gigtype } = useParams();
+
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [aboutProject, setAboutProject] = useState('');
@@ -47,7 +49,7 @@ const   AddProjectPage = () => {
     const [logo, setLogo] = useState(null);
     const [logoPreview, setLogoPreview] = useState('');
     const [projCurrency, setProjCurrency] = useState('USDC');
-    const [isOpenBounty, setIsOpenBounty] = useState(false);
+    const [isOpenBounty, setIsOpenBounty] = useState(gigtype === 'bounty');
     const [errors, setErrors] = useState({}); // State for validation errors
 
     const [totalPrize, setTotalPrize] = useState(0);
@@ -60,8 +62,6 @@ const   AddProjectPage = () => {
 
     const [submitted, setSubmitted] = useState(false);
     const [createdProjectId, setCreatedProjectId] = useState(null);
-
-    const [searchInput, setSearchInput] = useState()
 
     const [isCreatingProject, setIsCreatingProject] = useState(false);
 
@@ -337,20 +337,6 @@ const   AddProjectPage = () => {
         setTotalPrize(total)
     },[milestones])
 
-    const handleSearch = (e) => {
-        setSearchInput(e.target.value)
-    }
-
-    const handleRemoveTile = (tile) => {
-        setRole((prev) => prev.filter((t) => t !== tile))
-    }
-
-    const handleSelectRoles = (e) => {
-        e.preventDefault()
-        setRole((prev) => [...prev, e.target.value?.trim()])
-        setSearchInput('')
-    }
-
   return (
     <div className='pb-40'>
         <div className='flex items-center gap-1 pl-20 py-2'>
@@ -449,7 +435,7 @@ const   AddProjectPage = () => {
                                         </div>
                                         
                                         {/* Add info button for Open and Gated (close) projects description */}
-                                        <div className='mt-3'>
+                                        {/* <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Select bounty type <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2 text-white64'>
                                                 <input type="radio" id="isOpenTrue" name="isOpen" checked={isOpenBounty} onChange={() => setIsOpenBounty(true)} value={true} />
@@ -457,7 +443,7 @@ const   AddProjectPage = () => {
                                                 <input type="radio" id="isOpenFalse" name="isOpen" checked={!isOpenBounty} onChange={() => setIsOpenBounty(false)} value={false} />
                                                 <label htmlFor="isOpenFalse"> Gated</label>
                                             </div>
-                                        </div>
+                                        </div> */}
 
                                         <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Roles <span className='text-[#F03D3D]'>*</span></p>
@@ -585,7 +571,7 @@ const   AddProjectPage = () => {
                                 >
                                     <option value="days">Days</option>
                                     <option value="weeks">Weeks</option>
-                                    <option value="months">Months</option>
+                                    {/* <option value="months">Months</option> */}
                                 </select>
                             </div>
                             <div className='w-full'>
