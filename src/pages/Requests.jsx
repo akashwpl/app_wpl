@@ -25,7 +25,7 @@ const Requests = () => {
     useEffect(() => {
         if(!isLoadingallPendingProjects) {
             console.log('pendingProj',allPendingProjects);
-            
+            allPendingProjects?.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
             setFilteredReq(allPendingProjects);
         }
     },[isLoadingallPendingProjects, allPendingProjects])
@@ -64,14 +64,20 @@ const Requests = () => {
       pageNumbers?.push(i);
     }
 
+    console.log('pnum',pageNumbers);
+    
+
     const navigateToProjects = (id) => {
         navigate(`/projectdetails/${id}`)
     }   
 
+    console.log('cp',currentPage);
+    
+
     return (
         <div className='size-full'>
             <div className='mx-20 mt-28'>
-                <h2 className='font-gridular text-xl text-primaryYellow'>Bounty requests from WPL Sponsors</h2>
+                <h2 className='font-gridular text-xl text-primaryYellow'>Gig requests from WPL Sponsors</h2>
 
                 {/* TABLE */}
                 <div className='mt-8'>
@@ -89,34 +95,31 @@ const Requests = () => {
                                     <div className='grid grid-cols-10 gap-2 my-4 px-4'>
                                         <div className='text-[14px] col-span-1 text-white48 font-inter'>No.</div>
                                         <div className='text-[14px] col-span-2 text-white48 font-inter'>Name</div>
+                                        <div className='text-[14px] col-span-2 text-white48 font-inter'>Organisation</div>
                                         <div className='text-[14px] col-span-5 text-white48 font-inter'>Description</div>
-                                        <div className='text-[14px] col-span-2 text-white48 font-inter'>Action</div>
+                                        {/* <div className='text-[14px] col-span-2 text-white48 font-inter'>Action</div> */}
                                     </div>
                                     <div className="border border-dashed border-white88 w-full"></div>
                                     <div className='max-h-[515px] overflow-y-hidden'>
                                         {currentData?.map((proj, index) => (
                                             <div 
-                                                key={index} className={`grid grid-cols-10 gap-2 py-3 items-center cursor-pointer px-5 ${index == 4 ? "" : "border-b border-white7 hover:bg-white12"}`}>
-                                                <div className='text-[14px] col-span-1 text-white88 font-inter'>{index + 1}</div>
+                                                onClick={() =>navigateToProjects(proj._id)}
+                                                key={index} className={`grid grid-cols-10 gap-2 py-3 items-center cursor-pointer px-5 border-b border-white7 hover:bg-white12`}>
+                                                <div className='text-[14px] col-span-1 text-white88 font-inter'>{(parseInt(indexOfFirstItem)+parseInt(index))+1}</div>
                                                 <div className='text-[14px] col-span-2 text-start text-white88 font-inter'>
-                                                    <div 
-                                                        onClick={() =>navigateToProjects(proj._id)} 
-                                                        className='flex flex-col'
-                                                    >
-                                                        {/* <p className='text-white88 text-[14px]'>{proj?.user?.displayName}</p> */}
-                                                        <p className='text-white88 text-[14px]'>{proj?.title}</p>
-                                                    </div>
+                                                    {proj?.title}
                                                 </div>
-                                                <div 
-                                                    onClick={() =>navigateToProjects(proj._id)} 
-                                                    className='text-[14px] col-span-5 text-white88 font-inter truncate'
-                                                >
+                                                <div className='text-[14px] col-span-2 text-start text-white88 font-inter'>
+                                                    {proj?.organisation?.organisationHandle}
+                                                </div>
+                                                <div className='text-[14px] col-span-5 text-white88 font-inter truncate'>
                                                     {proj?.description}
                                                 </div>
-                                                <div className='col-span-2 flex justify-between w-[90px]'>
-                                                    <CircleCheck onClick={() => handleAcceptRejectRequest(proj._id,proj.owner_id,proj.title,proj.isOpenBounty,true)} className='text-cardGreenText/70' size={30} />
-                                                    <CircleX onClick={() => handleAcceptRejectRequest(proj._id,proj.owner_id,proj.title,proj.isOpenBounty,false)} className='text-cardRedText/70' size={30} />
-                                                </div>
+                                                {/* <div className='col-span-2 flex justify-between w-[90px]'> */}
+
+                                                    {/* <CircleCheck onClick={() => handleAcceptRejectRequest(proj._id,proj.owner_id,proj.title,proj.isOpenBounty,true)} className='text-cardGreenText/70' size={30} />
+                                                    <CircleX onClick={() => handleAcceptRejectRequest(proj._id,proj.owner_id,proj.title,proj.isOpenBounty,false)} className='text-cardRedText/70' size={30} /> */}
+                                                {/* </div> */}
                                             </div>
                                         ))}
                                     </div>
@@ -135,11 +138,11 @@ const Requests = () => {
                             if (number === 1 || number === pageNumbers.length || (number >= currentPage - 1 && number <= currentPage + 1)) {
                             return (
                                 <button
-                                key={number}
-                                onClick={() => paginate(number)}
-                                className={currentPage === number ? 'bg-[#293BBC] w-[20px] h-[18px]' : ''}
+                                    key={number}
+                                    onClick={() => paginate(number)}
+                                    className={currentPage === number ? 'bg-[#293BBC] w-[20px] h-[18px]' : ''}
                                 >
-                                {number}
+                                    {number}
                                 </button>
                             );
                             } else if (number === currentPage - 2 || number === currentPage + 2) {
