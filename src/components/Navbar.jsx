@@ -31,12 +31,16 @@ const menuBorderImgType = {
     img: userMenuBorderSVG,
   },
   'sponsor': {
-    height: 'h-[180px]',
-    img: sponsorMenuBorderSVG
+    height: 'h-[141px]',
+    img: userMenuBorderSVG,
+    // height: 'h-[180px]',
+    // img: sponsorMenuBorderSVG
   }, 
   'admin': {
-    height: 'h-[215px]',
-    img: adminMenuBorderSVG
+    // height: 'h-[215px]',
+    // img: adminMenuBorderSVG
+    height: 'h-[180px]',
+    img: sponsorMenuBorderSVG
   } 
 }
 
@@ -253,7 +257,7 @@ const Navbar = () => {
                         <p>My Profile</p>
                       </div>
                     </Link>
-                    {userDetail?.role !== 'user' && (
+                    {/* {userDetail?.role !== 'user' && (
                       <>
                         <Link
                           to="/userprojects"
@@ -265,7 +269,7 @@ const Navbar = () => {
                           </div>                          
                         </Link>
                       </>
-                    )}
+                    )} */}
                     {userDetail?.role === 'admin' && (
                       <>
                         <Link

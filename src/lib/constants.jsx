@@ -4,6 +4,9 @@ export const email_regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export const website_regex = /^(?:https?:\/\/)?(?:www\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,6}(?:\/\S*)?$/i;
 
+export const discord_server_link_regex = /^(https?:\/\/)?(www\.)?(discord\.(gg|com)\/(invite\/)?([a-zA-Z0-9-]+))$/i;
+export const telegram_channel_link_regex = /^(https?:\/\/)?(www\.)?(t\.me\/([a-zA-Z0-9_]+))$/i;
+
 export function isValidStarkNetAddress(address) {
   // Check if the address starts with '0x'
   if (!address.startsWith('0x')) {

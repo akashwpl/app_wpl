@@ -6,39 +6,91 @@ import greenBtnHoverImg from '../../assets/svg/green_btn_hover_subtract.png';
 import greenBtnImg from '../../assets/svg/green_btn_subtract.png';
 
 import add_bounty_img from '../../assets/images/add_bounty.png'
-import add_project_img from '../../assets/images/add_project.png'
+import add_grant_img from '../../assets/images/add_project.png'
+import add_project_img from '../../assets/images/contributor_signup.png'
 
 import loginBtnHoverImg from '../../assets/svg/btn_hover_subtract.png'
 import loginBtnImg from '../../assets/svg/btn_subtract_semi.png'
 import { useState } from "react";
 
-const stepsData = [
-	{
-		index: 1,
-		title: 'Submit your form',
-		desc: 'Create your bounty by filling a simple form',
-	},
-	{
-		index: 2,
-		title: 'Admin Approval',
-		desc: 'Our team review & approves your application',
-	},
-	{
-		index: 3,
-		title: 'Bounty goes live',
-		desc: 'The approved bounty becomes visible to the whole network',
-	},
-	{
-		index: 4,
-		title: 'Receive submissions',
-		desc: 'Start receiving submissions from users',
-	},
-	{
-		index: 5,
-		title: 'Review & reward',
-		desc: 'Review the submission, select the best one & reward!',
-	},
-]
+const stepsData = {
+	bounty: [
+		{
+			index: 1,
+			title: 'Submit your form',
+			desc: 'Create your bounty by filling a simple form',
+		},
+		{
+			index: 2,
+			title: 'Admin Approval',
+			desc: 'Our team review & approves your application',
+		},
+		{
+			index: 3,
+			title: 'Bounty goes live',
+			desc: 'The approved bounty becomes visible to the whole network',
+		},
+		{
+			index: 4,
+			title: 'Receive submissions',
+			desc: 'Start receiving submissions from users',
+		},
+		{
+			index: 5,
+			title: 'Review & reward',
+			desc: 'Review the submission, select the best one & reward!',
+		},
+	],
+	project: [
+		{
+			index: 1,
+			title: 'Submit your form',
+			desc: 'Create your project by filling a simple form',
+		},
+		{
+			index: 2,
+			title: 'Admin Approval',
+			desc: 'Our team review & approves your application',
+		},
+		{
+			index: 3,
+			title: 'Project goes live',
+			desc: 'The approved project becomes visible to the whole network',
+		},
+		{
+			index: 4,
+			title: 'Receive potential Participants',
+			desc: 'Start receiving applications from potential project participants',
+		},
+		{
+			index: 5,
+			title: 'Accept Participants',
+			desc: 'Shortlist participants for the project task',
+		},
+		{
+			index: 6,
+			title: ' Review and Rewards',
+			desc: 'Reveiw the submission and reward the user',
+		},
+	],
+	grant: [
+		{
+			index: 1,
+			title: 'Submit your form',
+			desc: 'Create your grant by filling a simple form',
+		},
+		{
+			index: 2,
+			title: 'Admin Approval',
+			desc: 'Our team review & approves your application',
+		},
+		{
+			index: 3,
+			title: 'Grant goes live',
+			desc: 'The approved grant becomes visible to the whole network',
+		},
+	]
+}
 
 const SelectProjectType = () => {
   const navigate = useNavigate();
@@ -79,10 +131,10 @@ const SelectProjectType = () => {
 
   return (
     <>
-      <div className='absolute left-20'>
+      <div className='absolute -top-6 left-20'>
         <div 
           onClick={handleGoBackBtn} 
-          className='cursor-pointer text-white88 hover:text-white64 flex items-center gap-1 w-fit'
+          className='cursor-pointer hover:text-white64 text-white32 flex items-center gap-1 w-fit'
         >
             <ArrowLeft size={14} className=''/>
             <p className='font-inter text-[14px]'>Go back</p>
@@ -96,7 +148,7 @@ const SelectProjectType = () => {
 							<p className='font-inter text-[12px] text-white48 font-medium leading-4 mb-5'>Bounties are listings where everyone completes a given scope of work, and competes for the prize pool </p>
 
 							<div className='flex flex-col py-3 px-4 bg-cardBlueBg2 rounded-md gap-4'>
-									<img className='w-[290px] h-[250px]' src={add_bounty_img} alt="talent_img" />
+									<img className='w-[290px] h-[250px]' src={add_bounty_img} alt="bounty_img" />
 									<div className='flex flex-col h-[110px]'>
 											<div className="flex flex-row text-white32 w-full items-center">
 													<CheckCheck className='mr-1'/>
@@ -129,7 +181,7 @@ const SelectProjectType = () => {
 							<p className='font-inter text-[12px] text-white48 font-medium leading-4 mb-5'>Projects are freelance gigs - people apply with their proposals but don't begin work until you pick them</p>
 
 							<div className='flex flex-col py-3 px-4 bg-cardBlueBg2 rounded-md gap-4'>
-									<img className='w-[290px] h-[250px]' src={add_project_img} alt="talent_img" />
+									<img className='w-[290px] h-[250px]' src={add_project_img} alt="project_img" />
 									<div className='flex flex-col h-[110px]'>
 											<div className="flex flex-row text-white32 w-full items-center">
 													<CheckCheck className='mr-1'/>
@@ -162,7 +214,7 @@ const SelectProjectType = () => {
 							<p className='font-inter text-[12px] text-white48 font-medium leading-4 mb-5'>Bounties are listings where everyone completes a given scope of work, and competes for the prize pool </p>
 
 							<div className='flex flex-col py-3 px-4 bg-cardBlueBg2 rounded-md gap-4'>
-									<img className='w-[290px] h-[250px]' src={add_bounty_img} alt="talent_img" />
+									<img className='w-[290px] h-[250px]' src={add_grant_img} alt="grant_img" />
 									<div className='flex flex-col h-[110px]'>
 											<div className="flex flex-row text-white32 w-full items-center">
 													<CheckCheck className='mr-1'/>
@@ -200,7 +252,7 @@ const SelectProjectType = () => {
 						{/* Points */}
 						<div className="bg-cardGithubBlueBg p-5 rounded-md flex flex-col gap-3.5">
 							{/* single point */}
-							{stepsData?.map((step) => {
+							{stepsData[gigType]?.map((step) => {
 								return (
 								<div className="flex items-center gap-3.5">
 									<div className="bg-white7 flex flex-row items-center justify-center rounded-full size-8">

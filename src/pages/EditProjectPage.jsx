@@ -13,7 +13,7 @@ import DiscordSVG from '../assets/icons/pixel-icons/discord.svg'
 import { createNotification, getProjectDetails, getUserOrgs, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getTimestampFromNow, ROLES } from '../lib/constants'
+import { discord_server_link_regex, getTimestampFromNow, ROLES, telegram_channel_link_regex } from '../lib/constants'
 import DatePicker from 'react-datepicker'
 import saveBtnImg from '../assets/svg/menu_btn_subtract.png'
 import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png'
@@ -80,7 +80,7 @@ const EditProjectPage = () => {
     const [organisationHandle, setOrganisationHandle] = useState(projectDetails?.organisationHandle || projectDetails?.organisation?.organisationHandle || '');
     const [organisationId, setOrganisationId] = useState('');
     const [description, setDescription] = useState(projectDetails?.description || '');
-    const [discordLink, setDiscordLink] = useState(projectDetails?.organisation?.socialHandleLink?.discord || '');
+    const [helpLink, setHelpLink] = useState(projectDetails?.helpLink || projectDetails?.organisation?.socialHandleLink?.telegram || projectDetails?.organisation?.socialHandleLink?.discord || '');
     const [about, setAbout] = useState(projectDetails?.about || '');
     const [projCurrency, setProjCurrency] = useState(projectDetails?.currency || '');
     const [isOpenBounty, setIsOpenBounty] = useState(projectDetails?.isOpenBounty || '');
@@ -143,8 +143,8 @@ const EditProjectPage = () => {
             let tempMsErr = msErrors;
             milestones.map((milestone,index) => {
                 const newErrors = {};
-                if (!milestone.title) newErrors.title = 'Title is required';
-                if (!milestone.description) newErrors.description = 'Description is required';
+                if (!milestone.title) newErrors.title = 'Milestone title is required';
+                if (!milestone.description) newErrors.description = 'Milestone description is required';
                 if (!milestone.starts_in) newErrors.starts_in = 'Start date is required';
                 if (!milestone.prize) {
                     newErrors.prize = 'Prize is required';
@@ -169,15 +169,18 @@ const EditProjectPage = () => {
     // Validation function
     const validateFields = () => {
         const newErrors = {};
-        if (title.length === 0) newErrors.title = 'Title is required.';
-        if (title.length > 50) newErrors.title = 'Title cannot exceed 50 characters.';
+        if (title.length === 0) newErrors.title = `${isOpenBounty ? "Bounty" : "Project"} title is required`;
+        if (title.length > 50) newErrors.title = `${isOpenBounty ? "Bounty" : "Project"} title cannot exceed 50 characters.`;
         
-        if (description.length === 0) newErrors.description = 'Description is required.';
-        if (description.length > 1000) newErrors.description = 'Description cannot exceed 1000 characters.';
+        if (description.length === 0) newErrors.description = 'About Organisation field is required';
+        if (description.length > 1000) newErrors.description = 'About Organisation field cannot exceed 1000 characters.';
         
-        if (!discordLink) newErrors.discordLink = 'Discord server link is required';
-        if (!discordLink.startsWith('https://discord.gg/')) newErrors.discordLink = 'Discord server link must start with https://discord.gg/';
-        if (!about) newErrors.about = 'About is required.';
+        if (!helpLink) {
+            newErrors.helpLink = 'Help link is required';
+        } else if(!discord_server_link_regex.test(helpLink) && !telegram_channel_link_regex.test(helpLink)) {
+            newErrors.helpLink = 'Link must be a valid Telegram channel or Discord server link'
+        } 
+        if (!about) newErrors.about = 'About project field is required.';
         if (milestones.length === 0) {
             newErrors.milestones = 'At least one milestone is required';
         } else if(validateMilestones()) {
@@ -229,7 +232,7 @@ const EditProjectPage = () => {
                     description: description,
                     organisationHandle: organisationHandle,
                     organisationId: organisationId,
-                    discordLink: discordLink,
+                    helpLink: helpLink,
                     about: about,
                     image: projectDetails?.image,
                     currency: projCurrency,
@@ -323,7 +326,7 @@ const EditProjectPage = () => {
                             <AccordionContent className="py-2 border-t border-dashed border-white12">
                                 <div>
                                     <div>
-                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title of the project</p>
+                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>{isOpenBounty ? "Bounty" : "Project"} Title</p>
                                         <div className='bg-white7 rounded-md px-3 py-2'>
                                             <input
                                                 type='text'
@@ -347,7 +350,7 @@ const EditProjectPage = () => {
                                         {errors.organisationHandle && <p className='text-[12px] font-medium text-red-500'>{errors.organisationHandle}</p>}
                                     </div>
                                     <div className='mt-3'>
-                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description</p>
+                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>About the Organisation</p>
                                         <div className='bg-white7 rounded-md px-3 py-2'>
                                             <textarea
                                                 value={description}
@@ -416,18 +419,18 @@ const EditProjectPage = () => {
                                     </div>
 
                                     <div className='mt-3'>
-                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Discord Link</p>
+                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Help link (Telegram/Discord)</p>
                                         <div className='bg-white7 rounded-md px-3 py-2 flex items-center gap-2'>
                                             <img src={DiscordSVG} alt='discord' className='size-[20px]'/>
                                             <input
                                                 type='text'
-                                                value={discordLink}
-                                                onChange={(e) => setDiscordLink(e.target.value)}
-                                                placeholder='https://discord.gg/server_name'
+                                                value={helpLink}
+                                                onChange={(e) => setHelpLink(e.target.value)}
+                                                placeholder='https://app_name/group_name'
                                                 className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
                                             />
                                         </div>
-                                        {errors.discordLink && <p className='text-[12px] font-medium text-red-500'>{errors.discordLink}</p>}
+                                        {errors.helpLink && <p className='text-[12px] font-medium text-red-500'>{errors.helpLink}</p>}
                                     </div>
                                 </div>
                             </AccordionContent>
@@ -441,12 +444,12 @@ const EditProjectPage = () => {
                             <AccordionTrigger className="text-white48 font-inter hover:no-underline border-b border-primaryYellow">
                                 <div className='flex items-center gap-1'>
                                     <Menu size={14} className='text-primaryYellow'/>
-                                    <div className='text-primaryYellow font-inter text-[14px]'>Project Details</div>
+                                    <div className='text-primaryYellow font-inter text-[14px]'>{isOpenBounty ? "Bounty" : "Project"} Details</div>
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent className="py-2">
                                 <div>
-                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the project about?</p>
+                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the {isOpenBounty ? "Bounty" : "Project"} about?</p>
                                     <div className='bg-white7 rounded-md px-3 py-2'>
                                         <textarea value={about} onChange={(e) => setAbout(e.target.value)} type='text' className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
                                     </div>
@@ -455,122 +458,194 @@ const EditProjectPage = () => {
                             </AccordionContent>
                         </AccordionItem>
                     </Accordion>
-
-                    <div className='border border-dashed border-white12 my-4'/>
-                    {errors?.milestones && <p className='text-red-500 font-medium text-[12px]'>{errors?.milestones}</p>}
-
-                    <div>
-                        {milestones?.map((milestone, index) => (
-                            <Accordion type="single" defaultValue="item-3" collapsible>
-                            <AccordionItem value={`item-${3}`} key={3} className="border-none">
-                                    <div className="flex w-full border-b border-primaryYellow justify-between items-center">
-                                        <AccordionTrigger className="w-[425px] text-white48 font-inter hover:no-underline">
-                                            <div className='flex items-center gap-1'>
-                                                <img src={trophySVG} alt="trophy" className='size-[18px]'/>
-                                                <div className='text-primaryYellow font-inter text-[14px]'>Milestone {index + 1}</div>
-                                            </div>
-                                        </AccordionTrigger>
-                                        <X size={16} className='text-primaryRed w-[30px] cursor-pointer' onClick={() => handleDeleteMilestone(index)}/>
+                    
+                    {isOpenBounty ?
+                        <>
+                            <div className='mt-3'>
+                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Start date</p>
+                                <div className='bg-white7 rounded-md'>
+                                    <DatePicker
+                                        className='w-[28rem] bg-transparent text-white88 placeholder:text-white64 outline-none border-none cursor-pointer px-3 py-2' 
+                                        selected={milestones[0].starts_in || ''}
+                                        onChange={(date) => handleDateChange(0,date)}
+                                        minDate={new Date()}
+                                        dateFormat="dd/MM/yyyy"
+                                        placeholderText='DD/MM/YYYY'
+                                    />
+                                </div>
+                                {msErrors.length != 0 && msErrors[0]?.starts_in && <p className='text-red-500 font-medium text-[12px]'>{msErrors[0]?.starts_in}</p>}
+                            </div>
+                            <div className='mt-3'>
+                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
+                                <div className='flex items-center gap-2 w-full'>
+                                    <div className='bg-[#091044] rounded-md py-2 w-[110px] flex justify-evenly items-center gap-1'>
+                                        <img src={projCurrency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px] rounded-sm'/>
+                                        <p className='text-white88 font-semibold font-inter text-[12px]'>{projCurrency}</p>
                                     </div>
-                                <AccordionContent className="py-2">
-                                    <div>
-                                        <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title</p>
-                                            <div className='bg-white7 rounded-md px-3 py-2'>
-                                                <input
-                                                    type='text'
-                                                    value={milestone.title}
-                                                    name='title'
-                                                    onChange={(e) => setMilestonesHelper(index,e)} 
-                                                    className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full'
-                                                />
-                                            </div>
-                                            {msErrors.length != 0 && msErrors[index]?.title && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.title}</p>}
+                                    <div className='w-full'>
+                                        <div className='bg-white7 rounded-md px-3 py-2'>
+                                            <input 
+                                                type='number' 
+                                                value={milestones[0].prize} 
+                                                name='prize'
+                                                onChange={(e) => setMilestonesHelper(0,e)} 
+                                                placeholder='1200' 
+                                                className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'/>
                                         </div>
-                                        <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone description</p>
-                                            <div className='bg-white7 rounded-md px-3 py-2'>
-                                                <textarea type='text' 
-                                                    value={milestone.description} 
-                                                    name='description'
-                                                    onChange={(e) => setMilestonesHelper(index,e)} 
-                                                    className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}
-                                                />
-                                            </div>
-                                            {msErrors.length != 0 && msErrors[index]?.description && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.description}</p>}
+                                    </div>
+                                </div> 
+                                {msErrors.length != 0 && msErrors[0]?.prize && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{msErrors[0]?.prize}</p>}
+                            </div>
+                            <div className='mt-3'>
+                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Delivery Time</p>
+                                <div className='flex items-center gap-2 w-full mt-2'>
+                                    <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
+                                        <select 
+                                            className='bg-[#091044] text-white88 outline-none border-none w-full cursor-pointer'
+                                            value={milestones[0].timeUnit || 'Days'}
+                                            name='timeUnit'
+                                            onChange={(e) => setMilestonesHelper(0,e)}
+                                        >
+                                            <option value="Days">Days</option>
+                                            <option value="Weeks">Weeks</option>
+                                            {/* <option value="Months">Months</option> */}
+                                        </select>
+                                    </div>
+                                    <div className='w-full'>
+                                        <div className='bg-white7 rounded-md px-3 py-2'>
+                                            <input 
+                                                type='number' 
+                                                placeholder='1200' 
+                                                className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
+                                                value={milestones[0].deliveryTime}
+                                                name='deliveryTime'
+                                                onChange={(e) => setMilestonesHelper(0,e)}
+                                            />
                                         </div>
-                                        <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Start date</p>
-                                            <div className='bg-white7 rounded-md'>
-                                                <DatePicker
-                                                    className='w-[28rem] bg-transparent text-white88 placeholder:text-white64 outline-none border-none cursor-pointer px-3 py-2' 
-                                                    selected={milestone.starts_in || ''}
-                                                    onChange={(date) => handleDateChange(index,date)}
-                                                    minDate={new Date()}
-                                                    dateFormat="dd/MM/yyyy"
-                                                    placeholderText='DD/MM/YYYY'
-                                                />
-                                            </div>
-                                            {msErrors.length != 0 && msErrors[index]?.starts_in && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.starts_in}</p>}
-                                        </div>
-                                        <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
-                                            <div className='flex items-center gap-2 w-full'>
-                                                <div className='bg-[#091044] rounded-md py-2 w-[110px] flex justify-evenly items-center gap-1'>
-                                                    <img src={projCurrency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px] rounded-sm'/>
-                                                    <p className='text-white88 font-semibold font-inter text-[12px]'>{projCurrency}</p>
+                                    </div>
+                                </div>
+                                {msErrors.length != 0 && msErrors[0]?.deliveryTime && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{msErrors[0]?.deliveryTime}</p>}
+                            </div>
+                        </>
+                    :
+                    <>
+                        <div className='border border-dashed border-white12 my-4'/>
+                        {errors?.milestones && <p className='text-red-500 font-medium text-[12px]'>{errors?.milestones}</p>}
+
+                        <div>
+                            {milestones?.map((milestone, index) => (
+                                <Accordion type="single" defaultValue="item-3" collapsible>
+                                <AccordionItem value={`item-${3}`} key={3} className="border-none">
+                                        <div className="flex w-full border-b border-primaryYellow justify-between items-center">
+                                            <AccordionTrigger className="w-[425px] text-white48 font-inter hover:no-underline">
+                                                <div className='flex items-center gap-1'>
+                                                    <img src={trophySVG} alt="trophy" className='size-[18px]'/>
+                                                    <div className='text-primaryYellow font-inter text-[14px]'>Milestone {index + 1}</div>
                                                 </div>
-                                                <div className='w-full'>
-                                                    <div className='bg-white7 rounded-md px-3 py-2'>
-                                                        <input 
-                                                            type='number' 
-                                                            value={milestone.prize} 
-                                                            name='prize'
-                                                            onChange={(e) => setMilestonesHelper(index,e)} 
-                                                            placeholder='1200' 
-                                                            className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'/>
+                                            </AccordionTrigger>
+                                            <X size={16} className='text-primaryRed w-[30px] cursor-pointer' onClick={() => handleDeleteMilestone(index)}/>
+                                        </div>
+                                    <AccordionContent className="py-2">
+                                        <div>
+                                            <div className='mt-3'>
+                                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone title</p>
+                                                <div className='bg-white7 rounded-md px-3 py-2'>
+                                                    <input
+                                                        type='text'
+                                                        value={milestone.title}
+                                                        name='title'
+                                                        onChange={(e) => setMilestonesHelper(index,e)} 
+                                                        className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full'
+                                                    />
+                                                </div>
+                                                {msErrors.length != 0 && msErrors[index]?.title && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.title}</p>}
+                                            </div>
+                                            <div className='mt-3'>
+                                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone description</p>
+                                                <div className='bg-white7 rounded-md px-3 py-2'>
+                                                    <textarea type='text' 
+                                                        value={milestone.description} 
+                                                        name='description'
+                                                        onChange={(e) => setMilestonesHelper(index,e)} 
+                                                        className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}
+                                                    />
+                                                </div>
+                                                {msErrors.length != 0 && msErrors[index]?.description && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.description}</p>}
+                                            </div>
+                                            <div className='mt-3'>
+                                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Start date</p>
+                                                <div className='bg-white7 rounded-md'>
+                                                    <DatePicker
+                                                        className='w-[28rem] bg-transparent text-white88 placeholder:text-white64 outline-none border-none cursor-pointer px-3 py-2' 
+                                                        selected={milestone.starts_in || ''}
+                                                        onChange={(date) => handleDateChange(index,date)}
+                                                        minDate={new Date()}
+                                                        dateFormat="dd/MM/yyyy"
+                                                        placeholderText='DD/MM/YYYY'
+                                                    />
+                                                </div>
+                                                {msErrors.length != 0 && msErrors[index]?.starts_in && <p className='text-red-500 font-medium text-[12px]'>{msErrors[index]?.starts_in}</p>}
+                                            </div>
+                                            <div className='mt-3'>
+                                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Milestone budget</p>
+                                                <div className='flex items-center gap-2 w-full'>
+                                                    <div className='bg-[#091044] rounded-md py-2 w-[110px] flex justify-evenly items-center gap-1'>
+                                                        <img src={projCurrency == 'STRK' ? STRKimg : USDCimg} alt='currency' className='size-[14px] rounded-sm'/>
+                                                        <p className='text-white88 font-semibold font-inter text-[12px]'>{projCurrency}</p>
                                                     </div>
-                                                </div>
-                                            </div> 
-                                            {msErrors.length != 0 && msErrors[index]?.prize && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{msErrors[index]?.prize}</p>}
-                                        </div>
-                                        <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Set Time</p>
-                                            <div className='flex items-center gap-2 w-full mt-2'>
-                                                <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
-                                                    <select 
-                                                        className='bg-[#091044] text-white88 outline-none border-none w-full cursor-pointer'
-                                                        value={milestone.timeUnit || 'Days'}
-                                                        name='timeUnit'
-                                                        onChange={(e) => setMilestonesHelper(index,e)}
-                                                    >
-                                                        <option value="Days">Days</option>
-                                                        <option value="Weeks">Weeks</option>
-                                                        {/* <option value="Months">Months</option> */}
-                                                    </select>
-                                                </div>
-                                                <div className='w-full'>
-                                                    <div className='bg-white7 rounded-md px-3 py-2'>
-                                                        <input 
-                                                            type='number' 
-                                                            placeholder='1200' 
-                                                            className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
-                                                            value={milestone.deliveryTime}
-                                                            name='deliveryTime'
+                                                    <div className='w-full'>
+                                                        <div className='bg-white7 rounded-md px-3 py-2'>
+                                                            <input 
+                                                                type='number' 
+                                                                value={milestone.prize} 
+                                                                name='prize'
+                                                                onChange={(e) => setMilestonesHelper(index,e)} 
+                                                                placeholder='1200' 
+                                                                className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'/>
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                                {msErrors.length != 0 && msErrors[index]?.prize && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{msErrors[index]?.prize}</p>}
+                                            </div>
+                                            <div className='mt-3'>
+                                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Delivery Time</p>
+                                                <div className='flex items-center gap-2 w-full mt-2'>
+                                                    <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
+                                                        <select 
+                                                            className='bg-[#091044] text-white88 outline-none border-none w-full cursor-pointer'
+                                                            value={milestone.timeUnit || 'Days'}
+                                                            name='timeUnit'
                                                             onChange={(e) => setMilestonesHelper(index,e)}
-                                                        />
+                                                        >
+                                                            <option value="Days">Days</option>
+                                                            <option value="Weeks">Weeks</option>
+                                                            {/* <option value="Months">Months</option> */}
+                                                        </select>
+                                                    </div>
+                                                    <div className='w-full'>
+                                                        <div className='bg-white7 rounded-md px-3 py-2'>
+                                                            <input 
+                                                                type='number' 
+                                                                placeholder='1200' 
+                                                                className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
+                                                                value={milestone.deliveryTime}
+                                                                name='deliveryTime'
+                                                                onChange={(e) => setMilestonesHelper(index,e)}
+                                                            />
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                {msErrors.length != 0 && msErrors[index]?.deliveryTime && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{msErrors[index]?.deliveryTime}</p>}
                                             </div>
-                                            {msErrors.length != 0 && msErrors[index]?.deliveryTime && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{msErrors[index]?.deliveryTime}</p>}
                                         </div>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        </Accordion>
-                        ))}
-                    </div>
-
+                                    </AccordionContent>
+                                </AccordionItem>
+                            </Accordion>
+                            ))}
+                        </div>
+                    </>
+                    }
+                    
                     {!isOpenBounty &&
                         <div className='mt-4'>
                             <FancyButton 
