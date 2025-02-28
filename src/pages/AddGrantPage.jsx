@@ -28,7 +28,7 @@ import Spinner from '../components/ui/spinner';
 
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png';
 import { displaySnackbar } from '../store/thunkMiddleware';
-import DropdownSearchList from '../components/form/DropdownSearchList';
+// import DropdownSearchList from '../components/form/DropdownSearchList';
 
 const AddGrantPage = () => {
 
@@ -41,7 +41,7 @@ const AddGrantPage = () => {
     const [description, setDescription] = useState('');
     const [aboutProject, setAboutProject] = useState('');
     const [grantLink, setGrantLink] = useState('');
-    const [role, setRole] = useState([]);
+    // const [role, setRole] = useState([]);
     const [logo, setLogo] = useState(null);
     const [logoPreview, setLogoPreview] = useState('');
     const [projCurrency, setProjCurrency] = useState('USDC');
@@ -83,15 +83,15 @@ const AddGrantPage = () => {
 
     const validateFields = () => {
         const newErrors = {};
-        if (!title) newErrors.title = 'Title is required';
+        if (!title) newErrors.title = 'Grant title is required';
         if (title.length > 50) newErrors.title = 'Title cannot exceed 50 characters.';
 
         if (!userOrg?.organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
-        if (!description) newErrors.description = 'Description is required';
-        if (description.length > 1000) newErrors.description = 'Description cannot exceed 1000 characters.';
+        if (!description) newErrors.description = 'About oganisation is required';
+        if (description.length > 1000) newErrors.description = 'About oganisation field cannot exceed 1000 characters.';
  
         if (!logoPreview) newErrors.logo = 'Logo is required';
-        if (!role.length > 0) newErrors.role = 'Role/s is/are required';
+        // if (!role.length > 0) newErrors.role = 'Role/s is/are required';
         if (!projCurrency) newErrors.projCurrency = 'Prize currency is required';
 
         if (!avgGrantSize) {
@@ -104,6 +104,8 @@ const AddGrantPage = () => {
           newErrors.prizeApproved = 'Field is required';
         } else if(parseInt(prizeApproved) < 1) {
           newErrors.prizeApproved = 'Value should be greater than 0'
+        } else if(parseInt(prizeApproved) > parseInt(avgGrantSize)) {
+          newErrors.prizeApproved = 'Value should not be greater than Averge grant size field'
         }
 
         if (!avgResponseTime) {
@@ -112,12 +114,14 @@ const AddGrantPage = () => {
           newErrors.avgResponseTime = 'Value should be greater than 0'
         }
 
-        if (!aboutProject) newErrors.aboutProject = 'About project is required';
+        if (!aboutProject) newErrors.aboutProject = 'Grant description is required';
+        if (aboutProject.length > 1000) newErrors.aboutProject = 'Grant description field cannot exceed 1000 characters.';
+
 
         if (!grantLink) {
-          newErrors.grantLink = 'Link to grant is required';
+          newErrors.grantLink = 'Grant form link is required';
         } else if(!website_regex.test(grantLink)) {
-          newErrors.grantLink = 'Invalid Grant link provided'
+          newErrors.grantLink = 'Invalid Grant form link provided'
         }
 
         setErrors(newErrors);
@@ -162,7 +166,7 @@ const AddGrantPage = () => {
             "organisationId": userOrg?._id,
             "description": description,
             "about": aboutProject,
-            "roles": role,
+            // "roles": role,
             "image" : imageUrl || userOrg?.img,
             "currency": projCurrency,    // project currency strk or usdc
             "avgGrantSize": avgGrantSize,
@@ -264,7 +268,7 @@ const AddGrantPage = () => {
                                         </div>
 
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title of the Grant <span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Grant title <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <input 
                                                     type='text' 
@@ -288,7 +292,7 @@ const AddGrantPage = () => {
                                             {errors.organisationHandle && <p className='text-red-500 font-medium text-[12px]'>{errors.organisationHandle}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description<span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>About the Organisation<span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <textarea 
                                                     type='text' 
@@ -301,13 +305,13 @@ const AddGrantPage = () => {
                                             {errors.description && <p className='text-red-500 font-medium text-[12px]'>{errors.description}</p>} {/* Error message */}
                                         </div>
 
-                                        <div className='mt-3'>
+                                        {/* <div className='mt-3'>
                                             <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Skills needed <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2 cursor-pointer'>
                                             <DropdownSearchList dropdownList={ROLES} setterFunction={setRole} />
                                             </div>
-                                            {errors.role && <p className='text-red-500 font-medium text-[12px]'>{errors.role}</p>} {/* Error message */}
-                                        </div>
+                                            {errors.role && <p className='text-red-500 font-medium text-[12px]'>{errors.role}</p>}
+                                        </div> */}
 
                                         {/* Select project milestone currency */}
                                         <div className='mt-3'>
@@ -413,7 +417,7 @@ const AddGrantPage = () => {
                             </AccordionTrigger>
                             <AccordionContent className="py-2">
                               <div>
-                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the Grant about? <span className='text-[#F03D3D]'>*</span> </p>
+                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Grant Description <span className='text-[#F03D3D]'>*</span> </p>
                                 <div className='bg-white7 rounded-md px-3 py-2'>
                                   <textarea value={aboutProject} onChange={(e) => setAboutProject(e.target.value)} type='text' className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
                                 </div>
@@ -421,7 +425,7 @@ const AddGrantPage = () => {
                               </div>
 
                               <div className='mt-3'>
-                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Link to the Grant <span className='text-[#F03D3D]'>*</span></p>
+                                <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Grant form link <span className='text-[#F03D3D]'>*</span></p>
                                 <div className='bg-white7 rounded-md px-3 py-2'>
                                   <input 
                                     type='text' 
@@ -452,7 +456,7 @@ const AddGrantPage = () => {
                         <div className='flex flex-col justify-center items-center mt-8'>
                             <img src={tickFilledImg} alt='tick-filled' className='size-[54px] mb-4'/>
                             <div className='text-white font-inter'>Added Grant</div>
-                            <p className='text-white32 text-[13px] text-center font-semibold font-inter'>Congratulations! The Grant is posted successfully and visible to all users on the platform.</p>
+                            <p className='text-white32 text-[13px] text-center font-semibold font-inter'>Congratulations! The Grant is created successfully and will be visible to all users on the platform once approved by Admin.</p>
                         </div>
 
                         <div className='mt-6'>

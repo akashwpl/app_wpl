@@ -36,6 +36,8 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
     const [showMilestoneSubmissionModal, setShowMilestoneSubmissionModal] = useState(false);
     const [isUserSubmittedOpenMS, setIsUserSubmittedOpenMS] = useState(false);
 
+    const helpLink = projectDetails?.helpLink || projectDetails?.organisation?.socialHandleLink?.telegram || projectDetails?.organisation?.socialHandleLink?.discord;
+
     const {data: openMilestoneSubmissions, isLoading: isLoadingOpenMilestoneSubmissions, refetch: refetchOpenMS} = useQuery({
         queryKey: ["openMilestoneSubmissions", milestoneData?._id],
         queryFn: () => getOpenMilestoneSubmissions(milestoneData?._id),
@@ -201,8 +203,8 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                     <p className='text-[12px] text-white32 leading-[16px]'>Need Help?</p>
                 </div>
                 <div className='flex items-center gap-1'>
-                    <a href={projectDetails?.organisation?.socialHandleLink?.telegram} target='_blank' rel="noopener noreferrer" className='cursor-pointer'>
-                        <p className='text-[12px] text-white88 leading-[14px] font-medium font-inter flex items-center gap-1 underline'>Join Telegram <ArrowUpRight size={14} className='text-white32'/></p>
+                    <a href={helpLink.startsWith('https://') ? helpLink : 'https://' + helpLink} target='_blank' rel="noopener noreferrer" className='cursor-pointer'>
+                        <p className='text-[12px] text-white88 leading-[14px] font-medium font-inter flex items-center gap-1 underline'>Join {helpLink.includes('discord') ? "Discord" : "Telegram"}<ArrowUpRight size={14} className='text-white32'/></p>
                     </a>
                 </div>
             </div>

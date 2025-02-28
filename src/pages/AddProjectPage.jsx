@@ -11,6 +11,7 @@ import STRKimg from '../assets/images/strk.png';
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png';
 import btnImg from '../assets/svg/btn_subtract_semi.png';
 import DiscordSvg from '../assets/svg/discord.svg';
+import heartSvg from '../assets/icons/pixel-icons/heart-handshake.svg';
 import saveBtnHoverImg from '../assets/svg/menu_btn_hover_subtract.png';
 import saveBtnImg from '../assets/svg/menu_btn_subtract.png';
 import USDCimg from '../assets/svg/usdc.svg';
@@ -21,7 +22,7 @@ import {
     AccordionTrigger,
 } from "../components/ui/accordion";
 import FancyButton from '../components/ui/FancyButton';
-import { BASE_URL, getTimestampFromNow, ROLES } from '../lib/constants';
+import { BASE_URL, discord_server_link_regex, getTimestampFromNow, ROLES, telegram_channel_link_regex } from '../lib/constants';
 import { storage } from '../lib/firebase';
 import { createNotification, createOpenProject, createProject, getAdmins, getUserOrgs } from '../service/api';
 
@@ -44,7 +45,8 @@ const   AddProjectPage = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [aboutProject, setAboutProject] = useState('');
-    const [discordLink, setDiscordLink] = useState();
+    // const [discordLink, setDiscordLink] = useState();
+    const [helpLink, setHelpLink] = useState();
     const [role, setRole] = useState([]);
     const [logo, setLogo] = useState(null);
     const [logoPreview, setLogoPreview] = useState('');
@@ -102,7 +104,8 @@ const   AddProjectPage = () => {
             } else {
                 const approvedOrg = userOrganisations?.filter(org => org.status === 'approved');
                 setUserOrg(approvedOrg[0]);
-                setDiscordLink(approvedOrg[0]?.socialHandleLink?.discord)
+                // setDiscordLink(approvedOrg[0]?.socialHandleLink?.discord)
+                setHelpLink(approvedOrg[0]?.socialHandleLink?.telegram || approvedOrg[0]?.socialHandleLink?.discord)
                 setLogoPreview(approvedOrg[0]?.img)
             }
         }
@@ -114,8 +117,8 @@ const   AddProjectPage = () => {
             let tempMsErr = msErrors;
             milestones.map((milestone,index) => {
                 const newErrors = {};
-                if (!milestone.title) newErrors.title = 'Title is required';
-                if (!milestone.description) newErrors.description = 'Description is required';
+                if (!milestone.title) newErrors.title = 'Milestone title is required';
+                if (!milestone.description) newErrors.description = 'Milestone description is required';
                 if (!milestone.starts_in) newErrors.starts_in = 'Start date is required';
                 if (!milestone.prize) {
                     newErrors.prize = 'Prize is required';
@@ -139,17 +142,17 @@ const   AddProjectPage = () => {
 
     const validateFields = () => {
         const newErrors = {};
-        if (!title) newErrors.title = 'Title is required';
-        if (title.length > 50) newErrors.title = 'Title cannot exceed 50 characters.';
+        if (!title) newErrors.title = `${isOpenBounty ? "Bounty" : "Project"} title is required`;
+        if (title.length > 50) newErrors.title = `${isOpenBounty ? "Bounty" : "Project"} title cannot exceed 50 characters.`;
 
         if (!userOrg?.organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
-        if (!description) newErrors.description = 'Description is required';
-        if (description.length > 1000) newErrors.description = 'Description cannot exceed 1000 characters.';
+        if (!description) newErrors.description = 'About Organisation field is required';
+        if (description.length > 1000) newErrors.description = 'About Organisation field cannot exceed 1000 characters.';
 
-        if (!discordLink) {
-            newErrors.discordLink = 'Discord server link is required';
-        } else if(!discordLink.startsWith('https://discord.gg/')) {
-            newErrors.discordLink = 'Discord link must start with https://discord.gg/'
+        if (!helpLink) {
+            newErrors.helpLink = 'Help link is required';
+        } else if(!discord_server_link_regex.test(helpLink) && !telegram_channel_link_regex.test(helpLink)) {
+            newErrors.helpLink = 'Link must be a valid Telegram channel or Discord server link'
         }  
         if (!logoPreview) newErrors.logo = 'Logo is required';
         if (!role.length > 0) newErrors.role = 'Role/s is/are required';
@@ -161,7 +164,7 @@ const   AddProjectPage = () => {
         } else if(validateMilestones()) {
             newErrors.milestones = 'Please fill all the fields for milestones'
         }
-        if (!aboutProject) newErrors.aboutProject = 'About project is required';
+        if (!aboutProject) newErrors.aboutProject = 'About project field is required';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0; // Return true if no errors
     };
@@ -265,7 +268,7 @@ const   AddProjectPage = () => {
                     "organisationHandle": userOrg?.organisationHandle,
                     "organisationId": userOrg?._id,
                     "description": description,
-                    "discordLink": discordLink,
+                    "helpLink": helpLink,
                     "status": "idle",
                     "about": aboutProject,
                     "roles": role,
@@ -397,7 +400,7 @@ const   AddProjectPage = () => {
                                         </div>
 
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Title of the project <span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>{isOpenBounty ? "Bounty" : "Project"} Title <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <input 
                                                     type='text' 
@@ -421,7 +424,7 @@ const   AddProjectPage = () => {
                                             {errors.organisationHandle && <p className='text-red-500 font-medium text-[12px]'>{errors.organisationHandle}</p>} {/* Error message */}
                                         </div>
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Add description<span className='text-[#F03D3D]'>*</span></p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>About the Organisation <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2'>
                                                 <textarea 
                                                     type='text' 
@@ -504,18 +507,18 @@ const   AddProjectPage = () => {
                                         </div>
 
                                         <div className='mt-3'>
-                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Discord Server Link</p>
+                                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Help link (Telegram/Discord) <span className='text-[#F03D3D]'>*</span></p>
                                             <div className='bg-white7 rounded-md px-3 py-2 flex items-center gap-2'>
-                                                <img src={DiscordSvg} alt='discord' className='size-[20px]'/>
+                                                <img src={heartSvg} alt='help link img' className='size-[20px]'/>
                                                 <input 
                                                     type='text' 
-                                                    placeholder='https://discord.gg/server_name' 
+                                                    placeholder='https://app_name/group_name' 
                                                     className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full' 
-                                                    value={discordLink} 
-                                                    onChange={(e) => setDiscordLink(e.target.value)} 
+                                                    value={helpLink} 
+                                                    onChange={(e) => setHelpLink(e.target.value)} 
                                                 />
                                             </div>
-                                            {errors.discordLink && <p className='text-red-500 font-medium text-[12px]'>{errors.discordLink}</p>}
+                                            {errors.helpLink && <p className='text-red-500 font-medium text-[12px]'>{errors.helpLink}</p>}
                                         </div>
                                     </div>
                                 </AccordionContent>
@@ -529,12 +532,12 @@ const   AddProjectPage = () => {
                                 <AccordionTrigger className="text-white48 font-inter hover:no-underline border-b border-primaryYellow">
                                     <div className='flex items-center gap-1'>
                                         <Menu size={14} className='text-primaryYellow'/>
-                                        <div className='text-primaryYellow font-inter text-[14px]'>Project Details</div>
+                                        <div className='text-primaryYellow font-inter text-[14px]'>{isOpenBounty ? "Bounty" : "Project"} Details</div>
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent className="py-2">
                                     <div>
-                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the project about?</p>
+                                        <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>What's the {isOpenBounty ? "Bounty" : "Project"} about?</p>
                                         <div className='bg-white7 rounded-md px-3 py-2'>
                                             <textarea value={aboutProject} onChange={(e) => setAboutProject(e.target.value)} type='text' className='bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' rows={4}/>
                                         </div>
