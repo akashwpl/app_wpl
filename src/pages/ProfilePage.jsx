@@ -65,15 +65,17 @@ const ProfilePage = () => {
 
   const userDetails = useMemo(() => {
     if (allUsers) {
-      if(id) {
+      
+      if(id?.includes('discord')) {
         return allUsers.find((user) => user.socials?.discord == id)
       } else {
-        return allUsers.find((user) => user._id == user_id)
+        return allUsers.find((user) => user._id == id)
       }
     }
-  }, [allUsers])
+  }, [allUsers, id, user_id])
 
-  console.log('allUsers', allUsers)
+  // console.log('allUsers', allUsers)
+  // console.log('userDetails', userDetails)
 
   const sampleProjects = useMemo(() =>  userDetails?.projects?.owned?.filter((proj) => proj.type == 'sample'), [userDetails, allUsers])
 

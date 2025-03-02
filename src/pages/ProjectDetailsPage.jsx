@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import headerPng from '../assets/images/prdetails_header.png'
 import wpl_prdetails from '../assets/images/wpl_prdetails.png'
 
@@ -202,7 +203,7 @@ const ProjectDetailsPage = () => {
       user_id: projectDetails.user_id,
       project_id: projectDetails._id
     }
-    const notiRes = await createNotification(notiObj)
+    await createNotification(notiObj)
 
     refetchProjectDetails()
     setShowCloseProjectModal(false);
@@ -210,10 +211,6 @@ const ProjectDetailsPage = () => {
 
   const navigateToSubmissions = (page) => {
     navigate(`/submissions/${projectDetails?._id}/${page}`)
-  }
-
-  const navigateToPrevPage = () => {
-    navigate(-1);
   }
 
   const isOwner = useMemo(() => projectDetails?.owner_id == user_id, [projectDetails, user_id])
@@ -290,7 +287,6 @@ const ProjectDetailsPage = () => {
         <div className='flex justify-center gap-20 mx-44'>
           {/* Left side */}
           <div>
-          
             <div className='md:min-w-[600px]'>
               <div className='translate-y-[-15px]'>
                 <img src={projectDetails?.image || wpl_prdetails} alt='wpl_prdetails' className='size-[72px] rounded-md'/>
@@ -380,7 +376,7 @@ const ProjectDetailsPage = () => {
                                   </div>
                                   <div className='max-h-[300px] overflow-y-auto'>
                                   {milestone.submissions?.map((submission, index) => (
-                                    <OpenMilestoneSubmissions submission={submission} index={index} submission_count={milestone.submissions.length-1} projectStatus={projectDetails?.status} milestoneStatus={milestone?.status} username={userDetails?.displayName} refetchProjectDetails={refetchProjectDetails}/>
+                                    <OpenMilestoneSubmissions key={index} submission={submission} index={index} submission_count={milestone.submissions.length-1} projectStatus={projectDetails?.status} milestoneStatus={milestone?.status} username={userDetails?.displayName} refetchProjectDetails={refetchProjectDetails}/>
                                   ))}
                                   </div>
                                 </>
