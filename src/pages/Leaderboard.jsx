@@ -1,11 +1,15 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, DollarSign, Filter, Search, TimerIcon, Trophy } from 'lucide-react'
 import USDCsvg from '../assets/svg/usdc.svg'
 import wpl_logo from '../assets/images/wpl_prdetails.png'
 import btnPng from '../assets/images/leaderboard_btn.png'
 import { useQuery } from '@tanstack/react-query'
-import { getLeaderboardData } from '../service/api'
+import { getAllUers, getLeaderboardData } from '../service/api'
 import { Link, useNavigate } from 'react-router-dom'
+
+import PlatformButtonPng from '../assets/images/platform-btn.png'
+import WebsiteButtonPng from '../assets/images/website-btn.png'
 
 const Leaderboard = () => {
    const navigate = useNavigate()
@@ -13,6 +17,11 @@ const Leaderboard = () => {
    const {data: leaderboardData, isLoading: isLoadingLeaderboard, refetch} = useQuery({
        queryKey: ["leaderboard"],
        queryFn: () => getLeaderboardData(),
+   })
+
+   const {data: usersLeaderboardData, isLoading: isLoadingAllUsers} = useQuery({
+        queryKey: ["users"],
+        queryFn: () => getAllUers(),
    })
 
    const [showfilterModal, setShowFilterModal] = useState(false)
@@ -23,7 +32,10 @@ const Leaderboard = () => {
    const [currentPage, setCurrentPage] = useState(1)
    const itemsPerPage = 10
 
+   const [learderboardType, setleaderboardType] = useState(localStorage.getItem('leaderboardType') || 'website')
+   
    const filteredData = useMemo(() => 
+        learderboardType == 'website' ? 
        searchInput
        ? leaderboardData?.data?.filter(data =>
            data?.discordIdentifier?.toLowerCase().includes(searchInput.toLowerCase())
@@ -33,7 +45,17 @@ const Leaderboard = () => {
                return sortOrder == 'ascending' ? a.cumulativeLeaderboard - b.cumulativeLeaderboard : b.cumulativeLeaderboard - a.cumulativeLeaderboard;
            })
        : leaderboardData?.data
-   , [searchInput, leaderboardData, sortBy, sortOrder])
+       : searchInput
+       ? usersLeaderboardData?.filter(data =>
+           data?.displayName?.toLowerCase().includes(searchInput.toLowerCase())
+       )
+       : sortBy == 'rewards' ? 
+           usersLeaderboardData?.sort((a, b) => {
+               return sortOrder == 'ascending' ? a.cumulativeLeaderboard - b.cumulativeLeaderboard : b.cumulativeLeaderboard - a.cumulativeLeaderboard;
+           })
+       : usersLeaderboardData?.filter(data => data?.role !== 'sponsor')
+    
+   , [searchInput, leaderboardData, sortBy, sortOrder, learderboardType, usersLeaderboardData])
 
    const indexOfLastItem = currentPage * itemsPerPage
    const indexOfFirstItem = indexOfLastItem - itemsPerPage
@@ -48,7 +70,7 @@ const Leaderboard = () => {
         })
        const data = updatedData?.slice(indexOfFirstItem, indexOfLastItem)
        setCurrentData(data)
-   }, [leaderboardData, currentPage, searchInput, sortBy, sortOrder])
+   }, [leaderboardData, currentPage, searchInput, sortBy, sortOrder, learderboardType, usersLeaderboardData])
 
    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -66,17 +88,30 @@ const Leaderboard = () => {
        setShowFilterModal(false)   
    }
 
-   const navigateToProfile = (id) => {
+   const handleChangeLeaderboardType = (type) => {
+        setleaderboardType(type)
+        localStorage.setItem('leaderboardType', type)
    }
     
    return (
-       <div className='flex justify-center items-end min-h-screen pb-24 text-white88'>
+       <div className='flex justify-center items-start min-h-screen pt-24 pb-24 text-white88'>
            <div className='md:w-[840px] max-w-[1200px]'>
+                <div className='flex items-center mb-6 justify-end'>
+                    <div onClick={() => handleChangeLeaderboardType('platform')} className={`${learderboardType == "platform" ? "bg-[#00000064]" : ""} relative h-[32px] w-[112px] cursor-pointer `}>
+                        <img src={PlatformButtonPng} className='h-[32px] w-[120px]'/>
+                        <p className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primaryYellow text-[12px] leading-[8.82px] font-gridular uppercase'>Platform</p>
+                    </div>
+                    <div onClick={() => handleChangeLeaderboardType('website')} className={`${learderboardType == "website" ? "bg-[#00000064]" : ""} relative h-[32px] w-[112px] cursor-pointer`}>
+                        <img src={PlatformButtonPng} className='rotate-180 -translate-x-[1px] h-[32px] w-[120px]'/>
+                        <p className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primaryYellow text-[12px] leading-[8.82px] font-gridular uppercase'>Website</p>
+                    </div>
+                </div>
+
                <div className={`w-full flex justify-center items-start flex-col h-[101px] py-5 px-6 bg-cover bg-[url('assets/images/total_earned_bg.png')] rounded-md`}>
                    <div className='w-full flex flex-col justify-between'>
                        <h2 className='text-[24px] font-gridular text-[#06105D]'>Start contributing Onchain</h2>
                        <p className='text-[#06105D] text-[14px] font-inter mt-1'>Earn in crypto by contributing to your fav projects</p>
-                   </div> 
+                   </div>
                </div>
            
                <div className='border border-white7 h-[56px] rounded-[12px] flex justify-between items-center mt-8'>
@@ -105,10 +140,14 @@ const Leaderboard = () => {
                        <thead className='bg-[#060E4F]'>
                            <tr className='h-[48px] text-[13px] text-white32 font-normal font-inter border-b border-white7'>
                                <td className='px-4'>Rank</td>
-                               <td className='w-[250px]'>Name</td>
+                               <td className={`${learderboardType == 'website' ? "w-[250px]" : "w-[530px]"}`}>Name</td>
                                <td className='w-[180px] text-left pl-6'>Rewards</td>
-                               <td className='w-[180px] text-left pl-6'>Tier</td>
-                               <td className='w-[100px] text-right pr-6'>Total Points</td>
+                               {learderboardType == 'website' && (
+                                <>
+                                   <td className='w-[180px] text-left pl-6'>Tier</td>
+                                    <td className='w-[100px] text-right pr-6'>Total Points</td>
+                                </>
+                               )}
                            </tr>
                        </thead>
                        <tbody className='bg-[#060F54] font-normal font-inter text-white'>
@@ -116,21 +155,25 @@ const Leaderboard = () => {
                                currentData?.map((data, index) => (
                                    <tr key={index} className="hover:bg-[#051149] transition-colors duration-200">
                                        <td className="py-4 text-[14px] px-6">#{data?.rank}</td>
-                                       <td className="py-4 w-[200px] truncate text-ellipsis cursor-pointer">
-                                           <Link to={`/profile/${data.discordIdentifier}`} className='flex items-center gap-2 px-0'>
+                                       <td className={`${learderboardType == 'website' ? "w-[250px]" : "w-[530px]"} py-4 w-[200px] truncate text-ellipsis cursor-pointer`}>
+                                           <Link to={`/profile/${learderboardType == 'website' ? data.discordIdentifier + "-discord" : data?._id}`} className='flex items-center gap-2 px-0'>
                                                <img src={wpl_logo} alt="USDC" className="size-4" />
-                                               <span className="text-white88 text-[14px]">{data.discordIdentifier}</span>
+                                               <span className="text-white88 text-[14px]">{learderboardType == 'website' ? data.discordIdentifier : data?.displayName || data?.username}</span>
                                            </Link>
                                        </td>
                                        <td className="py-4 text-[14px] pl-6">
                                            <div className='flex justify-start items-center gap-1'>
                                                <img src={USDCsvg} alt="USDC" className="size-4" />
-                                               <span>{data.rewards ? data.rewards : "1290"}</span> 
+                                               <span>{learderboardType == 'website' ? data.rewards ? data.rewards : "0" : data?.totalEarned}</span> 
                                                <span className="font-thin" >USDC</span>
                                            </div>
                                        </td>
-                                       <td className="py-4 text-[14px] font-normal text-left pl-6">{data.newTier == "" ? data?.tier : data?.newTier}</td>
-                                       <td className="py-4 text-[14px] font-normal text-right pr-6">{data.cumulativeLeaderboard}</td>
+                                       {learderboardType == 'website' && (
+                                        <>
+                                            <td className="py-4 text-[14px] font-normal text-left pl-6">{data.newTier == "" ? data?.tier : data?.newTier}</td>
+                                            <td className="py-4 text-[14px] font-normal text-right pr-6">{data.cumulativeLeaderboard}</td>
+                                        </>
+                                       )}
                                    </tr>
                                ))
                            ) : (
