@@ -99,11 +99,11 @@ const Leaderboard = () => {
                 <div className='flex items-center mb-6 justify-end'>
                     <div onClick={() => handleChangeLeaderboardType('platform')} className={`${learderboardType == "platform" ? "bg-[#00000064]" : ""} relative h-[32px] w-[112px] cursor-pointer `}>
                         <img src={PlatformButtonPng} className='h-[32px] w-[120px]'/>
-                        <p className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 text-primaryYellow text-[12px] leading-[8.82px] font-gridular uppercase'>Platform</p>
+                        <p className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primaryYellow text-[12px] leading-[8.82px] font-gridular uppercase'>Platform</p>
                     </div>
                     <div onClick={() => handleChangeLeaderboardType('website')} className={`${learderboardType == "website" ? "bg-[#00000064]" : ""} relative h-[32px] w-[112px] cursor-pointer`}>
                         <img src={PlatformButtonPng} className='rotate-180 -translate-x-[1px] h-[32px] w-[120px]'/>
-                        <p className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 text-primaryYellow text-[12px] leading-[8.82px] font-gridular uppercase'>Website</p>
+                        <p className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primaryYellow text-[12px] leading-[8.82px] font-gridular uppercase'>Website</p>
                     </div>
                 </div>
 
