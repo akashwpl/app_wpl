@@ -6,8 +6,9 @@ import btnImg from '../../assets/svg/btn_subtract_semi.png'
 import { useState } from "react";
 import { ExternalLink, X } from "lucide-react";
 import { useSelector } from "react-redux";
+import SeletecUserCheckPng from '../../assets/images/selected_user_check.png'
 
-const OpenMilestoneSubmissions = ({submission,index,submission_count, projectStatus, milestoneStatus, username, refetchProjectDetails}) => {
+const OpenMilestoneSubmissions = ({submission,index,submission_count, projectStatus, milestoneStatus, username, refetchProjectDetails, canSelectWinners, selectedWinners, handleAddRemoveSelectedWinner}) => {
   const { user_id } = useSelector((state) => state)
   const [showMilestoneSubmissionModal, setShowOpenMilestoneSubmissionModal] = useState(false);
 
@@ -35,11 +36,15 @@ const OpenMilestoneSubmissions = ({submission,index,submission_count, projectSta
 
   return (
     <>
-      <div onClick={() => setShowOpenMilestoneSubmissionModal(true)} key={index} className={`grid grid-cols-12 gap-2 py-2 rounded-sm hover:bg-white4 cursor-pointer ${index === submission_count ? "" : "border-b border-white7"}`}>
-        <div className='text-[14px] col-span-1 px-2 text-white88 font-inter'>{index + 1}</div>
+      <div onClick={() => setShowOpenMilestoneSubmissionModal(true)} key={index} className={`grid grid-cols-12 gap-2 py-2 rounded-sm hover:bg-white4 cursor-pointer ${selectedWinners?.find((user) => user?._id == submission?._id) ? "bg-[#0ED0651A]" : ""} ${index === submission_count ? "" : "border-b border-white7"}`}>
+        {canSelectWinners && <div onClick={(e) => {handleAddRemoveSelectedWinner(e, submission)}} className='text-[14px] col-span-1 px-2 pl-4 text-white88 font-inter flex items-center'>
+          {selectedWinners?.find((user) => user?._id == submission?._id) ? <img src={SeletecUserCheckPng} className="size-[15px]"/> : <div className="border border-white48 size-[15px] rounded-[4px]"/>}
+          </div>
+        }
+        <div className='text-[14px] col-span-1  text-white88 font-inter'>{index + 1}</div>
         <div className='text-[14px] col-span-2 text-start text-white88 font-inter'>{submission?.user?.displayName}</div>
         <div className='text-[14px] col-span-4 text-white88 font-inter'>{submission?.submissionLink}</div>
-        <div className='text-[14px] col-span-5 text-white88 font-inter truncate'>{submission?.submissionDescription}</div>
+        <div className={`text-[14px] ${canSelectWinners ? "col-span-4" : "col-span-5"} text-white88 font-inter truncate`}>{submission?.submissionDescription}</div>
       </div>
 
       <CustomModal isOpen={showMilestoneSubmissionModal} closeModal={() => setShowOpenMilestoneSubmissionModal(false)}>

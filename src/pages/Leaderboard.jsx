@@ -8,6 +8,9 @@ import { useQuery } from '@tanstack/react-query'
 import { getAllUers, getLeaderboardData } from '../service/api'
 import { Link, useNavigate } from 'react-router-dom'
 
+import PlatformButtonPng from '../assets/images/platform-btn.png'
+import WebsiteButtonPng from '../assets/images/website-btn.png'
+
 const Leaderboard = () => {
    const navigate = useNavigate()
 
@@ -89,15 +92,19 @@ const Leaderboard = () => {
         setleaderboardType(type)
         localStorage.setItem('leaderboardType', type)
    }
-
-   console.log('filteredData', filteredData)
     
    return (
        <div className='flex justify-center items-start min-h-screen pt-24 pb-24 text-white88'>
            <div className='md:w-[840px] max-w-[1200px]'>
-                <div className='flex items-center gap-1 mb-1'>
-                    <button onClick={() => handleChangeLeaderboardType('platform')} className='text-[14px]'>Platform</button>
-                    <button onClick={() => handleChangeLeaderboardType('website')} className='text-[14px]'>Website</button>
+                <div className='flex items-center mb-6 justify-end'>
+                    <div onClick={() => handleChangeLeaderboardType('platform')} className={`${learderboardType == "platform" ? "bg-[#00000064]" : ""} relative h-[32px] w-[112px] cursor-pointer `}>
+                        <img src={PlatformButtonPng} className='h-[32px] w-[120px]'/>
+                        <p className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 text-primaryYellow text-[12px] leading-[8.82px] font-gridular uppercase'>Platform</p>
+                    </div>
+                    <div onClick={() => handleChangeLeaderboardType('website')} className={`${learderboardType == "website" ? "bg-[#00000064]" : ""} relative h-[32px] w-[112px] cursor-pointer`}>
+                        <img src={PlatformButtonPng} className='rotate-180 -translate-x-[1px] h-[32px] w-[120px]'/>
+                        <p className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 text-primaryYellow text-[12px] leading-[8.82px] font-gridular uppercase'>Website</p>
+                    </div>
                 </div>
 
                <div className={`w-full flex justify-center items-start flex-col h-[101px] py-5 px-6 bg-cover bg-[url('assets/images/total_earned_bg.png')] rounded-md`}>

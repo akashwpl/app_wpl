@@ -4,7 +4,7 @@ import wpl_prdetails from '../assets/images/wpl_prdetails.png'
 
 import { useQuery } from '@tanstack/react-query'
 import { ArrowLeft, Clock, Download, TriangleAlert, Zap } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
@@ -34,6 +34,12 @@ import warningSVG from '../assets/icons/pixel-icons/warning.svg'
 import zapSVG from '../assets/icons/pixel-icons/zap-yellow.svg'
 import OpenMilestoneSubmissions from '../components/projectdetails/OpenMilestoneSubmissions'
 import { displaySnackbar } from '../store/thunkMiddleware'
+import CustomModal from '../components/ui/CustomModal'
+import TrophyPng from '../assets/images/trophy.png'
+
+import { Reorder, useDragControls } from "framer-motion"
+import { debounce } from 'lodash'
+
 
 const initialTabs = [
   {id: 'overview', name: 'Overview', isActive: true},
@@ -48,11 +54,17 @@ const ProjectDetailsPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const controls = useDragControls()
+  
   const { user_id, user_role } = useSelector((state) => state)
   const [orgHandle, setOrgHandle] = useState('');
   const [isProjApplied, setIsProjApplied] = useState(false);
   const [username, setUsername] = useState('A user');
   const [openMilestoneSubmissions, setOpenMilestoneSubmissions] = useState([]);
+
+  const [selectedWinners, setSelectedWinners] = useState([])
+  const [canSelectWinners, setCanSelectWinners] = useState(false)
+  const [showSelecteWinnersModal, setShowSelecteWinnersModal] = useState(false)
 
   const token = localStorage.getItem('token_app_wpl')
 
@@ -268,6 +280,33 @@ const ProjectDetailsPage = () => {
       }
     }
   },[isLoadingProjectDetails])
+
+  const handleAddRemoveSelectedWinner = (e, submission) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setSelectedWinners((prevWinners) => {
+        // Check if the submission already exists in the list
+        const exists = prevWinners?.some((winner) => winner._id === submission._id);
+
+        if (exists) {
+            // Remove the submission if it exists
+            return prevWinners.filter((winner) => winner._id !== submission._id);
+        } else {
+            // Add the submission if it does not exist
+            return [...prevWinners, submission];
+        }
+    });
+};
+
+  console.log('selectedWinners', selectedWinners)
+
+  const debouncedOnReorder = useCallback(
+    debounce((newOrder) => {
+      setSelectedWinners(newOrder);
+    }, 450), // 300ms delay
+    []
+  );
   
   return (
     <div className='relative'>
@@ -308,8 +347,11 @@ const ProjectDetailsPage = () => {
               </div>
 
               {isLoadingProjectDetails ? <div>Loading...</div> : <div className='w-full'>
-                <div className='mt-4 mb-4 border border-white7 rounded-md'>
+                <div className='mt-4 mb-4 border border-white7 rounded-md flex justify-between items-center'>
                   <Tabs tabs={tabs} handleTabClick={handleTabClick} selectedTab={selectedTab} submissionsCount={totalSubmissions} />
+                  <button onClick={() => setCanSelectWinners((prev) => !prev)} className='border border-white7 rounded-lg h-[32px] w-[135px] mr-4 flex justify-center items-center'>
+                    <p className='text-[14px] font-gridular text-white48'>Select winners</p>
+                  </button>
                 </div>
                 {selectedTab == 'overview' &&
                   <div className='w-[700px]'>
@@ -356,35 +398,39 @@ const ProjectDetailsPage = () => {
                     </div>
                     { projectDetails?.isOpenBounty ? 
                     openMilestoneSubmissions?.length == 0 ?
-                    <div className='text-[14px] px-4 py-2 text-center text-primaryYellow border-t border-white7 font-gridular'>No submissions yet</div> :
-                      <Accordion type="single" defaultValue="item-0" collapsible>
-                        {openMilestoneSubmissions?.map((milestone, index) => (
-                          <AccordionItem value={`item-${index}`} key={index} className="border-white7">
-                            <AccordionTrigger className="text-white48 font-inter hover:no-underline px-4">
-                              <p className='text-[13px] font-medium text-white88'>{milestone.title}</p>
-                            </AccordionTrigger>
-                            <AccordionContent className="py-2 px-4 border-t border-dashed border-white12">
+                      <div className='text-[14px] px-4 py-2 text-center text-primaryYellow border-t border-white7 font-gridular'>No submissions yet</div>
+                     :
+                      // <Accordion type="single" defaultValue="item-0" collapsible>
+                        openMilestoneSubmissions?.map((milestone, index) => 
+                          // <AccordionItem value={`item-${index}`} key={index} className="border-white7">
+                          //   <AccordionTrigger className="text-white48 font-inter hover:no-underline px-4">
+                          //     <p className='text-[13px] font-medium text-white88'>{milestone.title}</p>
+                          //   </AccordionTrigger>
+                          //   <AccordionContent className="py-2 px-4 border-t border-dashed border-white12">
                               {
-                                milestone.submissions.length == 0 ? 
+                               return milestone.submissions.length == 0 ? 
                                 <div className='text-[14px] text-primaryYellow font-gridular text-center'>No submissions yet</div> : 
-                                <>
-                                  <div className='grid grid-cols-12 gap-2 mb-2'>
+                                <div className={` ${canSelectWinners ? "px-0" : "px-4"} border-t border-dashed border-white12`}>
+                                  <div className='grid grid-cols-12 gap-2 my-2'>
+                                    {canSelectWinners && <div className='col-span-1'/>}
                                     <div className='text-[14px] col-span-1 text-white48 font-inter'>No.</div>
                                     <div className='text-[14px] col-span-2 text-white48 font-inter'>Name</div>
                                     <div className='text-[14px] col-span-4 text-white48 font-inter'>Link</div>
-                                    <div className='text-[14px] col-span-5 text-white48 font-inter'>Description</div>
+                                    <div className={`text-[14px] ${canSelectWinners ? "col-span-4" : "col-span-5"} text-white48 font-inter`}>Description</div>
                                   </div>
-                                  <div className='max-h-[300px] overflow-y-auto'>
+                                  <div className='max-h-[400px] overflow-y-auto'>
                                   {milestone.submissions?.map((submission, index) => (
-                                    <OpenMilestoneSubmissions key={index} submission={submission} index={index} submission_count={milestone.submissions.length-1} projectStatus={projectDetails?.status} milestoneStatus={milestone?.status} username={userDetails?.displayName} refetchProjectDetails={refetchProjectDetails}/>
+                                    <div key={index}>
+                                      <OpenMilestoneSubmissions key={index} submission={submission} index={index} submission_count={milestone.submissions.length-1} projectStatus={projectDetails?.status} milestoneStatus={milestone?.status} username={userDetails?.displayName} refetchProjectDetails={refetchProjectDetails} canSelectWinners={canSelectWinners} selectedWinners={selectedWinners} handleAddRemoveSelectedWinner={handleAddRemoveSelectedWinner}/>
+                                    </div>
                                   ))}
                                   </div>
-                                </>
+                                </div>
                               }
-                            </AccordionContent>
-                          </AccordionItem>
-                        ))}
-                      </Accordion>
+                      //       </AccordionContent>
+                      //     </AccordionItem>
+                        )
+                      // {/* // </Accordion> */}
                      :
                     totalSubmissions == 0 ? <div className='text-[14px] px-4 text-primaryYellow font-gridular'>No submissions yet</div> : <>
                       <div className='grid grid-cols-12 gap-2 mb-2 px-4'>
@@ -411,6 +457,17 @@ const ProjectDetailsPage = () => {
                       </div>
                     </>
                     }
+                    </div>
+                    <div className='flex justify-center items-center mt-6'>
+                      <FancyButton 
+                           src_img={menuBtnImg} 
+                           hover_src_img={menuBtnImgHover} 
+                           img_size_classes='w-[263px] h-[44px]' 
+                           className='font-gridular text-[13px] leading-[16.8px] text-primaryYellow mt-0.5'
+                           btn_txt={<span className='flex items-center justify-center gap-2 text-[13px] font-gridular normal-case'>Shortlist selected winners</span>} 
+                           alt_txt='save project btn' 
+                           onClick={() => {setShowSelecteWinnersModal(true)}}
+                      />
                     </div>
                   </div>
                 }
@@ -689,8 +746,165 @@ const ProjectDetailsPage = () => {
             </div>
         </div>
       }
+
+      {showSelecteWinnersModal && selectedWinners.length > 0 &&
+        <CustomModal
+          isOpen={showSelecteWinnersModal}
+          closeModal={() => setShowSelecteWinnersModal(false)}
+        >
+          <div className='bg-[#101C77] w-[580px] h-[583px] rounded-xl py-6 px-3'>
+            <div className='flex flex-col justify-center items-center gap-3'>
+              <img src={TrophyPng} className='size-[48px]'/>
+              <h3 className='text-primaryYellow text-[24px] leading-[28px] font-gridular'>Reorder submissions as per rank</h3>
+              <p className='w-[390px] text-center text-white32 text-[14px] font-inter leading-[19px]'>Hold and drag a submission to move it around. Remember 
+              to rank people in descending order.</p>
+            </div>
+            <div>
+              <Reorder.Group axis='y' values={selectedWinners} onReorder={debouncedOnReorder}>
+                {selectedWinners?.map((submission, index) => (
+                  <Reorder.Item
+                    value={submission}
+                    key={index}
+                    className='bg-white4 rounded-md p-3 flex items-center gap-3'
+                    dragListener={true}
+                    dragControls={controls}
+                  >
+                    <div  onPointerDown={(e) => controls.start(e)} className='h-10 w-10 bg-red-400'>
+
+                    </div>
+                    {submission?.user?.displayName}
+                  </Reorder.Item>
+                ))}
+              </Reorder.Group>
+            </div>
+          </div>
+        </CustomModal>
+      }
     </div>
   )
 }
 
 export default ProjectDetailsPage
+
+
+ const numdum = [0, 1, 2, 3, 4, 5]
+const dummyData = [
+  {
+    milestone_id: "67c0eef0456e1e6f9f7bfe32",
+    project_id: "67c0eef0456e1e6f9f7bfe2d",
+    status: "submitted",
+    submissionDescription: "yolo",
+    submissionLink: "https://google.com",
+    submitted_at: "2025-03-02T12:50:21.196Z",
+    user: {
+      bio: "Yo I am an awesome dev",
+      displayName: "Test user",
+      email: "onemlbb69@gmail.com",
+      experienceDescription: "Hi, this is a test account",
+      isKYCVerified: true,
+      job_preferences: [],
+      kycStatus: "Verified",
+      pfp: "https://firebasestorage.googleapis.com/v0/b/ehop-93b6a.appspot.com/o/images%2Fsamuel.png?alt=media&token=46e89025-bed1-42f2-b6e2-5960c7d6b5e1",
+      role: "user",
+      skills: [],
+      socials: { discord: "testuser1", telegram: "testuser1" },
+      teammates: [],
+      totalEarned: 0,
+      username: "TestUser1",
+      walletAddress: "0xa27CEF8aF2B6575903b676e5644657FAe96F491F",
+      _id: "67900c707377508655a21458",
+    },
+    user_id: "67900c707377508655a21458",
+    _id: "67c4540dd63b2805de8f2745",
+    __v: 0,
+  },
+  {
+    milestone_id: "67c0eef0456e1e6f9f7bfe33",
+    project_id: "67c0eef0456e1e6f9f7bfe2e",
+    status: "approved",
+    submissionDescription: "Implemented feature X",
+    submissionLink: "https://github.com/repo",
+    submitted_at: "2025-03-01T10:30:00.000Z",
+    user: {
+      bio: "Building cool stuff",
+      displayName: "Jane Doe",
+      email: "janedoe@example.com",
+      experienceDescription: "Software Engineer with 5 years experience",
+      isKYCVerified: false,
+      job_preferences: ["Frontend", "Backend"],
+      kycStatus: "Pending",
+      pfp: "https://example.com/jane-avatar.png",
+      role: "developer",
+      skills: ["React", "Node.js", "GraphQL"],
+      socials: { discord: "janedoe", telegram: "janedoe_tg" },
+      teammates: ["John Doe"],
+      totalEarned: 5000,
+      username: "JaneD",
+      walletAddress: "0xb27CEF8aF2B6575903b676e5644657FAe96F491F",
+      _id: "67900c707377508655a21459",
+    },
+    user_id: "67900c707377508655a21459",
+    _id: "67c4540dd63b2805de8f2746",
+    __v: 0,
+  },
+  {
+    milestone_id: "67c0eef0456e1e6f9f7bfe34",
+    project_id: "67c0eef0456e1e6f9f7bfe2f",
+    status: "rejected",
+    submissionDescription: "Added new API endpoints",
+    submissionLink: "https://bitbucket.org/repo",
+    submitted_at: "2025-02-28T15:20:30.000Z",
+    user: {
+      bio: "Full-stack developer",
+      displayName: "John Smith",
+      email: "johnsmith@example.com",
+      experienceDescription: "10 years of experience in web dev",
+      isKYCVerified: true,
+      job_preferences: ["Full Stack"],
+      kycStatus: "Verified",
+      pfp: "https://example.com/john-avatar.png",
+      role: "lead developer",
+      skills: ["Python", "Django", "PostgreSQL"],
+      socials: { discord: "johnsmith", telegram: "johnsmith_tg" },
+      teammates: [],
+      totalEarned: 8000,
+      username: "JohnS",
+      walletAddress: "0xc27CEF8aF2B6575903b676e5644657FAe96F491F",
+      _id: "67900c707377508655a21460",
+    },
+    user_id: "67900c707377508655a21460",
+    _id: "67c4540dd63b2805de8f2747",
+    __v: 0,
+  },
+  {
+    milestone_id: "67c0eef0456e1e6f9f7bfe35",
+    project_id: "67c0eef0456e1e6f9f7bfe30",
+    status: "pending",
+    submissionDescription: "Initial project setup",
+    submissionLink: "https://gitlab.com/repo",
+    submitted_at: "2025-02-27T09:45:10.000Z",
+    user: {
+      bio: "I love open-source",
+      displayName: "Alice Brown",
+      email: "alicebrown@example.com",
+      experienceDescription: "Open-source contributor & engineer",
+      isKYCVerified: false,
+      job_preferences: ["Blockchain", "Smart Contracts"],
+      kycStatus: "Pending",
+      pfp: "https://example.com/alice-avatar.png",
+      role: "blockchain dev",
+      skills: ["Solidity", "Rust", "Ethereum"],
+      socials: { discord: "alicebrown", telegram: "alicebrown_tg" },
+      teammates: ["Bob Martin"],
+      totalEarned: 3000,
+      username: "AliceB",
+      walletAddress: "0xd27CEF8aF2B6575903b676e5644657FAe96F491F",
+      _id: "67900c707377508655a21461",
+    },
+    user_id: "67900c707377508655a21461",
+    _id: "67c4540dd63b2805de8f2748",
+    __v: 0,
+  },
+];
+
+console.log(dummyData);
