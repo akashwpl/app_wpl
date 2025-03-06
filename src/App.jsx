@@ -29,6 +29,7 @@ import GrantsPage from "./pages/GrantsPage"
 import SelectProjectType from "./components/projectdetails/SelectProjectType"
 import AddGrantPage from "./pages/AddGrantPage"
 import GrantDetailsPage from "./pages/GrantDetailsPage"
+import EditGrantPage from "./pages/EditGrantPage"
 
 function App() {
 
@@ -69,6 +70,7 @@ function App() {
           <Route path="/grants" element={<GrantsPage />} />
           <Route path="/grantdetails/:id" element={<GrantDetailsPage />} />
           <Route path="/addGrant" element={<AddGrantPage />} />
+          <Route path="/editGrant/:id/" element={<EditGrantPage />} />
           <Route path="/selectprojecttype" element={<SelectProjectType />} />
 
         </Routes>
