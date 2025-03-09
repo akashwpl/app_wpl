@@ -412,3 +412,12 @@ export const editGrantById = async (id,data) => {
         handleForbiddenError(error)
     }
 }
+
+export const updateCopperXPatToken = async (body) => {
+    try {
+        const response = await axiosInstance.put(`/users/update/pat`, body);
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}

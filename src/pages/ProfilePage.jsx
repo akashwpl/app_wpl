@@ -30,14 +30,6 @@ const ProfilePage = () => {
   const { user_id } = useSelector((state) => state)
   const dispatch = useDispatch()
 
-  console.log('user_id PROFILe', user_id)
-
-  // const {data: userDetail, isLoading: isLoadingUserDetails, refetch} = useQuery({
-  //   queryKey: ["userDetails", id, user_id],
-  //   queryFn: () => getUserDetails(id || user_id),
-  //   enabled: !!id || !!user_id,
-  // })
-
   const {data: allUsers, isLoading: isLoadingUses, refetch} = useQuery({
     queryKey: ["users"],
     queryFn: () => getAllUers(),
@@ -62,7 +54,6 @@ const ProfilePage = () => {
     refetch()
   }
 
-
   const userDetails = useMemo(() => {
     if (allUsers) {
       if(id?.includes('discord')) {
@@ -73,16 +64,11 @@ const ProfilePage = () => {
     }
   }, [allUsers, id, user_id])
 
-  // console.log('allUsers', allUsers)
-  // console.log('userDetails', userDetails)
-
   const sampleProjects = useMemo(() =>  userDetails?.projects?.owned?.filter((proj) => proj.type == 'sample'), [userDetails, allUsers])
 
   const handleShareProfile = () => {
     dispatch(displaySnackbar('COMING SOON!!!!'))
   }
-
-  console.log('userDetails', userDetails)
 
   const handleKyc = () => {
     if(userDetails?.isKYCVerified) return
@@ -114,9 +100,9 @@ const ProfilePage = () => {
                       {userDetails?.isKYCVerified ? 'KYC Verified' : 'KYC Not Verified'}
                     </p>
                   </div>
-                  <div onClick={() => handleCopperxPAT()} className={`${userDetails?.cooperxPAT ? "bg-[#0ED0651A] hover:bg-[#0ED0651A]/90" : "bg-errorMsgRedText/10 hover:bg-errorMsgRedText/15"}  rounded-md px-2 py-1 cursor-pointer`}>
-                    <Link to={'/editprofile'}><p className={`text-[12px] ${userDetails?.cooperxPAT ? "text-[#9FE7C7]" : "text-cardRedText/80"}  font-semibold font-inter`}>
-                      {userDetails?.cooperxPAT ? 'Token' : 'No token'}
+                  <div onClick={() => handleCopperxPAT()} className={`${userDetails?.copperxPatHidden ? "bg-[#0ED0651A] hover:bg-[#0ED0651A]/90" : "bg-errorMsgRedText/10 hover:bg-errorMsgRedText/15"}  rounded-md px-2 py-1 cursor-pointer`}>
+                    <Link to={'/editprofile'}><p className={`text-[12px] ${userDetails?.copperxPatHidden ? "text-[#9FE7C7]" : "text-cardRedText/80"}  font-semibold font-inter`}>
+                      {userDetails?.copperxPatHidden ? 'Token' : 'No token'}
                     </p>
                     </Link>
                   </div>
