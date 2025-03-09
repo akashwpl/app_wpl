@@ -26,7 +26,7 @@ import {
 import FancyButton from '../components/ui/FancyButton'
 import Tabs from '../components/ui/Tabs'
 import { calculateRemainingDaysAndHours, convertTimestampToDate } from '../lib/constants'
-import { adminOpenProjectApproveOrReject, adminProjectApproveOrReject, createNotification, getOpenProjectSubmissions, getOrgById, getPendingProjects, getProjectDetails, getProjectSubmissions, getUserDetails, getUserProjects, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
+import { acceptOpenProjectSubmissions, adminOpenProjectApproveOrReject, adminProjectApproveOrReject, createNotification, getOpenProjectSubmissions, getOrgById, getPendingProjects, getProjectDetails, getProjectSubmissions, getUserDetails, getUserProjects, updateOpenProjectDetails, updateProjectDetails } from '../service/api'
 
 import alertPng from '../assets/images/alert.png'
 import clockSVG from '../assets/icons/pixel-icons/watch.svg'
@@ -44,6 +44,7 @@ import DraggableDotsPng from '../assets/images/dragable-dots.png'
 import GreenButtonPng from '../assets/svg/green_btn_subtract.png'
 import GreenButtonHoverPng from '../assets/svg/green_btn_hover_subtract.png'
 import DistributeRewardsPage from '../components/projectdetails/DistributeRewardsPage'
+import OpenMilestoneStatusCard from '../components/projectdetails/OpenMilestoneStatusCard'
 
 
 const initialTabs = [
@@ -60,15 +61,23 @@ const ProjectDetailsPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const controls = useDragControls()
-  
   const { user_id, user_role } = useSelector((state) => state)
+
+  const {data: projectDetails, isLoading: isLoadingProjectDetails, refetch: refetchProjectDetails} = useQuery({
+    queryKey: ['projectDetails', id],
+    queryFn: () => getProjectDetails(id),
+    enabled: !!id
+  })
+
   const [orgHandle, setOrgHandle] = useState('');
   const [isProjApplied, setIsProjApplied] = useState(false);
   const [username, setUsername] = useState('A user');
   const [openMilestoneSubmissions, setOpenMilestoneSubmissions] = useState([]);
 
   const [selectedWinners, setSelectedWinners] = useState([])
-  const [canSelectWinners, setCanSelectWinners] = useState(false)
+  console.log('sw',selectedWinners);
+  
+  const [canSelectWinners, setCanSelectWinners] = useState(!(projectDetails?.winners?.length == 0) || false)  
   const [showSelecteWinnersModal, setShowSelecteWinnersModal] = useState(false)
   const [isDistributingRewards, setIsDistributingRewards] = useState(false)
 
@@ -88,16 +97,16 @@ const ProjectDetailsPage = () => {
     queryKey: ["userProjects", user_id],
     queryFn: getUserProjects
   })
-  
-  const {data: projectDetails, isLoading: isLoadingProjectDetails, refetch: refetchProjectDetails} = useQuery({
-    queryKey: ['projectDetails', id],
-    queryFn: () => getProjectDetails(id),
-    enabled: !!id
-  })
 
   const {data: projectSubmissions, isLoading: isLoadingProjectSubmissions} = useQuery({
     queryKey: ['projectSubmissions', id],
     queryFn: () => getProjectSubmissions(id),
+  })
+
+  const {data: openProjectSubmissions, isLoading: isLoadingOpenProjectSubmissions, refetch: refetchOpenProjectSubmissions} = useQuery({
+    queryKey: ['openProjectSubmissions', id],
+    queryFn: () => getOpenProjectSubmissions(id),
+    enabled: !!projectDetails?.isOpenBounty
   })
 
   // To check if the user has applied to bounty or not
@@ -111,33 +120,27 @@ const ProjectDetailsPage = () => {
     })
   },[isLoadingProjectSubmissions])
 
-
-  const {data: openProjectSubmissions, isLoading: isLoadingOpenProjectSubmissions, refetch: refetchOpenProjectSubmissions} = useQuery({
-    queryKey: ['openProjectSubmissions', id],
-    queryFn: () => getOpenProjectSubmissions(id),
-    enabled: !!projectDetails?.isOpenBounty
-  })
-
   useEffect(() => {
     if(projectDetails?.isOpenBounty && !isLoadingOpenProjectSubmissions) {
-      const groupedData = openProjectSubmissions?.reduce((acc, curr) => {
-        (acc[curr.milestone_id] = acc[curr.milestone_id] || []).push(curr);
-        return acc;
-      }, {});
-      const formattedData = groupedData && Object.entries(groupedData).reduce((acc, [milestone_id, data]) => {
-        const milestoneData = projectDetails?.milestones.find(
-          (item) => item._id === milestone_id
-        );
-        if (milestoneData) {
-          acc.push({
-            title: milestoneData.title,
-            status: milestoneData.status,
-            submissions: data
-          })
-        }
-        return acc;
-      }, []);
-      setOpenMilestoneSubmissions(formattedData);
+      // const formattedData = []
+      // const groupedData = openProjectSubmissions?.reduce((acc, curr) => {
+      //   (acc[curr.milestone_id] = acc[curr.milestone_id] || []).push(curr);
+      //   return acc;
+      // }, {});
+      // const formattedData = groupedData && Object.entries(groupedData).reduce((acc, [milestone_id, data]) => {
+      //   const milestoneData = projectDetails?.milestones.find(
+      //     (item) => item._id === milestone_id
+      //   );
+      //   if (milestoneData) {
+      //     acc.push({
+      //       title: milestoneData.title,
+      //       status: milestoneData.status,
+      //       submissions: data
+      //     })
+      //   }
+      //   return acc;
+      // }, []);
+      setOpenMilestoneSubmissions(openProjectSubmissions);
     }
   }, [isLoadingOpenProjectSubmissions]);
 
@@ -149,29 +152,33 @@ const ProjectDetailsPage = () => {
       }
     }
 
+    console.log('pd',projectDetails);
     const updateProjectStatus = async () => {
-      const submittedMs = projectDetails?.milestones?.filter((ms) => {
-        return ms.status == 'rejected' || ms.status == 'completed'
-      })
-
-      if(submittedMs.length == projectDetails?.milestones?.length && !projectDetails?.isOpenBounty && (projectDetails?.status != 'completed' && projectDetails?.status != 'closed')) {
-        // Mark project as completed
-        const data = {
-          project: { status: "completed" },
-          milestones: projectDetails?.milestones        // milestones is a required field
+      
+      if(!isLoadingProjectDetails && !projectDetails?.isOpenBounty) {
+        const submittedMs = projectDetails?.milestones?.filter((ms) => {
+          return ms.status == 'rejected' || ms.status == 'completed'
+        })
+  
+        if(submittedMs.length == projectDetails?.milestones?.length && !projectDetails?.isOpenBounty && (projectDetails?.status != 'completed' && projectDetails?.status != 'closed')) {
+          // Mark project as completed
+          const data = {
+            project: { status: "completed" },
+            milestones: projectDetails?.milestones        // milestones is a required field
+          }
+          const res = await updateProjectDetails(projectDetails._id, data);
+          const notiObj = {
+            msg: `The Bounty has been marked as Complete. Check this out...`,
+            type: 'project_req',
+            fromId: user_id,
+            user_id: projectDetails.user_id,
+            project_id: projectDetails._id
+          }
+          const notiRes = await createNotification(notiObj)
         }
-        const res = await updateProjectDetails(projectDetails._id, data);
-        const notiObj = {
-          msg: `The Bounty has been marked as Complete. Check this out...`,
-          type: 'project_req',
-          fromId: user_id,
-          user_id: projectDetails.user_id,
-          project_id: projectDetails._id
-        }
-        const notiRes = await createNotification(notiObj)
+        refetchProjectDetails()
       }
-      refetchProjectDetails()
-    }
+    } 
 
     fetchOrgHandle();
     updateProjectStatus();
@@ -234,7 +241,8 @@ const ProjectDetailsPage = () => {
     setTabs(isOwner ? isOwnerTabs : initialTabs)
   }, [isOwner])
 
-  const totalPrize = useMemo(() => projectDetails?.milestones?.reduce((acc, milestone) => acc + parseFloat(milestone.prize), 0) || 0, [projectDetails]);
+  // const totalPrize = useMemo(() => projectDetails?.milestones?.reduce((acc, milestone) => acc + parseFloat(milestone.prize), 0) || 0, [projectDetails]);
+  const totalPrize = projectDetails?.totalPrize || 0;
   const totalSubmissions = useMemo(() => projectSubmissions?.length, [projectSubmissions])
 
   const remain = calculateRemainingDaysAndHours(new Date(), convertTimestampToDate(projectDetails?.deadline))
@@ -302,17 +310,46 @@ const ProjectDetailsPage = () => {
     });
 };
 
+const debouncedOnReorder = useCallback(
+  debounce((newOrder) => {
+    setSelectedWinners(newOrder);
+  }, 450), // 300ms delay
+  []
+);
+  
+  const handleRewardWinners = async () => {
+    const body = selectedWinners?.map((winner, index) => {
+      return {
+        rank: index+1,
+        id: winner._id
+      }
+    })
 
-  const debouncedOnReorder = useCallback(
-    debounce((newOrder) => {
-      setSelectedWinners(newOrder);
-    }, 450), // 300ms delay
-    []
-  );
+    // Accept user submissions and add to winner list
+    const res = await acceptOpenProjectSubmissions(projectDetails?._id, body)
+    console.log('rsp',res);
+    
 
-  const handleNavigateToDistributeRewards = () => {
-    setShowSelecteWinnersModal(false)
-    setIsDistributingRewards(true)
+    if(res?.message == 'success') {
+      dispatch(displaySnackbar('You have selected winners successfully'))      
+      setShowSelecteWinnersModal(false)
+      setIsDistributingRewards(true)
+    } else {
+      dispatch(displaySnackbar('Something went wrong'))      
+    }
+  }
+
+  const handleSelectWinner = () => {
+    console.log(projectDetails.winners)
+    if(projectDetails?.winners?.length == 0) {
+      setShowSelecteWinnersModal(true);
+    } else {
+      console.log('in len > 0');
+      setSelectedWinners(projectDetails?.winners)
+      setCanSelectWinners(false)
+      setShowSelecteWinnersModal(false)
+      setIsDistributingRewards(true)
+    }
   }
 
   return (
@@ -357,7 +394,7 @@ const ProjectDetailsPage = () => {
                   {isLoadingProjectDetails ? <div>Loading...</div> : <div className='w-full'>
                     <div className='mt-4 mb-4 border border-white7 rounded-md flex justify-between items-center'>
                       <Tabs tabs={tabs} handleTabClick={handleTabClick} selectedTab={selectedTab} submissionsCount={totalSubmissions} />
-                      {isOwner && selectedTab == 'submissions' && projectDetails?.isOpenBounty && <button onClick={() => setCanSelectWinners((prev) => !prev)} className='border border-white7 rounded-lg h-[32px] w-[135px] mr-4 flex justify-center items-center'>
+                      {isOwner && selectedTab == 'submissions' && projectDetails?.isOpenBounty && projectDetails?.winners.length == 0 && openMilestoneSubmissions?.length !==0 && <button onClick={() => setCanSelectWinners((prev) => !prev)} className='border border-white7 rounded-lg h-[32px] w-[135px] mr-4 flex justify-center items-center'>
                         <p className='text-[14px] font-gridular text-white48'>Select winners</p>
                       </button>}
                     </div>
@@ -408,37 +445,25 @@ const ProjectDetailsPage = () => {
                         openMilestoneSubmissions?.length == 0 ?
                           <div className='text-[14px] px-4 py-2 text-center text-primaryYellow border-t border-white7 font-gridular'>No submissions yet</div>
                         :
-                          // <Accordion type="single" defaultValue="item-0" collapsible>
-                            openMilestoneSubmissions?.map((milestone, index) => 
-                              // <AccordionItem value={`item-${index}`} key={index} className="border-white7">
-                              //   <AccordionTrigger className="text-white48 font-inter hover:no-underline px-4">
-                              //     <p className='text-[13px] font-medium text-white88'>{milestone.title}</p>
-                              //   </AccordionTrigger>
-                              //   <AccordionContent className="py-2 px-4 border-t border-dashed border-white12">
-                                  {
-                                  return milestone.submissions.length == 0 ? 
-                                    <div className='text-[14px] text-primaryYellow font-gridular text-center'>No submissions yet</div> : 
-                                    <div className={` ${canSelectWinners ? "px-0" : "px-4"} border-t border-dashed border-white12`}>
-                                      <div className='grid grid-cols-12 gap-2 my-2'>
-                                        {canSelectWinners && <div className='col-span-1'/>}
-                                        <div className='text-[14px] col-span-1 text-white48 font-inter'>No.</div>
-                                        <div className='text-[14px] col-span-2 text-white48 font-inter'>Name</div>
-                                        <div className='text-[14px] col-span-4 text-white48 font-inter'>Link</div>
-                                        <div className={`text-[14px] ${canSelectWinners ? "col-span-4" : "col-span-5"} text-white48 font-inter`}>Description</div>
-                                      </div>
-                                      <div className='max-h-[400px] overflow-y-auto'>
-                                      {milestone.submissions?.map((submission, index) => (
-                                        <div key={index}>
-                                          <OpenMilestoneSubmissions key={index} submission={submission} index={index} submission_count={milestone.submissions.length-1} projectStatus={projectDetails?.status} milestoneStatus={milestone?.status} username={userDetails?.displayName} refetchProjectDetails={refetchProjectDetails} canSelectWinners={canSelectWinners} selectedWinners={selectedWinners} handleAddRemoveSelectedWinner={handleAddRemoveSelectedWinner}/>
-                                        </div>
-                                      ))}
-                                      </div>
-                                    </div>
-                                  }
-                          //       </AccordionContent>
-                          //     </AccordionItem>
-                            )
-                          // {/* // </Accordion> */}
+                          <>
+                            {/* <div className='text-[14px] text-primaryYellow font-gridular text-center'>No submissions yet</div> :  */}
+                            <div className={` ${canSelectWinners ? "px-0" : "px-4"} border-t border-dashed border-white12`}>
+                              <div className='grid grid-cols-12 gap-2 my-2'>
+                                {canSelectWinners && <div className='col-span-1'/>}
+                                <div className='text-[14px] col-span-1 text-white48 font-inter'>No.</div>
+                                <div className='text-[14px] col-span-2 text-white48 font-inter'>Name</div>
+                                <div className='text-[14px] col-span-4 text-white48 font-inter'>Link</div>
+                                <div className={`text-[14px] ${canSelectWinners ? "col-span-4" : "col-span-5"} text-white48 font-inter`}>Description</div>
+                              </div>
+                              <div className='max-h-[400px] overflow-y-auto'>
+                              {openMilestoneSubmissions?.map((submission, index) => (
+                                <div key={index}>
+                                  <OpenMilestoneSubmissions key={index} submission={submission} index={index} submission_count={openMilestoneSubmissions?.length-1} projectStatus={projectDetails?.status} milestoneStatus={projectDetails?.status} username={userDetails?.displayName} refetchProjectDetails={refetchProjectDetails} canSelectWinners={canSelectWinners} selectedWinners={selectedWinners} handleAddRemoveSelectedWinner={handleAddRemoveSelectedWinner}/>
+                                </div>
+                              ))}
+                              </div>
+                            </div>
+                          </>
                         :
                         totalSubmissions == 0 ? <div className='text-[14px] px-4 text-primaryYellow font-gridular'>No submissions yet</div> : <>
                           <div className='grid grid-cols-12 gap-2 mb-2 px-4'>
@@ -466,15 +491,16 @@ const ProjectDetailsPage = () => {
                         </>
                         }
                         </div>
-                        {canSelectWinners && <div className='flex justify-center items-center mt-6'>
+                        {canSelectWinners && openMilestoneSubmissions?.length > 0 &&
+                        <div className='flex justify-center items-center mt-6'>
                           <FancyButton 
-                              src_img={menuBtnImg} 
-                              hover_src_img={menuBtnImgHover} 
-                              img_size_classes='w-[263px] h-[44px]' 
-                              className='font-gridular text-[13px] leading-[16.8px] text-primaryYellow mt-0.5'
-                              btn_txt={<span className='flex items-center justify-center gap-2 text-[13px] font-gridular normal-case'>Shortlist selected winners</span>} 
-                              alt_txt='save project btn' 
-                              onClick={() => {setShowSelecteWinnersModal(true)}}
+                            src_img={menuBtnImg} 
+                            hover_src_img={menuBtnImgHover} 
+                            img_size_classes='w-[263px] h-[44px]' 
+                            className='font-gridular text-[13px] leading-[16.8px] text-primaryYellow mt-0.5'
+                            btn_txt={<span className='flex items-center justify-center gap-2 text-[13px] font-gridular normal-case'>{projectDetails?.winners?.length == 0 ? 'Shortlist selected winners' : 'Complete Payment'}</span>} 
+                            alt_txt='save project btn' 
+                            onClick={handleSelectWinner}
                           />
                         </div>}
                       </div>
@@ -531,9 +557,14 @@ const ProjectDetailsPage = () => {
                   :
                     // for open bounties
                     <div className='bg-white7 border border-white4 rounded-[8px] p-3 mx-4 mt-4'>
-                        {projectDetails?.milestones?.map((milestone, index) => (
+                      {projectDetails?.isOpenBounty ?
+                        <OpenMilestoneStatusCard projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails} username={username} />
+                        // <div>open</div> 
+                        :
+                        projectDetails?.milestones?.map((milestone, index) => (
                           <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails} username={username} />
-                        ))}
+                        ))
+                      }
                     </div>
                   }
 
@@ -560,7 +591,7 @@ const ProjectDetailsPage = () => {
                   :
 
                   // bounty completed view for all user types
-                  projectDetails?.status == 'completed' || (projectDetails?.isOpenBounty && projectDetails?.milestones[0].status == 'completed') ?
+                  projectDetails?.status == 'completed' || (projectDetails?.isOpenBounty && projectDetails?.status == 'completed') ?
                     <div className='text-primaryGreen flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been Completed</div>
                   :
 
@@ -758,7 +789,7 @@ const ProjectDetailsPage = () => {
         : <DistributeRewardsPage selectedWinner={selectedWinners} projectDetails={projectDetails} setIsDistributingRewards={setIsDistributingRewards}/>
       }
 
-      {showSelecteWinnersModal && selectedWinners.length > 0 &&
+      {showSelecteWinnersModal && (projectDetails?.winners?.length > 0 || selectedWinners?.length > 0) &&
         <CustomModal
           isOpen={showSelecteWinnersModal}
           closeModal={() => setShowSelecteWinnersModal(false)}
@@ -822,7 +853,7 @@ const ProjectDetailsPage = () => {
                 className='font-gridular text-[13px] leading-[16.8px] text-[#9FE7C7] mt-1'
                 btn_txt='Reward winners' 
                 alt_txt='save project btn' 
-                onClick={handleNavigateToDistributeRewards}
+                onClick={handleRewardWinners}
               />
             </div>
           </div>

@@ -21,7 +21,7 @@ import {
 import FancyButton from '../components/ui/FancyButton';
 import { ROLES, website_regex } from '../lib/constants';
 import { storage } from '../lib/firebase';
-import { createGrant, createNotification, editGrantById, getAdmins, getUserOrgs } from '../service/api';
+import { createNotification, editGrantById, getAdmins } from '../service/api';
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import Spinner from '../components/ui/spinner';
@@ -153,9 +153,9 @@ const EditGrantPage = () => {
         // "roles": role,
         "image" : imageUrl || grantDetails?.image,
         "currency": projCurrency,    // project currency strk or usdc
-        "avgGrantSize": avgGrantSize,
-        "prizeApproved": prizeApproved,
-        "avgResponseTime": parseInt(avgResponseTime),
+        "avgGrantSize": parseFloat(avgGrantSize),
+        "prizeApproved": parseFloat(prizeApproved),
+        "avgResponseTime": parseFloat(avgResponseTime),
         "responseTimeUnit": responseTimeUnit,
         'grantLink': grantLink
       }
@@ -164,12 +164,12 @@ const EditGrantPage = () => {
       // const resp = await createGrant(data);
       console.log('grant Resp',resp);
 
-      if(resp?.grant._id) {
+      if(resp?._id) {
         const notification = {
-          msg: `Grant: ${title} is posted on the platform`,
+          msg: `Grant: ${title} has been updated by Admin`,
           type: 'grant_req',
           fromId: `${user_id}`,
-          project_id: resp?.grant._id
+          project_id: resp?._id
         }
 
         const adminList = await getAdmins();
@@ -177,7 +177,7 @@ const EditGrantPage = () => {
           const notiRes = await createNotification({...notification, user_id: admin._id});
         });
 
-        setCreatedGrantId(resp?.grant?._id);
+        setCreatedGrantId(resp?._id);
         setIsCreatingProject(false);
         setSubmitted(true);
       } else {
@@ -432,7 +432,7 @@ const EditGrantPage = () => {
                             </div>
                             <div>
                                 <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
-                                <p className='text-white88 font-semibold text-[13px] font-inter underline'><a href={userOrg?.websiteLink} target='_blank' rel="noopener noreferrer" >@{userOrg?.organisationHandle}</a></p>
+                                <p className='text-white88 font-semibold text-[13px] font-inter underline'><a href={grantDetails?.organisation?.websiteLink} target='_blank' rel="noopener noreferrer" >@{grantDetails?.organisation?.organisationHandle}</a></p>
                             </div>
                         </div>
 

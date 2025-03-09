@@ -261,7 +261,7 @@ export const createProject = async (data) => {
 
 export const updateOpenProjectDetails = async (id, updData) => {
     try {
-        const response = await axiosInstance.put(`/openProjects/updateWithMilestone/${id}`, updData)
+        const response = await axiosInstance.put(`/openProjects/update/${id}`, updData)
         return response.data.data
     } catch (error) {
         handleForbiddenError(error)
@@ -277,6 +277,16 @@ export const submitOpenMilestone = async (milestone_id, body) => {
     }
 }
 
+export const submitOpenProject = async (project_id, body) => {
+    try {
+        const response = await axiosInstance.post(`/openProjects/project/submit/${project_id}`, body)
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+// new Submissions route for open bounties
 export const getOpenProjectSubmissions = async (project_id) => {
     try {
         const response = await axiosInstance.get(`/openSubmissions/project/${project_id}`)
@@ -295,9 +305,9 @@ export const getOpenMilestoneSubmissions = async (milestone_id) => {
     }
 }
 
-export const updOpenMilestoneSubmissions = async (submission_id, data) => {
+export const acceptOpenProjectSubmissions = async (project_id, data) => {
     try {
-        const response = await axiosInstance.post(`/openSubmissions/update/${submission_id}`, data)
+        const response = await axiosInstance.post(`/openSubmissions/accept/${project_id}`, data)
         return response.data.data
     } catch (error) {
         handleForbiddenError(error)
@@ -376,3 +386,29 @@ export const getGrantById = async (id) => {
     }
 }
 
+export const grantApproveOrRejectById = async (id,data) => {
+    try {
+        const response = await axiosInstance.put(`/grants/approveOrReject/${id}`, data);
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const closeGrantById = async (id) => {
+    try {
+        const response = await axiosInstance.post(`/grants/close/${id}`);
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}
+
+export const editGrantById = async (id,data) => {
+    try {
+        const response = await axiosInstance.put(`/grants/update/${id}`, data);
+        return response.data.data
+    } catch (error) {
+        handleForbiddenError(error)
+    }
+}

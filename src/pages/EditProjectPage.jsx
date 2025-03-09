@@ -255,6 +255,22 @@ const EditProjectPage = () => {
             
             // Edit open project
             if(projectDetails?.isOpenBounty) {
+                const updData = {
+                    title: title,
+                    // organisationHandle: userOrg?.organisationHandle,
+                    organisationId: userOrg?._id,
+                    description: description,
+                    // helpLink: helpLink,
+                    status: "idle",
+                    about: aboutProject,
+                    roles: role,
+                    image: imageUrl || userOrg?.img,
+                    isOpenBounty: isOpenBounty,
+                    currency: projCurrency,    // project currency strk or usdc
+                    deadline: lastMilestone?.deadline,
+                    // noOfWinners: parseFloat(numOfWinners),
+                    // prizePool: multiWinnerPrizePool
+                }
                 const res = await updateOpenProjectDetails(projectDetails._id, updData);
             } else {
                 const res = await updateProjectDetails(projectDetails._id, updData);

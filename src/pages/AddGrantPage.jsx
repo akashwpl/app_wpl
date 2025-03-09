@@ -160,22 +160,19 @@ const AddGrantPage = () => {
         const imageUrl = await handleFirebaseImgUpload();
 
         const data = {
-          "grant": {
-            "title": title,
-            "organisationHandle": userOrg?.organisationHandle,
-            "organisationId": userOrg?._id,
-            "description": description,
-            "about": aboutProject,
-            // "roles": role,
-            "image" : imageUrl || userOrg?.img,
-            "currency": projCurrency,    // project currency strk or usdc
-            "avgGrantSize": avgGrantSize,
-            "prizeApproved": prizeApproved,
-            "avgResponseTime": avgResponseTime,
-            "responseTimeUnit": responseTimeUnit,
-            'grantLink': grantLink
-          },
-          "milestones": []
+          "title": title,
+          // "organisationHandle": userOrg?.organisationHandle,
+          "organisationId": userOrg?._id,
+          "description": description,
+          "about": aboutProject,
+          // "roles": role,
+          "image" : imageUrl || userOrg?.img,
+          "currency": projCurrency,    // project currency strk or usdc
+          "avgGrantSize": parseFloat(avgGrantSize),
+          "prizeApproved": parseFloat(prizeApproved),
+          "avgResponseTime": parseFloat(avgResponseTime),
+          "responseTimeUnit": responseTimeUnit,
+          'grantLink': grantLink
         }
 
         const resp = await createGrant(data);

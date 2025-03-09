@@ -1,12 +1,19 @@
 import GrantCard from '../components/grants/GrantCard'
 import { useQuery } from '@tanstack/react-query'
 import { getAllGrants } from '../service/api';
+import { useSelector } from 'react-redux';
 
 const GrantsPage = () => {
 
   const {data: grantDetails, isLoading: isLoadingGrantDetails} = useQuery({
     queryKey: ["grantDetails"],
     queryFn: () => getAllGrants(),
+  })
+
+  const { user_role } = useSelector((state) => state)
+
+  const approvedGrants = user_role !== 'user' ? grantDetails : grantDetails?.filter((grant) => {
+    return grant?.approvalStatus === 'approved'
   })
 
   return (
@@ -17,15 +24,17 @@ const GrantsPage = () => {
           <p className='text-white64 font-gridular text-[14px] leading-4 text-center'>Apply to these open grants and receive a grant to build your next big thing! <br /> There's no tomorrow, only yesterday. Apply now!</p>
         </div>
 
-        <div className='flex flex-wrap gap-6 items-center mt-6'>
-          {grantDetails?.length == 0 
-            ? <div className="font-gridular text-white88 text-[24px] mt-20">No Grants Available</div>
-            : grantDetails?.map((grant, idx) => (
-                <div key={idx}>
-                  <GrantCard data={grant}/>
-                </div>
-            ))}
-        </div>
+          {approvedGrants?.length == 0 
+            ? <div className="font-gridular text-white88 text-center text-[24px] mt-20">No Grants Available</div>
+            : 
+            <div className='flex flex-wrap gap-6 items-center mt-6'>
+              {approvedGrants?.map((grant, idx) => (
+                  <div key={idx}>
+                    <GrantCard data={grant}/>
+                  </div>
+              ))}
+            </div>
+          }
       </div>
     </div>  
   )
