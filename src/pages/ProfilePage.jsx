@@ -65,7 +65,6 @@ const ProfilePage = () => {
 
   const userDetails = useMemo(() => {
     if (allUsers) {
-      
       if(id?.includes('discord')) {
         return allUsers.find((user) => user.socials?.discord == id)
       } else {
@@ -114,6 +113,12 @@ const ProfilePage = () => {
                     <p className={`text-[12px] ${userDetails?.isKYCVerified ? "text-[#9FE7C7]" : "text-cardRedText/80"}  font-semibold font-inter`}>
                       {userDetails?.isKYCVerified ? 'KYC Verified' : 'KYC Not Verified'}
                     </p>
+                  </div>
+                  <div onClick={() => handleCopperxPAT()} className={`${userDetails?.cooperxPAT ? "bg-[#0ED0651A] hover:bg-[#0ED0651A]/90" : "bg-errorMsgRedText/10 hover:bg-errorMsgRedText/15"}  rounded-md px-2 py-1 cursor-pointer`}>
+                    <Link to={'/editprofile'}><p className={`text-[12px] ${userDetails?.cooperxPAT ? "text-[#9FE7C7]" : "text-cardRedText/80"}  font-semibold font-inter`}>
+                      {userDetails?.cooperxPAT ? 'Token' : 'No token'}
+                    </p>
+                    </Link>
                   </div>
                 </div>
                 <p className='text-[14px] text-white32 font-inter'>{userDetails?.username ? userDetails?.username : ""}</p>

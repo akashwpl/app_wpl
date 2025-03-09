@@ -44,6 +44,7 @@ const EditProfilePage = () => {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [username, setUsername] = useState('')
+    const [copperxPAT, setCopperxPAT] = useState('')
     const [bio, setBio] = useState('')
     const [discord, setDiscord] = useState('')
     const [telegram, setTelegram] = useState('')
@@ -280,6 +281,9 @@ const EditProfilePage = () => {
         } else if (!username?.length) {
             setErrors({username: 'Username is required'})
             return
+        } else if (!copperxPAT?.length) {
+            setErrors({copperxPAT: 'CopperX PAT token is required'})
+            return
         }
 
         setErrors({})
@@ -302,7 +306,8 @@ const EditProfilePage = () => {
                 "discord": document.querySelector('input[name="discordUsername"]').value,
                 "telegram": document.querySelector('input[name="telegramUsername"]').value,
             },
-            "username": username
+            "username": username,
+            "accessToken" : document.querySelector('input[name="copperxPAT"]').value,
         }
 
         if(pfp) {
@@ -421,6 +426,15 @@ const EditProfilePage = () => {
                             rows={3}
                         />
                         {errors.bio && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.bio}</div>}
+                    </div>
+
+                    {/* For copperX accesstoken */}
+                    <div className='flex flex-col gap-1 w-full'>
+                        <label className='text-[13px] font-medium text-white32'>CopperX Access Token</label>
+                        <input name='copperxPAT' value={copperxPAT} type='password' onChange={(e) => setCopperxPAT(e.target.value)} className={`bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none ${errors.copperxPAT ? 'border border-cardRedText' : 'border-none'}`} 
+                            placeholder='super secret stuff here'
+                        />
+                        {errors.copperxPAT && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.copperxPAT}</div>}
                     </div>
                 </div>
 

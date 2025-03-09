@@ -57,12 +57,14 @@ const HomePage = () => {
         return proj?.isOpenBounty && proj?.approvalStatus == 'approved'
       })
 
-      const topProject = filterProjects?.reduce((high, curr) => {
+      const topProject = filterProjects.length && filterProjects?.reduce((high, curr) => {
         return curr?.totalPrize > high?.totalPrize ? curr : high
       })
 
-      topProject.remain = calculateRemainingDaysAndHours(new Date(), topProject?.deadline);
-      setTrendingBounty(topProject)
+      if(topProject) {
+        topProject.remain = calculateRemainingDaysAndHours(new Date(), topProject?.deadline);
+      }
+      setTrendingBounty(topProject || allProjects[0])
     }
   },[isLoadingAllProjects])
   
