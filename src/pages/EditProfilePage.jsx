@@ -332,7 +332,7 @@ const EditProfilePage = () => {
             if(dummyProjects?.length) {
                 handleUploadProject()
             }
-            if(copperxPAT) {
+            if(copperxPAT != userDetails?.copperxPatHidden) {
                 handleCopperXPatApi()
             }
         })
