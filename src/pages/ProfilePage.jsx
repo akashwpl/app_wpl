@@ -23,7 +23,6 @@ import twitterSVG from '../assets/icons/pixel-icons/twitter.svg'
 import mailSVG from '../assets/icons/pixel-icons/mail.svg'
 import shareProfilePNG from '../assets/images/share_pfp.png'
 import { displaySnackbar } from '../store/thunkMiddleware'
-import AccessTokenInput from '../components/profile/AccessTokenInput'
 
 const ProfilePage = () => {
 
