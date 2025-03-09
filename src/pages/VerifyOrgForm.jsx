@@ -189,12 +189,12 @@ const VerifyOrgForm = () => {
     <div className='pb-40'>
         {isBackBtn &&
             <div className='flex items-center gap-1 pl-20 border-b border-white12 py-2'>
-                <div 
+                {/* <div 
                     onClick={() => {dispatch(setIsVerifyOrgBack(true));navigate('/onboarding')}} 
                     className='flex items-center gap-1 text-white32 hover:text-white48 cursor-pointer'>
                     <ArrowLeft size={14}/>
                     <p className='font-inter text-[14px]'>Go back</p>
-                </div>
+                </div> */}
             </div>
         }
         <div className='flex justify-center items-center mt-4'>
@@ -233,7 +233,7 @@ const VerifyOrgForm = () => {
                     //     </div>
                     // </div>
                     <SelectProjectType />
-                :   <div className='max-w-[469px] w-full'>
+                :   <div className='max-w-[530px] w-full bg-white7 px-6 py-2 rounded-md'>
                         {/* <div className='bg-primaryYellow/10 p-2 py-3 rounded-md border border-dashed border-primaryYellow/10'>
                             <p className='text-primaryYellow/70 text-[14px] font-gridular leading-[16.8px]'>We need to manually verify your organisation before you could post your projects.</p>
                         </div> */}

@@ -63,11 +63,11 @@ const Tabs = ({ tabs, handleTabClick, selectedTab, submissionsCount }) => {
               />
             )}
             {tab.name}
-            {submissionsCount && tab.name === 'Submissions' && (
+            {/* {submissionsCount && tab.name === 'Submissions' && (
               <span className="text-primaryYellow ml-2">
                 ({submissionsCount})
               </span>
-            )}
+            )} */}
           </div>
         ))}
         {tabs?.length > 0 && (

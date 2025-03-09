@@ -33,7 +33,7 @@ import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png';
 import { displaySnackbar } from '../store/thunkMiddleware';
 import DropdownSearchList from '../components/form/DropdownSearchList';
 
-const   AddProjectPage = () => {
+const AddProjectPage = () => {
 
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
@@ -55,6 +55,8 @@ const   AddProjectPage = () => {
     const [errors, setErrors] = useState({}); // State for validation errors
 
     const [totalPrize, setTotalPrize] = useState(0);
+    const [numOfWinners, setnumOfWinners] = useState(1);
+    const [multiWinnerPrizePool, setMultiWinnerPrizePool] = useState([]);
 
     const [milestones, setMilestones] = useState([
         { title: '', description: '', prize: '1', currency: projCurrency, deliveryTime: '1', timeUnit: 'days', starts_in: new Date().getTime() }
@@ -227,6 +229,45 @@ const   AddProjectPage = () => {
         setOpenBudget(e);
     }
 
+    const handleMultipleWinners = (num) => {
+        // if(!num || num > 3) {
+            // errors.numOfWinners = 'Number of winners should be between 1 to 3';
+            // setErrors({...errors,numOfWinners: 'Number of winners should be between 1 to 3'})
+            // setnumOfWinners(0)
+            // return
+        // }
+        const newPrizePool = Array.from({length:num}).map((_,index) => {
+            return {
+                rank: index+1,
+                prize: 0
+            }
+        })
+        setnumOfWinners(num)
+        setMultiWinnerPrizePool(newPrizePool)
+    }
+
+    const handleMultiplePrizePool = (index,prize) => {
+        const newPrizePool = [...multiWinnerPrizePool];
+        // if(prize == '') prize = 0;
+        newPrizePool[index].prize = parseFloat(prize);
+        setMultiWinnerPrizePool(newPrizePool)
+        console.log('np',newPrizePool);
+    }
+
+    // const handleOpenNumWinnerChange = (e) => {
+    //     if (!e) {
+    //         setOpenMsError({...openMsError, noOfWinners:'Number of winners value is required'})
+    //     } else if(parseInt(e) < 1 && parseInt(e) > 5) {
+    //         setOpenMsError({...openMsError, noOfWinners:'Number of winners should be between 1 to 5'})
+    //     } else {
+    //         setOpenMsError({...openMsError, noOfWinners: ''})
+    //     }
+    //     const updatedMilestones = [...milestones];
+    //     updatedMilestones[0] = { ...updatedMilestones[0], ['noOfWinners']: e };
+    //     setMilestones(updatedMilestones);
+    //     setOpenBudget(e);
+    // }
+
     const handleAddMilestone = () => {
         setMilestones([...milestones, { title: '', description: '', prize: '1', currency: projCurrency, deliveryTime: '1', timeUnit: 'days' }]);
     };
@@ -254,6 +295,9 @@ const   AddProjectPage = () => {
         const lastMilestone = tmpMilestones?.length == 0 ? [] : tmpMilestones?.reduce((last, curr) => { 
             return new Date(parseInt(last.deadline)) < new Date(parseInt(curr.deadline)) ? curr : last;
         });
+
+        console.log('LD',new Date(lastMilestone?.deadline));
+        
         
         if (validateFields()) {
 
@@ -265,7 +309,7 @@ const   AddProjectPage = () => {
             const data = {
                 "project": {
                     "title": title,
-                    "organisationHandle": userOrg?.organisationHandle,
+                    // "organisationHandle": userOrg?.organisationHandle,
                     "organisationId": userOrg?._id,
                     "description": description,
                     "helpLink": helpLink,
@@ -275,7 +319,8 @@ const   AddProjectPage = () => {
                     "image" : imageUrl || userOrg?.img,
                     "isOpenBounty": isOpenBounty,
                     "currency": projCurrency,    // project currency strk or usdc
-                    "deadline": lastMilestone?.deadline
+                    "deadline": lastMilestone?.deadline,
+                    "totalPrize": 100
                 },
                 "milestones": updatedMilestones
             }
@@ -283,11 +328,28 @@ const   AddProjectPage = () => {
             let resp;
             if(isOpenBounty) {
                 // create open project
-                const newData = {...data};
-                newData.milestones = [
-                    {...newData.milestones[0], title: 'Open Bounty title', description: 'Open Bounty Description'}
-                ]
-                resp = await createOpenProject(newData);
+                // const newData = {...data};
+                // newData.milestones = [
+                //     {...newData.milestones[0], title: 'Open Bounty title', description: 'Open Bounty Description'}
+                // ]
+                let data = {
+                    title: title,
+                    // organisationHandle: userOrg?.organisationHandle,
+                    organisationId: userOrg?._id,
+                    description: description,
+                    helpLink: helpLink,
+                    status: "idle",
+                    about: aboutProject,
+                    roles: role,
+                    image: imageUrl || userOrg?.img,
+                    isOpenBounty: isOpenBounty,
+                    currency: projCurrency,    // project currency strk or usdc
+                    deadline: lastMilestone?.deadline,
+                    noOfWinners: parseFloat(numOfWinners),
+                    prizePool: multiWinnerPrizePool,
+                    totalPrize: totalPrize
+                }
+                resp = await createOpenProject(data);
             } else {
                 resp = await createProject(data);
                 console.log('Gated resp',resp);
@@ -612,6 +674,52 @@ const   AddProjectPage = () => {
                             </div>
                             {openMsError && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{openMsError.prize}</p>}
                         </div>
+
+                        {/* no. of winners */}
+                        <div className='mt-3'>
+                            <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Number of Winners</p>
+                            <div className='flex items-center gap-2 w-full'>
+                                {/* <div className='bg-[#091044] rounded-md py-3 w-[110px] flex justify-evenly items-center gap-1'>
+                                    <img src={ projCurrency === 'STRK' ? STRKimg : USDCimg} alt='usdc' className='size-[16px] rounded-sm'/>
+                                    <p className='text-white88 font-semibold font-inter text-[12px]'>{projCurrency}</p>
+                                </div> */}
+                                <div className='w-full'>
+                                    <div className='bg-white7 rounded-md px-3 py-2'>
+                                        <input 
+                                            type='number' 
+                                            placeholder='1 to 5' 
+                                            className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
+                                            value={numOfWinners} 
+                                            onChange={(e) => handleMultipleWinners(e.target.value)} 
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            {numOfWinners && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{errors.numOfWinners}</p>}
+                        </div>
+                        
+                        {numOfWinners && Array.from({length:numOfWinners}).map((_,index) => {
+                            return (
+                                <div className='mt-3'>
+                                    <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Winner {index+1}</p>
+                                    <div className='flex items-center gap-2 w-full'>
+                                        <div className='w-full'>
+                                            <div className='bg-white7 rounded-md px-3 py-2'>
+                                                <input 
+                                                    type='number' 
+                                                    placeholder='1200' 
+                                                    className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
+                                                    value={multiWinnerPrizePool[index]?.prize || 0} 
+                                                    onChange={(e) => {handleMultiplePrizePool(index,e.target.value)}} 
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* {openMsError && <p className='text-red-500 font-medium text-[12px] ml-[100px]'>{openMsError.prize}</p>} */}
+                                </div>
+                            )
+                        }) 
+                        }
                         </>
                         }
 

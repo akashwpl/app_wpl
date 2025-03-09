@@ -1,4 +1,4 @@
-import { createNotification, updOpenMilestoneSubmissions } from "../../service/api";
+import { createNotification } from "../../service/api";
 import CustomModal from "../ui/CustomModal"
 import FancyButton from "../ui/FancyButton";
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png'
@@ -12,27 +12,26 @@ const OpenMilestoneSubmissions = ({submission,index,submission_count, projectSta
   const { user_id } = useSelector((state) => state)
   const [showMilestoneSubmissionModal, setShowOpenMilestoneSubmissionModal] = useState(false);
 
-  const handleOpenMileStoneSponsorAction = async () => {
-    const data = {
-      status: "accepted"
-    }
+  // const handleOpenMileStoneSponsorAction = async () => {
+  //   const data = {
+  //     status: "accepted"
+  //   }
     
-    const res = await updOpenMilestoneSubmissions(submission?._id, data);    
+  //   const res = await updOpenMilestoneSubmissions(submission?._id, data);    
 
-    if(res?._id) {
-      const notiObj = {
-          msg: `${username} has accepted your milestone submission...`,
-          type: 'project_req',
-          fromId: user_id,
-          project_id: submission?.project_id,
-          user_id: submission?.user_id
-      }
-      const notiRes = await createNotification(notiObj)
-      setShowOpenMilestoneSubmissionModal(false);
-    }
-    refetchProjectDetails()
-  }
-
+  //   if(res?._id) {
+  //     const notiObj = {
+  //         msg: `${username} has accepted your milestone submission...`,
+  //         type: 'project_req',
+  //         fromId: user_id,
+  //         project_id: submission?.project_id,
+  //         user_id: submission?.user_id
+  //     }
+  //     const notiRes = await createNotification(notiObj)
+  //     setShowOpenMilestoneSubmissionModal(false);
+  //   }
+  //   refetchProjectDetails()
+  // }
 
   return (
     <>
@@ -63,7 +62,7 @@ const OpenMilestoneSubmissions = ({submission,index,submission_count, projectSta
                 </div>
             </div>
 
-            <div>
+            {/* <div>
               {
                 projectStatus != 'closed' &&
                 milestoneStatus != 'completed'
@@ -80,7 +79,7 @@ const OpenMilestoneSubmissions = ({submission,index,submission_count, projectSta
                 </div>
                 : ""
               }
-            </div>
+            </div> */}
         </div>
       </CustomModal>
     </>

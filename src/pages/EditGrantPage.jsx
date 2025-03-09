@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { useQuery } from '@tanstack/react-query';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import STRKimg from '../assets/images/strk.png';
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png';
 import btnImg from '../assets/svg/btn_subtract_semi.png';
@@ -21,7 +21,7 @@ import {
 import FancyButton from '../components/ui/FancyButton';
 import { ROLES, website_regex } from '../lib/constants';
 import { storage } from '../lib/firebase';
-import { createGrant, createNotification, getAdmins, getUserOrgs } from '../service/api';
+import { createNotification, editGrantById, getAdmins } from '../service/api';
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import Spinner from '../components/ui/spinner';
@@ -30,185 +30,171 @@ import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png';
 import { displaySnackbar } from '../store/thunkMiddleware';
 // import DropdownSearchList from '../components/form/DropdownSearchList';
 
-const AddGrantPage = () => {
+const EditGrantPage = () => {
 
-    const fileInputRef = useRef(null);
-    const navigate = useNavigate();
-    const dispatch = useDispatch()
-    const {user_id, user_role} = useSelector((state) => state)
+  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch()
+  const {user_id, user_role} = useSelector((state) => state)
+  const { id } = useParams();
 
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [aboutProject, setAboutProject] = useState('');
-    const [grantLink, setGrantLink] = useState('');
-    // const [role, setRole] = useState([]);
-    const [logo, setLogo] = useState(null);
-    const [logoPreview, setLogoPreview] = useState('');
-    const [projCurrency, setProjCurrency] = useState('USDC');
-    const [errors, setErrors] = useState({}); // State for validation errors
+  const {data: grantDetails, isLoading: isLoadingGrantDetails, refetch: refetchGrantDetails} = useQuery({
+    queryKey: ['grantDetails', id],
+    queryFn: () => getGrantById(id),
+    enabled: !!id
+  })
 
-    const [avgGrantSize, setAvgGrantSize] = useState(1);
-    const [prizeApproved, setPrizeApproved] = useState(1);
-    const [avgResponseTime, setAvgResponseTime] = useState(1);
-    const [responseTimeUnit, setResponseTimeUnit] = useState('hours');
+  const [title, setTitle] = useState(grantDetails?.title || '');
+  const [description, setDescription] = useState(grantDetails?.description || '');
+  const [aboutProject, setAboutProject] = useState(grantDetails?.about || '');
+  const [grantLink, setGrantLink] = useState(grantDetails?.grantLink || '');
+  const [orgHandle, setOrgHandle] = useState(grantDetails?.organisation?.organisationHandle || '')
+  // const [role, setRole] = useState(grantDetails?.roles || []);
+  const [logo, setLogo] = useState(grantDetails?.image);
+  const [logoPreview, setLogoPreview] = useState(grantDetails?.image || '');
+  const [projCurrency, setProjCurrency] = useState(grantDetails?.currency || 'USDC');
+  const [errors, setErrors] = useState({}); // State for validation errors
 
-    const [submitted, setSubmitted] = useState(false);
-    const [createdGrantId, setCreatedGrantId] = useState(null);
+  const [avgGrantSize, setAvgGrantSize] = useState(grantDetails?.avgGrantSize || 1);
+  const [prizeApproved, setPrizeApproved] = useState(grantDetails?.prizeApproved || 1);
+  const [avgResponseTime, setAvgResponseTime] = useState(grantDetails?.avgResponseTime || 1);
+  const [responseTimeUnit, setResponseTimeUnit] = useState(grantDetails?.responseTimeUnit || 'hours');
 
-    const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [createdGrantId, setCreatedGrantId] = useState(null);
 
-    const [imgUploadHover, setImgUploadHover] = useState(false)
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
 
-    const [userOrg, setUserOrg] = useState({})
+  const [imgUploadHover, setImgUploadHover] = useState(false)
 
-    const {data: userOrganisations, isLoading: isLoadingUserOrgs} = useQuery({
-      queryKey: ['userOrganisations', user_id],
-      queryFn: () => getUserOrgs(user_id),
-      enabled: !!user_id
-    })
+  const validateFields = () => {
+    const newErrors = {};
+    if (!title) newErrors.title = 'Grant title is required';
+    if (title.length > 50) newErrors.title = 'Title cannot exceed 50 characters.';
 
-    useEffect(() => {
-      if(!user_id) return
-      if(!isLoadingUserOrgs) {
-        if(userOrganisations?.length >= 0 && user_role == 'user') {
-          dispatch(displaySnackbar('Your Organisation is not yet approved by Admin. Please try again later.'))
-          navigate('/')
-        } else {
-          const approvedOrg = userOrganisations?.filter(org => org.status === 'approved');
-          setUserOrg(approvedOrg[0]);
-          setLogoPreview(approvedOrg[0]?.img)
-        }
+    if (!orgHandle) newErrors.organisationHandle = 'Organisation handle is required';
+    if (!description) newErrors.description = 'About oganisation is required';
+    if (description.length > 1000) newErrors.description = 'About oganisation field cannot exceed 1000 characters.';
+
+    if (!logoPreview) newErrors.logo = 'Logo is required';
+    // if (!role.length > 0) newErrors.role = 'Role/s is/are required';
+    if (!projCurrency) newErrors.projCurrency = 'Prize currency is required';
+
+    if (!avgGrantSize) {
+      newErrors.avgGrantSize = 'Field is required';
+    } else if(parseInt(avgGrantSize) < 1) {
+      newErrors.avgGrantSize = 'Value should be greater than 0'
+    }
+
+    if (!prizeApproved) {
+      newErrors.prizeApproved = 'Field is required';
+    } else if(parseInt(prizeApproved) < 1) {
+      newErrors.prizeApproved = 'Value should be greater than 0'
+    } else if(parseInt(prizeApproved) > parseInt(avgGrantSize)) {
+      newErrors.prizeApproved = 'Value should not be greater than Averge grant size field'
+    }
+
+    if (!avgResponseTime) {
+      newErrors.avgResponseTime = 'Field is required';
+    } else if(parseInt(avgResponseTime) < 1) {
+      newErrors.avgResponseTime = 'Value should be greater than 0'
+    }
+
+    if (!aboutProject) newErrors.aboutProject = 'Grant description is required';
+    if (aboutProject.length > 1000) newErrors.aboutProject = 'Grant description field cannot exceed 1000 characters.';
+
+
+    if (!grantLink) {
+      newErrors.grantLink = 'Grant form link is required';
+    } else if(!website_regex.test(grantLink)) {
+      newErrors.grantLink = 'Invalid Grant form link provided'
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Return true if no errors
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current.click();   
+  }
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLogo(file);
+      setLogoPreview(URL.createObjectURL(file));
+    }
+  };
+
+  // Firebase image upload code
+  const handleFirebaseImgUpload = async () => {
+      let imageUrl = '';
+      if(logo) {
+          const imageRef = ref(storage, `images/${logo.name}`);
+          await uploadBytes(imageRef, logo);
+          imageUrl = await getDownloadURL(imageRef);
       }
-    },[isLoadingUserOrgs])
+      return imageUrl;
+  }
 
-    const validateFields = () => {
-        const newErrors = {};
-        if (!title) newErrors.title = 'Grant title is required';
-        if (title.length > 50) newErrors.title = 'Title cannot exceed 50 characters.';
+  const handleSubmit = async () => {
+    if (validateFields()) {
 
-        if (!userOrg?.organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
-        if (!description) newErrors.description = 'About oganisation is required';
-        if (description.length > 1000) newErrors.description = 'About oganisation field cannot exceed 1000 characters.';
- 
-        if (!logoPreview) newErrors.logo = 'Logo is required';
-        // if (!role.length > 0) newErrors.role = 'Role/s is/are required';
-        if (!projCurrency) newErrors.projCurrency = 'Prize currency is required';
+      setIsCreatingProject(true);
 
-        if (!avgGrantSize) {
-          newErrors.avgGrantSize = 'Field is required';
-        } else if(parseInt(avgGrantSize) < 1) {
-          newErrors.avgGrantSize = 'Value should be greater than 0'
-        }
+      // Firebase image upload code
+      const imageUrl = await handleFirebaseImgUpload();
 
-        if (!prizeApproved) {
-          newErrors.prizeApproved = 'Field is required';
-        } else if(parseInt(prizeApproved) < 1) {
-          newErrors.prizeApproved = 'Value should be greater than 0'
-        } else if(parseInt(prizeApproved) > parseInt(avgGrantSize)) {
-          newErrors.prizeApproved = 'Value should not be greater than Averge grant size field'
-        }
-
-        if (!avgResponseTime) {
-          newErrors.avgResponseTime = 'Field is required';
-        } else if(parseInt(avgResponseTime) < 1) {
-          newErrors.avgResponseTime = 'Value should be greater than 0'
-        }
-
-        if (!aboutProject) newErrors.aboutProject = 'Grant description is required';
-        if (aboutProject.length > 1000) newErrors.aboutProject = 'Grant description field cannot exceed 1000 characters.';
-
-
-        if (!grantLink) {
-          newErrors.grantLink = 'Grant form link is required';
-        } else if(!website_regex.test(grantLink)) {
-          newErrors.grantLink = 'Invalid Grant form link provided'
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; // Return true if no errors
-    };
-
-    const handleUploadClick = () => {
-        fileInputRef.current.click();   
-    }
-
-    const handleLogoChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setLogo(file);
-            setLogoPreview(URL.createObjectURL(file));
-        }
-    };
-
-    // Firebase image upload code
-    const handleFirebaseImgUpload = async () => {
-        let imageUrl = '';
-        if(logo) {
-            const imageRef = ref(storage, `images/${logo.name}`);
-            await uploadBytes(imageRef, logo);
-            imageUrl = await getDownloadURL(imageRef);
-        }
-        return imageUrl;
-    }
-
-    const handleSubmit = async () => {
-      if (validateFields()) {
-
-        setIsCreatingProject(true);
-
-        // Firebase image upload code
-        const imageUrl = await handleFirebaseImgUpload();
-
-        const data = {
-          "title": title,
-          // "organisationHandle": userOrg?.organisationHandle,
-          "organisationId": userOrg?._id,
-          "description": description,
-          "about": aboutProject,
-          // "roles": role,
-          "image" : imageUrl || userOrg?.img,
-          "currency": projCurrency,    // project currency strk or usdc
-          "avgGrantSize": parseFloat(avgGrantSize),
-          "prizeApproved": parseFloat(prizeApproved),
-          "avgResponseTime": parseFloat(avgResponseTime),
-          "responseTimeUnit": responseTimeUnit,
-          'grantLink': grantLink
-        }
-
-        const resp = await createGrant(data);
-        console.log('grant Resp',resp);
-
-        if(resp?.grant._id) {
-          const notification = {
-            msg: `Grant: ${title} is posted on the platform`,
-            type: 'grant_req',
-            fromId: `${user_id}`,
-            project_id: resp?.grant._id
-          }
-
-          const adminList = await getAdmins();
-          adminList.data.map(async(admin) => {
-            const notiRes = await createNotification({...notification, user_id: admin._id});
-          });
-
-          setCreatedGrantId(resp?.grant?._id);
-          setIsCreatingProject(false);
-          setSubmitted(true);
-        } else {
-          dispatch(displaySnackbar('Something went wrong. Please try again later.'))
-          setIsCreatingProject(false);
-        }
+      const data = {
+        "title": title,
+        "organisationId": grantDetails?.organisationId,
+        "description": description,
+        "about": aboutProject,
+        // "roles": role,
+        "image" : imageUrl || grantDetails?.image,
+        "currency": projCurrency,    // project currency strk or usdc
+        "avgGrantSize": parseFloat(avgGrantSize),
+        "prizeApproved": parseFloat(prizeApproved),
+        "avgResponseTime": parseFloat(avgResponseTime),
+        "responseTimeUnit": responseTimeUnit,
+        'grantLink': grantLink
       }
-    };
 
-    const handleNavigateToGrantsDetails = () => {
-      navigate(`/grantdetails/${createdGrantId}`);
+      const resp = await editGrantById(id,data)
+      // const resp = await createGrant(data);
+      console.log('grant Resp',resp);
+
+      if(resp?._id) {
+        const notification = {
+          msg: `Grant: ${title} has been updated by Admin`,
+          type: 'grant_req',
+          fromId: `${user_id}`,
+          project_id: resp?._id
+        }
+
+        const adminList = await getAdmins();
+        adminList.data.map(async(admin) => {
+          const notiRes = await createNotification({...notification, user_id: admin._id});
+        });
+
+        setCreatedGrantId(resp?._id);
+        setIsCreatingProject(false);
+        setSubmitted(true);
+      } else {
+        dispatch(displaySnackbar('Something went wrong. Please try again later.'))
+        setIsCreatingProject(false);
+      }
     }
+  };
+
+  const handleNavigateToGrantsDetails = () => {
+    navigate(`/grantdetails/${createdGrantId}`);
+  }
 
   return (
     <div className='pb-40'>
         <div className='flex items-center gap-1 pl-20 py-2'>
-            <div onClick={() => navigate('/selectprojecttype')} className='cursor-pointer text-white32 hover:text-white64 flex items-center gap-1 w-fit'>
+            <div onClick={() => navigate(`/grantdetails/${id}`)} className='cursor-pointer text-white32 hover:text-white64 flex items-center gap-1 w-fit'>
                 <ArrowLeft size={14} className=''/>
                 <p className='font-inter text-[14px]'>Go back</p>
             </div>
@@ -282,7 +268,7 @@ const AddGrantPage = () => {
                                                 <input 
                                                     type='text' 
                                                     className='cursor-not-allowed bg-transparent text-white88 placeholder:text-white64 outline-none border-none w-full' 
-                                                    value={userOrg?.organisationHandle} 
+                                                    value={orgHandle} 
                                                     disabled
                                                 />
                                             </div>
@@ -446,7 +432,7 @@ const AddGrantPage = () => {
                             </div>
                             <div>
                                 <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
-                                <p className='text-white88 font-semibold text-[13px] font-inter underline'><a href={userOrg?.websiteLink} target='_blank' rel="noopener noreferrer" >@{userOrg?.organisationHandle}</a></p>
+                                <p className='text-white88 font-semibold text-[13px] font-inter underline'><a href={grantDetails?.organisation?.websiteLink} target='_blank' rel="noopener noreferrer" >@{grantDetails?.organisation?.organisationHandle}</a></p>
                             </div>
                         </div>
 
@@ -490,7 +476,7 @@ const AddGrantPage = () => {
                         className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
                         btn_txt={<span className='flex items-center justify-center gap-2'>
                           {isCreatingProject ? <div className='flex justify-center items-center -translate-y-1'><Spinner /></div> : <>
-                            <CheckCheck size={14}/><span>Create</span>
+                            <CheckCheck size={14}/><span>Confirm</span>
                           </>
                         }
                         </span>} 
@@ -503,4 +489,4 @@ const AddGrantPage = () => {
   )
 }
 
-export default AddGrantPage
+export default EditGrantPage

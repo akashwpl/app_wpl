@@ -249,7 +249,7 @@ const Navbar = () => {
                     style={{backgroundImage: `url(${menuBorderImgType[userDetail?.role]?.img})`, zIndex: 100}}
                   >
                     <Link
-                      to={`/profile/${userDetail?.socials?.discord}`}
+                      to={`/profile/${user_id}`}
                       className="hover:bg-white12 cursor-pointer h-8 flex justify-start items-center pl-5 rounded-sm gap-2"
                     >
                       <div className="flex items-center gap-2">
