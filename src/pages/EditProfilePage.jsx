@@ -1,9 +1,9 @@
-import { ArrowLeft, CheckCheck, Info, Pen, Plus, Search, Upload, X } from 'lucide-react'
+import { ArrowLeft, CheckCheck, EyeIcon, Info, Pen, Plus, Search, Upload, X } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import CustomModal from '../components/ui/CustomModal'
 import PoWCard from '../components/profile/PoWCard'
 import { useNavigate } from 'react-router-dom';
-import { getUserDetails } from '../service/api';
+import { getUserDetails, updateCopperXPatToken } from '../service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
 import { BASE_URL, SKILLS } from '../lib/constants';
@@ -259,6 +259,7 @@ const EditProfilePage = () => {
         setDiscord(userDetails?.socials?.discord)
         setTelegram(userDetails?.socials?.telegram)
         setUsername(userDetails?.username)
+        setCopperxPAT(userDetails?.copperxPatHidden)
     }, [userDetails])
 
     const handleSubmitEditProfile = async () => {
@@ -306,8 +307,7 @@ const EditProfilePage = () => {
                 "discord": document.querySelector('input[name="discordUsername"]').value,
                 "telegram": document.querySelector('input[name="telegramUsername"]').value,
             },
-            "username": username,
-            "accessToken" : document.querySelector('input[name="copperxPAT"]').value,
+            "username": username
         }
 
         if(pfp) {
@@ -332,6 +332,9 @@ const EditProfilePage = () => {
             if(dummyProjects?.length) {
                 handleUploadProject()
             }
+            if(copperxPAT) {
+                handleCopperXPatApi()
+            }
         })
         .finally(() => {
             setIsUpdating(false)
@@ -347,8 +350,18 @@ const EditProfilePage = () => {
         }));
     },[skills])
 
-    console.log('skills',skills);
-    
+    const handleCopperXPatApi = async () => {
+        const body = {
+            pat: copperxPAT
+        }
+        const res = await updateCopperXPatToken(body)
+        
+        if(res._id) {
+            setCopperxPAT(res)
+        } else {
+            dispatch(displaySnackbar('Something went wrong while updating CopperX PAT token'))
+        }
+    }
 
   return (
     <div className='flex flex-col justify-center items-center'>
@@ -431,11 +444,15 @@ const EditProfilePage = () => {
                     {/* For copperX accesstoken */}
                     <div className='flex flex-col gap-1 w-full'>
                         <label className='text-[13px] font-medium text-white32'>CopperX Access Token</label>
-                        <input name='copperxPAT' value={copperxPAT} type='password' onChange={(e) => setCopperxPAT(e.target.value)} className={`bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none ${errors.copperxPAT ? 'border border-cardRedText' : 'border-none'}`} 
+                        <input name='copperxPAT' value={copperxPAT} type='text' onChange={(e) => setCopperxPAT(e.target.value)} className={`bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none ${errors.copperxPAT ? 'border border-cardRedText' : 'border-none'}`} 
                             placeholder='super secret stuff here'
                         />
                         {errors.copperxPAT && <div className="mt-[2px] error text-[#FF7373] text-[13px] font-inter">{errors.copperxPAT}</div>}
                     </div>
+                    {/* <div className='flex items-center justify-between mt-2 bg-white4 rounded-md py-2 px-2'>
+                        <input type={isPass ? 'password' : 'text'} placeholder="New Password" value={password} onChange={(e) => setPassword(e.target.value)} className='bg-transparent text-[14px] leading-[19.88px] w-full outline-none border-none text-white88 placeholder:text-white32'/>
+                        {isPass ? <EyeIcon className='cursor-pointer mr-3' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> : <EyeOffIcon className='cursor-pointer mr-3' onClick={() => setIsPass(!isPass)} stroke='#FFFFFF52'/> }
+                    </div> */}
                 </div>
 
                 <div className='h-[1px] w-full bg-white7 my-6'/>
