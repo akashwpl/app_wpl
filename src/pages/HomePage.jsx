@@ -128,7 +128,7 @@ const HomePage = () => {
           <div className='border border-white12 border-dashed w-full my-2'></div>
         </>
         :
-        trendingBounty &&
+        trendingBounty?._id &&
           <Link to={`projectdetails/${trendingBounty?._id}`} className='flex flex-col justify-between w-full h-[220px] bg-cardBlueBg hover:bg-cardBlueBg/15 rounded-md cursor-pointer'>
             <div className='flex flex-row justify-between px-4 mt-3'>
                 <img width={40} src={trendingBounty?.image} alt="WPL PR details" />
