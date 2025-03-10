@@ -1,14 +1,16 @@
 import { useQuery } from "@tanstack/react-query"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import SyncPng from '../../assets/images/sync.png'
 import USDCPng from '../../assets/images/usdc.png'
-import { getUserDetails } from "../../service/api"
+import { getUserDetails, sendOpenProjectRewards } from "../../service/api"
 
 import { ArrowLeft } from "lucide-react"
 import YellowBtnPng from '../../assets/images/yellow_button.png'
+import { displaySnackbar } from "../../store/thunkMiddleware"
 
 const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributingRewards}) => {
   const { user_id } = useSelector((state) => state)
+  const dispatch = useDispatch();
 
   const {data: userDetails} = useQuery({
     queryKey: ["userDetails", user_id],
@@ -18,6 +20,16 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
 
   
   console.log('projectDetails', projectDetails)
+
+  const handleTransferReward = async () => {
+    const resp = await sendOpenProjectRewards(projectDetails?._id);
+
+    if(resp?.message === "payed" && resp?.data?.status === 'ok') {
+      dispatch(displaySnackbar("Payment Initiated"))
+    } else {
+      dispatch(displaySnackbar("Payment Failed"))
+    }
+  }
    
   return (
     <div className=''>
@@ -72,7 +84,7 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
                 <p className="col-span-1 text-white32 font-semibold text-[13px] font-inter">Rank</p>
                 <p className="col-span-1 text-white32 font-semibold text-[13px] font-inter">Name</p>
                 <p className="col-span-1 text-white32 font-semibold text-[13px] font-inter text-end">Project Link</p>
-                <p className="col-span-1 text-white32 font-semibold text-[13px] font-inter text-end">Reward</p>
+                <p  className="col-span-1 text-white32 font-semibold text-[13px] font-inter text-end">Reward</p>
               </div>
               <div>
                 {selectedWinner?.map((winner, index) => (
@@ -135,7 +147,7 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
               </div>
 
               <div className="flex justify-end w-full mt-5">
-                <div className="w-[160px] h-[40px] relative">
+                <div onClick={handleTransferReward} className="w-[160px] h-[40px] relative cursor-pointer">
                   <img src={YellowBtnPng} alt="" className="h-[40px] rounded-md cursor-pointer"/>
                   <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#2A3485] text-[14px] font-gridular">Reward</p>
                 </div>

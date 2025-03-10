@@ -1,7 +1,7 @@
 import { ArrowUpRight, CheckCheck, Info, TriangleAlert, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { calculateRemainingDaysAndHours, isValidLink } from '../../lib/constants';
-import { createNotification, getOpenMilestoneSubmissions, getOpenProjectSubmissions, submitMilestone, submitOpenMilestone, updateMilestone, updateProjectDetails } from '../../service/api';
+import { createNotification, getOpenMilestoneSubmissions, getOpenProjectSubmissions, sendProjectMilestoneReward, submitMilestone, submitOpenMilestone, updateMilestone, updateProjectDetails } from '../../service/api';
 
 import { useDispatch, useSelector } from 'react-redux';
 import btnHoverImg from '../../assets/svg/btn_hover_subtract.png';
@@ -150,6 +150,18 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
 
     const time_remain = calculateRemainingDaysAndHours(new Date(), milestoneData?.starts_in);
 
+    const handleMilestoneReward = async () => {
+        // console.log(milestoneData);
+        const resp = await sendProjectMilestoneReward(milestoneData._id);
+
+        if(resp?.message === "payed" && resp?.data?.status === 'ok') {
+            dispatch(displaySnackbar("Payment Initiated"))
+        } else {
+            dispatch(displaySnackbar("Payment Failed"))
+        }
+        
+    }
+
     return (
         <div className='flex flex-col gap-[14px]'>
             <div className='flex items-center justify-between'>
@@ -227,9 +239,10 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                             src_img={btnImg} 
                             img_size_classes='w-[342px] h-[44px]' 
                             className='font-gridular text-[14px] leading-[8.82px] text-primaryGreen mt-1.5'
-                            btn_txt={"Completed"}  
-                            alt_txt='milestone completed btn' 
-                            disabled={true}
+                            btn_txt={milestoneData?.paymentStatus === 'initiated' ? "Payment Initiated" : "Make Payment"}  
+                            alt_txt='milestone payment btn' 
+                            onClick={handleMilestoneReward}
+                            disabled={milestoneData?.paymentStatus === 'initiated'}
                         />
                     : 
                     (milestoneData?.status == 'idle' || milestoneData?.status == 'ongoing') && projectDetails?.user_id?._id == user_id && milestoneData?.user_status == 'idle' ?

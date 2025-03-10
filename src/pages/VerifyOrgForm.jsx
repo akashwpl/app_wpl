@@ -173,7 +173,7 @@ const VerifyOrgForm = () => {
             }
 
             const adminList = await getAdmins();
-            adminList.data.map(async(admin) => {
+            adminList?.data.map(async(admin) => {
                 const notiRes = await createNotification({...notification, user_id: admin._id});
             });
 
