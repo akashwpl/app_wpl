@@ -77,7 +77,7 @@ const ProjectDetailsPage = () => {
   const [selectedWinners, setSelectedWinners] = useState([])
   console.log('sw',selectedWinners);
   
-  const [canSelectWinners, setCanSelectWinners] = useState(!(projectDetails?.winners?.length == 0) || false)  
+  const [canSelectWinners, setCanSelectWinners] = useState(true)  
   const [showSelecteWinnersModal, setShowSelecteWinnersModal] = useState(false)
   const [isDistributingRewards, setIsDistributingRewards] = useState(false)
 
@@ -213,6 +213,9 @@ const ProjectDetailsPage = () => {
     }
 
     if(projectDetails?.isOpenBounty) {
+      const data = {
+        status: "closed"
+      }
       const res = await updateOpenProjectDetails(projectDetails._id, data);
     } else {
       const res = await updateProjectDetails(projectDetails._id, data);

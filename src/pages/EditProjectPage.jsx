@@ -482,7 +482,7 @@ const EditProjectPage = () => {
                                 <div className='bg-white7 rounded-md'>
                                     <DatePicker
                                         className='w-[28rem] bg-transparent text-white88 placeholder:text-white64 outline-none border-none cursor-pointer px-3 py-2' 
-                                        selected={milestones[0].starts_in || ''}
+                                        selected={projectDetails?.starts_in || ''}
                                         onChange={(date) => handleDateChange(0,date)}
                                         minDate={new Date()}
                                         dateFormat="dd/MM/yyyy"
@@ -502,7 +502,7 @@ const EditProjectPage = () => {
                                         <div className='bg-white7 rounded-md px-3 py-2'>
                                             <input 
                                                 type='number' 
-                                                value={milestones[0].prize} 
+                                                value={projectDetails?.totalPrize} 
                                                 name='prize'
                                                 onChange={(e) => setMilestonesHelper(0,e)} 
                                                 placeholder='1200' 
@@ -518,7 +518,7 @@ const EditProjectPage = () => {
                                     <div className='bg-[#091044] rounded-md p-2 w-[110px] flex justify-center items-center gap-1'>
                                         <select 
                                             className='bg-[#091044] text-white88 outline-none border-none w-full cursor-pointer'
-                                            value={milestones[0].timeUnit || 'Days'}
+                                            value={projectDetails?.timeUnit || 'Days'}
                                             name='timeUnit'
                                             onChange={(e) => setMilestonesHelper(0,e)}
                                         >
@@ -533,7 +533,7 @@ const EditProjectPage = () => {
                                                 type='number' 
                                                 placeholder='1200' 
                                                 className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
-                                                value={milestones[0].deliveryTime}
+                                                value={projectDetails?.deliveryTime}
                                                 name='deliveryTime'
                                                 onChange={(e) => setMilestonesHelper(0,e)}
                                             />

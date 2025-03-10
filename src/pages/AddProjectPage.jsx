@@ -296,8 +296,6 @@ const AddProjectPage = () => {
             return new Date(parseInt(last.deadline)) < new Date(parseInt(curr.deadline)) ? curr : last;
         });
 
-        console.log('LD',new Date(lastMilestone?.deadline));
-        
         
         if (validateFields()) {
 
@@ -347,7 +345,10 @@ const AddProjectPage = () => {
                     deadline: lastMilestone?.deadline,
                     noOfWinners: parseFloat(numOfWinners),
                     prizePool: multiWinnerPrizePool,
-                    totalPrize: totalPrize
+                    totalPrize: totalPrize,
+                    starts_in: openStartDate?.getTime(),
+                    deliveryTime: parseFloat(openDeliveryInput),
+                    timeUnit: openDeliveryDuration
                 }
                 resp = await createOpenProject(data);
             } else {
@@ -364,7 +365,7 @@ const AddProjectPage = () => {
                 }
     
                 const adminList = await getAdmins();
-                adminList.data.map(async(admin) => {
+                adminList?.data.map(async(admin) => {
                     const notiRes = await createNotification({...notification, user_id: admin._id});
                 });
 

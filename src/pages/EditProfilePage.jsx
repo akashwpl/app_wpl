@@ -357,7 +357,7 @@ const EditProfilePage = () => {
         const res = await updateCopperXPatToken(body)
 
         if(res?.pat) {
-            setCopperxPAT(res)
+            setCopperxPAT(res?.pat)
         } else {
             dispatch(displaySnackbar('Something went wrong while updating CopperX PAT token'))
         }
