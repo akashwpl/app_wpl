@@ -14,13 +14,11 @@ const FancyButton = ({
 
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleHover = () => setIsHovered(!isHovered);
-
   return (
     <button 
       className={`relative ${disabled && 'cursor-not-allowed'}`}
-      onMouseEnter={handleHover}
-      onMouseLeave={handleHover}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onClick={onClick}
       disabled={disabled}
     >

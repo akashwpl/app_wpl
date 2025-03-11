@@ -170,7 +170,7 @@ const EditProjectPage = () => {
     const validateFields = () => {
         const newErrors = {};
         if (title.length === 0) newErrors.title = `${isOpenBounty ? "Bounty" : "Project"} title is required`;
-        if (title.length > 50) newErrors.title = `${isOpenBounty ? "Bounty" : "Project"} title cannot exceed 50 characters.`;
+        if (title.length > 100) newErrors.title = `${isOpenBounty ? "Bounty" : "Project"} title cannot exceed 100 characters.`;
         
         if (description.length === 0) newErrors.description = 'About Organisation field is required';
         if (description.length > 1000) newErrors.description = 'About Organisation field cannot exceed 1000 characters.';

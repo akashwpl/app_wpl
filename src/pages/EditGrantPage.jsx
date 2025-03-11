@@ -70,7 +70,7 @@ const EditGrantPage = () => {
   const validateFields = () => {
     const newErrors = {};
     if (!title) newErrors.title = 'Grant title is required';
-    if (title.length > 50) newErrors.title = 'Title cannot exceed 50 characters.';
+    if (title.length > 100) newErrors.title = 'Title cannot exceed 100 characters.';
 
     if (!orgHandle) newErrors.organisationHandle = 'Organisation handle is required';
     if (!description) newErrors.description = 'About oganisation is required';
