@@ -162,7 +162,7 @@ const AddProjectPage = () => {
         if (!role.length > 0) newErrors.role = 'Role/s is/are required';
         if (!projCurrency) newErrors.projCurrency = 'Prize currency is required';
         if (isOpenBounty) {
-            if(openMsError.deliveryTime || openMsError.prize) newErrors.openError = 'Please fix open bounty fields'
+            if(openMsError.deliveryTime || openMsError.prize) newErrors.openError = 'Please fix bounty fields'
         } else if (milestones.length === 0) {
             newErrors.milestones = 'At least one milestone is required';
         } else if(validateMilestones()) {
@@ -470,7 +470,7 @@ const AddProjectPage = () => {
         {isSelectingTemplate ? <TemplatesPage isOpenBounty={isOpenBounty} handleTemplateProjectStates={handleTemplateProjectStates} setIsSelectingTemplate={setIsSelectingTemplate} /> :
         !submitted
             ?  <div className='flex justify-center items-center mt-4'>
-                    <div className='max-w-[530px] w-full bg-white7 px-6 py-2 rounded-md'>
+                    <div className='max-w-[830px] w-full bg-white7 px-6 py-2 rounded-md'>
                         
                         <Accordion type="single" defaultValue="item-1" collapsible>
                             <AccordionItem value={`item-${1}`} key={1} className="border-none">
@@ -899,7 +899,7 @@ const AddProjectPage = () => {
                                     ))}
                                 </div>
                                 
-                                <div className='mt-4'>
+                                <div className='mt-4 flex justify-center mb-4'>
                                     <FancyButton 
                                         src_img={btnImg} 
                                         hover_src_img={btnHoverImg} 

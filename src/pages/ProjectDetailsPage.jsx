@@ -385,7 +385,7 @@ const debouncedOnReorder = useCallback(
                       <div className='text-[12px] font-medium text-[#FCBF04] flex items-center gap-1 bg-[#FCBF041A] rounded-[4px] px-2 py-1 font-inter'>
                         <img src={zapSVG} alt='zap' className='size-[16px]'/>
                         {/* <Zap size={14} className='text-[#FCBF04]'/> */}
-                        <p className='capitalize'>{projectDetails?.isOpenBounty ? 'Open' : 'Gated'}</p>
+                        <p className='capitalize'>{projectDetails?.isOpenBounty ? 'Bounty' : 'Project'}</p>
                       </div>
                     </div>
                     <p className='text-[14px] text-white32 leading-5 underline'><a href={projectDetails?.organisation?.websiteLink} target='_blank' rel="noopener noreferrer" >@{projectDetails?.organisationHandle || orgHandle}</a></p>
