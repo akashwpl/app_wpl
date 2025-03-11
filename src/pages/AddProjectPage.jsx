@@ -22,7 +22,7 @@ import {
     AccordionTrigger,
 } from "../components/ui/accordion";
 import FancyButton from '../components/ui/FancyButton';
-import { BASE_URL, discord_server_link_regex, getTimestampFromNow, ROLES, telegram_channel_link_regex } from '../lib/constants';
+import { BASE_URL, BOUNTY_TEMPLATES, discord_server_link_regex, getTimestampFromNow, PROJECT_TEMPLATES, ROLES, telegram_channel_link_regex } from '../lib/constants';
 import { storage } from '../lib/firebase';
 import { createNotification, createOpenProject, createProject, getAdmins, getUserOrgs } from '../service/api';
 
@@ -32,6 +32,7 @@ import Spinner from '../components/ui/spinner';
 import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png';
 import { displaySnackbar } from '../store/thunkMiddleware';
 import DropdownSearchList from '../components/form/DropdownSearchList';
+import TemplatesPage from './TemplatesPage';
 
 const AddProjectPage = () => {
 
@@ -41,6 +42,7 @@ const AddProjectPage = () => {
     const {user_id, user_role} = useSelector((state) => state)
 
     const { gigtype } = useParams();
+    const [isSelectingTemplate, setIsSelectingTemplate] = useState(true);
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -145,7 +147,7 @@ const AddProjectPage = () => {
     const validateFields = () => {
         const newErrors = {};
         if (!title) newErrors.title = `${isOpenBounty ? "Bounty" : "Project"} title is required`;
-        if (title.length > 50) newErrors.title = `${isOpenBounty ? "Bounty" : "Project"} title cannot exceed 50 characters.`;
+        if (title.length > 100) newErrors.title = `${isOpenBounty ? "Bounty" : "Project"} title cannot exceed 100 characters.`;
 
         if (!userOrg?.organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
         if (!description) newErrors.description = 'About Organisation field is required';
@@ -325,11 +327,6 @@ const AddProjectPage = () => {
 
             let resp;
             if(isOpenBounty) {
-                // create open project
-                // const newData = {...data};
-                // newData.milestones = [
-                //     {...newData.milestones[0], title: 'Open Bounty title', description: 'Open Bounty Description'}
-                // ]
                 let data = {
                     title: title,
                     // organisationHandle: userOrg?.organisationHandle,
@@ -403,16 +400,75 @@ const AddProjectPage = () => {
         setTotalPrize(total)
     },[milestones])
 
+		const handleTemplateProjectStates = (template_id) => {
+			if(isOpenBounty) {
+				const bountyData = BOUNTY_TEMPLATES[template_id]
+				console.log('bd',bountyData);
+				
+				setTitle(bountyData.title)
+				setDescription(bountyData.about)
+				setAboutProject(bountyData?.description)
+				setRole(bountyData?.roles)
+
+				setIsSelectingTemplate(false);
+			} else {
+				const bountyData = PROJECT_TEMPLATES[template_id]
+				console.log('p bd',bountyData);
+				
+				setTitle(bountyData?.title)
+				setDescription(bountyData.about)
+				setAboutProject(bountyData?.description)
+				setRole(bountyData?.roles)
+
+				const proj_milestones = [];
+				bountyData?.milestones?.map((milestone) => {
+					proj_milestones.push(
+						{ 
+							title: milestone?.title,
+							description: milestone?.description,
+							prize: '1',
+							currency: 'USDC',
+							deliveryTime: '1',
+							timeUnit: 'days' 
+						}
+					)
+				})
+				setMilestones(proj_milestones)
+				
+				setIsSelectingTemplate(false);
+			}
+		}
+
+	const handleGoBackBtn = () => {
+		if(isSelectingTemplate) {
+			navigate('/selectprojecttype');
+		} else {
+			setTitle('');
+			setDescription('');
+			setAboutProject('');
+			setRole('');
+			setMilestones([{ title: '', description: '', prize: '1', currency: projCurrency, deliveryTime: '1', timeUnit: 'days' }])
+			setErrors([]);
+			setMsErrors([])
+
+			setIsSelectingTemplate(true)
+		}
+	}
+
   return (
     <div className='pb-40'>
         <div className='flex items-center gap-1 pl-20 py-2'>
-            <div onClick={() => navigate('/selectprojecttype')} className='cursor-pointer text-white32 hover:text-white64 flex items-center gap-1 w-fit'>
+            <div 
+							onClick={handleGoBackBtn} 
+							className='cursor-pointer text-white32 hover:text-white64 flex items-center gap-1 w-fit'
+						>
                 <ArrowLeft size={14} className=''/>
                 <p className='font-inter text-[14px]'>Go back</p>
             </div>
         </div>
 
-        {!submitted
+        {isSelectingTemplate ? <TemplatesPage isOpenBounty={isOpenBounty} handleTemplateProjectStates={handleTemplateProjectStates} setIsSelectingTemplate={setIsSelectingTemplate} /> :
+        !submitted
             ?  <div className='flex justify-center items-center mt-4'>
                     <div className='max-w-[530px] w-full bg-white7 px-6 py-2 rounded-md'>
                         
@@ -539,7 +595,7 @@ const AddProjectPage = () => {
                                                 </select>
                                             </div> */}
 
-                                            <DropdownSearchList dropdownList={ROLES} setterFunction={setRole} />
+                                            <DropdownSearchList dropdownList={ROLES} setterFunction={setRole} prefilledTiles={role}/>
                                             
                                             </div>
                                             {errors.role && <p className='text-red-500 font-medium text-[12px]'>{errors.role}</p>} {/* Error message */}
@@ -897,7 +953,8 @@ const AddProjectPage = () => {
                     </div>
                 </div>
         }
-
+				
+				{!isSelectingTemplate && 
             <div className='bg-[#091044] px-20 py-4 fixed bottom-0 left-0 w-full flex justify-between items-center z-20'>
                     
                     <div className='flex items-center gap-2'>
@@ -926,6 +983,7 @@ const AddProjectPage = () => {
                         />
                     </div>
             </div>
+				}
     </div>
   )
 }
