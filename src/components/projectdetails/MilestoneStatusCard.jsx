@@ -20,7 +20,7 @@ import warningSVG from '../../assets/icons/pixel-icons/warning.svg';
 import clockSVG from '../../assets/icons/pixel-icons/watch.svg';
 import { useQuery } from '@tanstack/react-query';
 
-const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProjectDetails, username }) => {
+const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchProjectDetails, username, userDetails }) => {
 
     const {user_id, user_role} = useSelector(state => state)
     const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -29,6 +29,11 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
 
     const [linkError, setLinkError] = useState(null);
     const [descriptionError, setDescriptionError] = useState(null);
+
+    const [otpInput, setOtpInput] = useState('');
+    const [userEmail, setUserEmail] = useState(userDetails?.email || '')
+    const [otpSid, setOtpSid] = useState(null);
+    const [showOtpModal, setShowOtpModal] = useState(false);
 
     // const [link, setLink] = useState('');
     // const [desc, setDesc] = useState('');
@@ -150,16 +155,53 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
 
     const time_remain = calculateRemainingDaysAndHours(new Date(), milestoneData?.starts_in);
 
+    const handleGetCopperXOtp = async () => {
+        const otpUrl = 'https://income-api.copperx.io/api/auth/email-otp/request';
+        const userEmail = userDetails?._id === projectDetails?.owner_id ? userDetails?.email : "";
+        const otpBody = {
+            email: userEmail
+        }
+        const otpRes = await fetch(otpUrl,{
+            method: 'POST',
+            body: JSON.stringify(otpBody),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }).then((res) => res.json())
+    
+        if(otpRes?.sid) {
+            setUserEmail(userEmail);
+            setOtpSid(otpRes?.sid);
+            dispatch(displaySnackbar("Please enter CopperX OTP"))
+            setShowOtpModal(true);
+        } else {
+            dispatch(displaySnackbar("Something went wrong!!"))
+        }
+    }
+
     const handleMilestoneReward = async () => {
-        // console.log(milestoneData);
-        const resp = await sendProjectMilestoneReward(milestoneData._id);
+        const data = {
+            email: userEmail,
+            otp: otpInput,
+            sid: otpSid
+        }
+        const resp = await sendProjectMilestoneReward(milestoneData._id, data);
+        console.log('otp res',resp);
+        
 
         if(resp?.message === "payed" && resp?.data?.status === 'ok') {
             dispatch(displaySnackbar("Payment Initiated"))
+            setShowOtpModal(false);
+        } else if (resp?.message === 'OTP verification failed') {
+            dispatch(displaySnackbar("Invalid OTP. Please enter correct OTP"))
         } else {
             dispatch(displaySnackbar("Payment Failed"))
         }
-        
+    }
+
+    const handleCloseOtpModal = () => {
+        setShowOtpModal(false);
+        setOtpInput('');
     }
 
     return (
@@ -234,14 +276,14 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                             alt_txt='user submitted milestone btn' 
                         />
                     :
-                    milestoneData?.status == 'completed' ?
+                    milestoneData?.status == 'completed' && projectDetails?.owner_id == user_id ?
                         <FancyButton 
                             src_img={btnImg} 
                             img_size_classes='w-[342px] h-[44px]' 
                             className='font-gridular text-[14px] leading-[8.82px] text-primaryGreen mt-1.5'
                             btn_txt={milestoneData?.paymentStatus === 'initiated' ? "Payment Initiated" : "Make Payment"}  
                             alt_txt='milestone payment btn' 
-                            onClick={handleMilestoneReward}
+                            onClick={handleGetCopperXOtp}
                             disabled={milestoneData?.paymentStatus === 'initiated'}
                         />
                     : 
@@ -427,6 +469,38 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                         </div>
                         : ""
                         }
+                    </div>
+                </div>
+            </CustomModal>
+
+            <CustomModal isOpen={showOtpModal} closeModal={handleCloseOtpModal}>
+                <div className='bg-primaryDarkUI border border-white4 rounded-md w-[500px] p-3'>
+                    <div className='flex justify-end'><X size={20} onClick={handleCloseOtpModal}  className='text-white88 hover:text-white64 cursor-pointer'/></div>
+                    <div>
+                        <p className='text-primaryYellow font-semibold font-gridular'>Enter CopperX OTP</p>
+                        <div className='h-[1px] bg-primaryYellow w-full mt-2 mb-5'/>
+                        <div className='flex flex-col mt-4 mb-4'>
+                            <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1' htmlFor='otp'>OTP</label>
+                            <input 
+                                type="text" 
+                                value={otpInput} 
+                                onChange={(e) => setOtpInput(e.target.value)} 
+                                name="otp" 
+                                id="otp"
+                                placeholder='112233'
+                                className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' 
+                            />
+                        </div>
+                        <FancyButton 
+                            src_img={btnImg} 
+                            hover_src_img={btnHoverImg} 
+                            img_size_classes='w-[500px] h-[44px]' 
+                            className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                            btn_txt='submit'  
+                            alt_txt='payment btn' 
+                            onClick={handleMilestoneReward}
+                        />
+                        
                     </div>
                 </div>
             </CustomModal>

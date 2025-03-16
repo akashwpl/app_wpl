@@ -262,6 +262,10 @@ const ProjectDetailsPage = () => {
     return projectDetails?.milestones?.every(milestone => milestone.status == 'completed')
   }, [projectDetails])
 
+  const allMilestonesPaymentCompleted = useMemo(() => {
+    return projectDetails?.milestones?.every(milestone => milestone.paymentStatus != 'pending' && milestone.paymentStatus != 'failed')
+  }, [projectDetails])
+
   const handleAcceptRejectRequest = async (id, userId, title, bountyType, status) => {
     const dataObj = { isApproved: status }
     let res;
@@ -551,7 +555,7 @@ const debouncedOnReorder = useCallback(
                               </div>
                             </AccordionTrigger>
                             <AccordionContent className="py-2 border-t border-dashed border-white12">
-                              <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails} username={username} />
+                              <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails} username={username} userDetails={userDetails} />
                             </AccordionContent>
                           </AccordionItem>
                         ))}
@@ -594,7 +598,7 @@ const debouncedOnReorder = useCallback(
                   :
 
                   // bounty completed view for all user types
-                  projectDetails?.status == 'completed' || (projectDetails?.isOpenBounty && projectDetails?.status == 'completed') ?
+                  projectDetails?.status == 'completed' && allMilestonesCompleted && allMilestonesPaymentCompleted || (projectDetails?.isOpenBounty && projectDetails?.status == 'completed') ?
                     <div className='text-primaryGreen flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been Completed</div>
                   :
 

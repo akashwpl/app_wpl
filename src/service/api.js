@@ -434,11 +434,11 @@ export const sendOpenProjectRewards = async (project_id) => {
     }
 }
 
-export const sendProjectMilestoneReward = async (milestone_id) => {
+export const sendProjectMilestoneReward = async (milestone_id, data) => {
     try {
-        const response = await axiosInstance.post(`/projects/project/pay/milestone/${milestone_id}`);
+        const response = await axiosInstance.post(`/projects/project/pay/milestone/${milestone_id}`, data);
         return response.data
     } catch (error) {
-        handleForbiddenError(error)
+        return handleForbiddenError(error)
     }
 }
