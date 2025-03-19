@@ -187,12 +187,11 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
         }
         const resp = await sendProjectMilestoneReward(milestoneData._id, data);
         console.log('otp res',resp);
-        
 
         if(resp?.message === "payed" && resp?.data?.status === 'ok') {
             dispatch(displaySnackbar("Payment Initiated"))
             setShowOtpModal(false);
-        } else if (resp?.message === 'OTP verification failed') {
+        } else if (resp?.err == 'OTP verification failed') {
             dispatch(displaySnackbar("Invalid OTP. Please enter correct OTP"))
         } else {
             dispatch(displaySnackbar("Payment Failed"))
