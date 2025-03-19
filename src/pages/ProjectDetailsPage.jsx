@@ -45,6 +45,7 @@ import GreenButtonPng from '../assets/svg/green_btn_subtract.png'
 import GreenButtonHoverPng from '../assets/svg/green_btn_hover_subtract.png'
 import DistributeRewardsPage from '../components/projectdetails/DistributeRewardsPage'
 import OpenMilestoneStatusCard from '../components/projectdetails/OpenMilestoneStatusCard'
+import WinnersTable from '../components/projectdetails/WinnersTable'
 
 
 const initialTabs = [
@@ -262,6 +263,10 @@ const ProjectDetailsPage = () => {
     return projectDetails?.milestones?.every(milestone => milestone.status == 'completed')
   }, [projectDetails])
 
+  const allMilestonesPaymentCompleted = useMemo(() => {
+    return projectDetails?.milestones?.every(milestone => milestone.paymentStatus != 'pending' && milestone.paymentStatus != 'failed')
+  }, [projectDetails])
+
   const handleAcceptRejectRequest = async (id, userId, title, bountyType, status) => {
     const dataObj = { isApproved: status }
     let res;
@@ -393,6 +398,13 @@ const debouncedOnReorder = useCallback(
                       <p className='text-white88'>{projectDetails?.isOpenBounty ? openProjectSubmissions?.length : totalSubmissions} <span className='text-white32'>Submissions</span></p>
                     </div>
                   </div>
+
+                  {projectDetails?.status === 'completed' && projectDetails?.winners?.length == projectDetails?.noOfWinners && 
+                    <>
+                      <p className='font-gridular text-[16px] text-primaryYellow mt-4'>Bounty Winner/s</p>
+                      <WinnersTable projectDetails={projectDetails} />
+                    </> 
+                  }
 
                   {isLoadingProjectDetails ? <div>Loading...</div> : <div className='w-full'>
                     <div className='mt-4 mb-4 border border-white7 rounded-md flex justify-between items-center'>
@@ -551,7 +563,7 @@ const debouncedOnReorder = useCallback(
                               </div>
                             </AccordionTrigger>
                             <AccordionContent className="py-2 border-t border-dashed border-white12">
-                              <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails} username={username} />
+                              <MilestoneStatusCard data={milestone} projectDetails={projectDetails} refetchProjectDetails={refetchProjectDetails} username={username} userDetails={userDetails} />
                             </AccordionContent>
                           </AccordionItem>
                         ))}
@@ -594,7 +606,7 @@ const debouncedOnReorder = useCallback(
                   :
 
                   // bounty completed view for all user types
-                  projectDetails?.status == 'completed' || (projectDetails?.isOpenBounty && projectDetails?.status == 'completed') ?
+                  projectDetails?.status == 'completed' && allMilestonesCompleted && allMilestonesPaymentCompleted || (projectDetails?.isOpenBounty && projectDetails?.status == 'completed') ?
                     <div className='text-primaryGreen flex justify-center items-center gap-1 mt-4'><TriangleAlert size={20}/> Project has been Completed</div>
                   :
 

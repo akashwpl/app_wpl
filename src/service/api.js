@@ -24,6 +24,8 @@ const handleForbiddenError = async (error) => {
         console.error('error', error);
         return { err: error?.response?.data?.message }
     }
+    console.error('error', error);
+    return { err: error?.response?.data?.message }
 };
 
 export const getProjectDetails = async (id) => {
@@ -425,20 +427,29 @@ export const updateCopperXPatToken = async (body) => {
     }
 }
 
-export const sendOpenProjectRewards = async (project_id) => {
+export const sendOpenProjectRewards = async (project_id, data) => {
     try {
-        const response = await axiosInstance.post(`/openProjects/project/pay/${project_id}`);
+        const response = await axiosInstance.post(`/openProjects/project/pay/${project_id}`,data);
         return response.data
     } catch (error) {
-        handleForbiddenError(error)
+        return handleForbiddenError(error)
     }
 }
 
-export const sendProjectMilestoneReward = async (milestone_id) => {
+export const sendProjectMilestoneReward = async (milestone_id, data) => {
     try {
-        const response = await axiosInstance.post(`/projects/project/pay/milestone/${milestone_id}`);
+        const response = await axiosInstance.post(`/projects/project/pay/milestone/${milestone_id}`, data);
         return response.data
     } catch (error) {
-        handleForbiddenError(error)
+        return handleForbiddenError(error)
+    }
+}
+
+export const getUserAcctBalance = async () => {
+    try {
+        const response = await axiosInstance.get(`/users/wallet/balances`);
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
     }
 }
