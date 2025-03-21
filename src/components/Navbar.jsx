@@ -18,6 +18,7 @@ import profileSVG from '../assets/icons/pixel-icons/profile-yellow.svg'
 import listSVG from '../assets/icons/pixel-icons/search-list-yellow.svg'
 import tickSVG from '../assets/icons/pixel-icons/tick-outline-yellow.svg'
 import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
+import supportSVG from '../assets/icons/support.svg'
 
 import userMenuBorderSVG from '../assets/svg/Button2.svg'
 import sponsorMenuBorderSVG from '../assets/svg/Button.svg'
@@ -31,16 +32,16 @@ const menuBorderImgType = {
     img: userMenuBorderSVG,
   },
   'sponsor': {
-    height: 'h-[141px]',
-    img: userMenuBorderSVG,
-    // height: 'h-[180px]',
-    // img: sponsorMenuBorderSVG
-  }, 
-  'admin': {
-    // height: 'h-[215px]',
-    // img: adminMenuBorderSVG
+    // height: 'h-[141px]',
+    // img: userMenuBorderSVG,
     height: 'h-[180px]',
     img: sponsorMenuBorderSVG
+  }, 
+  'admin': {
+    height: 'h-[215px]',
+    img: adminMenuBorderSVG
+    // height: 'h-[180px]',
+    // img: sponsorMenuBorderSVG
   } 
 }
 
@@ -301,6 +302,17 @@ const Navbar = () => {
                         <p>Rewards</p>
                       </div>
                     </Link>
+                    {userDetail?.role !== 'user' && 
+                    <Link
+                      to="/payment"
+                      className="hover:bg-white12 cursor-pointer h-9 flex justify-start items-center pl-5 gap-2"
+                    >
+                      <div className="flex items-center gap-2">
+                        <img src={supportSVG} alt="payment" className='size-[20px]' />
+                        <p>Payment</p>
+                      </div>
+                    </Link>
+                    }
                     {/* {userDetail?.role === 'user' && (
                       <>
                         <Link
