@@ -52,6 +52,7 @@ const HomePage = () => {
   })
 
   useEffect(() => {
+    if(!allProjects?.length) return
     if(!isLoadingAllProjects && token && user_role == 'user') {
       const filterProjects = allProjects?.filter((proj) => {
         return proj?.isOpenBounty && proj?.approvalStatus == 'approved'
@@ -66,7 +67,7 @@ const HomePage = () => {
       }
       setTrendingBounty(topProject || allProjects[0])
     }
-  },[isLoadingAllProjects])
+  },[isLoadingAllProjects, allProjects])
   
   if(user_role == 'admin') {
     return <AdminDashboard />

@@ -45,7 +45,8 @@ const ExploreGigs = ({orgProjects, userId}) => {
 
   const { data: allProjects, isLoading: isLoadingAllProjects, refetch: refetchAllProjectDetails } = useQuery({
     queryKey: ["allProjects"],
-    queryFn: getAllProjects
+    queryFn: getAllProjects,
+    enabled: !!user_id
   })
 
   const { data: userDetails, isLoading: isLoadingUserDetails } = useQuery({
