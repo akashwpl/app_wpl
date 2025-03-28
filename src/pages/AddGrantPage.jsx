@@ -84,7 +84,7 @@ const AddGrantPage = () => {
     const validateFields = () => {
         const newErrors = {};
         if (!title) newErrors.title = 'Grant title is required';
-        if (title.length > 50) newErrors.title = 'Title cannot exceed 50 characters.';
+        if (title.length > 100) newErrors.title = 'Title cannot exceed 100 characters.';
 
         if (!userOrg?.organisationHandle) newErrors.organisationHandle = 'Organisation handle is required';
         if (!description) newErrors.description = 'About oganisation is required';
@@ -187,7 +187,7 @@ const AddGrantPage = () => {
           }
 
           const adminList = await getAdmins();
-          adminList.data.map(async(admin) => {
+          adminList?.data.map(async(admin) => {
             const notiRes = await createNotification({...notification, user_id: admin._id});
           });
 
@@ -216,7 +216,7 @@ const AddGrantPage = () => {
 
         {!submitted
             ?  <div className='flex justify-center items-center mt-4'>
-                    <div className='max-w-[530px] w-full bg-white7 rounded-md px-6 py-2'>
+                    <div className='max-w-[830px] w-full bg-white7 rounded-md px-6 py-2'>
                         
                         <Accordion type="single" defaultValue="item-1" collapsible>
                             <AccordionItem value={`item-${1}`} key={1} className="border-none">
@@ -421,7 +421,7 @@ const AddGrantPage = () => {
                                 {errors?.aboutProject && <p className='text-red-500 font-medium text-[12px]'>{errors?.aboutProject}</p>}
                               </div>
 
-                              <div className='mt-3'>
+                              <div className='mt-3 mb-2'>
                                 <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Grant form link <span className='text-[#F03D3D]'>*</span></p>
                                 <div className='bg-white7 rounded-md px-3 py-2'>
                                   <input 

@@ -332,7 +332,7 @@ const EditProfilePage = () => {
             if(dummyProjects?.length) {
                 handleUploadProject()
             }
-            if(copperxPAT) {
+            if(copperxPAT != userDetails?.copperxPatHidden) {
                 handleCopperXPatApi()
             }
         })
@@ -355,9 +355,9 @@ const EditProfilePage = () => {
             pat: copperxPAT
         }
         const res = await updateCopperXPatToken(body)
-        
-        if(res._id) {
-            setCopperxPAT(res)
+
+        if(res?.pat) {
+            setCopperxPAT(res?.pat)
         } else {
             dispatch(displaySnackbar('Something went wrong while updating CopperX PAT token'))
         }

@@ -46,7 +46,7 @@ const ExploreGigsCard = ({data}) => {
                             <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Due: <span className='text-white64 ml-1'>{remain.days < 0 ? <span className=''>--</span> : `${remain.days} D ${remain.hours} H`}</span></p>
                             <Dot size={16} />
                             <img src={zapSVG} alt='zap' className='size-[16px]'/>
-                            <p className='font-inter font-medium text-cardYellowText text-[12px] leading-[14.4px] capitalize'>{data?.isOpenBounty ? 'Open' : 'Gated'}</p>
+                            <p className='font-inter font-medium text-cardYellowText text-[12px] leading-[14.4px] capitalize'>{data?.isOpenBounty ? 'Bounty' : 'Project'}</p>
                             <Dot size={16} />
                         </div>
                         <div className={`flex w-full items-center gap-1 mt-2 flex-wrap`}>

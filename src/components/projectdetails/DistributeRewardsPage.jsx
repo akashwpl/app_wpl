@@ -1,14 +1,24 @@
 import { useQuery } from "@tanstack/react-query"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import SyncPng from '../../assets/images/sync.png'
 import USDCPng from '../../assets/images/usdc.png'
-import { getUserDetails } from "../../service/api"
+import STRKPng from '../../assets/images/strk.png'
+import { getUserAcctBalance, getUserDetails, sendOpenProjectRewards } from "../../service/api"
 
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, X } from "lucide-react"
 import YellowBtnPng from '../../assets/images/yellow_button.png'
+import { displaySnackbar } from "../../store/thunkMiddleware"
+import { useEffect, useState } from "react"
+import FancyButton from "../ui/FancyButton"
+import btnHoverImg from '../../assets/svg/btn_hover_subtract.png';
+import btnImg from '../../assets/svg/btn_subtract_semi.png';
+import CustomModal from "../ui/CustomModal"
+import wpllogo from '../../assets/svg/wolf_logo.svg'
+import { useNavigate } from "react-router-dom"
 
 const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributingRewards}) => {
   const { user_id } = useSelector((state) => state)
+  const navigate = useNavigate()
 
   const {data: userDetails} = useQuery({
     queryKey: ["userDetails", user_id],
@@ -16,9 +26,82 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
     enabled: !!user_id,
   })
 
-  
-  console.log('projectDetails', projectDetails)
-   
+  const [acctBalance, setAcctBalance] = useState({});
+  const [finalBalance, setFinalBalance] = useState(0)
+
+  const [otpInput, setOtpInput] = useState('');
+  const [userEmail, setUserEmail] = useState(userDetails?.email || '')
+  const [otpSid, setOtpSid] = useState(null);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const {data: userAcctBalance, isLoading: isLoadingUserAcctBalance, refetch: refetchUserAcctBalance} = useQuery({
+    queryKey: ["userAcctBalance", user_id],
+    queryFn: () => getUserAcctBalance(),
+    enabled: !!user_id,
+  })
+
+  useEffect(() => {
+    if(!isLoadingUserAcctBalance) {
+      const starkWalletData = userAcctBalance?.filter((wallet) => wallet?.network === '23434')[0]?.balances?.filter((type) => type?.symbol === projectDetails?.currency?.toUpperCase())
+      setAcctBalance(starkWalletData[0]);
+      const balance = parseFloat(starkWalletData[0]?.balance) - parseFloat(projectDetails?.totalPrize);
+      setFinalBalance(balance); 
+    }
+  }, [isLoadingUserAcctBalance,acctBalance,finalBalance])
+
+  const handleGetCopperXOtp = async () => {
+    if(projectDetails?.paymentStatus != 'ready' && projectDetails?.paymentStatus) return
+    const otpUrl = 'https://income-api.copperx.io/api/auth/email-otp/request';
+    const userEmail = userDetails?._id === projectDetails?.owner_id ? userDetails?.email : "";
+    const otpBody = {
+      email: userEmail
+    }
+    const otpRes = await fetch(otpUrl,{
+      method: 'POST',
+      body: JSON.stringify(otpBody),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((res) => res.json())
+
+    if(otpRes?.sid) {
+      setUserEmail(userEmail);
+      setOtpSid(otpRes?.sid);
+      dispatch(displaySnackbar("Please enter CopperX OTP"))
+      setShowOtpModal(true);
+    } else {
+      dispatch(displaySnackbar("Something went wrong!!"))
+    }
+  }
+
+  const handleTransferReward = async () => {
+    const data = {
+      email: userEmail,
+      otp: otpInput,
+      sid: otpSid
+    }
+
+    const resp = await sendOpenProjectRewards(projectDetails?._id,data);
+    console.log('otp res',resp);
+
+    if(resp?.message === "payed" && resp?.data?.status === 'ok') {
+      dispatch(displaySnackbar("Payment Initiated"))
+      refetchUserAcctBalance();
+      setShowOtpModal(false);
+    } else if (resp?.err === 'OTP verification failed') {
+        dispatch(displaySnackbar("Invalid OTP. Please enter correct OTP"))
+    } else {
+        dispatch(displaySnackbar("Payment Failed"))
+    }
+  }
+
+  const handleCloseOtpModal = () => {
+    setShowOtpModal(false);
+    setOtpInput('');
+  }
+
   return (
     <div className=''>
       <div className='flex items-center gap-1 pl-20 py-2'>
@@ -70,25 +153,25 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
             <div className="bg-[#091044] rounded-xl w-full h-fit">
               <div className="grid grid-cols-4 w-full px-4 border-b border-white7 py-3">
                 <p className="col-span-1 text-white32 font-semibold text-[13px] font-inter">Rank</p>
-                <p className="col-span-1 text-white32 font-semibold text-[13px] font-inter">Name</p>
-                <p className="col-span-1 text-white32 font-semibold text-[13px] font-inter text-end">Project Link</p>
-                <p className="col-span-1 text-white32 font-semibold text-[13px] font-inter text-end">Reward</p>
+                <p className="col-span-2 text-white32 font-semibold text-[13px] font-inter">Name</p>
+                {/* <p className="col-span-2 text-white32 font-semibold text-[13px] font-inter text-end">Project Link</p> */}
+                <p  className="col-span-1 text-white32 font-semibold text-[13px] font-inter text-end">Reward</p>
               </div>
               <div>
                 {selectedWinner?.map((winner, index) => (
-                  <div key={index} className="grid grid-cols-4 w-full px-4 py-3">
+                  <div key={index} className="grid grid-cols-4 w-full px-4 py-3 hover:bg-white12 cursor-pointer" onClick={() => navigate(`/profile/${winner.user}`)}>
                     <p className="col-span-1 text-[14px] text-white88 font-inter">{index + 1}</p>
-                    <div className="col-span-1 text-[14px] text-white88 font-inter flex items-center gap-1">
-                      <img src={winner?.user?.pfp} alt="user" className="size-[24px] rounded-md"/>
-                      {winner?.user?.displayName}
+                    <div className="col-span-2 text-[14px] text-white88 font-inter flex items-center gap-1">
+                      <img src={winner?.user?.pfp || wpllogo} alt="user" className="size-[24px] rounded-md"/>
+                      {winner?.user}
                     </div>
-                    <p className="col-span-1 text-[14px] text-white88 font-inter flex justify-end truncate">
+                    {/* <p className="col-span-2 text-[14px] text-white88 font-inter flex justify-end truncate">
                       <a href={winner?.submissionLink}>{winner?.submissionLink}</a>
-                    </p>
+                    </p> */}
                     <div className="col-span-1 text-[14px] text-white88 font-inter flex justify-end items-center gap-1">
-                      <img src={USDCPng} alt="" className="size-[14px]"/>
-                      <p>1000</p>
-                      <p className="text-white48">USDC</p>
+                      <img src={projectDetails?.currency === 'STRK' ? STRKPng : USDCPng} alt="" className="size-[14px]"/>
+                      <p>{winner?.prize}</p>
+                      <p className="text-white48">{projectDetails?.currency}</p>
                     </div>
                   </div>
                 ))}
@@ -97,19 +180,19 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
 
             <div>
               <div className="w-full flex justify-end">
-                <div className="flex justify-end items-center gap-1 bg-white7 rounded-lg w-fit px-2 py-1 font-gridular border border-white7 text-[14px] text-[#FFFFFFC4]">
+                <div className="flex justify-end items-center gap-1.5 bg-white7 rounded-lg w-fit px-2 py-1 font-gridular border border-white7 text-[14px] text-[#FFFFFFC4]">
                   <img src={SyncPng} alt="" className="size-[20px]"/>
-                  <p>Pay in</p>
-                  <img src={USDCPng} alt="" className="size-[18px]"/>
-                  <p className="font-inter">STRK</p>
+                  <p>Pay in </p>
+                  <img src={projectDetails?.currency === 'STRK' ? STRKPng : USDCPng} alt="" className="size-[18px]"/>
+                  <p className="font-inter">{projectDetails?.currency}</p>
                 </div>
               </div>
 
               <div className="w-[380px] bg-[#101C77] p-[6px] rounded-2xl mt-2">
                 <div className="bg-[#091044] rounded-2xl flex justify-center items-center gap-2 h-[114px]">
-                  <img src={USDCPng} alt="" className="size-[32px]"/>
-                  <p className="text-[42px] text-primaryGreen font-gridular">5000</p>
-                  <p className="text-white48 font-inter">USDC</p>
+                  <img src={projectDetails?.currency === 'STRK' ? STRKPng : USDCPng} alt="" className="size-[32px]"/>
+                  <p className="text-[42px] text-primaryGreen font-gridular">{acctBalance?.balance || '--'}</p>
+                  <p className="text-white48 font-inter">{projectDetails?.currency}</p>
                 </div>
                 <div className="mt-2 flex gap-1">
                   <div className="bg-[#FFFFFF12] border border-[#FFFFFF12] rounded-md w-[89px] h-[32px] flex justify-center items-center text-[13px] text-white font-gridular">150 USDC</div>
@@ -122,22 +205,22 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
               <div className="w-[380px] bg-[#101C77] p-[6px] rounded-2xl mt-5">
                 <div className="bg-[#06105D] flex justify-between items-center px-4 rounded-t-lg rounded-b-[4px] h-[41px]">
                   <p className="text-[13px] font-semibold font-inter text-[#FFFFFFA8]">Current balance</p>
-                  <p className="text-[14px] font-gridular text-primaryYellow">445.00 USDC</p>
+                  <p className="text-[14px] font-gridular text-primaryYellow">{acctBalance?.balance || '--'} {projectDetails?.currency}</p>
                 </div>
                 <div className="bg-[#06105D] flex justify-between items-center px-4 rounded-[4px] h-[41px] my-1">
-                  <p className="text-[13px] font-semibold font-inter text-[#FFFFFFA8]">Current balance</p>
-                  <p className="text-[14px] font-gridular text-primaryYellow">445.00 USDC</p>
+                  <p className="text-[13px] font-semibold font-inter text-[#FFFFFFA8]">Allocated</p>
+                  <p className="text-[14px] font-gridular text-primaryYellow">{projectDetails?.totalPrize} {projectDetails?.currency}</p>
                 </div>
                 <div className="bg-[#06105D] flex justify-between items-center px-4 rounded-t-[4px] rounded-b-lg h-[41px]">
-                  <p className="text-[13px] font-semibold font-inter text-[#FFFFFFA8]">Current balance</p>
-                  <p className="text-[14px] font-gridular text-primaryYellow">445.00 USDC</p>
+                  <p className="text-[13px] font-semibold font-inter text-[#FFFFFFA8]">Final balance</p>
+                  <p className="text-[14px] font-gridular text-primaryYellow">{finalBalance} {projectDetails?.currency}</p>
                 </div>
               </div>
 
               <div className="flex justify-end w-full mt-5">
-                <div className="w-[160px] h-[40px] relative">
-                  <img src={YellowBtnPng} alt="" className="h-[40px] rounded-md cursor-pointer"/>
-                  <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#2A3485] text-[14px] font-gridular">Reward</p>
+                <div onClick={handleGetCopperXOtp} className={`w-[160px] h-[40px] relative ${projectDetails?.paymentStatus != 'ready' && projectDetails?.paymentStatus ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                  <img src={YellowBtnPng} alt="" className={`h-[40px] rounded-md ${projectDetails?.paymentStatus != 'ready' && projectDetails?.paymentStatus ? 'cursor-not-allowed' : 'cursor-pointer'}`}/>
+                  <p className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#2A3485] text-[14px] font-gridular">{projectDetails?.paymentStatus != 'ready' && projectDetails?.paymentStatus != 'failed' ? 'Rewarded' : 'Reward'}</p>
                 </div>
               </div>
 
@@ -146,6 +229,37 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
 
         </div>
       </div>
+
+      <CustomModal isOpen={showOtpModal} closeModal={handleCloseOtpModal}>
+        <div className='bg-primaryDarkUI border border-white4 rounded-md w-[500px] p-3'>
+          <div className='flex justify-end'><X size={20} onClick={handleCloseOtpModal}  className='text-white88 hover:text-white64 cursor-pointer'/></div>
+            <div>
+              <p className='text-primaryYellow font-semibold font-gridular'>Enter CopperX OTP</p>
+              <div className='h-[1px] bg-primaryYellow w-full mt-2 mb-5'/>
+              <div className='flex flex-col mt-4 mb-4'>
+                <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1' htmlFor='otp'>OTP</label>
+                <input 
+                  type="text" 
+                  value={otpInput} 
+                  onChange={(e) => setOtpInput(e.target.value)} 
+                  name="otp" 
+                  id="otp"
+                  placeholder='112233'
+                  className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' 
+                />
+              </div>
+              <FancyButton 
+                src_img={btnImg} 
+                hover_src_img={btnHoverImg} 
+                img_size_classes='w-[500px] h-[44px]' 
+                className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                btn_txt='submit'  
+                alt_txt='payment btn' 
+                onClick={handleTransferReward}
+              />
+            </div>
+        </div>
+      </CustomModal>
     </div>
 )
 }

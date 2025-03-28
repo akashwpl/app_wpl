@@ -146,8 +146,8 @@ const ExploreGigs = ({orgProjects, userId}) => {
 
             const matchesBountyIsOpen = 
             bountyTypeFilter == null || // If no checkbox is selected, show all
-            (bountyTypeFilter === 'open' && project?.isOpenBounty) ||
-            (bountyTypeFilter === 'close' && project?.isOpenBounty == false);             
+            (bountyTypeFilter === 'bounty' && project?.isOpenBounty) ||
+            (bountyTypeFilter === 'project' && project?.isOpenBounty == false);             
 
             return matchesSearch && matchesRole && matchesType && matchesWeeks && matchfoundation && matchesBountyIsOpen;
         })
@@ -232,12 +232,12 @@ const ExploreGigs = ({orgProjects, userId}) => {
                     <div>
                         <p className='text-[12px] font-semibold font-inter mb-2 text-start'>Bounty type</p>
                         <div className='mb-1 flex items-center gap-2 text-white88 text-[14px] font-gridular'>
-                            <input type='checkbox' name='open' value='open' onChange={(e) => handleBountyTypeFilterChange(e)} checked={bountyTypeFilter === 'open'} id='open' className='border border-primaryYellow cursor-pointer'/>
-                            <label className='cursor-pointer' htmlFor='open'>Open</label>
+                            <input type='checkbox' name='bounty' value='bounty' onChange={(e) => handleBountyTypeFilterChange(e)} checked={bountyTypeFilter === 'bounty'} id='bounty' className='border border-primaryYellow cursor-pointer'/>
+                            <label className='cursor-pointer' htmlFor='bounty'>Bounty</label>
                         </div>
                         <div className=' flex items-center gap-2 text-white88 text-[14px] font-gridular'>
-                            <input type='checkbox' name='close' value='close' onChange={(e) => handleBountyTypeFilterChange(e)} checked={bountyTypeFilter === 'close'} id='close' className='border border-primaryYellow cursor-pointer'/>
-                            <label className='cursor-pointer' htmlFor='close'>Gated</label>
+                            <input type='checkbox' name='project' value='project' onChange={(e) => handleBountyTypeFilterChange(e)} checked={bountyTypeFilter === 'project'} id='project' className='border border-primaryYellow cursor-pointer'/>
+                            <label className='cursor-pointer' htmlFor='project'>Project</label>
                         </div>
                     </div>
                     <div className='border border-dashed border-white7 w-full my-4'/>
