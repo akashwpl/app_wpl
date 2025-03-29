@@ -80,7 +80,7 @@ const FormPage = () => {
     username:'',
     emailId: '',
     appExp: '',
-    ercAddress: '',
+    // ercAddress: '',
     gitTeammates: []
   });
 
@@ -105,7 +105,7 @@ const FormPage = () => {
         teammates: formData.gitTeammates,
         portfolioLink: formData.portfolioLink,
         experienceDescription: formData.appExp,
-        walletAddress: formData.ercAddress,
+        // walletAddress: formData.ercAddress,
         status: 'submitted'
       }
 
@@ -147,14 +147,14 @@ const FormPage = () => {
           newErrors[key] = 'Invalid Email';
           isValid = false;
         }
-      } else if (key === 'ercAddress') {
-        if (!value) {
-          newErrors[key] = 'Address is required';
-          isValid = false;
-        } else if (!isValidStarkNetAddress(value)) {
-          newErrors[key] = 'Invalid Starknet wallet address';
-          isValid = false;
-        }
+      // } else if (key === 'ercAddress') {
+      //   if (!value) {
+      //     newErrors[key] = 'Address is required';
+      //     isValid = false;
+      //   } else if (!isValidStarkNetAddress(value)) {
+      //     newErrors[key] = 'Invalid Starknet wallet address';
+      //     isValid = false;
+      //   }
       } else if (key === 'appExp') {
         if (!value || whitespaceRegex.test(value)) {
           newErrors[key] = 'Field is required';
@@ -176,7 +176,7 @@ const FormPage = () => {
       username:'',
       emailId: '',
       appExp: '',
-      ercAddress: '',
+      // ercAddress: '',
       gitTeammates: []
     })
     setErrors({})
@@ -307,7 +307,7 @@ const FormPage = () => {
                           />
                         </div>
 
-                        <div className='flex flex-col gap-1 w-full'>
+                        {/* <div className='flex flex-col gap-1 w-full'>
                             <label 
                               htmlFor='ercAddress' 
                               className='text-[13px] leading-[15.6px] font-medium text-white32'
@@ -328,7 +328,7 @@ const FormPage = () => {
                                 <p className='font-inter font-medium text-errorMsgRedText text-[12px] leading-[14.4px]'>{errors.ercAddress}</p>
                               </div>
                             }
-                        </div>
+                        </div> */}
                         
                         <div className="mb-56">
                           <FancyButton 

@@ -48,7 +48,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
 
   const [displayName, setDisplayName] = useState('') // Changed from firstName to email
   const [experience, setExperience] = useState('')
-  const [walletAddress, setWalletAddress] = useState('')
+  // const [walletAddress, setWalletAddress] = useState('')
   const [discord, setDiscord] = useState('')
 
   const [isSignin, setIsSignin] = useState(true)
@@ -91,7 +91,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
     displayName: '',
     experience: '',
     discord: '',
-    walletAddress: '',
+    // walletAddress: '',
     img: ''
   });
 
@@ -210,7 +210,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       displayName: !displayName ? 'Please fill the name field' : '',
       experience: !experience && applyChoice === 'user' ? 'Please fill the experience field' : '',
       discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Discord ID can only contain letters, numbers, and underscores. Must be 5-32 characters.' : '',
-      walletAddress: !walletAddress ? 'Please fill the wallet address field' : !isValidStarkNetAddress(walletAddress) ? 'Invalid Starknet wallet address' : '',
+      // walletAddress: !walletAddress ? 'Please fill the wallet address field' : !isValidStarkNetAddress(walletAddress) ? 'Invalid Starknet wallet address' : '',
       img: !img ? 'Please upload a profile image' : ''
     };
 
@@ -263,7 +263,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       socials: {
         discord: discord.toLowerCase()
       },
-      walletAddress: walletAddress,
+      // walletAddress: walletAddress,
       pfp: googleImg || imageUrl,
       isKYCVerified: false,
       kycStatus: "idle"
@@ -359,8 +359,8 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
           getUserDetails(data?.data?.userId).then((data) => {
             if(
                 data.displayName ||
-                data.experienceDescription ||
-                data.walletAddress
+                data.experienceDescription
+                // data.walletAddress
               ) {
               navigate('/')
               return              
@@ -502,7 +502,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       setPassword(user.password);
       setDisplayName(user.displayName);
       setExperience(user.experience);
-      setWalletAddress(user.walletAddress);
+      // setWalletAddress(user.walletAddress);
       setImg(user.pfp);
       console.log('ran');
     }
@@ -897,11 +897,11 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
                   {errors.discord && <span className='text-red-500 text-sm'>{errors.discord}</span>}
                 </div>
 
-                <div className='mt-4'>
+                {/* <div className='mt-4'>
                   <div className='text-white32 font-semibold font-inter text-[13px]'>Enter your Starknet wallet address <span className='text-[#F03D3D]'>*</span></div>
                   <input value={walletAddress} onChange={(e) => setWalletAddress(e.target.value)} placeholder='0x101..' className={`w-full bg-[#FFFFFF12] rounded-md py-2 px-2 text-[13px] ${errors.walletAddress ? 'border border-[#F03D3D]' : ""} outline-none text-white88 placeholder:text-white32`}/>
                   {errors.walletAddress && <span className='text-red-500 text-sm'>{errors.walletAddress}</span>}
-                </div>
+                </div> */}
 
                 {/* {isOrgSignUp &&
                 <div>

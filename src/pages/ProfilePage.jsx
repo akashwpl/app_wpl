@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 import dummyPng from '../assets/dummy/Container.png'
 import CustomModal from '../components/ui/CustomModal'
-import { deleteProject, getAllUers, getUserDetails } from '../service/api'
+import { deleteProject, getAllUsers, getUserDetails } from '../service/api'
 
 import discordSVG from '../assets/icons/pixel-icons/discord.svg'
 import twitterSVG from '../assets/icons/pixel-icons/twitter.svg'
@@ -32,7 +32,7 @@ const ProfilePage = () => {
 
   const {data: allUsers, isLoading: isLoadingUses, refetch} = useQuery({
     queryKey: ["users"],
-    queryFn: () => getAllUers(),
+    queryFn: () => getAllUsers(),
   })
 
   const [selectedProjectToDelete, setSelectedProjectToDelete] = useState(null)

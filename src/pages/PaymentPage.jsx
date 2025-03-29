@@ -5,7 +5,7 @@ import USDCPng from '../assets/images/usdc.png'
 import STRKPng from '../assets/images/strk.png'
 import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
 import trophyPNG from '../assets/icons/trophy-fill.png'
-import { getUserAcctBalance, getUserDetails, sendOpenProjectRewards } from "../service/api"
+import { getAllUsers, getUserAcctBalance, getUserDetails, sendOpenProjectRewards } from "../service/api"
 
 import { ArrowLeft, CheckCheck, Menu, X } from "lucide-react"
 import YellowBtnPng from '../assets/images/yellow_button.png'
@@ -43,6 +43,10 @@ const PaymentPage = () => {
   const [otpSid, setOtpSid] = useState(null);
   const [showOtpModal, setShowOtpModal] = useState(false);
 
+  const [paymentChoice, setPaymentChoice] = useState('email')
+
+  const [allUserData, setAllUserData] = useState([])
+
   const dispatch = useDispatch();
 
   const {data: userAcctBalance, isLoading: isLoadingUserAcctBalance, refetch: refetchUserAcctBalance} = useQuery({
@@ -51,13 +55,40 @@ const PaymentPage = () => {
     enabled: !!user_id,
   })
 
+  const {data: allUsers, isLoading: isLoadingAllUsers} = useQuery({
+    queryKey: ["users"],
+    queryFn: () => getAllUsers(),
+  })
+
+  useEffect(() => {
+    if(!isLoadingAllUsers) {
+      const usersData = allUsers?.map(({displayName,email,username,_id}) => {
+        return {
+          displayName,
+          email,
+          username,
+          _id
+        }
+      })
+      setAllUserData(usersData)
+    }
+  },[isLoadingAllUsers])
+
+  console.log('all user',allUserData);
+
   useEffect(() => {
     if(!isLoadingUserAcctBalance) {
-      const starkWalletData = userAcctBalance?.filter((wallet) => wallet?.network === '23434')[0]?.balances?.filter((type) => type?.symbol === currency?.toUpperCase())
-      setAcctBalance(starkWalletData[0]);
-      const balance = parseFloat(starkWalletData[0]?.balance) - parseFloat(payAmt);
-      if(isNaN(balance)) setFinalBalance(starkWalletData[0]?.balance)
-      else setFinalBalance(balance); 
+      if(userAcctBalance.err) {
+        alert("Please enter your CopperX access token in WPL profile section to proceed with payments");
+        navigate(`/profile/${user_id}`)
+      } else {
+        const starkWalletData = userAcctBalance?.filter((wallet) => wallet?.network === '23434')[0]?.balances?.filter((type) => type?.symbol === currency?.toUpperCase())
+        const data = starkWalletData ? starkWalletData[0] : {}
+        setAcctBalance(data);
+        const balance = parseFloat(data?.balance) - parseFloat(payAmt);
+        if(isNaN(balance)) setFinalBalance(data?.balance)
+        else setFinalBalance(balance); 
+      }
     }
   }, [isLoadingUserAcctBalance,payAmt,currency])
 
@@ -135,7 +166,9 @@ const PaymentPage = () => {
                   <div className="flex flex-row text-primaryBlue gap-2">
                     <div className="w-full h-[101px] py-5 px-5 bg-cover bg-[url('assets/images/total_earned_bg.png')] rounded-md">
                         <p className='font-inter font-medium text-[12px] leading-[14.4px] mb-1'>Remaining balance</p>
-                        <p className='font-gridular text-[42px] leading-[50.4px]'>{userDetails ? userDetails?.totalProjectsInWPL : '0'}</p>
+                        <div className="flex">
+                          <p className='font-gridular text-[42px] leading-[50.4px]'>{finalBalance}</p>
+                        </div>
                     </div>
                     <div className='w-1/2 h-[101px] bg-primaryGreen py-6 px-3 rounded-lg'>
                       <p className='font-inter font-medium text-[12px] leading-[14.4px] mb-1'>Rewarded Amount</p>
@@ -172,15 +205,15 @@ const PaymentPage = () => {
                 <div className="border border-b-primaryYellow my-3.5"></div>
                 <div className="flex flex-col gap-1.5 font-inter text-[14px]">
                   <label className="text-[13px] font-medium text-white32" htmlFor="payment_mtd">Payment Method</label>
-                  <select className="h-10 bg-[#1A2151] text-white88 cursor-pointer px-3 outline-none" name="payment_mtd" id="payment_mtd">
-                    <option value="wallet_address">Wallet Address</option>
+                  <select onChange={(e) => setPaymentChoice(e.target.value)} value={paymentChoice} className="h-10 bg-[#1A2151] text-white88 cursor-pointer px-3 outline-none" name="payment_mtd" id="payment_mtd">
+                    {/* <option value="wallet_address">Wallet Address</option> */}
                     <option value="email">Email Id</option>
                     <option value="username">WPL username</option>
                   </select>
                 </div>
                 <div className="flex flex-col gap-1.5 font-inter text-[14px] mt-3">
-                  <label className="text-[13px] font-medium text-white32" htmlFor="user_payment_details">Enter Wallet address</label>
-                  <input className="w-full h-10 bg-[#1A2151] text-white88 outline-none px-3" placeholder="0xdsfdshifsdiofisdofh" type="text" id="user_payment_details" name="user_payment_details" />
+                  <label className="text-[13px] font-medium text-white32" htmlFor="user_payment_details">Enter {paymentChoice === 'email' ? 'Email address' : 'WPL username'}</label>
+                  <input className="w-full h-10 bg-[#1A2151] text-white88 outline-none px-3" placeholder={paymentChoice === 'email' ? 'janedoe@wpl.com' : 'Jane Doe'} type="text" id="user_payment_details" name="user_payment_details" />
                 </div>
                 <div className='mt-3'>
                   <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Amount <span className='text-[#F03D3D]'>*</span></p>

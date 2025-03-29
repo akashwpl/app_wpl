@@ -413,7 +413,6 @@ const AddProjectPage = () => {
 				setIsSelectingTemplate(false);
 			} else {
 				const bountyData = PROJECT_TEMPLATES[template_id]
-				console.log('p bd',bountyData);
 				
 				setTitle(bountyData?.title)
 				setDescription(bountyData.about)
