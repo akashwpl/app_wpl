@@ -46,7 +46,7 @@ export const getAllProjects = async () => {
     }
 }
 
-export const getAllUers = async () => {
+export const getAllUsers = async () => {
     try {
         const response = await axiosInstance.get('/users')
         return response.data.data

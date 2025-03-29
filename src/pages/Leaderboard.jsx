@@ -5,7 +5,7 @@ import USDCsvg from '../assets/svg/usdc.svg'
 import wpl_logo from '../assets/images/wpl_prdetails.png'
 import btnPng from '../assets/images/leaderboard_btn.png'
 import { useQuery } from '@tanstack/react-query'
-import { getAllUers, getLeaderboardData } from '../service/api'
+import { getAllUsers, getLeaderboardData } from '../service/api'
 import { Link, useNavigate } from 'react-router-dom'
 
 import PlatformButtonPng from '../assets/images/platform-btn.png'
@@ -21,7 +21,7 @@ const Leaderboard = () => {
 
    const {data: usersLeaderboardData, isLoading: isLoadingAllUsers} = useQuery({
         queryKey: ["users"],
-        queryFn: () => getAllUers(),
+        queryFn: () => getAllUsers(),
    })
 
    const [showfilterModal, setShowFilterModal] = useState(false)

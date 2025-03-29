@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCheck, EyeIcon, Info, Pen, Plus, Search, Upload, X } from 'lucide-react'
+import { ArrowLeft, CheckCheck, ExternalLink, ExternalLinkIcon, EyeIcon, Info, Pen, Plus, Search, Upload, X } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 import CustomModal from '../components/ui/CustomModal'
 import PoWCard from '../components/profile/PoWCard'
@@ -443,7 +443,10 @@ const EditProfilePage = () => {
 
                     {/* For copperX accesstoken */}
                     <div className='flex flex-col gap-1 w-full'>
-                        <label className='text-[13px] font-medium text-white32'>CopperX Access Token</label>
+                        <div className='flex gap-2 items-center'>
+                            <label className='text-[13px] font-medium text-white32'>CopperX Access Token</label>
+                            <a href='https://payout.copperx.io/app/developer' target='_blank' rel="noopener noreferrer"><ExternalLinkIcon className='text-white32 cursor-pointer' size={18} /></a>
+                        </div>
                         <input name='copperxPAT' value={copperxPAT} type='text' onChange={(e) => setCopperxPAT(e.target.value)} className={`bg-white7 rounded-[6px] text-white placeholder:text-white32 px-3 py-2 text-[14px] outline-none ${errors.copperxPAT ? 'border border-cardRedText' : 'border-none'}`} 
                             placeholder='super secret stuff here'
                         />

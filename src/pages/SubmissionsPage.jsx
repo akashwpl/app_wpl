@@ -74,7 +74,7 @@ const SubmissionsPage = () => {
             projectId: id,
             teammates: [],
             userId: currentSubmission.user?._id || "",
-            walletAddress: currentSubmission._doc?.walletAddress || "",
+            // walletAddress: currentSubmission._doc?.walletAddress || "",
         };
         submissionData.status = type === 'accepted' ? 'accepted' : 'rejected';
         const res = await acceptRejectSubmission(submissionData, currentSubmission?._doc?._id)
@@ -187,7 +187,7 @@ const SubmissionsPage = () => {
                                         <a href={currentSubmission?._doc?.portfolioLink} rel='noopener noreferrer' target='_blank' className={`bg-white7 rounded-[6px] text-white88 placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7 underline cursor-pointer`}>{currentSubmission?._doc?.portfolioLink} <ExternalLink className="inline size-4 ml-1" /></a>
                                         </div>
 
-                                        <div className='flex flex-col gap-1 w-full mb-20'>
+                                        {/* <div className='flex flex-col gap-1 w-full mb-20'>
                                             <label 
                                             htmlFor='ercAddress' 
                                             className='text-[13px] leading-[15.6px] font-medium text-white32'
@@ -195,7 +195,7 @@ const SubmissionsPage = () => {
                                                 Starknet wallet address
                                             </label>
                                             <div className={`bg-white7 text-white88 rounded-[6px] placeholder:text-white32 px-3 py-2 text-[14px] focus:outline-0 focus:bg-white7`}>{currentSubmission?.user?.walletAddress}</div>
-                                        </div>
+                                        </div> */}
                                 </div>
                             </div>
                         </div>
