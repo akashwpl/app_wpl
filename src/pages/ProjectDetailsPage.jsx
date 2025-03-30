@@ -271,9 +271,9 @@ const ProjectDetailsPage = () => {
     const dataObj = { isApproved: status }
     let res;
     if(!bountyType) {
-        res = await adminProjectApproveOrReject(id, dataObj);
+      res = await adminProjectApproveOrReject(id, dataObj);
     } else {
-        res = await adminOpenProjectApproveOrReject(id, dataObj);
+      res = await adminOpenProjectApproveOrReject(id, dataObj);
     }
     
     if(res._id) {
