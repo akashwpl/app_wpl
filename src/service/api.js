@@ -453,3 +453,12 @@ export const getUserAcctBalance = async () => {
         return handleForbiddenError(error)
     }
 }
+
+export const sendP2pPaymentReward = async (data) => {
+    try {
+        const response = await axiosInstance.post(`/users/payment/pay`,data);
+        return response.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}

@@ -387,6 +387,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       console.log("User signed in with Google:", result.user);
     } catch (error) {
       console.error("Error signing in with Google:", error);
+      setError(error)
     }
   };
 
