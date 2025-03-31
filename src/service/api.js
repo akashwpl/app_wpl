@@ -462,3 +462,13 @@ export const sendP2pPaymentReward = async (data) => {
         return handleForbiddenError(error)
     }
 }
+
+export const getPaymentTransactions = async () => {
+    try {
+        const response = await axiosInstance.get(`/users/payment/history`);
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+
