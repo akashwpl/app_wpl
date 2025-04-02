@@ -11,7 +11,7 @@ import googleLogo from '../assets/svg/google_symbol.png'
 import checkinboxPng from '../assets/svg/check-in-box.png'
 
 import FancyButton from '../components/ui/FancyButton'
-import { createUser, getUserDetails, verifyOtp } from '../service/api'
+import { createUser, getUserDetails, loginWithFirebaseGoogle, updateUserProfile, verifyOtp } from '../service/api'
 import { setUserDetails, setUserId, setUserRole } from '../store/slice/userSlice'
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
@@ -64,6 +64,11 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
   const [img, setImg] = useState(null)
   const [imgPreview, setImgPreview] = useState(null)
   const [googleImg, setGoogleImg] = useState(null)
+
+  const [isGoogleFlow, setIsGoogleFlow] = useState(false);
+  const [googleAccessToken, setGoogleAccessToken] = useState('');
+  console.log('gflow',isGoogleFlow);
+  
 
   const [imgUploadHover, setImgUploadHover] = useState(false)
 
@@ -226,33 +231,6 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
     const imageUrl = await getDownloadURL(imageRef);
 
     if(applyChoice === 'sponsor') setExperience('Hey, I recently joined WPL as a Sponsor');
-    // if(isOrgSignUp) {
-    //   try {
-    //     const res = await axios.post(`${BASE_URL}/users/signup`, {email, password, otp: otpInput});
-    //     localStorage.setItem('token_app_wpl', res?.data?.data?.token)
-    //     dispatch(setUserId(res?.data?.data?.userId))
-    //     setExperience('Hey, I recently joined WPL as a Sponsor')
-    //     setError('')
-    //   } catch (error) {
-    //     if(error.status == '409') {
-    //       if(error.response.data.message === `This email ${email} already exists`) {
-    //         setErrors({email: error.response.data.message});
-    //         setGettingOTP(false)
-    //         setIsUploadingProfile(false)
-    //         return
-    //       }
-    //       setGettingOTP(false)
-    //       setIsUploadingProfile(false)
-    //       setOtpError('Invalid OTP')
-    //       return
-    //     } else {
-    //       setGettingOTP(false)
-    //       setIsUploadingProfile(false)
-    //       setErrors('Something went wrong. Try again after sometime!')
-    //       return
-    //     }
-    //   }
-    // }
 
     const userBody = { 
       email: email,
@@ -275,12 +253,23 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       navigate('/verifyorg')
       setGettingOTP(false)
     } else {
-      const data = await createUser(userBody);
+      let data = null;
+      if(isGoogleFlow) {
+        console.log('g flow brotha');
+        data = await loginWithFirebaseGoogle(googleAccessToken,{email});
+      } else {
+        data = await createUser(userBody);
+      }
       console.log(data);
 
       if(data?.token && data?.userId) {
         localStorage.setItem('token_app_wpl', data?.token)
         dispatch(setUserId(data?.userId))
+        if(isGoogleFlow) {
+          getUserDetails(data?.userId).then(async (data) => {
+            if(!data.displayName && !data.experienceDescription) await updateUserProfile(userBody);
+          })
+        }
         setIsUploadingProfile(false)
         navigate('/')
         setGettingOTP(false)
@@ -292,27 +281,6 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
         setErrors('Something went wrong. Try again after sometime!')
       }
     }
-
-
-    // if(data?.token && data?.userId) {
-    //   localStorage.setItem('token_app_wpl', data?.token)
-    //   dispatch(setUserId(data?.userId))
-    //   if(applyChoice === 'sponsor') {
-    //     setIsUploadingProfile(false)
-    //     navigate('/verifyorg')
-    //     setGettingOTP(false)
-    //   } else {
-    //     setIsUploadingProfile(false)
-    //     navigate('/')
-    //     setGettingOTP(false)
-    //     setShowSignInModal(false);
-    //     window.location.reload();
-    //   }
-    // } else {
-    //   setGettingOTP(false)
-    //   setIsUploadingProfile(false)
-    //   setErrors('Something went wrong. Try again after sometime!')
-    // }
   }
 
   const removeImgPrveiew = () => {
@@ -335,55 +303,85 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
 
   const handleUploadClick = () => {
     fileInputRef.current.click();
-    console.log('This was clicked');
   }
 
   const handleGoogleSignUp = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const { accessToken, displayName, email, photoURL } = result.user;
-    
-      const response = fetch(`${BASE_URL}/account/loginWithFirebase`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({ email }),
-      }).then((res) => res.json())
-      .then((data) => {
-        if(data?.data?.token) {
-          localStorage.setItem('token_app_wpl', data?.data?.token)
-          dispatch(setUserId(data?.data?.userId))
+      setIsGoogleFlow(true);
+      setGoogleAccessToken(accessToken);
+      // if(isSignin) {
+        console.log('Login with google');
+        const data = await loginWithFirebaseGoogle(accessToken,{email});
+        if(data?.token) {
+          localStorage.setItem('token_app_wpl', data?.token)
+          dispatch(setUserId(data?.userId))
 
-          getUserDetails(data?.data?.userId).then((data) => {
+          getUserDetails(data?.userId).then((data) => {
             if(
-                data.displayName ||
-                data.experienceDescription
-                // data.walletAddress
-              ) {
+              data.displayName ||
+              data.experienceDescription
+              // data.walletAddress
+            ) {
+              console.log('d',data);
+              
               navigate('/')
-              return              
-            } else {
-              setIsSignComplete(true)
-              setError('')
-              setEmail(email)
-              setDisplayName(displayName)
-              setGoogleImg(photoURL)
-              setImgPreview(photoURL)
-              setImg(photoURL)
               return
             }
           })
-        } 
-        if(data.message === `This email ${email} already exists`) {
-          setError(data.message)
         }
-        // Handle invalid bearer token scenario
-        if(data.message === 'invalid google sign in creds') {
-          setError("Invalid Google Sign in credentials. Please try again.")
-        }
-      })
+      // }
+        setError('')
+        setEmail(email)
+        setDisplayName(displayName)
+        setGoogleImg(photoURL)
+        setImgPreview(photoURL)
+        setImg(photoURL)
+        setIsSignComplete(true)
+        console.log('sign up with google');
+    
+      // const response = fetch(`${BASE_URL}/account/loginWithFirebase`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${accessToken}`
+      //   },
+      //   body: JSON.stringify({ email }),
+      // }).then((res) => res.json())
+      // .then((data) => {
+      //   if(data?.data?.token) {
+      //     localStorage.setItem('token_app_wpl', data?.data?.token)
+      //     dispatch(setUserId(data?.data?.userId))
+
+      //     getUserDetails(data?.data?.userId).then((data) => {
+      //       if(
+      //           data.displayName ||
+      //           data.experienceDescription
+      //           // data.walletAddress
+      //         ) {
+      //         navigate('/')
+      //         return              
+      //       } else {
+      //         setIsSignComplete(true)
+      //         setError('')
+      //         setEmail(email)
+      //         setDisplayName(displayName)
+      //         setGoogleImg(photoURL)
+      //         setImgPreview(photoURL)
+      //         setImg(photoURL)
+      //         return
+      //       }
+      //     })
+      //   } 
+      //   if(data.message === `This email ${email} already exists`) {
+      //     setError(data.message)
+      //   }
+      //   // Handle invalid bearer token scenario
+      //   if(data.message === 'invalid google sign in creds') {
+      //     setError("Invalid Google Sign in credentials. Please try again.")
+      //   }
+      // })
       console.log("User signed in with Google:", result.user);
     } catch (error) {
       console.error("Error signing in with Google:", error);
@@ -403,29 +401,6 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
     // }
     setHovered(true);
   };
-
-  // useEffect(() => {
-  //   if(state?.fromHome) {
-      // setIsOrgSignUp(true);
-      // setIsSignComplete(true);
-  //   }
-  // }, [])
-
-  // useEffect(() => {
-  //   if(isOrgSignUp) {
-  //     setEmail('');
-  //     setPassword('')
-  //   }
-  // },[isOrgSignUp])
-
-  const handleOrgSignUp = () => {
-    setEmail('');
-    setPassword('');
-    setConfirmPassword('');
-    setIsOrgSignUp(true);
-    setIsSignComplete(true);
-    return
-  }
 
   const sendOTP = async () => {
     if(!email) return setError('Please enter email')
