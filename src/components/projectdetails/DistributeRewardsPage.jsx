@@ -105,9 +105,9 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
       refetchUserAcctBalance();
       setShowOtpModal(false);
     } else if (resp?.err === 'OTP verification failed') {
-        dispatch(displaySnackbar("Invalid OTP. Please enter correct OTP"))
+      dispatch(displaySnackbar("Invalid OTP. Please enter correct OTP"))
     } else {
-        dispatch(displaySnackbar("Payment Failed"))
+      dispatch(displaySnackbar("Payment Failed"))
     }
   }
 
