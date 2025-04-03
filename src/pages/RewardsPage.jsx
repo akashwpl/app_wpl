@@ -111,12 +111,17 @@ const RewardsPage = () => {
                                         {selection === 'p2p' && 
                                         <td className='px-4'>
                                             <div className='flex items-center gap-1 text-[14px] text-white88 font-inter'>
-                                                {data?.payment_direction === 'send' ?
+                                                {data?.sender_id === user_id ?
+                                                <>
                                                     <MoveUpRight className='size-[16px] mr-1'/>
+                                                    <p className=''>Send</p> 
+                                                </>
                                                 :
+                                                <>
                                                     <MoveDownLeft className='size-[16px] mr-1' />
+                                                    <p className=''>Receive</p>
+                                                </>
                                                 }
-                                                <p className=''>{data?.payment_direction}</p> 
                                             </div>
                                         </td>
                                         }
