@@ -11,7 +11,7 @@ import googleLogo from '../assets/svg/google_symbol.png'
 import checkinboxPng from '../assets/svg/check-in-box.png'
 
 import FancyButton from '../components/ui/FancyButton'
-import { createUser, getUserDetails, loginWithFirebaseGoogle, updateUserProfile, verifyOtp } from '../service/api'
+import { createUser, getUserDetails, loginWithFirebaseGoogle, singupWithFirebaseGoogle, updateUserProfile, verifyOtp } from '../service/api'
 import { setUserDetails, setUserId, setUserRole } from '../store/slice/userSlice'
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
@@ -255,8 +255,20 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
     } else {
       let data = null;
       if(isGoogleFlow) {
+        const googleSignupBody = {
+          email: email,
+          displayName: displayName,
+          username: generateUsername(displayName),
+          experienceDescription: experience,
+          socials: {
+            discord: discord.toLowerCase()
+          },
+          pfp: googleImg || imageUrl,
+          isKYCVerified: false,
+          kycStatus: "idle"
+        }
         console.log('g flow brotha');
-        data = await loginWithFirebaseGoogle(googleAccessToken,{email});
+        data = await singupWithFirebaseGoogle(googleAccessToken,googleSignupBody);
       } else {
         data = await createUser(userBody);
       }
@@ -265,11 +277,6 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       if(data?.token && data?.userId) {
         localStorage.setItem('token_app_wpl', data?.token)
         dispatch(setUserId(data?.userId))
-        if(isGoogleFlow) {
-          getUserDetails(data?.userId).then(async (data) => {
-            if(!data.displayName && !data.experienceDescription) await updateUserProfile(userBody);
-          })
-        }
         setIsUploadingProfile(false)
         navigate('/')
         setGettingOTP(false)
@@ -311,27 +318,16 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       const { accessToken, displayName, email, photoURL } = result.user;
       setIsGoogleFlow(true);
       setGoogleAccessToken(accessToken);
-      // if(isSignin) {
-        console.log('Login with google');
-        const data = await loginWithFirebaseGoogle(accessToken,{email});
-        if(data?.token) {
-          localStorage.setItem('token_app_wpl', data?.token)
-          dispatch(setUserId(data?.userId))
-
-          getUserDetails(data?.userId).then((data) => {
-            if(
-              data.displayName ||
-              data.experienceDescription
-              // data.walletAddress
-            ) {
-              console.log('d',data);
-              
-              navigate('/')
-              return
-            }
-          })
-        }
-      // }
+      const data = await loginWithFirebaseGoogle(accessToken,{email});
+      console.log('login google',data);
+      
+      if(data?.token) {
+        localStorage.setItem('token_app_wpl', data?.token)
+        dispatch(setUserId(data?.userId))
+        navigate('/')
+        return
+      } 
+      else if(data?.err === 'user not found') {
         setError('')
         setEmail(email)
         setDisplayName(displayName)
@@ -339,52 +335,10 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
         setImgPreview(photoURL)
         setImg(photoURL)
         setIsSignComplete(true)
-        console.log('sign up with google');
-    
-      // const response = fetch(`${BASE_URL}/account/loginWithFirebase`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Authorization: `Bearer ${accessToken}`
-      //   },
-      //   body: JSON.stringify({ email }),
-      // }).then((res) => res.json())
-      // .then((data) => {
-      //   if(data?.data?.token) {
-      //     localStorage.setItem('token_app_wpl', data?.data?.token)
-      //     dispatch(setUserId(data?.data?.userId))
-
-      //     getUserDetails(data?.data?.userId).then((data) => {
-      //       if(
-      //           data.displayName ||
-      //           data.experienceDescription
-      //           // data.walletAddress
-      //         ) {
-      //         navigate('/')
-      //         return              
-      //       } else {
-      //         setIsSignComplete(true)
-      //         setError('')
-      //         setEmail(email)
-      //         setDisplayName(displayName)
-      //         setGoogleImg(photoURL)
-      //         setImgPreview(photoURL)
-      //         setImg(photoURL)
-      //         return
-      //       }
-      //     })
-      //   } 
-      //   if(data.message === `This email ${email} already exists`) {
-      //     setError(data.message)
-      //   }
-      //   // Handle invalid bearer token scenario
-      //   if(data.message === 'invalid google sign in creds') {
-      //     setError("Invalid Google Sign in credentials. Please try again.")
-      //   }
-      // })
-      console.log("User signed in with Google:", result.user);
+      }
     } catch (error) {
       console.error("Error signing in with Google:", error);
+      window.reload();
       setError(error)
     }
   };
@@ -447,10 +401,12 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
     switch (screenName) {
       case SIGNUP_CHOICE: {
         setCurrentScreen(SIGNUP_CHOICE)
-        setOtpInput('')
-        setConfirmPassword('')
-        setIsSignComplete(false)
-        sendOTP()
+        if(isGoogleFlow) {
+          setIsSignComplete(false)
+        } else {
+          setIsSignComplete(false)
+          sendOTP() 
+        }
         break;
       }
       case APPLY_AS_CHOICE: {
