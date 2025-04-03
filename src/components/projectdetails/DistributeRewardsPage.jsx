@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import SyncPng from '../../assets/images/sync.png'
 import USDCPng from '../../assets/images/usdc.png'
 import STRKPng from '../../assets/images/strk.png'
-import { getUserAcctBalance, getUserDetails, sendOpenProjectRewards } from "../../service/api"
+import { createNotification, getUserAcctBalance, getUserDetails, sendOpenProjectRewards } from "../../service/api"
 
 import { ArrowLeft, X } from "lucide-react"
 import YellowBtnPng from '../../assets/images/yellow_button.png'
@@ -20,7 +20,7 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
   const { user_id } = useSelector((state) => state)
   const navigate = useNavigate()
 
-  const {data: userDetails} = useQuery({
+  const {data: userDetails, isLoading:isLoadingUserDetails} = useQuery({
     queryKey: ["userDetails", user_id],
     queryFn: () => getUserDetails(user_id),
     enabled: !!user_id,
@@ -28,6 +28,11 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
 
   const [acctBalance, setAcctBalance] = useState({});
   const [finalBalance, setFinalBalance] = useState(0)
+
+  const [username, setUsername] = useState('A user');
+  useEffect(() => {
+    if(!isLoadingUserDetails) setUsername(userDetails?.displayName);
+  },[isLoadingUserDetails])
 
   const [otpInput, setOtpInput] = useState('');
   const [userEmail, setUserEmail] = useState(userDetails?.email || '')
@@ -84,10 +89,19 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
     }
 
     const resp = await sendOpenProjectRewards(projectDetails?._id,data);
-    console.log('otp res',resp);
 
     if(resp?.message === "payed" && resp?.data?.status === 'ok') {
       dispatch(displaySnackbar("Payment Initiated"))
+      selectedWinner?.map(async (winner) => {
+        const notiObj = {
+          msg: `${username} has rewarded you for bounty`,
+          type: 'payment',
+          fromId: user_id,
+          user_id: winner.user,
+          // project_id: projectDetails._id
+        }
+        await createNotification(notiObj);
+      })
       refetchUserAcctBalance();
       setShowOtpModal(false);
     } else if (resp?.err === 'OTP verification failed') {
