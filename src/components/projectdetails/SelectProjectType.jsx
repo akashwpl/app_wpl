@@ -122,7 +122,7 @@ const SelectProjectType = () => {
 
 	const handleGoBackBtn = () => {
 		if(isFirstScreen) {
-			navigate('/');
+			navigate('/userprojects');
 		} else {
 			setGigType('bounty')
 			setIsFirstScreen(true);

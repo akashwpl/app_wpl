@@ -179,7 +179,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       getUserDetails(res?.data?.data?.userId).then((data) => {
         setError('')
         if(isModal) setShowSignInModal(false)
-        data?.role == 'sponsor' ? navigate('/') : navigate('/')
+        data?.role == 'sponsor' ? navigate('/userprojects') : navigate('/')
       })
     } catch (error) {
       if(error.status == '409') {

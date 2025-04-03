@@ -362,7 +362,8 @@ const debouncedOnReorder = useCallback(
 
   return (
     <div className='relative'>
-      {!isDistributingRewards ? <>
+      {!isDistributingRewards ? 
+      <>
         <div>
           <img src={headerPng} alt='header' className='h-[200px] w-full'/>
         </div>

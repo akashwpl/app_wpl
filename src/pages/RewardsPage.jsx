@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom'
 
 const initialTabs = [
     {id: 'gigPayments', name: 'Gig Payments', isActive: true},
-    {id: 'paymentHistory', name: 'Payment History', isActive: false},
+    {id: 'paymentHistory', name: 'P2P Payments', isActive: false},
 ]
 
 const RewardsPage = () => {
@@ -80,6 +80,9 @@ const RewardsPage = () => {
         console.log(data);
     }));
     
+    const navigateToCopperX = () => {
+        window.location.href = 'https://payout.copperx.io/app';
+    };
 
     return (
         <div className='flex justify-center items-end pt-20'>
@@ -97,17 +100,18 @@ const RewardsPage = () => {
                     <table className='border border-white4'>
                         <thead className='bg-[#060E4F] stroke-bottom'>
                             <tr className='h-[48px] text-[13px] text-white32 border-b border-white4 font-normal font-inter'>
-                                {selection === 'p2p' && <td className='w-[120px] px-4'>Type</td>}
-                                <td className='w-[720px] px-4'>{selection === 'p2p' ? 'Payee Remarks' : 'Gig Details'}</td>
-                                {filteredTransactions[selection]?.length != 0 && <td className='w-[80px] text-right px-4'>Amount</td>}
-                                <td className='w-[154px] px-4 text-right'>Status</td>
-                                <td className='w-[140px] px-4 text-right'>Time</td>
+                                {selection === 'p2p' && <td className='w-[70px] px-4'>Type</td>}
+                                <td className='w-[620px] px-4'>{selection === 'p2p' ? 'Payee Remarks' : 'Gig Details'}</td>
+                                {filteredTransactions[selection]?.length != 0 && <td className='w-[70px] text-right px-4'>Amount</td>}
+                                <td className='w-[140px] px-4 text-right'>Status</td>
+                                <td className='w-[154px] px-4 text-right'>Action</td>
+                                <td className='w-[165px] px-4 text-right'>Time</td>
                             </tr>
                             
                         </thead>
                             {!filteredTransactions[selection]?.length == 0 && <tbody className='bg-[#060e54]'>
                                 {filteredTransactions[selection]?.map((data, idx) => (
-                                    <tr key={idx} className='hover:bg-white7 cursor-pointer'>
+                                    <tr key={idx} className='hover:bg-white7 cursor-pointer' onClick={navigateToCopperX}>
                                         {selection === 'p2p' && 
                                         <td className='px-4'>
                                             <div className='flex items-center gap-1 text-[14px] text-white88 font-inter'>
@@ -146,6 +150,17 @@ const RewardsPage = () => {
                                             </div>
                                         </td>
                                         <td className='justify-items-end px-4'>{paymentStatusType(data?.status)}</td>
+                                        <td className='justify-items-center'>
+                                        {data?.status === 'success' ? 
+                                            <div className='text-[14px] text-[#0ED065] font-inter flex items-center justify-center max-w-fit bg-[#FFB800]/10 px-2 py-1 rounded-[6px]'>
+                                                <p className='hidden md:block'>Check Balance</p>
+                                            </div>
+                                        :
+                                            <div className='text-[14px] text-[#FFB800] font-inter flex items-center justify-center max-w-fit bg-[#FFB800]/10 px-2 py-1 rounded-[6px]'>
+                                                <p className='hidden md:block'>Complete KYC</p>
+                                            </div>
+                                    }
+                                        </td>
                                         <td className='text-[14px] text-white32 font-inter font-light text-right px-4'>{`${data?.time?.days}D ${data?.time?.hours}H ${data?.time?.minutes}M ago`}</td>
                                     </tr>
                                 ))}
