@@ -32,6 +32,7 @@ import hourglassSVG from '../assets/icons/pixel-icons/hourglass.svg'
 import { calculateRemainingDaysAndHours } from '../lib/constants'
 
 import trendingBountyVideo from '../assets/dummy/trending_bounty.mp4'
+import sponsorCardVideo from '../assets/dummy/sponsor_wolf_card.mp4'
 
 const HomePage = () => {
 
@@ -121,14 +122,29 @@ const HomePage = () => {
       </div>
 
       {/* right side */}
-      <div className='flex flex-col gap-6 py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh] min-w-[350px] max-w-[350px]'>
+      <div className='flex flex-col gap-6 py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh] min-w-[350px] max-w-[350px] relative'>
 
         {!token ?
         <>
-          <div onClick={handleNavigateToSponsorSignUp} className='w-full cursor-pointer'>
+          {/* <div onClick={handleNavigateToSponsorSignUp} className='w-full cursor-pointer'>
             <img src={sponsorCardPng} alt='sponsor login'/>
+          </div> */}
+          <div 
+            className='w-[350px] absolute -top-3 left-0 cursor-pointer'
+            onClick={() => {setShowSignInModal(true)}}
+          >
+            <video 
+              autoPlay
+              loop
+              muted
+              playsInline
+              disablePictureInPicture
+              className="object-cover [clip-path:inset(33px_23px_round_0px)]"
+            >
+              <source src={sponsorCardVideo} type="video/mp4"/>
+            </video>
           </div>
-          <div className='border border-white12 border-dashed w-full my-2'></div>
+          <div className='border border-white12 border-dashed w-full my-2 mt-40'></div>
         </>
         :
         trendingBounty?._id &&
