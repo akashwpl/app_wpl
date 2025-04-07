@@ -29,7 +29,7 @@ import { createNotification, createOpenProject, createProject, getAdmins, getUse
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import Spinner from '../components/ui/spinner';
 
-import tickFilledImg from '../assets/icons/pixel-icons/tick-filled.png';
+import hourglassImg from '../assets/icons/hourglass-fill.png';
 import { displaySnackbar } from '../store/thunkMiddleware';
 import DropdownSearchList from '../components/form/DropdownSearchList';
 import TemplatesPage from './TemplatesPage';
@@ -920,25 +920,25 @@ const AddProjectPage = () => {
                                            
                     </div>
                 </div>
-            :   <div className='flex justify-center items-center mt-4'>
-                    <div className='max-w-[469px] w-full'>
-                        <div className='flex gap-4 border border-dashed border-[#FFFFFF1F] bg-[#FCBF041A] rounded-md px-4 py-3'>
+            :   <div className='flex justify-center items-center mt-6'>
+                    <div className='max-w-[576px] w-full'>
+                        <div className='flex justify-center items-center gap-6 border border-dashed border-[#FFFFFF1F] bg-[#FCBF041A] rounded-md px-4 py-3'>
                             <div>
-                                <img src={logoPreview} alt='dummy' className='size-[72px] aspect-square rounded-md'/>
+                                <img src={logoPreview} alt='dummy' className='size-20 aspect-square rounded-md'/>
                             </div>
                             <div>
                                 <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{title}</p>
-                                <p className='text-white88 font-semibold text-[13px] font-inter underline'><a href={userOrg?.websiteLink} target='_blank' rel="noopener noreferrer" >@{userOrg?.organisationHandle}</a></p>
+                                <p className='text-white88 font-medium text-[13px] font-inter underline'><a href={userOrg?.websiteLink} target='_blank' rel="noopener noreferrer" >@{userOrg?.organisationHandle}</a></p>
                             </div>
                         </div>
 
-                        <div className='flex flex-col justify-center items-center mt-8'>
-                            <img src={tickFilledImg} alt='tick-filled' className='size-[54px] mb-4'/>
-                            <div className='text-white font-inter'>Added Project</div>
-                            <p className='text-white32 text-[13px] font-semibold font-inter'>You can now view updated details of the project</p>
+                        <div className='flex flex-col justify-center items-center mt-12'>
+                            <img src={hourglassImg} alt='hourglass icon' className='size-[54px] mb-4 animate-spin-slow'/>
+                            <div className='text-white font-inter'>Your {isOpenBounty ? 'Bounty' : 'Project'} is under review</div>
+                            <p className='text-white32 text-[13px] font-semibold font-inter'>You will be notified once your {isOpenBounty ? 'bounty' : 'project'} gets approved by WPL admin</p>
                         </div>
 
-                        <div className='mt-6'>
+                        <div className='mt-6 text-center'>
                             <FancyButton 
                                 src_img={btnImg} 
                                 hover_src_img={btnHoverImg} 
@@ -955,7 +955,7 @@ const AddProjectPage = () => {
                 </div>
         }
 				
-				{!isSelectingTemplate && 
+				{!isSelectingTemplate && submitted &&
             <div className='bg-[#091044] px-20 py-4 fixed bottom-0 left-0 w-full flex justify-between items-center z-20'>
                     
                     <div className='flex items-center gap-2'>

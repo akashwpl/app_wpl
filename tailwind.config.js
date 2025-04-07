@@ -108,6 +108,7 @@ export default {
         'hovered': 'bounce 0.5s ease-in-out forwards',
 
         'spin-alt-180': 'spin-alternate-180 3s linear infinite',
+        'spin-slow': 'spin 2s linear infinite'
       },
     },
   },
