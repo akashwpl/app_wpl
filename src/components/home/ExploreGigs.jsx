@@ -267,7 +267,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
           </div>
         </div>
 
-        <div>
+        <div className={filteredProjects?.length > 0 && 'mb-32'}>
           {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
           filteredProjects && selectedTab == 'live' && filteredProjects?.length == 0 ? <div className="mt-24">
             <div className="flex flex-col justify-center items-center gap-2">
