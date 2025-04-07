@@ -247,6 +247,7 @@ const SubmissionsPage = () => {
                                     btn_txt={<span className='flex items-center justify-center gap-2'><X size={14}/><span>Reject</span></span>} 
                                     alt_txt='submission reject btn' 
                                     onClick={() => handleAccpetReject('rejected')}
+                                    transitionDuration={500}
                                 />
                                 <FancyButton 
                                     src_img={greenBtnImg} 
@@ -256,6 +257,7 @@ const SubmissionsPage = () => {
                                     btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Accept</span></span>}  
                                     alt_txt='submission accept btn' 
                                     onClick={() => handleAccpetReject('accepted')}
+                                    transitionDuration={500}
                                 />
                             </div>
                         }
@@ -298,6 +300,7 @@ const submittedDetails = (projectDetails, navigate) => {
                         btn_txt='view project' 
                         alt_txt='view projects btn' 
                         onClick={handleNavigateToProjectDetails}
+                        transitionDuration={500}
                     />
                 </div>
             </div>

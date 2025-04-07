@@ -517,6 +517,7 @@ const debouncedOnReorder = useCallback(
                             btn_txt={<span className='flex items-center justify-center gap-2 text-[13px] font-gridular normal-case'>{projectDetails?.winners?.length == 0 ? 'Shortlist selected winners' : 'Complete Payment'}</span>} 
                             alt_txt='save project btn' 
                             onClick={handleSelectWinner}
+                            transitionDuration={500}
                           />
                         </div>}
                       </div>
@@ -597,6 +598,7 @@ const debouncedOnReorder = useCallback(
                         btn_txt={'login'} 
                         alt_txt='login btn' 
                         onClick={() => {navigate('/onboarding')}}
+                        transitionDuration={500}
                       />
                     </div>
                   : 
@@ -672,6 +674,7 @@ const debouncedOnReorder = useCallback(
                           btn_txt='Accept' 
                           alt_txt='admin project accept btn' 
                           onClick={() => handleAcceptRejectRequest(projectDetails._id,projectDetails.owner_id,projectDetails.title,projectDetails.isOpenBounty,true)}
+                          transitionDuration={500}
                         />
                         <FancyButton 
                           src_img={closeProjBtnImg} 
@@ -681,6 +684,7 @@ const debouncedOnReorder = useCallback(
                           btn_txt='Reject'
                           alt_txt='admin project reject btn'
                           onClick={() => handleAcceptRejectRequest(projectDetails._id,projectDetails.owner_id,projectDetails.title,projectDetails.isOpenBounty,false)}
+                          transitionDuration={500}
                         />
                       </div>
                     :
@@ -696,6 +700,7 @@ const debouncedOnReorder = useCallback(
                           btn_txt='Close project'
                           alt_txt='project close btn'
                           onClick={() => setShowCloseProjectModal(true)}
+                          transitionDuration={500}
                         />
 
                         {/* bounty edit btn */}
@@ -708,6 +713,7 @@ const debouncedOnReorder = useCallback(
                           alt_txt='view submissions btn' 
                           // onClick={() => setSelectedTab('submissions')}
                           onClick={editProject}
+                          transitionDuration={500}
                         />
                       </div>
                     : 
@@ -731,6 +737,7 @@ const debouncedOnReorder = useCallback(
                           alt_txt='project apply btn' 
                           onClick={applyForProject}
                           disabled={isProjApplied}
+                          transitionDuration={isProjApplied ? '' : 500}
                         />
                       </div>
                     :
@@ -795,6 +802,7 @@ const debouncedOnReorder = useCallback(
                     btn_txt='Close project' 
                     alt_txt='project close btn' 
                     onClick={closeProject}
+                    transitionDuration={500}
                   />
                 </div>
                 
@@ -861,6 +869,7 @@ const debouncedOnReorder = useCallback(
                 btn_txt='Go back' 
                 alt_txt='save project btn' 
                 onClick={() => {setShowSelecteWinnersModal(false)}}
+                transitionDuration={500}
               />
               <FancyButton 
                 src_img={GreenButtonPng} 
@@ -870,6 +879,7 @@ const debouncedOnReorder = useCallback(
                 btn_txt='Reward winners' 
                 alt_txt='save project btn' 
                 onClick={handleRewardWinners}
+                transitionDuration={500}
               />
             </div>
           </div>

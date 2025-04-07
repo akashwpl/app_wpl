@@ -907,6 +907,7 @@ const AddProjectPage = () => {
                                         btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={14}/><span>Add milestone</span></span>} 
                                         alt_txt='add milestone btn' 
                                         onClick={handleAddMilestone}
+                                        transitionDuration={500}
                                     />
                                     {/* <button className='flex justify-center items-center w-full border border-primaryYellow h-[43px]' onClick={handleAddMilestone}>
                                         <Plus size={14} className='text-primaryYellow'/>
@@ -946,6 +947,7 @@ const AddProjectPage = () => {
                                 btn_txt='view project' 
                                 alt_txt='view projects btn' 
                                 onClick={handleNavigateToProjectDetails}
+                                transitionDuration={500}
                             />
                             {/* <button onClick={handleNavigateToProjectDetails} className='flex justify-center items-center py-3 px-4 border border-primaryYellow text-primaryYellow w-full font-gridular'>View Project</button> */}
                         </div>
@@ -979,6 +981,7 @@ const AddProjectPage = () => {
                             </span>} 
                             alt_txt='save project btn' 
                             onClick={handleSubmit}
+                            transitionDuration={500}
                         />
                     </div>
             </div>

@@ -336,6 +336,7 @@ const PaymentPage = () => {
                       btn_txt={<span className='flex items-center justify-center gap-2'><X size={14}/><span>Go Back</span></span>} 
                       alt_txt='submission reject btn' 
                       onClick={() => navigate('/')}
+                      transitionDuration={500}
                     />
                     <FancyButton 
                       src_img={greenBtnImg} 
@@ -345,6 +346,7 @@ const PaymentPage = () => {
                       btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Confirm</span></span>}  
                       alt_txt='submission accept btn' 
                       onClick={handleGetCopperXOtp}
+                      transitionDuration={500}
                     />
                   </>
                 </div> 
@@ -431,6 +433,7 @@ const PaymentPage = () => {
                 alt_txt='payment btn' 
                 onClick={handleTransferReward}
                 disabled={otpErr}
+                transitionDuration={500}
               />
             </div>
         </div>

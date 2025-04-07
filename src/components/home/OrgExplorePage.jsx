@@ -127,6 +127,7 @@ const navigateToProjectDetails = () => {
               btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
               alt_txt='save project btn' 
               onClick={navigateToProjectDetails}
+              transitionDuration={500}
             />
           </div>
           : null
@@ -192,6 +193,7 @@ const navigateToProjectDetails = () => {
                   btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
                   alt_txt='save project btn' 
                   onClick={navigateToProjectDetails}
+                  transitionDuration={500}
                 />
               </div>
             </div>
@@ -209,6 +211,7 @@ const navigateToProjectDetails = () => {
                     btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
                     alt_txt='save project btn' 
                     onClick={navigateToProjectDetails}
+                    transitionDuration={500}
                   />
                 </div>
             </div>

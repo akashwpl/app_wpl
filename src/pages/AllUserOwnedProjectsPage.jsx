@@ -183,6 +183,7 @@ const AllUserOwnedProjectsPage = () => {
                                 btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={20} fontWeight={800} className='size-4 stoke-[3]'/><span>Add Listing</span></span>} 
                                 alt_txt='Add project btn'
                                 onClick={navigateToAddProject}
+                                transitionDuration={500}
                             />
                         }
                     </div>

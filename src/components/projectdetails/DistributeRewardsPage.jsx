@@ -270,6 +270,7 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
                 btn_txt='submit'  
                 alt_txt='payment btn' 
                 onClick={handleTransferReward}
+                transitionDuration={500}
               />
             </div>
         </div>

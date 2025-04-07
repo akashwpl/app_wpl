@@ -572,6 +572,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
                       : <GlyphEffect text={'SIGN UP'} isNav={false} />
                     } 
                     onClick={isSignin ? login : signUp} 
+                    transitionDuration={500}
                   />
                 </div>
                 :
@@ -605,6 +606,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
                         
                     } 
                     onClick={isOTPRecieved ? signUp : sendOTP} 
+                    transitionDuration={500}
                   />
                 </div>
               }
@@ -660,6 +662,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
                 btn_txt='Continue as a talent'  
                 alt_txt='project apply btn' 
                 onClick={() => {setApplyChoice('user')}}
+                transitionDuration={500}
               />
             </div>
           </div>
@@ -684,6 +687,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
                 btn_txt='Continue as a Sponsor'  
                 alt_txt='project apply btn' 
                 onClick={() => {setApplyChoice('sponsor')}}
+                transitionDuration={500}
               />
             </div>
           </div>
@@ -860,6 +864,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
                     btn_txt={isuploadingProfile ? <span className='flex justify-center items-center w-full -translate-y-2'><Spinner /></span>  : applyChoice === 'sponsor' ? 'next steps' : 'submit'}
                     alt_txt='submit sign up btn' 
                     onClick={updateProfile}
+                    transitionDuration={500}
                   />
                 </div>
               </div>

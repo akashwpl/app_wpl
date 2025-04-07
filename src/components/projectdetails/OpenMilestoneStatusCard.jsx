@@ -214,6 +214,7 @@ const OpenMilestoneStatusCard = ({ projectDetails, refetchProjectDetails, userna
                         alt_txt='milestone submit btn' 
                         onClick={() => setShowSubmitModal(true)}
                         disabled={isUserSubmittedOpenMS}
+                        transitionDuration={isUserSubmittedOpenMS ? '' : 500}
                     />
                     : <></>
                 }
@@ -311,6 +312,7 @@ const OpenMilestoneStatusCard = ({ projectDetails, refetchProjectDetails, userna
                                 btn_txt='submit'  
                                 alt_txt='project apply btn' 
                                 onClick={handleSubmitMilestone}
+                                transitionDuration={500}
                             />
                         </div>
                     }
@@ -344,6 +346,7 @@ const OpenMilestoneStatusCard = ({ projectDetails, refetchProjectDetails, userna
                                 btn_txt='accept'
                                 alt_txt='project apply btn' 
                                 onClick={() => handleMileStoneSponsorAction('accept')}
+                                transitionDuration={500}
                             />
                             <FancyButton 
                                 src_img={closeProjBtnImg} 
@@ -353,6 +356,7 @@ const OpenMilestoneStatusCard = ({ projectDetails, refetchProjectDetails, userna
                                 btn_txt='reject'  
                                 alt_txt='project apply btn' 
                                 onClick={() => handleMileStoneSponsorAction('reject')}
+                                transitionDuration={500}
                             />
                         </div>
                         : ""

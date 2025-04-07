@@ -306,6 +306,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                             btn_txt={"user submission"}  
                             onClick={() => setShowMilestoneSubmissionModal(true)}
                             alt_txt='user submitted milestone btn' 
+                            transitionDuration={500}
                         />
                     :
                     milestoneData?.status == 'completed' && projectDetails?.owner_id == user_id ?
@@ -328,6 +329,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                             btn_txt={'submit milestone'}  
                             alt_txt='milestone submit btn' 
                             onClick={() => setShowSubmitModal(true)}
+                            transitionDuration={500}
                         />
                     :
                     milestoneData?.status == 'under_review' && milestoneData?.user_status == 'submitted' && projectDetails?.user_id?._id == user_id ?
@@ -339,6 +341,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                             btn_txt={'submitted'}  
                             alt_txt='milestone submitted btn'
                             onClick={() => setShowMilestoneSubmissionModal(true)}
+                            transitionDuration={500}
                         />
                     :
                     milestoneData?.status == 'rejected' && milestoneData?.user_status == 'submitted' && projectDetails?.user_id?._id == user_id ?
@@ -358,6 +361,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                         alt_txt='milestone submit btn' 
                         onClick={() => setShowSubmitModal(true)}
                         disabled={isUserSubmittedOpenMS}
+                        transitionDuration={isUserSubmittedOpenMS ? '' : 500}
                     />
                     : <></>
                 }
@@ -455,6 +459,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                                 btn_txt='submit'  
                                 alt_txt='project apply btn' 
                                 onClick={handleSubmitMilestone}
+                                transitionDuration={500}
                             />
                         </div>
                     }
@@ -488,6 +493,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                                 btn_txt='accept'
                                 alt_txt='project apply btn' 
                                 onClick={() => handleMileStoneSponsorAction('accept')}
+                                transitionDuration={500}
                             />
                             <FancyButton 
                                 src_img={closeProjBtnImg} 
@@ -497,6 +503,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                                 btn_txt='reject'  
                                 alt_txt='project apply btn' 
                                 onClick={() => handleMileStoneSponsorAction('reject')}
+                                transitionDuration={500}
                             />
                         </div>
                         : ""
@@ -533,6 +540,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                             alt_txt='payment btn' 
                             onClick={handleMilestoneReward}
                             disabled={otpErr}
+                            transitionDuration={500}
                         />
                         
                     </div>

@@ -43,6 +43,7 @@ const GrantCard = ({data}) => {
         btn_txt='View'  
         alt_txt='project apply btn' 
         onClick={() => {navigateToGrantDetails()}}
+        transitionDuration={500}
       />
     </div>
   )

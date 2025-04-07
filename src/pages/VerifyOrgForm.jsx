@@ -407,6 +407,7 @@ const VerifyOrgForm = () => {
                                 alt_txt='verify org btn' 
                                 onClick={submitForm}
                                 // isArrow='true'
+                                transitionDuration={500}
                             />
                         </div> 
                         {errors.submit && <p className='text-red-500 font-medium text-center text-[12px] mt-1'>{errors.submit}</p>}
