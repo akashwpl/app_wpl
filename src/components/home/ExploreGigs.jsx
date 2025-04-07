@@ -123,6 +123,8 @@ const ExploreGigs = ({orgProjects, userId}) => {
     return allProjects?.filter((el) => {
       if(selectedTab == 'closed') {
         return (el?.status == 'closed' || el?.status == 'completed')
+      } else if(selectedTab == 'ongoing') {
+        return el?.status !== 'closed' && el?.status !== 'completed'
       } else if(selectedTab == 'idle') {
         return el;
       } else {

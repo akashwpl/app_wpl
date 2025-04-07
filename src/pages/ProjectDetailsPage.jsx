@@ -749,21 +749,21 @@ const debouncedOnReorder = useCallback(
                     projectDetails?.user_id?._id === user_id ?
                       <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
                         <img src={warningSVG} alt='warning' className='size-[20px]'/>
-                        <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit a milestone only ONCE. No backsies.</p>
+                        <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit {projectDetails?.isOpenBounty ? 'the bounty' : 'a milestone'} only ONCE. No backsies.</p>
                       </div>
                     :
 
                       // if another user got selected to work on project
                       <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
                         <img src={warningSVG} alt='warning' className='size-[20px]'/>
-                        <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>Oops! Bounty already assigned. Meanwhile, check other bounties on the platform.</p>
+                        <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>Oops! {projectDetails?.isOpenBounty ? 'Bounty' : 'Project'} already assigned. Meanwhile, check other bounties on the platform.</p>
                       </div>
                     :
                     null
                     :
                     <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
                       <img src={warningSVG} alt='warning' className='size-[20px]'/>
-                      <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit a milestone only ONCE. No backsies.</p>
+                      <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit {projectDetails?.isOpenBounty ? 'the bounty' : 'a milestone'} only ONCE. No backsies.</p>
                     </div>
                   }
                 </div>

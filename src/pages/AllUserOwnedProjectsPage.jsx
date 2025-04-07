@@ -85,13 +85,15 @@ const AllUserOwnedProjectsPage = () => {
         if(user_role == 'sponsor') {
         return userProjects?.projects?.owned?.filter((el) => {
             if(selectedTab == 'idle') {
-                return el?.status == "idle"
+                return el
             } else if(selectedTab == 'pending') {
                 return el?.approvalStatus == 'pending' && el?.status == "idle"
             } else if(selectedTab == "approved") {
                 return el?.approvalStatus != 'pending' && el?.approvalStatus != 'rejected'
             } else if(selectedTab == 'closed') {
                 return (el?.status == 'closed' || el?.status == 'completed')
+            } else if(selectedTab == 'ongoing') {
+                return (el?.status !== 'closed' && el?.status !== 'completed')
             } else {
                 return el?.status == selectedTab
             }
@@ -121,7 +123,7 @@ const AllUserOwnedProjectsPage = () => {
         } else {
             return userProjects?.projects?.taken?.filter((el) => {
                 if(selectedTab == 'idle') {
-                    return el?.status == "idle"
+                    return el?.status !== 'closed' && el?.status !== 'completed'
                 }
                 else if(selectedTab == 'closed') {
                     return (el?.status == 'closed' || el?.status == 'completed')

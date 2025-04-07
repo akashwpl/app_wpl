@@ -76,10 +76,10 @@ const OrgExplore = ({userId}) => {
 
   const filteredProjects = useMemo(() => {
     let projectsToSort = [];
-    if (selectedTab === 'all') projectsToSort = orgProjects?.filter(project => project.status == 'idle');
-    else if (selectedTab === 'live') projectsToSort = orgProjects?.filter(project => project.status === 'ongoing');
-    else if (selectedTab === 'completed') projectsToSort = orgProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
-    // else if (selectedTab === 'in_review') projectsToSort = orgProjects?.filter(project => project.status === 'submitted');
+    if (selectedTab === 'all') projectsToSort = orgProjects?.filter(project => project);
+    else if (selectedTab === 'live') projectsToSort = orgProjects?.filter(project => project?.status !== 'completed' && project?.status !== 'closed');
+    else if (selectedTab === 'completed') projectsToSort = orgProjects?.filter(project => project?.status === 'completed' || project?.status === 'closed');
+    // else if (selectedTab === 'in_review') projectsToSort = orgProjects?.filter(project => project?.status === 'submitted');
     else projectsToSort = orgProjects;
 
     return projectsToSort
