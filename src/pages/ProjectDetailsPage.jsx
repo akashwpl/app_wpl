@@ -400,7 +400,7 @@ const debouncedOnReorder = useCallback(
                     </div>
                   </div>
 
-                  {projectDetails?.status === 'completed' && projectDetails?.winners?.length == projectDetails?.noOfWinners && 
+                  {projectDetails?.isOpenBounty && projectDetails?.status === 'completed' && projectDetails?.winners?.length == projectDetails?.noOfWinners && 
                     <>
                       <p className='font-gridular text-[16px] text-primaryYellow mt-4'>Bounty Winner/s</p>
                       <WinnersTable projectDetails={projectDetails} />

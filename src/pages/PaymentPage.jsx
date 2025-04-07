@@ -356,7 +356,7 @@ const PaymentPage = () => {
             <div>
               <div className="w-full flex justify-end">
                 <div onClick={toggleCurrency} className="flex justify-end items-center gap-1.5 bg-white7 rounded-lg w-fit px-2 py-1 font-gridular cursor-pointer border border-white7 text-[14px] text-[#FFFFFFC4]">
-                  <img src={SyncPng} alt="" className="size-[20px]"/>
+                  <img src={SyncPng} alt="" className="size-[20px] animate-spin-alt-180"/>
                   <p>Pay in </p>
                   <img src={currency === 'STRK' ? STRKPng : USDCPng} alt="" className="size-[18px]"/>
                   <p className="font-inter">{currency}</p>
