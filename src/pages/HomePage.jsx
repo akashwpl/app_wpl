@@ -31,6 +31,9 @@ import zapBlueSVG from '../assets/icons/pixel-icons/zap-blue.svg'
 import hourglassSVG from '../assets/icons/pixel-icons/hourglass.svg'
 import { calculateRemainingDaysAndHours } from '../lib/constants'
 
+import trendingBountyVideo from '../assets/dummy/trending_bounty.mp4'
+import sponsorCardVideo from '../assets/dummy/sponsor_wolf_card.mp4'
+
 const HomePage = () => {
 
   const { user_id, user_role } = useSelector((state) => state)
@@ -119,24 +122,53 @@ const HomePage = () => {
       </div>
 
       {/* right side */}
-      <div className='flex flex-col gap-6 py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh] min-w-[350px] max-w-[350px]'>
+      <div className='flex flex-col gap-6 py-6 px-6 border border-y-0 border-r-0 border-l border-l-primaryYellow/20 min-h-[140vh] min-w-[350px] max-w-[350px] relative'>
 
         {!token ?
         <>
-          <div onClick={handleNavigateToSponsorSignUp} className='w-full cursor-pointer'>
+          {/* <div onClick={handleNavigateToSponsorSignUp} className='w-full cursor-pointer'>
             <img src={sponsorCardPng} alt='sponsor login'/>
+          </div> */}
+          <div 
+            className='w-[350px] absolute -top-3 left-0 cursor-pointer'
+            onClick={() => {setShowSignInModal(true)}}
+          >
+            <video 
+              autoPlay
+              loop
+              muted
+              playsInline
+              disablePictureInPicture
+              className="object-cover [clip-path:inset(33px_23px_round_0px)]"
+            >
+              <source src={sponsorCardVideo} type="video/mp4"/>
+            </video>
           </div>
-          <div className='border border-white12 border-dashed w-full my-2'></div>
+          <div className='border border-white12 border-dashed w-full my-2 mt-40'></div>
         </>
         :
         trendingBounty?._id &&
           <Link to={`projectdetails/${trendingBounty?._id}`} className='flex flex-col justify-between w-full h-[220px] bg-cardBlueBg hover:bg-cardBlueBg/15 rounded-md cursor-pointer'>
-            <div className='flex flex-row justify-between px-4 mt-3'>
+            <div className='flex flex-row justify-between px-4 mt-3 relative'>
                 <img width={40} src={trendingBounty?.image} alt="WPL PR details" />
-                <div className='flex flex-row py-1 gap-1 text-cardBlueText bg-[#233579] w-32 h-[25px] items-center rounded-md'>
-                    <img src={zapBlueSVG} alt='zap-blue' className='size-[14px] ml-2'/>
-                    <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Trending Bounty</p>
+                <div 
+                  className='w-[250px] absolute -top-14 left-24'
+                >
+                  <video 
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    disablePictureInPicture
+                    className="object-cover [clip-path:inset(56px_56px_round_6px)]"
+                  >
+                    <source src={trendingBountyVideo} type="video/mp4"/>
+                  </video>
                 </div>
+                {/* <div className='flex flex-row py-1 gap-1 text-cardBlueText bg-[#233579] w-32 h-[25px] items-center rounded-md'> */}
+                    {/* <img src={zapBlueSVG} alt='zap-blue' className='size-[14px] ml-2'/> */}
+                    {/* <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Trending Bounty</p> */}
+                {/* </div> */}
             </div>
             <p className='text-[16px] text-cardBlueText font-gridular leading-[19.2px] px-4'>{trendingBounty?.title}</p>
             <p className='text-[13px] text-white48 font-inter leading-[15.6px] font-medium px-4 truncate text-ellipsis'>{trendingBounty?.description}</p>

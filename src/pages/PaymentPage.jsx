@@ -336,6 +336,7 @@ const PaymentPage = () => {
                       btn_txt={<span className='flex items-center justify-center gap-2'><X size={14}/><span>Go Back</span></span>} 
                       alt_txt='submission reject btn' 
                       onClick={() => navigate('/')}
+                      transitionDuration={500}
                     />
                     <FancyButton 
                       src_img={greenBtnImg} 
@@ -345,6 +346,7 @@ const PaymentPage = () => {
                       btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Confirm</span></span>}  
                       alt_txt='submission accept btn' 
                       onClick={handleGetCopperXOtp}
+                      transitionDuration={500}
                     />
                   </>
                 </div> 
@@ -354,7 +356,7 @@ const PaymentPage = () => {
             <div>
               <div className="w-full flex justify-end">
                 <div onClick={toggleCurrency} className="flex justify-end items-center gap-1.5 bg-white7 rounded-lg w-fit px-2 py-1 font-gridular cursor-pointer border border-white7 text-[14px] text-[#FFFFFFC4]">
-                  <img src={SyncPng} alt="" className="size-[20px]"/>
+                  <img src={SyncPng} alt="" className="size-[20px] animate-spin-alt-180"/>
                   <p>Pay in </p>
                   <img src={currency === 'STRK' ? STRKPng : USDCPng} alt="" className="size-[18px]"/>
                   <p className="font-inter">{currency}</p>
@@ -431,6 +433,7 @@ const PaymentPage = () => {
                 alt_txt='payment btn' 
                 onClick={handleTransferReward}
                 disabled={otpErr}
+                transitionDuration={500}
               />
             </div>
         </div>

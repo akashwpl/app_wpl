@@ -75,6 +75,7 @@ const TemplatesPage = ({isOpenBounty,handleTemplateProjectStates,setIsSelectingT
         hover_src_img={scratch_hover_btn}  
         alt_txt='Image alt text'  
         onClick={() => setIsSelectingTemplate(false)} 
+        transitionDuration={300}    
       />
       <div className='flex flex-row w-full flex-wrap gap-7'>
         {template_card_data?.[isOpenBounty ? "bounty" : "project"]?.map((cardData) => {

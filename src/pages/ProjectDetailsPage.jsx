@@ -400,7 +400,7 @@ const debouncedOnReorder = useCallback(
                     </div>
                   </div>
 
-                  {projectDetails?.status === 'completed' && projectDetails?.winners?.length == projectDetails?.noOfWinners && 
+                  {projectDetails?.isOpenBounty && projectDetails?.status === 'completed' && projectDetails?.winners?.length == projectDetails?.noOfWinners && 
                     <>
                       <p className='font-gridular text-[16px] text-primaryYellow mt-4'>Bounty Winner/s</p>
                       <WinnersTable projectDetails={projectDetails} />
@@ -517,6 +517,7 @@ const debouncedOnReorder = useCallback(
                             btn_txt={<span className='flex items-center justify-center gap-2 text-[13px] font-gridular normal-case'>{projectDetails?.winners?.length == 0 ? 'Shortlist selected winners' : 'Complete Payment'}</span>} 
                             alt_txt='save project btn' 
                             onClick={handleSelectWinner}
+                            transitionDuration={500}
                           />
                         </div>}
                       </div>
@@ -597,6 +598,7 @@ const debouncedOnReorder = useCallback(
                         btn_txt={'login'} 
                         alt_txt='login btn' 
                         onClick={() => {navigate('/onboarding')}}
+                        transitionDuration={500}
                       />
                     </div>
                   : 
@@ -672,6 +674,7 @@ const debouncedOnReorder = useCallback(
                           btn_txt='Accept' 
                           alt_txt='admin project accept btn' 
                           onClick={() => handleAcceptRejectRequest(projectDetails._id,projectDetails.owner_id,projectDetails.title,projectDetails.isOpenBounty,true)}
+                          transitionDuration={500}
                         />
                         <FancyButton 
                           src_img={closeProjBtnImg} 
@@ -681,6 +684,7 @@ const debouncedOnReorder = useCallback(
                           btn_txt='Reject'
                           alt_txt='admin project reject btn'
                           onClick={() => handleAcceptRejectRequest(projectDetails._id,projectDetails.owner_id,projectDetails.title,projectDetails.isOpenBounty,false)}
+                          transitionDuration={500}
                         />
                       </div>
                     :
@@ -696,6 +700,7 @@ const debouncedOnReorder = useCallback(
                           btn_txt='Close project'
                           alt_txt='project close btn'
                           onClick={() => setShowCloseProjectModal(true)}
+                          transitionDuration={500}
                         />
 
                         {/* bounty edit btn */}
@@ -708,6 +713,7 @@ const debouncedOnReorder = useCallback(
                           alt_txt='view submissions btn' 
                           // onClick={() => setSelectedTab('submissions')}
                           onClick={editProject}
+                          transitionDuration={500}
                         />
                       </div>
                     : 
@@ -726,11 +732,12 @@ const debouncedOnReorder = useCallback(
                           src_img={btnImg} 
                           hover_src_img={isProjApplied ? btnImg : btnHoverImg} 
                           img_size_classes='w-[342px] h-[44px]' 
-                          className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5}`}
+                          className={`font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5`}
                           btn_txt={isProjApplied ? 'Applied' : 'Apply'} 
                           alt_txt='project apply btn' 
                           onClick={applyForProject}
                           disabled={isProjApplied}
+                          transitionDuration={isProjApplied ? '' : 500}
                         />
                       </div>
                     :
@@ -742,21 +749,21 @@ const debouncedOnReorder = useCallback(
                     projectDetails?.user_id?._id === user_id ?
                       <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
                         <img src={warningSVG} alt='warning' className='size-[20px]'/>
-                        <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit a milestone only ONCE. No backsies.</p>
+                        <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit {projectDetails?.isOpenBounty ? 'the bounty' : 'a milestone'} only ONCE. No backsies.</p>
                       </div>
                     :
 
                       // if another user got selected to work on project
                       <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
                         <img src={warningSVG} alt='warning' className='size-[20px]'/>
-                        <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>Oops! Bounty already assigned. Meanwhile, check other bounties on the platform.</p>
+                        <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>Oops! {projectDetails?.isOpenBounty ? 'Bounty' : 'Project'} already assigned. Meanwhile, check other bounties on the platform.</p>
                       </div>
                     :
                     null
                     :
                     <div className='flex justify-center items-center gap-2 bg-cardYellowBg px-4 py-1.5 rounded-md mt-4 mx-4'>
                       <img src={warningSVG} alt='warning' className='size-[20px]'/>
-                      <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit a milestone only ONCE. No backsies.</p>
+                      <p className='text-cardYellowText font-inter text-[12px] leading-[14.4px] font-medium'>PS: You can submit {projectDetails?.isOpenBounty ? 'the bounty' : 'a milestone'} only ONCE. No backsies.</p>
                     </div>
                   }
                 </div>
@@ -795,6 +802,7 @@ const debouncedOnReorder = useCallback(
                     btn_txt='Close project' 
                     alt_txt='project close btn' 
                     onClick={closeProject}
+                    transitionDuration={500}
                   />
                 </div>
                 
@@ -861,6 +869,7 @@ const debouncedOnReorder = useCallback(
                 btn_txt='Go back' 
                 alt_txt='save project btn' 
                 onClick={() => {setShowSelecteWinnersModal(false)}}
+                transitionDuration={500}
               />
               <FancyButton 
                 src_img={GreenButtonPng} 
@@ -870,6 +879,7 @@ const debouncedOnReorder = useCallback(
                 btn_txt='Reward winners' 
                 alt_txt='save project btn' 
                 onClick={handleRewardWinners}
+                transitionDuration={500}
               />
             </div>
           </div>

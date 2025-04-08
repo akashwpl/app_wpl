@@ -195,7 +195,7 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
             <div>
               <div className="w-full flex justify-end">
                 <div className="flex justify-end items-center gap-1.5 bg-white7 rounded-lg w-fit px-2 py-1 font-gridular border border-white7 text-[14px] text-[#FFFFFFC4]">
-                  <img src={SyncPng} alt="" className="size-[20px]"/>
+                  <img src={SyncPng} alt="" className="size-[20px] animate-spin-alt-180"/>
                   <p>Pay in </p>
                   <img src={projectDetails?.currency === 'STRK' ? STRKPng : USDCPng} alt="" className="size-[18px]"/>
                   <p className="font-inter">{projectDetails?.currency}</p>
@@ -208,12 +208,12 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
                   <p className="text-[42px] text-primaryGreen font-gridular">{acctBalance?.balance || '--'}</p>
                   <p className="text-white48 font-inter">{projectDetails?.currency}</p>
                 </div>
-                <div className="mt-2 flex gap-1">
+                {/* <div className="mt-2 flex gap-1">
                   <div className="bg-[#FFFFFF12] border border-[#FFFFFF12] rounded-md w-[89px] h-[32px] flex justify-center items-center text-[13px] text-white font-gridular">150 USDC</div>
                   <div className="bg-[#FFFFFF12] border border-[#FFFFFF12] rounded-md w-[89px] h-[32px] flex justify-center items-center text-[13px] text-white font-gridular">500 USDC</div>
                   <div className="bg-[#FFFFFF12] border border-[#FFFFFF12] rounded-md w-[89px] h-[32px] flex justify-center items-center text-[13px] text-white font-gridular">1000 USDC</div>
                   <div className="bg-[#FFFFFF12] border border-[#FFFFFF12] rounded-md w-[89px] h-[32px] flex justify-center items-center text-[13px] text-white font-gridular">2000 USDC</div>
-                </div>
+                </div> */}
               </div>
 
               <div className="w-[380px] bg-[#101C77] p-[6px] rounded-2xl mt-5">
@@ -270,6 +270,7 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
                 btn_txt='submit'  
                 alt_txt='payment btn' 
                 onClick={handleTransferReward}
+                transitionDuration={500}
               />
             </div>
         </div>

@@ -672,6 +672,7 @@ const EditProjectPage = () => {
                                 btn_txt={<span className='flex items-center justify-center gap-2'><Plus size={14}/><span>Add milestone</span></span>} 
                                 alt_txt='add milestone btn' 
                                 onClick={handleAddMilestone}
+                                transitionDuration={500}
                             />
                         </div>          
                     }            
@@ -704,6 +705,7 @@ const EditProjectPage = () => {
                             btn_txt='view project' 
                             alt_txt='view projects btn' 
                             onClick={handleNavigateToProjectDetails}
+                            transitionDuration={500}
                         />
                     </div>
                 </div>
@@ -729,6 +731,7 @@ const EditProjectPage = () => {
                     btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Save</span></span>} 
                     alt_txt='save project btn' 
                     onClick={handleSave}
+                    transitionDuration={500}
                 />
             </div>
         </div>

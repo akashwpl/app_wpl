@@ -76,10 +76,10 @@ const OrgExplore = ({userId}) => {
 
   const filteredProjects = useMemo(() => {
     let projectsToSort = [];
-    if (selectedTab === 'all') projectsToSort = orgProjects?.filter(project => project.status == 'idle');
-    else if (selectedTab === 'live') projectsToSort = orgProjects?.filter(project => project.status === 'ongoing');
-    else if (selectedTab === 'completed') projectsToSort = orgProjects?.filter(project => project.status === 'completed' || project.status === 'closed');
-    // else if (selectedTab === 'in_review') projectsToSort = orgProjects?.filter(project => project.status === 'submitted');
+    if (selectedTab === 'all') projectsToSort = orgProjects?.filter(project => project);
+    else if (selectedTab === 'live') projectsToSort = orgProjects?.filter(project => project?.status !== 'completed' && project?.status !== 'closed');
+    else if (selectedTab === 'completed') projectsToSort = orgProjects?.filter(project => project?.status === 'completed' || project?.status === 'closed');
+    // else if (selectedTab === 'in_review') projectsToSort = orgProjects?.filter(project => project?.status === 'submitted');
     else projectsToSort = orgProjects;
 
     return projectsToSort
@@ -127,6 +127,7 @@ const navigateToProjectDetails = () => {
               btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
               alt_txt='save project btn' 
               onClick={navigateToProjectDetails}
+              transitionDuration={500}
             />
           </div>
           : null
@@ -192,6 +193,7 @@ const navigateToProjectDetails = () => {
                   btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
                   alt_txt='save project btn' 
                   onClick={navigateToProjectDetails}
+                  transitionDuration={500}
                 />
               </div>
             </div>
@@ -209,6 +211,7 @@ const navigateToProjectDetails = () => {
                     btn_txt={<span className='flex items-center justify-center gap-2'><span>{user_role != 'user' ? "List Projects" : "Explore all"}</span><ArrowUpRight size={18}/></span>} 
                     alt_txt='save project btn' 
                     onClick={navigateToProjectDetails}
+                    transitionDuration={500}
                   />
                 </div>
             </div>

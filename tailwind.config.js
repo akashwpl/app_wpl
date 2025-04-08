@@ -90,6 +90,10 @@ export default {
         bounce: {
           '0%': { transform: 'translateY(0)' },
           '100%': { transform: 'translateY(-5px)' },
+        },
+        'spin-alternate-180': {
+          '0%, 100%': { transform: 'rotate(0deg)' },  
+          '50%': { transform: 'rotate(180deg)' },
         }
       },
       animation: {
@@ -101,7 +105,10 @@ export default {
 
         'menu-slide-in': 'menuSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
         'menu-slide-out': 'menuSlideOut 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
-        'hovered': 'bounce 0.5s ease-in-out forwards' 
+        'hovered': 'bounce 0.5s ease-in-out forwards',
+
+        'spin-alt-180': 'spin-alternate-180 3s linear infinite',
+        'spin-slow': 'spin 2s linear infinite'
       },
     },
   },

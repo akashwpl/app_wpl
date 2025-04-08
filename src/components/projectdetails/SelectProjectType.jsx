@@ -164,13 +164,14 @@ const SelectProjectType = () => {
 											</div>
 									</div>
 									<FancyButton 
-											src_img={greenBtnImg} 
-											hover_src_img={greenBtnHoverImg} 
-											img_size_classes='w-[500px] h-[44px]' 
-											className='font-gridular text-[14px] leading-[8.82px] text-primaryGreen mt-1.5'
-											btn_txt='Create a bounty'  
-											alt_txt='Add project btn' 
-											onClick={() => handleGigChange('bounty')}
+										src_img={greenBtnImg} 
+										hover_src_img={greenBtnHoverImg} 
+										img_size_classes='w-[500px] h-[44px]' 
+										className='font-gridular text-[14px] leading-[8.82px] text-primaryGreen mt-1.5'
+										btn_txt='Create a bounty'  
+										alt_txt='Add project btn' 
+										onClick={() => handleGigChange('bounty')}
+										transitionDuration={500}
 									/>
 							</div>
 					</div>
@@ -197,13 +198,14 @@ const SelectProjectType = () => {
 											</div>
 									</div>
 									<FancyButton 
-											src_img={loginBtnImg} 
-											hover_src_img={loginBtnHoverImg} 
-											img_size_classes='w-[500px] h-[44px]' 
-											className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
-											btn_txt='Create a project'  
-											alt_txt='project apply btn' 
-											onClick={() => handleGigChange('project')}
+										src_img={loginBtnImg} 
+										hover_src_img={loginBtnHoverImg} 
+										img_size_classes='w-[500px] h-[44px]' 
+										className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+										btn_txt='Create a project'  
+										alt_txt='project apply btn' 
+										onClick={() => handleGigChange('project')}
+										transitionDuration={500}
 									/>
 							</div>
 					</div>
@@ -230,13 +232,14 @@ const SelectProjectType = () => {
 											</div>
 									</div>
 									<FancyButton 
-											src_img={greenBtnImg} 
-											hover_src_img={greenBtnHoverImg} 
-											img_size_classes='w-[500px] h-[44px]' 
-											className='font-gridular text-[14px] leading-[8.82px] text-primaryGreen mt-1.5'
-											btn_txt='Create a grant'  
-											alt_txt='Add grant btn' 
-											onClick={() => handleGigChange('grant')}
+										src_img={greenBtnImg} 
+										hover_src_img={greenBtnHoverImg} 
+										img_size_classes='w-[500px] h-[44px]' 
+										className='font-gridular text-[14px] leading-[8.82px] text-primaryGreen mt-1.5'
+										btn_txt='Create a grant'  
+										alt_txt='Add grant btn' 
+										onClick={() => handleGigChange('grant')}
+										transitionDuration={500}
 									/>
 							</div>
 					</div>
@@ -275,6 +278,7 @@ const SelectProjectType = () => {
 							btn_txt={`Create ${gigType}`}  
 							alt_txt='Create gig btn' 
 							onClick={() => handleGigNavigation(gigType)}
+							transitionDuration={500}
 						/>
 					</div>
 				</div>

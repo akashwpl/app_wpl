@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import html2canvas from 'html2canvas';
 import headerPng from '../assets/images/prdetails_header.png'
 import wpllogo from '../assets/images/wpl_prdetails.png'
 
@@ -24,6 +25,12 @@ import mailSVG from '../assets/icons/pixel-icons/mail.svg'
 import shareProfilePNG from '../assets/images/share_pfp.png'
 import profileCardPNG from '../assets/images/profile_card_bg.png'
 import { displaySnackbar } from '../store/thunkMiddleware'
+import FancyButton from '../components/ui/FancyButton'
+
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png';
+import btnImg from '../assets/svg/btn_subtract_semi.png';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { storage } from '../lib/firebase';
 
 const ProfilePage = () => {
 
@@ -74,9 +81,44 @@ const ProfilePage = () => {
 
   const sampleProjects = useMemo(() =>  userDetails?.projects?.owned?.filter((proj) => proj.type == 'sample'), [userDetails, allUsers])
 
-  const handleShareProfile = () => {
-    setShowProfileCardModal(true)
-    // dispatch(displaySnackbar('COMING SOON!!!!'))
+  const captureSnapshot = async() => {
+    const element = document.getElementById('wpl_profile_card');
+    const canvas = await html2canvas(element);
+    // return canvas.toDataURL('image/png');
+    return new Promise((resolve, reject) => {
+      canvas.toBlob(blob => {
+          if (blob) {
+              resolve(blob);
+          } else {
+              reject(new Error('Canvas to Blob conversion failed.'));
+          }
+      }, 'image/png');
+    });
+  }
+
+  // Firebase image upload code
+  const handleFirebaseImgUpload = async (data) => {
+    let imageUrl = '';
+    if(data) {
+      const imageRef = ref(storage, `images/${user_id}_${new Date().getTime()}`);
+      await uploadBytes(imageRef, data);
+      imageUrl = await getDownloadURL(imageRef);
+    }
+    return imageUrl;
+}
+
+  const shareOnTwitter = async() => {
+
+    const imageData = await captureSnapshot();
+    const imageDataUrl = await handleFirebaseImgUpload(imageData);
+
+    const tweetText = `Check out this snapshot!`; // Keep text concise
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(imageDataUrl)}`;
+    window.open(tweetUrl, '_blank');
+  }
+
+  const handleTwitterShareProfile = async() => {
+    shareOnTwitter();
   }
 
   const handleKyc = () => {
@@ -95,7 +137,7 @@ const ProfilePage = () => {
           <div className='w-[350px] md:w-[480px]'>
             <div className='-translate-y-8 flex justify-between items-center'>
               <img src={userDetails?.pfp || wpllogo} alt="WPL Logo" className='size-[72px] rounded-md'/>
-              <div className='w-[187px] h-[43px] cursor-pointer' onClick={handleShareProfile}>
+              <div className='w-[187px] h-[43px] cursor-pointer' onClick={() => setShowProfileCardModal(true)}>
                 <img src={shareProfilePNG} alt='share profile' />
               </div>
             </div>
@@ -236,17 +278,39 @@ const ProfilePage = () => {
       </div>
 
       <CustomModal isOpen={showProfileCardModal} closeModal={handleCloseProfileCardModal}>
-        <div className='relative overflow-hidden w-[400px] h-[400px]'>
+        <div className='relative overflow-hidden w-[400px] h-[400px]' id='wpl_profile_card'>
           <img src={profileCardPNG} alt="profile_card_bg" />
           <div className='absolute inset-0 left-3 top-2'>
             <img src={userDetails?.pfp || wpllogo} className=' object-cover w-[377px] h-[190px] rounded-md' alt="user_profile_pic" />
             <p className='bg-primaryYellow mt-1.5 rounded-md w-[377px] h-[52px] text-center content-center font-gridular text-[30px] text-primaryDarkUI'>{userDetails?.displayName}</p>
-            <div>
-              <div>
-                
+            <div className='flex items-center justify-center gap-5 mr-2 mt-2'>
+              <div className='relative w-[155px]'>
+                <p className='font-gridular text-[56px] text-primaryYellow mb-4 text-center'>10k</p>
+                <p className='font-inter text-[22px] text-white absolute left-5 bottom-0'>{`Earned ($)`}</p>
               </div>
+
+              <div className='h-16 bg-white/40 w-[1px] mt-4'></div>
+              
+              <div className='relative w-[155px]'>
+                <p className='font-gridular text-[56px] text-primaryGreen mb-4 text-center'>{userDetails?.projectsCompleted}</p>
+                <p className='font-inter text-[22px] text-white absolute left-5 bottom-0'>Total wins</p>
+              </div>
+
             </div>
           </div>
+        </div>
+
+        <div className='mt-3 text-center'>
+          <FancyButton 
+            src_img={btnImg} 
+            hover_src_img={btnHoverImg} 
+            img_size_classes='w-[400px] h-[44px]' 
+            className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+            btn_txt='Share on Twitter' 
+            alt_txt='share profile on twitter button' 
+            onClick={handleTwitterShareProfile}
+            transitionDuration={500}
+          />
         </div>
       </CustomModal>
     </div>
