@@ -955,7 +955,7 @@ const AddProjectPage = () => {
                 </div>
         }
 				
-				{!isSelectingTemplate && submitted &&
+				{!isSelectingTemplate && !submitted &&
             <div className='bg-[#091044] px-20 py-4 fixed bottom-0 left-0 w-full flex justify-between items-center z-20'>
                     
                     <div className='flex items-center gap-2'>
