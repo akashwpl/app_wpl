@@ -29,6 +29,11 @@ import contributor_signup_img from '../assets/images/contributor_signup.png'
 
 import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png';
 import greenBtnImg from '../assets/svg/green_btn_subtract.png';
+import CustomModal from '../components/ui/CustomModal'
+
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png';
+import btnImg from '../assets/svg/btn_subtract_semi.png';
+import { displaySnackbar } from '../store/thunkMiddleware'
 
 const addressRegex = /^(0x)[0-9a-fA-F]{40}$/; 
 const discordRegex = /^[a-zA-Z0-9_]{5,32}$/
@@ -67,8 +72,6 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
 
   const [isGoogleFlow, setIsGoogleFlow] = useState(false);
   const [googleAccessToken, setGoogleAccessToken] = useState('');
-  console.log('gflow',isGoogleFlow);
-  
 
   const [imgUploadHover, setImgUploadHover] = useState(false)
 
@@ -87,6 +90,12 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
 
   const [otpInput, setOtpInput] = useState('')
   const [otperror, setOtpError] = useState('')
+
+  const [copperXOtpInput, setCopperXOtpInput] = useState('');
+  const [copperXSid, setCopperXSid] = useState(null);
+  const [showCopperXOtpModal, setShowCopperXOtpModal] = useState(false);
+  const [copperXOtpErr, setCopperXOtpErr] = useState('')
+  const [isCopperXOtpModalLoading, setIsCopperXOtpModalLoading] = useState(false)
 
   const [applyChoice, setApplyChoice] = useState('');
 
@@ -209,22 +218,24 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
 
   const updateProfile = async () => {
     setIsUploadingProfile(true)
-    const newErrors = {
-      // email: isOrgSignUp && !email ? 'Please fill the email field' : !email_regex.test(email) ? 'Please enter a valid email' : '',
-      // password: isOrgSignUp && !password ? 'Please fill the password field' : password !== confirmPassword ? 'Password not matching' : '',
-      displayName: !displayName ? 'Please fill the name field' : '',
-      experience: !experience && applyChoice === 'user' ? 'Please fill the experience field' : '',
-      discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Discord ID can only contain letters, numbers, and underscores. Must be 5-32 characters.' : '',
-      // walletAddress: !walletAddress ? 'Please fill the wallet address field' : !isValidStarkNetAddress(walletAddress) ? 'Invalid Starknet wallet address' : '',
-      img: !img ? 'Please upload a profile image' : ''
-    };
+    setIsCopperXOtpModalLoading(true)
+    if(copperXOtpErr) return;
+    // const newErrors = {
+    //   // email: isOrgSignUp && !email ? 'Please fill the email field' : !email_regex.test(email) ? 'Please enter a valid email' : '',
+    //   // password: isOrgSignUp && !password ? 'Please fill the password field' : password !== confirmPassword ? 'Password not matching' : '',
+    //   displayName: !displayName ? 'Please fill the name field' : '',
+    //   experience: !experience && applyChoice === 'user' ? 'Please fill the experience field' : '',
+    //   discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Discord ID can only contain letters, numbers, and underscores. Must be 5-32 characters.' : '',
+    //   // walletAddress: !walletAddress ? 'Please fill the wallet address field' : !isValidStarkNetAddress(walletAddress) ? 'Invalid Starknet wallet address' : '',
+    //   img: !img ? 'Please upload a profile image' : ''
+    // };
 
-    setErrors(newErrors);
+    // setErrors(newErrors);
 
-    if (Object.values(newErrors).some(error => error)) {
-      setIsUploadingProfile(false)
-      return;
-    }
+    // if (Object.values(newErrors).some(error => error)) {
+    //   setIsUploadingProfile(false)
+    //   return;
+    // }
 
     const imageRef = ref(storage, `images/${img.name}`);
     await uploadBytes(imageRef, img);
@@ -244,14 +255,21 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       // walletAddress: walletAddress,
       pfp: googleImg || imageUrl,
       isKYCVerified: false,
-      kycStatus: "idle"
+      kycStatus: "idle",
+      otp: copperXOtpInput,
+      sid: copperXSid
     }
 
     if(applyChoice === 'sponsor') {
       setIsUploadingProfile(false)
+      setIsCopperXOtpModalLoading(false)
       dispatch(setUserDetails(userBody))
-      navigate('/verifyorg')
       setGettingOTP(false)
+      if(isGoogleFlow) {
+        navigate('/verifyorg/gmail')
+      } else {
+        navigate('/verifyorg/email')
+      }
     } else {
       let data = null;
       if(isGoogleFlow) {
@@ -265,26 +283,33 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
           },
           pfp: googleImg || imageUrl,
           isKYCVerified: false,
-          kycStatus: "idle"
+          kycStatus: "idle",
+          otp: copperXOtpInput,
+          sid: copperXSid
         }
-        console.log('g flow brotha');
         data = await singupWithFirebaseGoogle(googleAccessToken,googleSignupBody);
       } else {
         data = await createUser(userBody);
       }
-      console.log(data);
 
       if(data?.token && data?.userId) {
         localStorage.setItem('token_app_wpl', data?.token)
         dispatch(setUserId(data?.userId))
         setIsUploadingProfile(false)
+        setIsCopperXOtpModalLoading(false)
+        localStorage.removeItem('token_google')
         navigate('/')
         setGettingOTP(false)
         setShowSignInModal(false);
         window.location.reload();
+      } else if(data?.err == 'OTP verification failed') {
+        setCopperXOtpErr(data?.err);
+        setIsUploadingProfile(false)
+        setIsCopperXOtpModalLoading(false)
       } else {
         setGettingOTP(false)
         setIsUploadingProfile(false)
+        setIsCopperXOtpModalLoading(false)
         setErrors('Something went wrong. Try again after sometime!')
       }
     }
@@ -318,12 +343,14 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
       const { accessToken, displayName, email, photoURL } = result.user;
       setIsGoogleFlow(true);
       setGoogleAccessToken(accessToken);
+      localStorage.setItem('token_google', accessToken)
       const data = await loginWithFirebaseGoogle(accessToken,{email});
       console.log('login google',data);
       
       if(data?.token) {
         localStorage.setItem('token_app_wpl', data?.token)
         dispatch(setUserId(data?.userId))
+        localStorage.removeItem('token_google')
         navigate('/')
         return
       } 
@@ -343,10 +370,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
     }
   };
 
-  const [text, setText] = useState("Sign Up");  
-  const [isHovering, setIsHovering] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const controlledVariants = ["NGIS PU", "GNIS PU", "NGIS PU", "$Sign Up",  "Sign Up"]; // Predefined variations
 
   const handleMouseEnter = () => {
     // if(isSignin) {
@@ -423,24 +447,86 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
     }
   }
 
-  useEffect(() => {
-    localStorage.removeItem('token_app_wpl')
-    dispatch(setUserId(''))
-    dispatch(setUserRole(''))
-    if(isVerifyOrgBack) {
-      setIsSignComplete(true)
-      setApplyChoice('sponsor')
-      setEmail(user.email);
-      setPassword(user.password);
-      setDisplayName(user.displayName);
-      setExperience(user.experience);
-      // setWalletAddress(user.walletAddress);
-      setImg(user.pfp);
-      console.log('ran');
+  const handleCloseOtpModal = () => {
+    setShowCopperXOtpModal(false);
+    setCopperXOtpInput('');
+  }
+
+  const handleCopperXOtpInputChange = (e) => {
+    const value = e.target.value;
+    setCopperXOtpInput(value);
+
+    setCopperXOtpErr('');
+
+    if (!value) {
+      setCopperXOtpErr('OTP is required.');
+      setCopperXOtpInput('');
+      return;
     }
-    console.log('wwpp',isVerifyOrgBack);
-    
-  },[isVerifyOrgBack])
+
+    if (!/^\d+$/.test(value)) {
+      setCopperXOtpErr('OTP must contain only numeric digits.');
+      const currentInput = copperXOtpInput
+      setCopperXOtpInput(currentInput);
+      return;
+    }
+
+    if (value.length > 6) {
+      setCopperXOtpErr('OTP cannot be more than 6 digits.');
+      const currentInput = copperXOtpInput
+      setCopperXOtpInput(currentInput);
+      return;
+    }
+
+    setCopperXOtpInput(value);
+  }
+
+  const handleGetCopperXOtp = async () => {
+    const newErrors = {
+      // email: isOrgSignUp && !email ? 'Please fill the email field' : !email_regex.test(email) ? 'Please enter a valid email' : '',
+      // password: isOrgSignUp && !password ? 'Please fill the password field' : password !== confirmPassword ? 'Password not matching' : '',
+      displayName: !displayName ? 'Please fill the name field' : '',
+      experience: !experience && applyChoice === 'user' ? 'Please fill the experience field' : '',
+      discord: !discord ? 'Please fill the Discord ID field' : !discordRegex.test(discord) ? 'Discord ID can only contain letters, numbers, and underscores. Must be 5-32 characters.' : '',
+      // walletAddress: !walletAddress ? 'Please fill the wallet address field' : !isValidStarkNetAddress(walletAddress) ? 'Invalid Starknet wallet address' : '',
+      img: !img ? 'Please upload a profile image' : ''
+    };
+
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some(error => error)) {
+      setIsUploadingProfile(false)
+      return;
+    }
+
+    if(applyChoice === 'sponsor') {
+      setCopperXOtpErr(null)
+      updateProfile();
+      return;
+    }
+
+    const otpUrl = 'https://income-api.copperx.io/api/auth/email-otp/request';
+    const otpBody = {
+      email: email
+    }
+    const otpRes = await fetch(otpUrl,{
+      method: 'POST',
+      body: JSON.stringify(otpBody),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((res) => res.json())
+
+    if(otpRes?.sid) {
+      // setUserEmail(userEmail);
+      setCopperXSid(otpRes?.sid);
+      dispatch(displaySnackbar("Please enter CopperX OTP"))
+      setCopperXOtpErr('')
+      setShowCopperXOtpModal(true);
+    } else {
+      dispatch(displaySnackbar("Something went wrong!!"))
+    }
+  }
 
   return (
     <div className='flex justify-center items-center'>
@@ -711,7 +797,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
               <div className='-translate-y-8'>
                 {imgPreview ? 
                     <div className='relative size-fit'>
-                        <img src={imgPreview} alt='dummy' className='size-[72px] aspect-square rounded-md'/>
+                        <img src={imgPreview} referrerPolicy="no-referrer" alt='dummy' className='size-[72px] aspect-square rounded-md'/>
                         <div onClick={() => {removeImgPrveiew()}} className='absolute -top-1 -right-1 bg-white64 rounded-full size-4 flex justify-center items-center cursor-pointer hover:bg-white48'><X size={14} className='text-black/60'/></div>
                     </div>
                 :   <>
@@ -863,7 +949,7 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
                     className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                     btn_txt={isuploadingProfile ? <span className='flex justify-center items-center w-full -translate-y-2'><Spinner /></span>  : applyChoice === 'sponsor' ? 'next steps' : 'submit'}
                     alt_txt='submit sign up btn' 
-                    onClick={updateProfile}
+                    onClick={handleGetCopperXOtp}
                     transitionDuration={500}
                   />
                 </div>
@@ -872,7 +958,42 @@ const OnBoarding = ({setShowSignInModal, isModal = false}) => {
           </div>
         </div>
       }
+
+      <CustomModal isOpen={showCopperXOtpModal} closeModal={handleCloseOtpModal}>
+        <div className='bg-primaryDarkUI border border-white4 rounded-md w-[500px] p-3'>
+          <div className='flex justify-end'><X size={20} onClick={handleCloseOtpModal}  className='text-white88 hover:text-white64 cursor-pointer'/></div>
+            <div>
+              <p className='text-primaryYellow font-semibold font-gridular'>Enter CopperX OTP</p>
+              <div className='h-[1px] bg-primaryYellow w-full mt-2 mb-5'/>
+              <div className='flex flex-col mt-4 mb-4'>
+                <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1' htmlFor='cotp'>OTP</label>
+                <input 
+                  type="text" 
+                  value={copperXOtpInput} 
+                  onChange={(e) => handleCopperXOtpInputChange(e)} 
+                  name="cotp" 
+                  id="cotp"
+                  placeholder='112233'
+                  className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' 
+                />
+                {copperXOtpErr && <p className='text-red-500 font-medium text-[12px] mt-2'>{copperXOtpErr}</p>}
+              </div>
+              <FancyButton 
+                src_img={btnImg} 
+                hover_src_img={btnHoverImg} 
+                img_size_classes='w-[500px] h-[44px]' 
+                className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                btn_txt={isCopperXOtpModalLoading ? <div className='flex justify-center items-center -translate-y-1 -mt-1.5'><Spinner /></div> : 'Submit'}  
+                alt_txt='submit btn' 
+                onClick={updateProfile}
+                disabled={copperXOtpErr}
+                transitionDuration={500}
+              />
+            </div>
+        </div>
+      </CustomModal>
     </div>
+
   )
 }
 
