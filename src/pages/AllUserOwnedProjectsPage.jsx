@@ -93,7 +93,7 @@ const AllUserOwnedProjectsPage = () => {
             } else if(selectedTab == 'closed') {
                 return (el?.status == 'closed' || el?.status == 'completed')
             } else if(selectedTab == 'ongoing') {
-                return (el?.status !== 'closed' && el?.status !== 'completed')
+                return (el?.status !== 'closed' && el?.status !== 'completed' && el?.approvalStatus != 'pending')
             } else {
                 return el?.status == selectedTab
             }

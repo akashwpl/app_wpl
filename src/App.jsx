@@ -61,7 +61,7 @@ function App() {
           <Route path="/userprojects" element={<AllUserOwnedProjectsPage />} />
           <Route path="/submissions/:id/:page" element={<SubmissionsPage />} />
           <Route path="/notifications" element={<Notifications />} />
-          <Route path="/verifyorg" element={<VerifyOrgForm />} />
+          <Route path="/verifyorg/:signupType" element={<VerifyOrgForm />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/sponsordashboard" element={<SponsorDashboard />} />
           <Route path="/admindashboard" element={<AdminDashboard />} />
