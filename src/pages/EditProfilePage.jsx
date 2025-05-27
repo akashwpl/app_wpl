@@ -545,6 +545,7 @@ const EditProfilePage = () => {
                     }  
                     alt_txt='update profile btn'
                     onClick={handleSubmitEditProfile}
+                    transitionDuration={500}
                   />
             </div>
             
@@ -643,6 +644,7 @@ const EditProfilePage = () => {
                                     btn_txt={<span className='flex items-center justify-center gap-1'><X size={12}/><span>Cancel</span></span>}  
                                     alt_txt='project apply btn' 
                                     onClick={handleCloseAddProjectModal}
+                                    transitionDuration={500}
                                 />
                                 <FancyButton 
                                     src_img={saveBtnImg} 
@@ -652,6 +654,7 @@ const EditProfilePage = () => {
                                     btn_txt={<span className='flex items-center justify-center gap-1'><CheckCheck size={12}/><span>Add project</span></span>} 
                                     alt_txt='Add personal project btn' 
                                     onClick={handleAddProject}
+                                    transitionDuration={500}
                                 />
                             </div>
                         </div>

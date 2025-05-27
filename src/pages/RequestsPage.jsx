@@ -240,6 +240,7 @@ const RequestsPage = () => {
                                         btn_txt={<span className='flex items-center justify-center gap-2'><X size={14}/><span>Reject</span></span>} 
                                         alt_txt='submission reject btn' 
                                         onClick={() => handleAcceptRejectRequest(false)}
+                                        transitionDuration={500}
                                     />
                                     <FancyButton 
                                         src_img={greenBtnImg} 
@@ -249,6 +250,7 @@ const RequestsPage = () => {
                                         btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Accept</span></span>}  
                                         alt_txt='submission accept btn' 
                                         onClick={() => handleAcceptRejectRequest(true)}
+                                        transitionDuration={500}
                                     />
                                 </>
                                 :

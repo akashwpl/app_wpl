@@ -62,6 +62,7 @@ const FormPage = () => {
           alt_txt='explore projects button'
           className='font-gridular text-[14px] leading-[20px] text-primaryYellow'
           onClick={() => navigate('/allprojects')}
+          transitionDuration={500}
         />
         {/* <button className='w-full text-white48 font-gridular text-[14px] leading-[20px] bg-cardBlueBg h-[43px]'
           onClick={() => {
@@ -339,6 +340,7 @@ const FormPage = () => {
                             alt_txt='apply project form submit button'
                             className='font-gridular text-[14px] leading-[20px] text-primaryYellow'
                             onClick={handleSubmitForm}
+                            transitionDuration={500}
                           />
                         </div>
                     </div>

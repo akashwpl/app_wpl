@@ -444,13 +444,14 @@ const EditGrantPage = () => {
 
                         <div className='mt-6'>
                             <FancyButton 
-                                src_img={btnImg} 
-                                hover_src_img={btnHoverImg} 
-                                img_size_classes='w-[490px] h-[44px]' 
-                                className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                                btn_txt='view grant' 
-                                alt_txt='view grants btn' 
-                                onClick={handleNavigateToGrantsDetails}
+                              src_img={btnImg} 
+                              hover_src_img={btnHoverImg} 
+                              img_size_classes='w-[490px] h-[44px]' 
+                              className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
+                              btn_txt='view grant' 
+                              alt_txt='view grants btn' 
+                              onClick={handleNavigateToGrantsDetails}
+                              transitionDuration={500}
                             />
                         </div>
                     </div>
@@ -482,6 +483,7 @@ const EditGrantPage = () => {
                         </span>} 
                         alt_txt='save project btn' 
                         onClick={handleSubmit}
+                        transitionDuration={500}
                       />
                     </div>
             </div>

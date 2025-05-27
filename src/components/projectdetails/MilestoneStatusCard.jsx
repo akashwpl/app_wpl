@@ -35,6 +35,8 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
     const [otpSid, setOtpSid] = useState(null);
     const [showOtpModal, setShowOtpModal] = useState(false);
 
+    const [otpErr, setOtpErr] = useState('')
+
     // const [link, setLink] = useState('');
     // const [desc, setDesc] = useState('');
 
@@ -155,6 +157,35 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
 
     const time_remain = calculateRemainingDaysAndHours(new Date(), milestoneData?.starts_in);
 
+    const handleOtpInputChange = (e) => {
+        const value = e.target.value;
+        setOtpInput(value);
+
+        setOtpErr('');
+
+        if (!value) {
+            setOtpErr('OTP is required.');
+            setOtpInput('');
+            return;
+        }
+
+        if (!/^\d+$/.test(value)) {
+            setOtpErr('OTP must contain only numeric digits.');
+            const currentInput = otpInput
+            setOtpInput(currentInput);
+            return;
+        }
+
+        if (value.length > 6) {
+            setOtpErr('OTP cannot be more than 6 digits.');
+            const currentInput = otpInput
+            setOtpInput(currentInput);
+            return;
+        }
+
+        setOtpInput(value);
+    }
+
     const handleGetCopperXOtp = async () => {
         const otpUrl = 'https://income-api.copperx.io/api/auth/email-otp/request';
         const userEmail = userDetails?._id === projectDetails?.owner_id ? userDetails?.email : "";
@@ -188,13 +219,15 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
         const resp = await sendProjectMilestoneReward(milestoneData._id, data);
         console.log('otp res',resp);
 
-        if(resp?.message === "payed" && resp?.data?.status === 'ok') {
+        if(resp?.message === "payed") {
+            refetchProjectDetails();
             dispatch(displaySnackbar("Payment Initiated"))
             setShowOtpModal(false);
         } else if (resp?.err == 'OTP verification failed') {
             dispatch(displaySnackbar("Invalid OTP. Please enter correct OTP"))
         } else {
             dispatch(displaySnackbar("Payment Failed"))
+            setShowOtpModal(false);
         }
     }
 
@@ -273,6 +306,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                             btn_txt={"user submission"}  
                             onClick={() => setShowMilestoneSubmissionModal(true)}
                             alt_txt='user submitted milestone btn' 
+                            transitionDuration={500}
                         />
                     :
                     milestoneData?.status == 'completed' && projectDetails?.owner_id == user_id ?
@@ -295,6 +329,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                             btn_txt={'submit milestone'}  
                             alt_txt='milestone submit btn' 
                             onClick={() => setShowSubmitModal(true)}
+                            transitionDuration={500}
                         />
                     :
                     milestoneData?.status == 'under_review' && milestoneData?.user_status == 'submitted' && projectDetails?.user_id?._id == user_id ?
@@ -306,6 +341,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                             btn_txt={'submitted'}  
                             alt_txt='milestone submitted btn'
                             onClick={() => setShowMilestoneSubmissionModal(true)}
+                            transitionDuration={500}
                         />
                     :
                     milestoneData?.status == 'rejected' && milestoneData?.user_status == 'submitted' && projectDetails?.user_id?._id == user_id ?
@@ -325,6 +361,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                         alt_txt='milestone submit btn' 
                         onClick={() => setShowSubmitModal(true)}
                         disabled={isUserSubmittedOpenMS}
+                        transitionDuration={isUserSubmittedOpenMS ? '' : 500}
                     />
                     : <></>
                 }
@@ -422,6 +459,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                                 btn_txt='submit'  
                                 alt_txt='project apply btn' 
                                 onClick={handleSubmitMilestone}
+                                transitionDuration={500}
                             />
                         </div>
                     }
@@ -455,6 +493,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                                 btn_txt='accept'
                                 alt_txt='project apply btn' 
                                 onClick={() => handleMileStoneSponsorAction('accept')}
+                                transitionDuration={500}
                             />
                             <FancyButton 
                                 src_img={closeProjBtnImg} 
@@ -464,6 +503,7 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                                 btn_txt='reject'  
                                 alt_txt='project apply btn' 
                                 onClick={() => handleMileStoneSponsorAction('reject')}
+                                transitionDuration={500}
                             />
                         </div>
                         : ""
@@ -483,12 +523,13 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                             <input 
                                 type="text" 
                                 value={otpInput} 
-                                onChange={(e) => setOtpInput(e.target.value)} 
+                                onChange={(e) => handleOtpInputChange(e)} 
                                 name="otp" 
                                 id="otp"
                                 placeholder='112233'
                                 className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' 
                             />
+                            {otpErr && <p className='text-red-500 font-medium text-[12px] mt-2'>{otpErr}</p>}
                         </div>
                         <FancyButton 
                             src_img={btnImg} 
@@ -498,6 +539,8 @@ const   MilestoneStatusCard = ({ data: milestoneData, projectDetails, refetchPro
                             btn_txt='submit'  
                             alt_txt='payment btn' 
                             onClick={handleMilestoneReward}
+                            disabled={otpErr}
+                            transitionDuration={500}
                         />
                         
                     </div>

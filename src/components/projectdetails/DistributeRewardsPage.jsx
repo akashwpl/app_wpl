@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux"
 import SyncPng from '../../assets/images/sync.png'
 import USDCPng from '../../assets/images/usdc.png'
 import STRKPng from '../../assets/images/strk.png'
-import { getUserAcctBalance, getUserDetails, sendOpenProjectRewards } from "../../service/api"
+import { createNotification, getUserAcctBalance, getUserDetails, sendOpenProjectRewards } from "../../service/api"
 
 import { ArrowLeft, X } from "lucide-react"
 import YellowBtnPng from '../../assets/images/yellow_button.png'
@@ -20,7 +20,7 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
   const { user_id } = useSelector((state) => state)
   const navigate = useNavigate()
 
-  const {data: userDetails} = useQuery({
+  const {data: userDetails, isLoading:isLoadingUserDetails} = useQuery({
     queryKey: ["userDetails", user_id],
     queryFn: () => getUserDetails(user_id),
     enabled: !!user_id,
@@ -28,6 +28,11 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
 
   const [acctBalance, setAcctBalance] = useState({});
   const [finalBalance, setFinalBalance] = useState(0)
+
+  const [username, setUsername] = useState('A user');
+  useEffect(() => {
+    if(!isLoadingUserDetails) setUsername(userDetails?.displayName);
+  },[isLoadingUserDetails])
 
   const [otpInput, setOtpInput] = useState('');
   const [userEmail, setUserEmail] = useState(userDetails?.email || '')
@@ -84,16 +89,25 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
     }
 
     const resp = await sendOpenProjectRewards(projectDetails?._id,data);
-    console.log('otp res',resp);
 
     if(resp?.message === "payed" && resp?.data?.status === 'ok') {
       dispatch(displaySnackbar("Payment Initiated"))
+      selectedWinner?.map(async (winner) => {
+        const notiObj = {
+          msg: `${username} has rewarded you for bounty`,
+          type: 'payment',
+          fromId: user_id,
+          user_id: winner.user,
+          // project_id: projectDetails._id
+        }
+        await createNotification(notiObj);
+      })
       refetchUserAcctBalance();
       setShowOtpModal(false);
     } else if (resp?.err === 'OTP verification failed') {
-        dispatch(displaySnackbar("Invalid OTP. Please enter correct OTP"))
+      dispatch(displaySnackbar("Invalid OTP. Please enter correct OTP"))
     } else {
-        dispatch(displaySnackbar("Payment Failed"))
+      dispatch(displaySnackbar("Payment Failed"))
     }
   }
 
@@ -181,7 +195,7 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
             <div>
               <div className="w-full flex justify-end">
                 <div className="flex justify-end items-center gap-1.5 bg-white7 rounded-lg w-fit px-2 py-1 font-gridular border border-white7 text-[14px] text-[#FFFFFFC4]">
-                  <img src={SyncPng} alt="" className="size-[20px]"/>
+                  <img src={SyncPng} alt="" className="size-[20px] animate-spin-alt-180"/>
                   <p>Pay in </p>
                   <img src={projectDetails?.currency === 'STRK' ? STRKPng : USDCPng} alt="" className="size-[18px]"/>
                   <p className="font-inter">{projectDetails?.currency}</p>
@@ -194,12 +208,12 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
                   <p className="text-[42px] text-primaryGreen font-gridular">{acctBalance?.balance || '--'}</p>
                   <p className="text-white48 font-inter">{projectDetails?.currency}</p>
                 </div>
-                <div className="mt-2 flex gap-1">
+                {/* <div className="mt-2 flex gap-1">
                   <div className="bg-[#FFFFFF12] border border-[#FFFFFF12] rounded-md w-[89px] h-[32px] flex justify-center items-center text-[13px] text-white font-gridular">150 USDC</div>
                   <div className="bg-[#FFFFFF12] border border-[#FFFFFF12] rounded-md w-[89px] h-[32px] flex justify-center items-center text-[13px] text-white font-gridular">500 USDC</div>
                   <div className="bg-[#FFFFFF12] border border-[#FFFFFF12] rounded-md w-[89px] h-[32px] flex justify-center items-center text-[13px] text-white font-gridular">1000 USDC</div>
                   <div className="bg-[#FFFFFF12] border border-[#FFFFFF12] rounded-md w-[89px] h-[32px] flex justify-center items-center text-[13px] text-white font-gridular">2000 USDC</div>
-                </div>
+                </div> */}
               </div>
 
               <div className="w-[380px] bg-[#101C77] p-[6px] rounded-2xl mt-5">
@@ -256,6 +270,7 @@ const DistributeRewardsPage = ({selectedWinner, projectDetails, setIsDistributin
                 btn_txt='submit'  
                 alt_txt='payment btn' 
                 onClick={handleTransferReward}
+                transitionDuration={500}
               />
             </div>
         </div>

@@ -24,7 +24,6 @@ import userMenuBorderSVG from '../assets/svg/Button2.svg'
 import sponsorMenuBorderSVG from '../assets/svg/Button.svg'
 import adminMenuBorderSVG from '../assets/svg/admin_menu_bg.svg'
 import useNavBar from './useNavHook'
-import { BASE_URL } from '../lib/constants'
 
 const menuBorderImgType = {
   'user': {
@@ -53,9 +52,8 @@ const Navbar = () => {
   const { notificationCount } = useNavBar()
 
   const { user_id } = useSelector((state) => state)
-  console.log('user_id', user_id)
 
-  const { data: userDetail } = useQuery({
+  const { data: userDetail, isLoading:isLoadingUserDetail  } = useQuery({
     queryKey: ['userDetails', user_id],
     queryFn: () => getUserDetails(user_id),
     enabled: !!user_id
@@ -96,8 +94,8 @@ const Navbar = () => {
 
   useEffect(() => {
     if(!userDetail) return
-    dispatch(setUserRole(userDetail?.role))
-  }, [userDetail])
+    if(!isLoadingUserDetail) dispatch(setUserRole(userDetail?.role))
+  }, [isLoadingUserDetail])
 
   const signout = () => {
     localStorage.removeItem('token_app_wpl')
@@ -151,63 +149,13 @@ const Navbar = () => {
     }, 300);
   }
 
-  // const checkIfUserVerfied = () => {
-  //   const res = fetch(`https://income-api.copperx.io/api/kycs/status/${userDetail?.email}`)
-  //   .then(res => res.json())
-  //   .then(data => {
-  //     console.log('data kyc', data)
-  //     if(data?.statusCode == 404){
-  //       updateUserDetails(false, 'Not Verified')
-  //     } else {
-  //       updateUserDetails(true, 'Verified')
-  //     }
-  //     return data
-  //   })
-  // }
-
-  // const updateUserDetails = (isKYCVerified, kycStatus) => {
-  //   const filteredUser = Object.keys(userDetail)
-  //     .filter(key => !key.startsWith('_') && key !== 'projects' && key !== 'rewards' && key !== 'payments' && key !== 'notifications' && key !== 'projectsParticipated' && key !== 'projectsOngoing' && key !== 'projectsCompleted' && key !== 'projectsInProgress' && key !== 'totalProjectsInWPL' && key !== 'totalAmountSpent' && key !== 'projectsPending')
-  //     .reduce((acc, key) => {
-  //       acc[key] = userDetail[key];
-  //       return acc;
-  //     }, {});
-
-  //   const body = {
-  //     ...filteredUser,
-  //     isKYCVerified: isKYCVerified,
-  //     kycStatus: kycStatus
-  //   }
-  //   const response = fetch(`${BASE_URL}/users/update/`, {
-  //     method: "PUT",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       'authorization': 'Bearer ' + localStorage.getItem('token_app_wpl')
-  //     },
-  //     body: JSON.stringify({
-  //       ...body
-  //     })
-  //   }).then(res => res.json())
-  //   .then(data => {
-  //     console.log('data updating user details', data)
-  //     return data
-  //   })
-  // }
-
-  // const {data} = useQuery({
-  //   queryKey: ['userVerification', userDetail?.email],
-  //   queryFn: checkIfUserVerfied,
-  //   enabled: !!userDetail?.email
-  // })
-
-
   return (
     <div className='bg-[#091E67] w-full flex md:px-10 lg:px-20 h-[64px]'>
       {!pathname.includes('verifyorg') &&
       <div className='hidden md:flex justify-between items-center w-full relative'>
         {/* DESKTOP */}
         <div className='flex items-center gap-[24px] text-[12px] lg:text-[14px] font-gridular'>
-          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/'}><GlyphEffect text={'BOUNTIES'}/></Link>}
+          {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/'}><GlyphEffect text={'GIGS'}/></Link>}
           {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/grants'}><GlyphEffect text={'GRANTS'}/></Link>}
           {!pathname?.includes('onboarding') && !pathname?.includes('forgetpassword') && <Link to={'/wplprogram'}>
             <div className='flex items-center gap-[6px] rounded-md bg-[#091044] px-2 py-1'>

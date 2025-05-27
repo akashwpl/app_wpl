@@ -1,23 +1,35 @@
-import used_by_img from '../../assets/svg/template_images/used_by.png'
-import template_card_bg from '../../assets/svg/template_card_bg.png'
-import template_card_hover_bg from '../../assets/svg/template_card_hover_bg.png'
+import used_by_img from '../../assets/svg/template_images/used_by.png';
+import template_card_bg from '../../assets/svg/template_card_bg.png';
+import template_card_hover_bg from '../../assets/svg/template_card_hover_bg.png';
 import { useState } from 'react';
 
-const TemplateCard = ({cardData, handleTemplateProjectStates}) => {
+const TemplateCard = ({ cardData, handleTemplateProjectStates }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const transtionDuration = 300
 
   return (
-    <div 
-      className='w-[290px] h-[190px]  cursor-pointer relative'
+    <div
+      className='w-[290px] h-[190px] cursor-pointer relative'
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)} 
-      onClick={() => handleTemplateProjectStates(cardData?.id)} 
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => handleTemplateProjectStates(cardData?.id)}
     >
-      <img 
-          src={isHovered ? template_card_hover_bg : template_card_bg } 
-          alt='template card img'
-          className='w-full h-full'
-        />
+      {/* Background Image (Base) */}
+      <img
+        src={template_card_bg}
+        alt='template card background'
+        className={`w-full h-full absolute top-0 left-0 transition-opacity duration-${transtionDuration} ease-in-out`}
+        style={{ opacity: isHovered ? 0 : 1 }}
+      />
+
+      {/* Background Image (Hover) */}
+      <img
+        src={template_card_hover_bg}
+        alt='template card hover background'
+        className={`w-full h-full absolute top-0 left-0 transition-opacity duration-${transtionDuration} ease-in-out`}
+        style={{ opacity: isHovered ? 1 : 0 }}
+      />
+
       <div className='absolute inset-0 top-0 px-8 py-5'>
         <img src={cardData?.image} className='w-14 h-16 mx-auto my-5' alt="" />
         <div className='flex items-center justify-between'>
@@ -32,7 +44,7 @@ const TemplateCard = ({cardData, handleTemplateProjectStates}) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default TemplateCard
+export default TemplateCard;

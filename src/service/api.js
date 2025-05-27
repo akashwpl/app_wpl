@@ -1,4 +1,6 @@
+import axios from 'axios';
 import { axiosInstance } from '../lib/axiosInstance'
+import { BASE_URL } from '../lib/constants';
 
 const token = localStorage.getItem('token_app_wpl')
 
@@ -448,6 +450,59 @@ export const sendProjectMilestoneReward = async (milestone_id, data) => {
 export const getUserAcctBalance = async () => {
     try {
         const response = await axiosInstance.get(`/users/wallet/balances`);
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+
+export const sendP2pPaymentReward = async (data) => {
+    try {
+        const response = await axiosInstance.post(`/users/payment/pay`,data);
+        return response.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+
+export const getPaymentTransactions = async () => {
+    try {
+        const response = await axiosInstance.get(`/users/payment/history`);
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+
+export const loginWithFirebaseGoogle = async (bearerToken, data) => {
+    try {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${bearerToken}`,
+          };
+        const response = await axios.post(`${BASE_URL}/account/loginWithFirebase`, data, { headers });
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+
+export const updateUserProfile = async (data) => {
+    try {
+        const response = await axiosInstance.put(`/users/update/`,data);
+        return response.data.data
+    } catch (error) {
+        return handleForbiddenError(error)
+    }
+}
+
+export const singupWithFirebaseGoogle = async (bearerToken, data) => {
+    try {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${bearerToken}`,
+          };
+        const response = await axios.post(`${BASE_URL}/account/signupWithFirebase`, data, { headers });
         return response.data.data
     } catch (error) {
         return handleForbiddenError(error)

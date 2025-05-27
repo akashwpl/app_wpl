@@ -4,7 +4,10 @@ import trophyPNG from '../assets/icons/trophy-fill.png'
 import STRKPng from '../assets/images/strk.png'
 import SyncPng from '../assets/images/sync.png'
 import USDCPng from '../assets/images/usdc.png'
-import { getAllUsers, getUserAcctBalance, getUserDetails } from "../service/api"
+import STRKPng from '../assets/images/strk.png'
+import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
+import trophyPNG from '../assets/icons/trophy-fill.png'
+import { getAllUsers, getUserAcctBalance, getUserDetails, sendOpenProjectRewards, sendP2pPaymentReward } from "../service/api"
 
 import { ArrowLeft, CheckCheck, Menu, X } from "lucide-react"
 import { useEffect, useState } from "react"
@@ -17,7 +20,16 @@ import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png'
 import greenBtnImg from '../assets/svg/green_btn_subtract.png'
 import CustomModal from "../components/ui/CustomModal"
 import FancyButton from "../components/ui/FancyButton"
-import { displaySnackbar } from "../store/thunkMiddleware"
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png';
+import btnImg from '../assets/svg/btn_subtract_semi.png';
+import CustomModal from "../components/ui/CustomModal"
+import wpllogo from '../assets/svg/wolf_logo.svg'
+import { useNavigate } from "react-router-dom"
+import redBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png';
+import redBtnImg from '../assets/svg/close_proj_btn_subtract.png';
+import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png';
+import greenBtnImg from '../assets/svg/green_btn_subtract.png';
+import { email_regex } from "../lib/constants"
 
 const PaymentPage = () => {
   const { user_id } = useSelector((state) => state)
@@ -29,22 +41,31 @@ const PaymentPage = () => {
     enabled: !!user_id,
   })
 
+  const [paymentChoice, setPaymentChoice] = useState('email')
+  const [userInput, setUserInput] = useState('')
   const [currency, setCurrency] = useState('USDC')
   const [payAmt, setPayAmt] = useState(1)
+  const [remarks, setRemarks] = useState('')
 
   const [acctBalance, setAcctBalance] = useState({});
   const [finalBalance, setFinalBalance] = useState(0)
 
   const [otpInput, setOtpInput] = useState('');
-  const [userEmail, setUserEmail] = useState(userDetails?.email || '')
   const [otpSid, setOtpSid] = useState(null);
   const [showOtpModal, setShowOtpModal] = useState(false);
 
-  const [paymentChoice, setPaymentChoice] = useState('email')
+  const [userEmail, setUserEmail] = useState(userDetails?.email || '')
+  const [receiverEmail, setReceiverEmail] = useState('');
 
   const [allUserData, setAllUserData] = useState([])
 
-  const [showUsersDialog, setShowusersDialog] = useState(false)
+  const [errors,setErrors] = useState({
+    userInput: '',
+    remarks: '',
+    amount: ''
+  })
+
+  const [otpErr, setOtpErr] = useState('')
 
   const dispatch = useDispatch();
 
@@ -96,7 +117,7 @@ const PaymentPage = () => {
   
 
   const handleGetCopperXOtp = async () => {
-    // if(projectDetails?.paymentStatus != 'ready' && projectDetails?.paymentStatus) return
+    if(!validateFields()) return
     const otpUrl = 'https://income-api.copperx.io/api/auth/email-otp/request';
     const userEmail = userDetails?.email || "";
     const otpBody = {
@@ -120,25 +141,89 @@ const PaymentPage = () => {
     }
   }
 
+  const validateFields = () => {
+    setErrors({
+      userInput: '',
+      remarks: '',
+      amount: ''
+    })
+    const newError = {}
+    if(!userInput) {
+      newError.userInput = 'User details are mandatory'
+    } else if(userInput && paymentChoice === 'email' && !email_regex.test(userInput)) {
+      newError.userInput = 'Please provide a valid email'
+    }
+    if(!remarks) newError.remarks = 'Please provide Payment remarks'
+    if(remarks.length > 100) newError.remarks = 'Payment remarks length should not exceed 100 characters'
+    if(!payAmt || parseFloat(payAmt) < 1) {
+      newError.amount = 'Amount should be greater than or equal to 1'
+    } else if(parseFloat(payAmt) > acctBalance?.balance) {
+      newError.amount = 'Amount is greater than available balance'
+    }
+
+    setErrors(newError)
+    return Object.keys(newError).length === 0
+  }
+
+  const handleOtpInputChange = (e) => {
+    const value = e.target.value;
+    setOtpInput(value);
+
+    setOtpErr('');
+
+    if (!value) {
+      setOtpErr('OTP is required.');
+      setOtpInput('');
+      return;
+    }
+
+    if (!/^\d+$/.test(value)) {
+      setOtpErr('OTP must contain only numeric digits.');
+      const currentInput = otpInput
+      setOtpInput(currentInput);
+      return;
+    }
+
+    if (value.length > 6) {
+      setOtpErr('OTP cannot be more than 6 digits.');
+      const currentInput = otpInput
+      setOtpInput(currentInput);
+      return;
+    }
+
+    setOtpInput(value);
+  }
+
   const handleTransferReward = async () => {
-    // const data = {
-    //   email: userEmail,
-    //   otp: otpInput,
-    //   sid: otpSid
-    // }
+    if(otpErr) return;
 
-    // const resp = await sendOpenProjectRewards(projectDetails?._id,data);
-    // console.log('otp res',resp);
+    // Just for testing P2P flow
+    // separate function to be created to get receiver email based on username/ email search in input field
+    let receiverEmailTemp = ''
+    if(paymentChoice === 'email') receiverEmailTemp = userInput
 
-    // if(resp?.message === "payed" && resp?.data?.status === 'ok') {
-    //   dispatch(displaySnackbar("Payment Initiated"))
-    //   refetchUserAcctBalance();
-    //   setShowOtpModal(false);
-    // } else if (resp?.err === 'OTP verification failed') {
-    //     dispatch(displaySnackbar("Invalid OTP. Please enter correct OTP"))
-    // } else {
-    //     dispatch(displaySnackbar("Payment Failed"))
-    // }
+    const data = {
+      email: userEmail,
+      otp: otpInput,
+      sid: otpSid,
+      receiverEmail: receiverEmailTemp,
+      amount: payAmt,
+      currency: currency,
+      remarks: remarks
+    }
+
+    const resp = await sendP2pPaymentReward(data);
+
+    if(resp?.message === "payed") {
+      dispatch(displaySnackbar("Payment Initiated"))
+      refetchUserAcctBalance();
+      setShowOtpModal(false);
+    } else if (resp?.err === 'OTP verification failed') {
+      dispatch(displaySnackbar("Invalid OTP. Please enter correct OTP"))
+    } else {
+      dispatch(displaySnackbar("Payment Failed. Please, try again later"))
+      setShowOtpModal(false);
+    }
   }
 
   const handleCloseOtpModal = () => {
@@ -157,7 +242,7 @@ const PaymentPage = () => {
         <ArrowLeft size={14} stroke='#ffffff65'/>
         <p 
           className='text-white48 font-inter text-[14px] cursor-pointer' 
-          onClick={() => {setIsDistributingRewards(false)}}
+          onClick={() => navigate('/')}
         >Go back</p>
       </div>
 
@@ -169,8 +254,12 @@ const PaymentPage = () => {
                   <div className="flex flex-row text-primaryBlue gap-2">
                     <div className="w-full h-[101px] py-5 px-5 bg-cover bg-[url('assets/images/total_earned_bg.png')] rounded-md">
                         <p className='font-inter font-medium text-[12px] leading-[14.4px] mb-1'>Remaining balance</p>
-                        <div className="flex">
-                          <p className='font-gridular text-[42px] leading-[50.4px]'>{finalBalance}</p>
+                        
+                        <div className="flex items-center gap-3">
+                          <img src={currency === 'STRK' ? STRKPng : USDCPng} alt="" className="size-[32px]"/>
+                          <p className="font-gridular text-[42px] leading-[50.4px]">{acctBalance?.balance || '--'}</p>
+                          <p className="font-gridular text-[42px] leading-[50.4px]">{currency}</p>
+                          {/* <p className='font-gridular text-[42px] leading-[50.4px]'> {acctBalance?.balance}</p> */}
                         </div>
                     </div>
                     <div className='w-1/2 h-[101px] bg-primaryGreen py-6 px-3 rounded-lg'>
@@ -207,7 +296,7 @@ const PaymentPage = () => {
                 </div>
                 <div className="border border-b-primaryYellow my-3.5"></div>
                 <div className="flex flex-col gap-1.5 font-inter text-[14px]">
-                  <label className="text-[13px] font-medium text-white32" htmlFor="payment_mtd">Payment Method</label>
+                  <label className="text-[13px] font-medium text-white32" htmlFor="payment_mtd">Payment Method <span className='text-[#F03D3D]'>*</span></label>
                   <select onChange={(e) => setPaymentChoice(e.target.value)} value={paymentChoice} className="h-10 bg-[#1A2151] text-white88 cursor-pointer px-3 outline-none" name="payment_mtd" id="payment_mtd">
                     {/* <option value="wallet_address">Wallet Address</option> */}
                     <option value="email">Email Id</option>
@@ -215,9 +304,17 @@ const PaymentPage = () => {
                   </select>
                 </div>
                 <div className="flex flex-col gap-1.5 font-inter text-[14px] mt-3">
-                  <label className="text-[13px] font-medium text-white32" htmlFor="user_payment_details">Enter {paymentChoice === 'email' ? 'Email address' : 'WPL username'}</label>
-                  <input className="w-full h-10 bg-[#1A2151] text-white88 outline-none px-3" placeholder={paymentChoice === 'email' ? 'janedoe@wpl.com' : 'Jane Doe'} type="text" id="user_payment_details" name="user_payment_details" />
+                  <label className="text-[13px] font-medium text-white32" htmlFor="user_payment_details">Enter {paymentChoice === 'email' ? 'Email address' : 'WPL username'} <span className='text-[#F03D3D]'>*</span></label>
+                  <input className="w-full h-10 bg-[#1A2151] text-white88 outline-none px-3" placeholder={paymentChoice === 'email' ? 'janedoe@wpl.com' : 'Jane Doe'} type="text" id="user_payment_details" name="user_payment_details" value={userInput} onChange={(e) => setUserInput(e.target.value)} />
+                  {errors.userInput && <p className='text-red-500 font-medium text-[12px] mx-3'>{errors.userInput}</p>}
                 </div>
+
+                <div className="flex flex-col gap-1.5 font-inter text-[14px] mt-3">
+                  <label className="text-[13px] font-medium text-white32" htmlFor="payment_remarks">Payment Remarks <span className='text-[#F03D3D]'>*</span></label>
+                  <input className="w-full h-10 bg-[#1A2151] text-white88 outline-none px-3" placeholder='Hey buddy you deserve this!!' type="text" id="payment_remarks" name="payment_remarks" value={remarks} onChange={(e) => setRemarks(e.target.value)} />
+                  {errors.remarks && <p className='text-red-500 font-medium text-[12px] mx-3'>{errors.remarks}</p>}
+                </div>
+
                 <div className='mt-3'>
                   <p className='text-[13px] font-semibold text-white32 font-inter mb-[6px]'>Amount <span className='text-[#F03D3D]'>*</span></p>
                   <div className='flex items-center gap-2 w-full'>
@@ -237,7 +334,7 @@ const PaymentPage = () => {
                       </div>
                     </div>
                   </div>
-                  {/* {errors.prizeApproved && <p className='text-red-500 font-medium text-[12px]'>{errors.prizeApproved}</p>} */}
+                  {errors.amount && <p className='text-red-500 font-medium text-[12px] mt-1 mx-2'>{errors.amount}</p>}
                 </div>
               </div>
 
@@ -251,6 +348,7 @@ const PaymentPage = () => {
                       btn_txt={<span className='flex items-center justify-center gap-2'><X size={14}/><span>Go Back</span></span>} 
                       alt_txt='submission reject btn' 
                       onClick={() => navigate('/')}
+                      transitionDuration={500}
                     />
                     <FancyButton 
                       src_img={greenBtnImg} 
@@ -260,6 +358,7 @@ const PaymentPage = () => {
                       btn_txt={<span className='flex items-center justify-center gap-2'><CheckCheck size={14}/><span>Confirm</span></span>}  
                       alt_txt='submission accept btn' 
                       onClick={handleGetCopperXOtp}
+                      transitionDuration={500}
                     />
                   </>
               </div> 
@@ -269,7 +368,7 @@ const PaymentPage = () => {
             <div>
               <div className="w-full flex justify-end">
                 <div onClick={toggleCurrency} className="flex justify-end items-center gap-1.5 bg-white7 rounded-lg w-fit px-2 py-1 font-gridular cursor-pointer border border-white7 text-[14px] text-[#FFFFFFC4]">
-                  <img src={SyncPng} alt="" className="size-[20px]"/>
+                  <img src={SyncPng} alt="" className="size-[20px] animate-spin-alt-180"/>
                   <p>Pay in </p>
                   <img src={currency === 'STRK' ? STRKPng : USDCPng} alt="" className="size-[18px]"/>
                   <p className="font-inter">{currency}</p>
@@ -329,12 +428,13 @@ const PaymentPage = () => {
                 <input 
                   type="text" 
                   value={otpInput} 
-                  onChange={(e) => setOtpInput(e.target.value)} 
+                  onChange={(e) => handleOtpInputChange(e)} 
                   name="otp" 
                   id="otp"
                   placeholder='112233'
                   className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' 
                 />
+                {otpErr && <p className='text-red-500 font-medium text-[12px] mt-2'>{otpErr}</p>}
               </div>
               <FancyButton 
                 src_img={btnImg} 
@@ -344,6 +444,8 @@ const PaymentPage = () => {
                 btn_txt='submit'  
                 alt_txt='payment btn' 
                 onClick={handleTransferReward}
+                disabled={otpErr}
+                transitionDuration={500}
               />
             </div>
         </div>

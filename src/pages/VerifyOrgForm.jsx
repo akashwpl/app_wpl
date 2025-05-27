@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
     Accordion,
     AccordionContent,
@@ -12,7 +12,7 @@ import { ArrowLeft, CheckCheck, Globe, Menu, Send, Trash, Upload, X } from 'luci
 import DiscordSvg from '../assets/svg/discord.svg'
 import TwitterPng from '../assets/images/twitter.png'
 import { useDispatch, useSelector } from 'react-redux';
-import { createNotification, createOrganisation, createUser, getAdmins, getUserDetails } from '../service/api';
+import { createNotification, createOrganisation, createUser, getAdmins, getUserDetails, singupWithFirebaseGoogle } from '../service/api';
 import FancyButton from '../components/ui/FancyButton';
 import btnImg from '../assets/svg/btn_subtract_semi.png'
 import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
@@ -23,10 +23,14 @@ import { website_regex } from '../lib/constants';
 import { setIsVerifyOrgBack, setUserDetails, setUserId, setUserRole } from '../store/slice/userSlice';
 import SelectProjectType from '../components/projectdetails/SelectProjectType';
 
+import CustomModal from '../components/ui/CustomModal'
+import { displaySnackbar } from '../store/thunkMiddleware'
+
 const VerifyOrgForm = () => {
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const dispatch = useDispatch()
+    const { signupType } = useParams();
 
     const { user_id } = useSelector((state) => state)
     const { user } = useSelector((state) => state);
@@ -52,6 +56,12 @@ const VerifyOrgForm = () => {
     
     const [isloading, setIsLoading] = useState(false);
     const [pfp, setPfp] = useState(null)
+
+    const [copperXOtpInput, setCopperXOtpInput] = useState('');
+    const [copperXSid, setCopperXSid] = useState(null);
+    const [showCopperXOtpModal, setShowCopperXOtpModal] = useState(false);
+    const [copperXOtpErr, setCopperXOtpErr] = useState('')
+    const [isCopperXOtpModalLoading, setIsCopperXOtpModalLoading] = useState(false)
     
     useEffect(() => {
         setPfp(user.pfp);
@@ -117,24 +127,43 @@ const VerifyOrgForm = () => {
     }
 
     const submitForm = async () => {
-        const isValid = validateFields();
+        // const isValid = validateFields();
+        setIsCopperXOtpModalLoading(true);
         
-        if (isValid) {
+        // if (isValid) {
             setIsLoading(true);
 
             // Firebase image upload code
             const imageUrl = await handleFirebaseImgUpload();
 
             // Create sponsor account
-            const createUserResp = await createUser(user);
+            const userBody = {...user, sid: copperXSid, otp: copperXOtpInput}
 
-            if(createUserResp?.err != `This email ${user.email} already exists`) {
+            let createUserResp = null;
+            
+            if(signupType === 'gmail') {
+                const googleAccessToken = localStorage.getItem('token_google')
+                createUserResp = await singupWithFirebaseGoogle(googleAccessToken,userBody);
+            } else if(signupType === 'email') {
+                createUserResp = await createUser(userBody);
+            }
+
+            console.log('cr log',createUserResp);
+            
+            if(createUserResp?.err == 'OTP verification failed') {
+                setCopperXOtpErr(createUserResp?.err)
+                setIsLoading(false);
+                setIsCopperXOtpModalLoading(false);
+                return
+            } else if(createUserResp?.err != `This email ${user.email} already exists`) {
                 if(createUserResp?.token && createUserResp?.userId) {
                     localStorage.setItem('token_app_wpl', createUserResp?.token)
+                    localStorage.removeItem('token_google')
                     dispatch(setUserId(createUserResp?.userId))
                 } else {
                     setErrors({submit: 'Something went wrong. Please try again later'});
                     setIsLoading(false);
+                    setIsCopperXOtpModalLoading(false)
                     return
                 }
             }
@@ -161,6 +190,7 @@ const VerifyOrgForm = () => {
                 setErrors(errorObj);
                 scrollToTop();
                 setIsLoading(false);
+                setIsCopperXOtpModalLoading(false)
                 return;
             }
 
@@ -181,8 +211,75 @@ const VerifyOrgForm = () => {
             dispatch(setUserRole("sponsor"));
             setIsBackBtn(false);
             setSubmitted(true);
-        }
+            setShowCopperXOtpModal(false)
+        // }
         setIsLoading(false);
+        setIsCopperXOtpModalLoading(false)
+    }
+
+      const handleCloseOtpModal = () => {
+        setShowCopperXOtpModal(false);
+        setCopperXOtpInput('');
+      }
+    
+      const handleCopperXOtpInputChange = (e) => {
+        const value = e.target.value;
+        setCopperXOtpInput(value);
+    
+        setCopperXOtpErr('');
+    
+        if (!value) {
+          setCopperXOtpErr('OTP is required.');
+          setCopperXOtpInput('');
+          return;
+        }
+    
+        if (!/^\d+$/.test(value)) {
+          setCopperXOtpErr('OTP must contain only numeric digits.');
+          const currentInput = copperXOtpInput
+          setCopperXOtpInput(currentInput);
+          return;
+        }
+    
+        if (value.length > 6) {
+          setCopperXOtpErr('OTP cannot be more than 6 digits.');
+          const currentInput = copperXOtpInput
+          setCopperXOtpInput(currentInput);
+          return;
+        }
+    
+        setCopperXOtpInput(value);
+      }
+    
+    const handleGetCopperXOtp = async () => {
+        const isValid = validateFields();
+        if(isValid) {
+
+            const otpUrl = 'https://income-api.copperx.io/api/auth/email-otp/request';
+            const otpBody = {
+                email: user?.email
+            }
+            const otpRes = await fetch(otpUrl,{
+                method: 'POST',
+                body: JSON.stringify(otpBody),
+                headers: {
+                'Content-Type': 'application/json',
+                },
+            }).then((res) => res.json())
+
+            console.log('clg res',otpRes);
+            
+    
+            if(otpRes?.sid) {
+                // setUserEmail(userEmail);
+                setCopperXSid(otpRes?.sid);
+                dispatch(displaySnackbar("Please enter CopperX OTP"))
+                setCopperXOtpErr('')
+                setShowCopperXOtpModal(true);
+            } else {
+                dispatch(displaySnackbar("Something went wrong!!"))
+            }
+        }
     }
 
   return (
@@ -201,37 +298,6 @@ const VerifyOrgForm = () => {
             {/* <div className='max-w-[469px] w-full'> */}
                 {submitted 
                 ?   
-                    // <div className='flex justify-center items-center mt-4'>
-                    //     <div className='max-w-[469px] w-full'>
-                    //         <div className='flex items-center gap-4 border border-dashed border-[#FFFFFF1F] bg-white12 rounded-md px-4 py-3'>
-                    //             <div>
-                    //                 <img src={logoPreview} alt='dummy' className='size-[72px] aspect-square rounded-md'/>
-                    //             </div>
-                    //             <div>
-                    //                 <p className='text-white88 font-gridular text-[20px] leading-[24px]'>{name}</p>
-                    //                 <a href={websiteLink} target='_blank'><p className='text-white88 font-semibold text-[13px] font-inter underline'>@{organisationHandle}</p></a>
-                    //             </div>
-                    //         </div>
-
-                    //         <div className='flex flex-col justify-center items-center mt-8'>
-                    //             <img src={tickFilledImg} alt='tick-filled' className='size-[54px] mb-4'/>
-                    //             <div className='text-white font-inter'>Submitted your details</div>
-                    //             <p className='text-white32 text-[13px] font-semibold font-inter'>You will be notified once the verification is compeleted</p>
-                    //         </div>
-
-                    //         <div className='mt-4'>
-                    //             <FancyButton 
-                    //                 src_img={btnImg} 
-                    //                 hover_src_img={btnHoverImg} 
-                    //                 img_size_classes='w-[490px] h-[44px]' 
-                    //                 className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
-                    //                 btn_txt='Welcome Aboard' 
-                    //                 alt_txt='redirect to all projects' 
-                    //                 onClick={() => {navigate('/');window.location.reload()}}
-                    //             />
-                    //         </div>
-                    //     </div>
-                    // </div>
                     <SelectProjectType />
                 :   <div className='max-w-[530px] w-full bg-white7 px-6 py-2 rounded-md'>
                         {/* <div className='bg-primaryYellow/10 p-2 py-3 rounded-md border border-dashed border-primaryYellow/10'>
@@ -405,8 +471,9 @@ const VerifyOrgForm = () => {
                                 className='font-gridular text-[14px] leading-[16.8px] text-primaryYellow mt-0.5'
                                 btn_txt={isloading ? <div className="flex justify-center items-center -mt-1"> <Spinner /> </div> : "Let's Get started"}
                                 alt_txt='verify org btn' 
-                                onClick={submitForm}
+                                onClick={handleGetCopperXOtp}
                                 // isArrow='true'
+                                transitionDuration={500}
                             />
                         </div> 
                         {errors.submit && <p className='text-red-500 font-medium text-center text-[12px] mt-1'>{errors.submit}</p>}
@@ -414,6 +481,39 @@ const VerifyOrgForm = () => {
                 }
             {/* </div> */}
         </div>
+        <CustomModal isOpen={showCopperXOtpModal} closeModal={handleCloseOtpModal}>
+            <div className='bg-primaryDarkUI border border-white4 rounded-md w-[500px] p-3'>
+            <div className='flex justify-end'><X size={20} onClick={handleCloseOtpModal}  className='text-white88 hover:text-white64 cursor-pointer'/></div>
+                <div>
+                <p className='text-primaryYellow font-semibold font-gridular'>Enter CopperX OTP</p>
+                <div className='h-[1px] bg-primaryYellow w-full mt-2 mb-5'/>
+                <div className='flex flex-col mt-4 mb-4'>
+                    <label className='text-[13px] leading-[15.6px] font-medium text-white32 mb-1' htmlFor='cotp'>OTP</label>
+                    <input 
+                    type="text" 
+                    value={copperXOtpInput} 
+                    onChange={(e) => handleCopperXOtpInputChange(e)} 
+                    name="cotp" 
+                    id="cotp"
+                    placeholder='112233'
+                    className='bg-white12 text-[14px] rounded-md py-2 px-2 text-white88 placeholder:text-white12 outline-none' 
+                    />
+                    {copperXOtpErr && <p className='text-red-500 font-medium text-[12px] mt-2'>{copperXOtpErr}</p>}
+                </div>
+                <FancyButton 
+                    src_img={btnImg} 
+                    hover_src_img={btnHoverImg} 
+                    img_size_classes='w-[500px] h-[44px]' 
+                    className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
+                    btn_txt={isCopperXOtpModalLoading ? <div className='flex justify-center items-center -translate-y-1 -mt-1.5'><Spinner /></div> : 'Submit'}  
+                    alt_txt='submit btn' 
+                    onClick={submitForm}
+                    disabled={copperXOtpErr}
+                    transitionDuration={500}
+                />
+                </div>
+            </div>
+        </CustomModal>
     </div>
   )
 }

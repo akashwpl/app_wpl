@@ -213,6 +213,7 @@ const GrantDetailsPage = () => {
                       className='font-gridular text-[14px] leading-[8.82px] text-primaryYellow mt-1.5'
                       btn_txt='Apply'  
                       alt_txt='Grant apply btn' 
+                      transitionDuration={500}
                     />
                   </a>
                   // for type: admin
@@ -228,6 +229,7 @@ const GrantDetailsPage = () => {
                         btn_txt='Accept' 
                         alt_txt='admin grant accept btn' 
                         onClick={() => handleAcceptRejectRequest(grantDetails._id,grantDetails.owner_id,grantDetails.title,true)}
+                        transitionDuration={500}
                       />
                       <FancyButton 
                         src_img={closeProjBtnImg} 
@@ -237,6 +239,7 @@ const GrantDetailsPage = () => {
                         btn_txt='Reject'
                         alt_txt='admin grant reject btn'
                         onClick={() => handleAcceptRejectRequest(grantDetails._id,grantDetails.owner_id,grantDetails.title,false)}
+                        transitionDuration={500}
                       />
                     </div>
                   :
@@ -251,6 +254,7 @@ const GrantDetailsPage = () => {
                         btn_txt='Close' 
                         alt_txt='admin grant close btn' 
                         onClick={() => handleGrantCLose(grantDetails._id,grantDetails.owner_id,grantDetails.title)}
+                        transitionDuration={500}
                       />
                       {/* Grant edit btn */}
                       <FancyButton 
@@ -261,6 +265,7 @@ const GrantDetailsPage = () => {
                         btn_txt='Edit'
                         alt_txt='admin grant edit btn'
                         onClick={() => handleGrantEdit(grantDetails._id)}
+                        transitionDuration={500}
                       />
                     </div>
                   :

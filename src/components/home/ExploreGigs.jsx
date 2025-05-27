@@ -64,45 +64,45 @@ const ExploreGigs = ({orgProjects, userId}) => {
     enabled: !!userId
   })
 
-  useEffect(() => {
-    const closeProject = async (projectDetails) => {
-      const data = {
-        project: { status: "closed" },
-        milestones: projectDetails.milestones        // milestones is a required field
-      }
+  // useEffect(() => {
+  //   const closeProject = async (projectDetails) => {
+  //     const data = {
+  //       project: { status: "closed" },
+  //       milestones: projectDetails.milestones        // milestones is a required field
+  //     }
   
-      if(projectDetails?.isOpenBounty) {
-        const res = await updateOpenProjectDetails(projectDetails._id, data);
-      } else {
-        const res = await updateProjectDetails(projectDetails._id, data);
-      }
+  //     if(projectDetails?.isOpenBounty) {
+  //       const res = await updateOpenProjectDetails(projectDetails._id, data);
+  //     } else {
+  //       const res = await updateProjectDetails(projectDetails._id, data);
+  //     }
   
-      const notiObj = {
-        msg: `The project has been automatically closed as the deadline to complete it has passed.`,
-        type: 'project_req',
-        fromId: user_id,
-        user_id: projectDetails.user_id,
-        project_id: projectDetails._id
-      }
-      const notiRes = await createNotification(notiObj)
-    }
+  //     const notiObj = {
+  //       msg: `The project has been automatically closed as the deadline to complete it has passed.`,
+  //       type: 'project_req',
+  //       fromId: user_id,
+  //       user_id: projectDetails.user_id,
+  //       project_id: projectDetails._id
+  //     }
+  //     const notiRes = await createNotification(notiObj)
+  //   }
     
-    const checkAndCloseProjects = async () => {
-      const pastDeadlineProjects = allProjects?.filter(project => new Date(project.deadline) < new Date());
-      if (pastDeadlineProjects?.length > 0) {
-        for (const project of pastDeadlineProjects) {
-          if(project?.owner_id == userId) await closeProject(project);
-        }
-      }
-    };
+  //   const checkAndCloseProjects = async () => {
+  //     const pastDeadlineProjects = allProjects?.filter(project => new Date(project.deadline) < new Date());
+  //     if (pastDeadlineProjects?.length > 0) {
+  //       for (const project of pastDeadlineProjects) {
+  //         if(project?.owner_id == userId) await closeProject(project);
+  //       }
+  //     }
+  //   };
     
-    if(!isLoadingAllProjects) {
-      checkAndCloseProjects();
-    }
+  //   if(!isLoadingAllProjects) {
+  //     checkAndCloseProjects();
+  //   }
     
-    checkAndCloseProjects();
-    refetchAllProjectDetails()
-  },[isLoadingAllProjects, allProjects])
+  //   checkAndCloseProjects();
+  //   refetchAllProjectDetails()
+  // },[isLoadingAllProjects, allProjects])
 
   const handleTabClick = (id) => {
     const newTabs = tabs.map((tab) => ({
@@ -123,6 +123,8 @@ const ExploreGigs = ({orgProjects, userId}) => {
     return allProjects?.filter((el) => {
       if(selectedTab == 'closed') {
         return (el?.status == 'closed' || el?.status == 'completed')
+      } else if(selectedTab == 'ongoing') {
+        return el?.status !== 'closed' && el?.status !== 'completed'
       } else if(selectedTab == 'idle') {
         return el;
       } else {
@@ -265,7 +267,7 @@ const ExploreGigs = ({orgProjects, userId}) => {
           </div>
         </div>
 
-        <div>
+        <div className={filteredProjects?.length > 0 && 'mb-32'}>
           {isLoadingUserProjects ? <div className="flex justify-center items-center mt-10"> <Spinner /> </div> :
           filteredProjects && selectedTab == 'live' && filteredProjects?.length == 0 ? <div className="mt-24">
             <div className="flex flex-col justify-center items-center gap-2">

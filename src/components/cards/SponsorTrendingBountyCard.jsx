@@ -9,7 +9,7 @@ import wpl_pr_details from '../../assets/images/wpl_prdetails.png'
 import { calculateRemainingDaysAndHours } from '../../lib/constants'
 import { getProjectDetails, getUserProjects } from '../../service/api'
 
-
+import trendingBountyVideo from '../../assets/dummy/trending_bounty.mp4'
 
 const SponsorTrendingBountyCard = () => {
 
@@ -55,10 +55,24 @@ const SponsorTrendingBountyCard = () => {
       <Link to={`projectdetails/${projectData?._id}`} className='flex flex-col justify-between w-full h-[220px] bg-cardBlueBg hover:bg-cardBlueBg/15 rounded-md cursor-pointer'>
         <div className='flex flex-row justify-between px-4 mt-3'>
             <img width={40} src={wpl_pr_details} alt="WPL PR details" />
-            <div className='flex flex-row py-1 gap-1 text-cardBlueText bg-[#233579] w-32 h-[25px] items-center rounded-md'>
+            <div 
+              className='w-[250px] absolute -top-14 left-24'
+            >
+              <video 
+                autoPlay
+                loop
+                muted
+                playsInline
+                disablePictureInPicture
+                className="object-cover [clip-path:inset(56px_56px_round_6px)]"
+              >
+                <source src={trendingBountyVideo} type="video/mp4"/>
+              </video>
+            </div>
+            {/* <div className='flex flex-row py-1 gap-1 text-cardBlueText bg-[#233579] w-32 h-[25px] items-center rounded-md'>
                 <img src={zapBlueSVG} alt='zap-blue' className='size-[14px] ml-2'/>
                 <p className='font-inter font-medium text-[12px] leading-[14.4px]'>Trending Bounty</p>
-            </div>
+            </div> */}
         </div>
         <p className='text-[16px] text-cardBlueText font-gridular leading-[19.2px] px-4'>{projectData?.title}</p>
         <p className='text-[13px] text-white48 font-inter leading-[15.6px] font-medium px-4 truncate text-ellipsis'>{projectData?.description}</p>
