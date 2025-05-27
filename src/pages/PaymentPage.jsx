@@ -1,26 +1,23 @@
 import { useQuery } from "@tanstack/react-query"
 import { useDispatch, useSelector } from "react-redux"
+import trophyPNG from '../assets/icons/trophy-fill.png'
+import STRKPng from '../assets/images/strk.png'
 import SyncPng from '../assets/images/sync.png'
 import USDCPng from '../assets/images/usdc.png'
-import STRKPng from '../assets/images/strk.png'
-import trophySVG from '../assets/icons/pixel-icons/trophy-yellow.svg'
-import trophyPNG from '../assets/icons/trophy-fill.png'
-import { getAllUsers, getUserAcctBalance, getUserDetails, sendOpenProjectRewards } from "../service/api"
+import { getAllUsers, getUserAcctBalance, getUserDetails } from "../service/api"
 
 import { ArrowLeft, CheckCheck, Menu, X } from "lucide-react"
-import YellowBtnPng from '../assets/images/yellow_button.png'
-import { displaySnackbar } from "../store/thunkMiddleware"
 import { useEffect, useState } from "react"
-import FancyButton from "../components/ui/FancyButton"
-import btnHoverImg from '../assets/svg/btn_hover_subtract.png';
-import btnImg from '../assets/svg/btn_subtract_semi.png';
-import CustomModal from "../components/ui/CustomModal"
-import wpllogo from '../assets/svg/wolf_logo.svg'
 import { useNavigate } from "react-router-dom"
-import redBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png';
-import redBtnImg from '../assets/svg/close_proj_btn_subtract.png';
-import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png';
-import greenBtnImg from '../assets/svg/green_btn_subtract.png';
+import btnHoverImg from '../assets/svg/btn_hover_subtract.png'
+import btnImg from '../assets/svg/btn_subtract_semi.png'
+import redBtnHoverImg from '../assets/svg/close_proj_btn_hover_subtract.png'
+import redBtnImg from '../assets/svg/close_proj_btn_subtract.png'
+import greenBtnHoverImg from '../assets/svg/green_btn_hover_subtract.png'
+import greenBtnImg from '../assets/svg/green_btn_subtract.png'
+import CustomModal from "../components/ui/CustomModal"
+import FancyButton from "../components/ui/FancyButton"
+import { displaySnackbar } from "../store/thunkMiddleware"
 
 const PaymentPage = () => {
   const { user_id } = useSelector((state) => state)
@@ -46,6 +43,8 @@ const PaymentPage = () => {
   const [paymentChoice, setPaymentChoice] = useState('email')
 
   const [allUserData, setAllUserData] = useState([])
+
+  const [showUsersDialog, setShowusersDialog] = useState(false)
 
   const dispatch = useDispatch();
 
@@ -77,6 +76,7 @@ const PaymentPage = () => {
   console.log('all user',allUserData);
 
   useEffect(() => {
+    if(!userAcctBalance?.length) return
     if(!isLoadingUserAcctBalance) {
       if(userAcctBalance.err) {
         alert("Please enter your CopperX access token in WPL profile section to proceed with payments");
@@ -90,7 +90,10 @@ const PaymentPage = () => {
         else setFinalBalance(balance); 
       }
     }
-  }, [isLoadingUserAcctBalance,payAmt,currency])
+  }, [isLoadingUserAcctBalance, payAmt, currency, userAcctBalance])
+
+
+  
 
   const handleGetCopperXOtp = async () => {
     // if(projectDetails?.paymentStatus != 'ready' && projectDetails?.paymentStatus) return
@@ -197,7 +200,7 @@ const PaymentPage = () => {
               </div>
 
               {/* Payment input box */}
-              <div className="bg-[#091044] flex flex-col gap-2 w-full h-fit py-6 px-3">
+              <div className="bg-[#091044] rounded-lg flex flex-col gap-2 w-full h-fit py-6 px-3">
                 <div className='flex items-center gap-1'>
                   <Menu size={14} className='text-primaryYellow'/>
                   <p className='text-primaryYellow font-inter text-[14px]'>Pay the Contributor</p>
@@ -225,7 +228,7 @@ const PaymentPage = () => {
                     <div className='w-full'>
                       <div className='bg-white7 rounded-md px-3 py-2'>
                         <input 
-                          type='number' 
+                          type='number'
                           placeholder='1200' 
                           className='bg-transparent text-white88 placeholder:text-white32 outline-none border-none w-full'
                           value={payAmt} 
@@ -259,7 +262,7 @@ const PaymentPage = () => {
                       onClick={handleGetCopperXOtp}
                     />
                   </>
-                </div> 
+              </div> 
             </div>
 
             {/* Right side reward data box */}
